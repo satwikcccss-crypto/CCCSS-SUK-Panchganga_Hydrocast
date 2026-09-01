@@ -1,0 +1,479 @@
+Basin: Basin 1
+     Last Modified Date: 5 August 2026
+     Last Modified Time: 07:59:28
+     Version: 4.13
+     Filepath Separator: \
+     Unit System: Metric
+     Missing Flow To Zero: No
+     Enable Flow Ratio: No
+     Compute Local Flow At Junctions: No
+     Unregulated Output Required: No
+
+     Enable Sediment Routing: No
+End:
+
+Subbasin: S6
+     Last Modified Date: 14 August 2026
+     Last Modified Time: 08:16:07
+     Latitude Degrees:  16.61195671752751
+     Longitude Degrees: 73.91344491456454
+     Canvas X: 384102.3404274039
+     Canvas Y: 1836942.7640426934
+     Area: 227.72
+     Downstream: R5
+
+     Discretization: None
+     File: Basin_1.sqlite
+
+     Canopy: None
+     Allow Simultaneous Precip Et: No
+     Plant Uptake Method: None
+
+     Surface: None
+
+     LossRate: SCS
+     Percent Impervious Area: 0.0
+     Curve Number: 61.7827985
+     Initial Abstraction: 0
+
+     Transform: SCS
+     Lag: 3318.071262
+     Unitgraph Type: STANDARD
+
+     Baseflow: None
+End:
+
+Subbasin: S7
+     Last Modified Date: 14 August 2026
+     Last Modified Time: 08:16:07
+     Latitude Degrees:  16.55017579911951
+     Longitude Degrees: 73.95400469687281
+     Canvas X: 388393.45826613245
+     Canvas Y: 1830084.545773453
+     Area: 195.39
+     Downstream: R5
+
+     Discretization: None
+     File: Basin_1.sqlite
+
+     Canopy: None
+     Allow Simultaneous Precip Et: No
+     Plant Uptake Method: None
+
+     Surface: None
+
+     LossRate: SCS
+     Percent Impervious Area: 0.0
+     Curve Number: 61.2814615
+     Initial Abstraction: 0
+
+     Transform: SCS
+     Lag: 3362.265784
+     Unitgraph Type: STANDARD
+
+     Baseflow: None
+End:
+
+Reach: R5
+     Last Modified Date: 12 August 2026
+     Last Modified Time: 09:13:08
+     Canvas X: 406121.8603714667
+     Canvas Y: 1842298.3527893368
+     From Canvas X: 397146.02019882493
+     From Canvas Y: 1845773.8464588781
+     Downstream: R2
+
+     Route: Muskingum
+     Initial Variable: Combined Inflow
+     Muskingum K: 4.619
+     Muskingum x: 0.2
+     Muskingum Steps: 1
+     Channel Loss: None
+End:
+
+Subbasin: S9
+     Last Modified Date: 14 August 2026
+     Last Modified Time: 08:16:07
+     Latitude Degrees:  16.458597651285654
+     Longitude Degrees: 74.00936611316145
+     Canvas X: 394251.20048225037
+     Canvas Y: 1819923.0104067929
+     Area: 366.97
+     Downstream: R4
+
+     Discretization: None
+     File: Basin_1.sqlite
+
+     Canopy: None
+     Allow Simultaneous Precip Et: No
+     Plant Uptake Method: None
+
+     Surface: None
+
+     LossRate: SCS
+     Percent Impervious Area: 0.0
+     Curve Number: 64.3060626
+     Initial Abstraction: 0
+
+     Transform: SCS
+     Lag: 5199.04366
+     Unitgraph Type: STANDARD
+
+     Baseflow: None
+End:
+
+Reach: R4
+     Last Modified Date: 12 August 2026
+     Last Modified Time: 09:13:08
+     Canvas X: 406121.8603714667
+     Canvas Y: 1842298.3527893368
+     From Canvas X: 407995.6047846108
+     From Canvas Y: 1840001.5047990312
+     Downstream: R2
+
+     Route: Muskingum
+     Initial Variable: Combined Inflow
+     Muskingum K: 1.224
+     Muskingum x: 0.2
+     Muskingum Steps: 1
+     Channel Loss: None
+End:
+
+Subbasin: S8
+     Last Modified Date: 14 August 2026
+     Last Modified Time: 08:16:07
+     Latitude Degrees:  16.565108309856193
+     Longitude Degrees: 74.04327654901516
+     Canvas X: 397927.30974639545
+     Canvas Y: 1831689.1487367349
+     Area: 177.44
+     Downstream: R2
+
+     Discretization: None
+     File: Basin_1.sqlite
+
+     Canopy: None
+     Allow Simultaneous Precip Et: No
+     Plant Uptake Method: None
+
+     Surface: None
+
+     LossRate: SCS
+     Percent Impervious Area: 0.0
+     Curve Number: 65.7647998
+     Initial Abstraction: 0
+
+     Transform: SCS
+     Lag: 3387.149566
+     Unitgraph Type: STANDARD
+
+     Baseflow: None
+End:
+
+Reach: R2
+     Last Modified Date: 12 August 2026
+     Last Modified Time: 09:13:08
+     Canvas X: 412498.6357129732
+     Canvas Y: 1850095.5472827428
+     From Canvas X: 406121.8603714667
+     From Canvas Y: 1842298.3527893368
+     Downstream: R1
+
+     Route: Muskingum
+     Initial Variable: Combined Inflow
+     Muskingum K: 11.827
+     Muskingum x: 0.2
+     Muskingum Steps: 1
+     Channel Loss: None
+End:
+
+Subbasin: S4
+     Last Modified Date: 14 August 2026
+     Last Modified Time: 08:16:07
+     Latitude Degrees:  16.81459922029607
+     Longitude Degrees: 73.84099846467186
+     Canvas X: 376504.40821553057
+     Canvas Y: 1859406.6199921423
+     Area: 262.00
+     Downstream: R3
+
+     Discretization: None
+     File: Basin_1.sqlite
+
+     Canopy: None
+     Allow Simultaneous Precip Et: No
+     Plant Uptake Method: None
+
+     Surface: None
+
+     LossRate: SCS
+     Percent Impervious Area: 0.0
+     Curve Number: 61.8906009
+     Initial Abstraction: 0
+
+     Transform: SCS
+     Lag: 3115.505941
+     Unitgraph Type: STANDARD
+
+     Baseflow: None
+End:
+
+Subbasin: S5
+     Last Modified Date: 14 August 2026
+     Last Modified Time: 08:16:07
+     Latitude Degrees:  16.711348120140514
+     Longitude Degrees: 73.90229027678078
+     Canvas X: 382972.81936482847
+     Canvas Y: 1847945.7582640373
+     Area: 106.39
+     Downstream: R3
+
+     Discretization: None
+     File: Basin_1.sqlite
+
+     Canopy: None
+     Allow Simultaneous Precip Et: No
+     Plant Uptake Method: None
+
+     Surface: None
+
+     LossRate: SCS
+     Percent Impervious Area: 0.0
+     Curve Number: 60.967329
+     Initial Abstraction: 0
+
+     Transform: SCS
+     Lag: 2117.085349
+     Unitgraph Type: STANDARD
+
+     Baseflow: None
+End:
+
+Reach: R3
+     Last Modified Date: 12 August 2026
+     Last Modified Time: 09:13:08
+     Canvas X: 412498.6357129732
+     Canvas Y: 1850095.5472827428
+     From Canvas X: 390557.6930687377
+     From Canvas Y: 1851999.5133799699
+     Downstream: R1
+
+     Route: Muskingum
+     Initial Variable: Combined Inflow
+     Muskingum K: 3.829
+     Muskingum x: 0.2
+     Muskingum Steps: 1
+     Channel Loss: None
+End:
+
+Subbasin: S3
+     Last Modified Date: 14 August 2026
+     Last Modified Time: 08:16:07
+     Latitude Degrees:  16.773895310165326
+     Longitude Degrees: 74.05421063555589
+     Canvas X: 399203.3413209635
+     Canvas Y: 1854782.5906360971
+     Area: 261.32
+     Downstream: R1
+
+     Discretization: None
+     File: Basin_1.sqlite
+
+     Canopy: None
+     Allow Simultaneous Precip Et: No
+     Plant Uptake Method: None
+
+     Surface: None
+
+     LossRate: SCS
+     Percent Impervious Area: 0.0
+     Curve Number: 64.8169278
+     Initial Abstraction: 0
+
+     Transform: SCS
+     Lag: 3997.700714
+     Unitgraph Type: STANDARD
+
+     Baseflow: None
+End:
+
+Subbasin: S2
+     Last Modified Date: 14 August 2026
+     Last Modified Time: 08:16:07
+     Latitude Degrees:  16.679570752226052
+     Longitude Degrees: 74.1068244613895
+     Canvas X: 404764.1819232655
+     Canvas Y: 1844321.176471403
+     Area: 153.77
+     Downstream: R1
+
+     Discretization: None
+     File: Basin_1.sqlite
+
+     Canopy: None
+     Allow Simultaneous Precip Et: No
+     Plant Uptake Method: None
+
+     Surface: None
+
+     LossRate: SCS
+     Percent Impervious Area: 0.0
+     Curve Number: 65.7438039
+     Initial Abstraction: 0
+
+     Transform: SCS
+     Lag: 3154.252682
+     Unitgraph Type: STANDARD
+
+     Baseflow: None
+End:
+
+Reach: R1
+     Last Modified Date: 12 August 2026
+     Last Modified Time: 09:13:08
+     Canvas X: 418482.52916140103
+     Canvas Y: 1850911.532752983
+     From Canvas X: 412498.6357129732
+     From Canvas Y: 1850095.5472827428
+     Downstream: Sink-1
+
+     Route: Muskingum
+     Initial Variable: Combined Inflow
+     Muskingum K: 2.899
+     Muskingum x: 0.2
+     Muskingum Steps: 1
+     Channel Loss: None
+End:
+
+Subbasin: S1
+     Last Modified Date: 14 August 2026
+     Last Modified Time: 08:16:07
+     Latitude Degrees:  16.68490000865959
+     Longitude Degrees: 74.21762775879954
+     Canvas X: 416581.6770579384
+     Canvas Y: 1844861.1642143556
+     Area: 86.213
+     Downstream: Sink-1
+
+     Discretization: None
+     File: Basin_1.sqlite
+
+     Canopy: None
+     Allow Simultaneous Precip Et: No
+     Plant Uptake Method: None
+
+     Surface: None
+
+     LossRate: SCS
+     Percent Impervious Area: 0.0
+     Curve Number: 74.848945
+     Initial Abstraction: 0
+
+     Transform: SCS
+     Lag: 2151.961246
+     Unitgraph Type: STANDARD
+
+     Baseflow: None
+End:
+
+Sink: Sink-1
+     Last Modified Date: 12 August 2026
+     Last Modified Time: 10:30:40
+     Canvas X: 418482.52916140103
+     Canvas Y: 1850911.532752983
+     Observed Hydrograph Gage: Gage 1
+End:
+
+Basin Layer Properties:
+     Element Layer:
+          Name: Icons
+          Layer shown: Yes
+     End Layer:
+     Element Layer:
+          Name: Reaches
+          Layer shown: Yes
+     End Layer:
+     2D Connection Layer:
+          Layer shown: No
+     End Layer:
+     Map Layer:
+          Filename: Basin_1.sqlite
+          Layer:13
+          Display name: Centroidal Flowpath
+          Minimum Scale: Undefined
+          Maximum Scale: Undefined
+          Layer shown: Yes
+     End Layer:
+     Map Layer:
+          Filename: Basin_1.sqlite
+          Layer:12
+          Display name: Centroid
+          Minimum Scale: Undefined
+          Maximum Scale: Undefined
+          Layer shown: Yes
+     End Layer:
+     Map Layer:
+          Filename: Basin_1.sqlite
+          Layer:14
+          Display name: 10-85 Flowpath
+          Minimum Scale: Undefined
+          Maximum Scale: Undefined
+          Layer shown: Yes
+     End Layer:
+     Map Layer:
+          Filename: Basin_1.sqlite
+          Layer:11
+          Display name: Longest Flowpath
+          Minimum Scale: Undefined
+          Maximum Scale: Undefined
+          Layer shown: Yes
+     End Layer:
+     Element Layer:
+          Name: Subbasins
+          Layer shown: Yes
+     End Layer:
+     Discretization Layer:
+          Layer shown: No
+     End Layer:
+     Breakpoint Layer:
+          Layer shown: Yes
+     End Layer:
+End:
+
+Basin Spatial Properties:
+     Coordinate System: PROJCS["UTM_ZONE_43N_Wgs84",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",75],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]
+     Terrain: Terrain 1
+     Break Point: Break Point 1
+          X Coordinate: 418485.33905482094
+          Y Coordinate: 1850914.6168749894
+     End Break Point:
+     reach_prefix: R
+     junction_insert: false
+     subbasin_prefix: S
+End:
+
+Basin Schematic Properties:
+     Last View N: 1859406.6199921423
+     Last View S: 1819923.0104067929
+     Last View W: 376504.40821553057
+     Last View E: 418482.52916140103
+     Maximum View N: 1859406.6199921423
+     Maximum View S: 1819923.0104067929
+     Maximum View W: 376504.40821553057
+     Maximum View E: 418482.52916140103
+     Extent Method: Elements
+     Buffer: 0
+     Draw Icons: Yes
+     Draw Icon Labels: Name
+     Draw Map Objects: No
+     Draw Gridlines: No
+     Draw Flow Direction: No
+     Draw HillShade Layer: Yes
+     Draw Elevation Layer: Yes
+     Elevation Layer Color Palette: Gray Scale
+     Ignore Elevation Color Ramp Scale: No
+     Use Interpolated Color Ramp for Elevation Layer: Yes
+     Color Ramp Opacity Level for Elevation Layer: 33.0
+     Fix Element Locations: No
+     Fix Hydrologic Order: No
+End:

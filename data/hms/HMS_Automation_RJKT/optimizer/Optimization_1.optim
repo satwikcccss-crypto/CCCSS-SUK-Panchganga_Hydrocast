@@ -1,0 +1,101 @@
+Optimization Analysis: Optimization 1
+     Description: 
+     Version: 4.13
+     Log File: Optimization_1.log
+     DSS File: Optimization_1.dss
+     Last Modified Date: 1 September 2026
+     Last Modified Time: 07:25:33
+
+     Basin Model Name: Basin 1
+     Met Model Name: Met 1
+
+     Time Zone GMT Offset: 19800000
+     Start Date: 11 July 2024
+     Start Time: 24:00
+     End Date: 6 August 2024
+     End Time: 24:00
+     Time Interval: 1440
+     Time-Series Output: Save All
+
+     Goal Type: Maximize
+     Target Element Name: Sink-1
+     Objective Type: Flow Volume
+     Time Series Results Manager Start:
+     Time Series Results Manager End:
+
+Search Method: Simplex
+     Search Method Modified Date: 1 September 2026
+     Search Method Time: 07:25:33
+     Search Tolerance: 0.01
+     Tolerance Modified Date: 14 August 2026
+     Tolerance Modified Time: 07:46:33
+     Maximum Iterations: 100
+     Maximum Iterations Modified Date: 14 August 2026
+     Maximum Iterations Modified Time: 07:46:33
+     Tolerance Type: Absolute
+End Search Method: 
+
+Objective Function: Response
+     Data Transformation: None
+     Start Date: 11 July 2024
+     Start Time: 24:00
+     End Date: 6 August 2024
+     End Time: 24:00
+     Percent Missing Allowed: 
+     Objective Function Modified Date: 1 September 2026
+     Objective Function Modified Time: 07:25:33
+End Objective Function:
+
+Optimization Variable: 
+     Target Name: All Subbasins
+     Method Category: Loss Rate
+     Parameter Name: Curve Number Scale Factor
+     Instance: 0
+     Initial Value: 60
+     Minimum Constraint: 0.0100
+     Maximum Constraint: 100.0
+     Locked: No
+     Parameter Modified Date: 12 August 2026
+     Parameter Modified Time: 10:39:48
+End Optimization Variable:
+
+Optimization Variable: 
+     Target Name: R5
+     Method Category: Channel Route
+     Parameter Name: Muskingum K
+     Instance: 0
+     Initial Value: 4.619
+     Minimum Constraint: 1
+     Maximum Constraint: 150.0
+     Locked: No
+     Parameter Modified Date: 12 August 2026
+     Parameter Modified Time: 10:42:10
+End Optimization Variable:
+
+Optimization Variable: 
+     Target Name: R4
+     Method Category: Channel Route
+     Parameter Name: Muskingum K
+     Instance: 0
+     Initial Value: 1.224
+     Minimum Constraint: 1
+     Maximum Constraint: 150.0
+     Locked: No
+     Parameter Modified Date: 12 August 2026
+     Parameter Modified Time: 10:42:19
+End Optimization Variable:
+
+Optimization Variable: 
+     Target Name: R3
+     Method Category: Channel Route
+     Parameter Name: Muskingum K
+     Instance: 0
+     Initial Value: 3.829
+     Minimum Constraint: 1
+     Maximum Constraint: 150.0
+     Locked: No
+     Parameter Modified Date: 12 August 2026
+     Parameter Modified Time: 10:42:24
+End Optimization Variable:
+
+End Optimization Analysis: Optimization 1

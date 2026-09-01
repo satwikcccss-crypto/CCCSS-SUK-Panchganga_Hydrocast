@@ -1,0 +1,148 @@
+Gage Manager: 
+     Gage Manager: 
+     Version: 4.13
+     Filepath Separator: \
+End: 
+
+Gage: Radhanagari
+     Gage: Radhanagari
+     Gage Type: Precipitation
+     Last Modified Date: 1 September 2026
+     Last Modified Time: 07:25:33
+     Latitude Degrees: 16.41021
+     Longitude Degrees: 73.9971822
+     Reference Height Units: Meters
+     Reference Height: 9.9999
+     Data Source Type: Manual Entry
+     Filename: HMS_Automation_RJKT.dss
+     Pathname: //Radhanagari/PRECIP-INC//1DAY/GAGE/
+     Variant: Variant-1
+       Start Time: 12 July 2024, 00:00
+       End Time: 7 August 2024, 00:00
+     End Variant: Variant-1
+End: 
+
+Gage: Salwan
+     Gage: Salwan
+     Gage Type: Precipitation
+     Last Modified Date: 1 September 2026
+     Last Modified Time: 07:25:33
+     Latitude Degrees: 16.6712
+     Longitude Degrees: 73.9735
+     Reference Height Units: Meters
+     Reference Height: 9.9999
+     Data Source Type: Manual Entry
+     Filename: HMS_Automation_RJKT.dss
+     Pathname: //Salwan/PRECIP-INC//1DAY/GAGE/
+     Variant: Variant-1
+       Start Time: 12 July 2024, 00:00
+       End Time: 7 August 2024, 00:00
+     End Variant: Variant-1
+End: 
+
+Gage: Gage 1
+     Gage: Gage 1
+     Gage Type: Flow
+     Description: RJKT_2K24_Discharge
+     Last Modified Date: 1 September 2026
+     Last Modified Time: 07:25:33
+     Reference Height Units: Meters
+     Reference Height: 9.9999
+     Data Source Type: Manual Entry
+     Filename: HMS_Automation_RJKT.dss
+     Pathname: //Gage 1/FLOW//1DAY/GAGE/
+     Variant: Variant-1
+       Start Time: 12 July 2024, 00:00
+       End Time: 7 August 2024, 00:00
+     End Variant: Variant-1
+End: 
+
+Gage: Sangarul
+     Gage: Sangarul
+     Gage Type: Precipitation
+     Last Modified Date: 1 September 2026
+     Last Modified Time: 07:25:33
+     Latitude Degrees: 16.6841962
+     Longitude Degrees: 74.0931627
+     Reference Height Units: Meters
+     Reference Height: 9.9999
+     Data Source Type: Manual Entry
+     Filename: HMS_Automation_RJKT.dss
+     Pathname: //Sangarul/PRECIP-INC//1DAY/GAGE/
+     Variant: Variant-1
+       Start Time: 12 July 2024, 00:00
+       End Time: 7 August 2024, 00:00
+     End Variant: Variant-1
+End: 
+
+Gage: Beed
+     Gage: Beed
+     Gage Type: Precipitation
+     Last Modified Date: 1 September 2026
+     Last Modified Time: 07:25:33
+     Latitude Degrees: 16.647984
+     Longitude Degrees: 74.1288964
+     Reference Height Units: Meters
+     Reference Height: 9.9999
+     Data Source Type: Manual Entry
+     Filename: HMS_Automation_RJKT.dss
+     Pathname: //Beed/PRECIP-INC//1DAY/GAGE/
+     Variant: Variant-1
+       Start Time: 12 July 2024, 00:00
+       End Time: 7 August 2024, 00:00
+     End Variant: Variant-1
+End: 
+
+Gage: kotoli
+     Gage: kotoli
+     Gage Type: Precipitation
+     Last Modified Date: 1 September 2026
+     Last Modified Time: 07:25:33
+     Latitude Degrees: 16.7820174
+     Longitude Degrees: 74.0518705
+     Reference Height Units: Meters
+     Reference Height: 9.9999
+     Data Source Type: Manual Entry
+     Filename: HMS_Automation_RJKT.dss
+     Pathname: //kotoli/PRECIP-INC//1DAY/GAGE/
+     Variant: Variant-1
+       Start Time: 12 July 2024, 00:00
+       End Time: 7 August 2024, 00:00
+     End Variant: Variant-1
+End: 
+
+Gage: karanjphen
+     Gage: karanjphen
+     Gage Type: Precipitation
+     Last Modified Date: 1 September 2026
+     Last Modified Time: 07:25:33
+     Latitude Degrees: 16.7850973
+     Longitude Degrees: 73.9036487
+     Reference Height Units: Meters
+     Reference Height: 9.9999
+     Data Source Type: Manual Entry
+     Filename: HMS_Automation_RJKT.dss
+     Pathname: //karanjphen/PRECIP-INC//1DAY/GAGE/
+     Variant: Variant-1
+       Start Time: 12 July 2024, 00:00
+       End Time: 7 August 2024, 00:00
+     End Variant: Variant-1
+End: 
+
+Gage: Karvir
+     Gage: Karvir
+     Gage Type: Precipitation
+     Last Modified Date: 1 September 2026
+     Last Modified Time: 07:25:33
+     Latitude Degrees: 16.706369
+     Longitude Degrees: 74.2481772
+     Reference Height Units: Meters
+     Reference Height: 9.9999
+     Data Source Type: Manual Entry
+     Filename: HMS_Automation_RJKT.dss
+     Pathname: //Karvir/PRECIP-INC//1DAY/GAGE/
+     Variant: Variant-1
+       Start Time: 12 July 2024, 00:00
+       End Time: 7 August 2024, 00:00
+     End Variant: Variant-1
+End: 

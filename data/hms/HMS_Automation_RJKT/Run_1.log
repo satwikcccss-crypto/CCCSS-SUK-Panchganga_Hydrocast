@@ -1,0 +1,36 @@
+NOTE 15301:  Began computing simulation run "Run 1" at time 01Sep2026, 12:56:01.
+NOTE 20364:  Found no parameter problems in meteorologic model "Met 1".
+NOTE 40049:  Found no parameter problems in basin model "Basin 1".
+WARNING 41743:  Initial abstraction ratio for subbasin "S6" is 0.0.
+WARNING 41743:  Initial abstraction ratio for subbasin "S7" is 0.0.
+WARNING 41169:  Muskingum routing is unstable with the given parameters for reach "R5".
+WARNING 41743:  Initial abstraction ratio for subbasin "S9" is 0.0.
+WARNING 41169:  Muskingum routing is unstable with the given parameters for reach "R4".
+WARNING 41743:  Initial abstraction ratio for subbasin "S8" is 0.0.
+WARNING 41169:  Muskingum routing is unstable with the given parameters for reach "R2".
+WARNING 41743:  Initial abstraction ratio for subbasin "S4" is 0.0.
+WARNING 41743:  Initial abstraction ratio for subbasin "S5" is 0.0.
+WARNING 41169:  Muskingum routing is unstable with the given parameters for reach "R3".
+WARNING 41743:  Initial abstraction ratio for subbasin "S3" is 0.0.
+WARNING 41743:  Initial abstraction ratio for subbasin "S2" is 0.0.
+WARNING 41169:  Muskingum routing is unstable with the given parameters for reach "R1".
+WARNING 41743:  Initial abstraction ratio for subbasin "S1" is 0.0.
+WARNING 41784:  Simulation time interval is greater than 0.29 * lag for subbasin "S6"; reduce simulation time interval.
+NOTE 42413:  Unit hydrograph volume for subbasin "S6" is 1.0000 mm.
+WARNING 41784:  Simulation time interval is greater than 0.29 * lag for subbasin "S7"; reduce simulation time interval.
+NOTE 42413:  Unit hydrograph volume for subbasin "S7" is 1.0000 mm.
+NOTE 42413:  Unit hydrograph volume for subbasin "S9" is 1.0000 mm.
+WARNING 41784:  Simulation time interval is greater than 0.29 * lag for subbasin "S8"; reduce simulation time interval.
+NOTE 42413:  Unit hydrograph volume for subbasin "S8" is 1.0000 mm.
+WARNING 41784:  Simulation time interval is greater than 0.29 * lag for subbasin "S4"; reduce simulation time interval.
+NOTE 42413:  Unit hydrograph volume for subbasin "S4" is 1.0000 mm.
+WARNING 41784:  Simulation time interval is greater than 0.29 * lag for subbasin "S5"; reduce simulation time interval.
+NOTE 42413:  Unit hydrograph volume for subbasin "S5" is 1.0000 mm.
+WARNING 41784:  Simulation time interval is greater than 0.29 * lag for subbasin "S3"; reduce simulation time interval.
+NOTE 42413:  Unit hydrograph volume for subbasin "S3" is 1.0000 mm.
+WARNING 41784:  Simulation time interval is greater than 0.29 * lag for subbasin "S2"; reduce simulation time interval.
+NOTE 42413:  Unit hydrograph volume for subbasin "S2" is 1.0000 mm.
+WARNING 41784:  Simulation time interval is greater than 0.29 * lag for subbasin "S1"; reduce simulation time interval.
+NOTE 42413:  Unit hydrograph volume for subbasin "S1" is 1.0000 mm.
+NOTE 15302:  Finished computing simulation run "Run 1" at time 01Sep2026, 12:56:01.
+NOTE 15312:  The total runtime for this simulation is 00:00.

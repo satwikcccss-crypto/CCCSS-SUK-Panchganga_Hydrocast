@@ -1,0 +1,26 @@
+Project: HMS_Automation_RJKT
+     Description: Automation Model for Panchganga River Built on Rajaram Weir as a Sink Location for the model
+     Version: 4.13
+     Filepath Separator: \
+     DSS File Name: HMS_Automation_RJKT.dss
+End:
+
+Precipitation: Met 1
+     Filename: Met_1.met
+     Description: 
+     Last Modified Date: 12 August 2026
+     Last Modified Time: 09:34:53
+End:
+
+Basin: Basin 1
+     Filename: Basin_1.basin
+     Description: 
+     Last Modified Date: 14 August 2026
+     Last Modified Time: 08:16:07
+End:
+
+Control: Control 1
+     FileName: Control_1.control
+     Description: RJKT_2K24_12JUL_TO_07AUG
+End:
+
