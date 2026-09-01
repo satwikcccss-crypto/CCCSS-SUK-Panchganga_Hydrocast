@@ -50,8 +50,8 @@ export default function CrossSectionViewer({
         river: "Panchganga River",
         reach: "Panchganga Ghat (Kolhapur Urban)",
         rawPoints: SHIVAJI_SURVEY_POINTS,
-        bankLeftStation: 118,
-        bankRightStation: 242,
+        bankLeftStation: 124.29,
+        bankRightStation: 261.66,
         warningStage: 542.73,
         dangerStage: 543.33,
         extremeStage: 544.33,
@@ -66,12 +66,12 @@ export default function CrossSectionViewer({
         river: "Panchganga River",
         reach: "Kasba Bawada Barrage",
         rawPoints: RAJARAM_SURVEY_POINTS,
-        bankLeftStation: 172,
-        bankRightStation: 388,
-        warningStage: 535.20,
-        dangerStage: 536.50,
-        extremeStage: 537.50,
-        hflStage: 538.20,
+        bankLeftStation: 79.87,
+        bankRightStation: 342.96,
+        warningStage: 542.73,
+        dangerStage: 543.33,
+        extremeStage: 544.33,
+        hflStage: 545.33,
         forecast: bridgeRajaram?.forecast ?? [],
         siteInfo: bridgeRajaram?.site ?? {},
       };
@@ -549,65 +549,63 @@ export default function CrossSectionViewer({
           })}
 
           {/* Bank Station Markers (Red Dots) */}
-          <g>
-            {/* Left Bank */}
-            <circle
-              cx={toSvgX(siteConfig.bankLeftStation)}
-              cy={toSvgY(
-                crossSectionPoints.find((p) => Math.abs(p.station - siteConfig.bankLeftStation) < 5)?.elevation ??
-                  bounds.minY + 6
-              )}
-              r="4.5"
-              fill="#ef4444"
-              stroke="#ffffff"
-              strokeWidth="1.5"
-            />
-            <text
-              x={toSvgX(siteConfig.bankLeftStation)}
-              y={
-                toSvgY(
-                  crossSectionPoints.find((p) => Math.abs(p.station - siteConfig.bankLeftStation) < 5)?.elevation ??
-                    bounds.minY + 6
-                ) - 8
-              }
-              textAnchor="middle"
-              fill="#f87171"
-              fontSize="9"
-              fontWeight="bold"
-              fontFamily="monospace"
-            >
-              Left Bank ({siteConfig.bankLeftStation}m)
-            </text>
+          {(() => {
+            const leftPt = crossSectionPoints.find((p) => Math.abs(p.station - siteConfig.bankLeftStation) < 2) ?? crossSectionPoints[0];
+            const rightPt = crossSectionPoints.find((p) => Math.abs(p.station - siteConfig.bankRightStation) < 2) ?? crossSectionPoints[crossSectionPoints.length - 1];
+            return (
+              <g>
+                {/* Left Bank */}
+                {leftPt && (
+                  <>
+                    <circle
+                      cx={toSvgX(leftPt.station)}
+                      cy={toSvgY(leftPt.elevation)}
+                      r="5"
+                      fill="#ef4444"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                    />
+                    <text
+                      x={toSvgX(leftPt.station)}
+                      y={toSvgY(leftPt.elevation) - 10}
+                      textAnchor="middle"
+                      fill="#f87171"
+                      fontSize="9.5"
+                      fontWeight="bold"
+                      fontFamily="monospace"
+                    >
+                      Left Bank ({leftPt.elevation.toFixed(2)}m)
+                    </text>
+                  </>
+                )}
 
-            {/* Right Bank */}
-            <circle
-              cx={toSvgX(siteConfig.bankRightStation)}
-              cy={toSvgY(
-                crossSectionPoints.find((p) => Math.abs(p.station - siteConfig.bankRightStation) < 5)?.elevation ??
-                  bounds.minY + 6
-              )}
-              r="4.5"
-              fill="#ef4444"
-              stroke="#ffffff"
-              strokeWidth="1.5"
-            />
-            <text
-              x={toSvgX(siteConfig.bankRightStation)}
-              y={
-                toSvgY(
-                  crossSectionPoints.find((p) => Math.abs(p.station - siteConfig.bankRightStation) < 5)?.elevation ??
-                    bounds.minY + 6
-                ) - 8
-              }
-              textAnchor="middle"
-              fill="#f87171"
-              fontSize="9"
-              fontWeight="bold"
-              fontFamily="monospace"
-            >
-              Right Bank ({siteConfig.bankRightStation}m)
-            </text>
-          </g>
+                {/* Right Bank */}
+                {rightPt && (
+                  <>
+                    <circle
+                      cx={toSvgX(rightPt.station)}
+                      cy={toSvgY(rightPt.elevation)}
+                      r="5"
+                      fill="#ef4444"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                    />
+                    <text
+                      x={toSvgX(rightPt.station)}
+                      y={toSvgY(rightPt.elevation) - 10}
+                      textAnchor="middle"
+                      fill="#f87171"
+                      fontSize="9.5"
+                      fontWeight="bold"
+                      fontFamily="monospace"
+                    >
+                      Right Bank ({rightPt.elevation.toFixed(2)}m)
+                    </text>
+                  </>
+                )}
+              </g>
+            );
+          })()}
 
           {/* ── Reference Flood Alert Level Guide Lines ─────────────────────── */}
           {/* 1. Warning Stage Line (Amber) */}

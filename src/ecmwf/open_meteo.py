@@ -80,10 +80,11 @@ def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarr
 
 def convert_discharge_to_stage(q: float, site: str) -> float:
     if site == "SHIVAJI_BRIDGE":
-        # Calibrated to WRD Maharashtra datum: Warning 542.73m, Danger 543.33m, HFL 545.33m
+        # Calibrated to WRD Maharashtra datum: Warning 542.73m, Danger 543.33m, Extreme 544.33m, HFL 545.33m
         return float(539.20 + 0.165 * (max(q, 1.0) ** 0.52))
     else:
-        return float(531.50 + 0.145 * (max(q, 1.0) ** 0.50))
+        # Rajaram KT Weir - Calibrated to WRD Maharashtra MSL datum: Warning 542.73m, Danger 543.33m, Extreme 544.33m, HFL 545.33m
+        return float(539.10 + 0.168 * (max(q, 1.0) ** 0.52))
 
 
 def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
@@ -209,13 +210,14 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "is_above_danger": stg_shivaji >= 543.33,
         })
 
-        q_rajaram = hydrograph[h]["discharge_m3s"] * 0.58
+        q_rajaram = hydrograph[h]["discharge_m3s"] * 0.72
         stg_rajaram = convert_discharge_to_stage(q_rajaram, "RAJARAM_WEIR")
         lvl_r = "NORMAL"
-        if stg_rajaram >= 538.2: lvl_r = "HFL_EXCEEDED"
-        elif stg_rajaram >= 536.5: lvl_r = "DANGER"
-        elif stg_rajaram >= 535.2: lvl_r = "WARNING"
-        elif stg_rajaram >= 533.2: lvl_r = "ALERT"
+        if stg_rajaram >= 545.33: lvl_r = "HFL_EXCEEDED"
+        elif stg_rajaram >= 544.33: lvl_r = "EXTREME"
+        elif stg_rajaram >= 543.33: lvl_r = "DANGER"
+        elif stg_rajaram >= 542.73: lvl_r = "WARNING"
+        elif stg_rajaram >= 541.50: lvl_r = "ALERT"
 
         rajaram_forecast.append({
             "forecast_time": (start_dt + timedelta(hours=h)).isoformat(),
@@ -223,7 +225,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "stage_m": round(stg_rajaram, 2),
             "discharge_m3s": round(q_rajaram, 1),
             "alert_level": lvl_r,
-            "is_above_danger": stg_rajaram >= 536.5,
+            "is_above_danger": stg_rajaram >= 543.33,
         })
 
     bridge_shivaji = {
@@ -249,12 +251,17 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         "site": {
             "site_id": "RAJARAM_BRIDGE",
             "site_name": "Rajaram K.T. Weir (Kasba Bawada)",
+            "district": "Kolhapur",
+            "authority": "WRD Maharashtra / Kolhapur Municipal Corporation (KMC)",
+            "description": "Primary Panchganga flood & water-level monitoring barrage (Kasba Bawada). Alert thresholds referenced to WRD Maharashtra MSL datum.",
             "latitude": 16.736167,
             "longitude": 74.235889,
-            "alert_stage_m": 533.2,
-            "warning_stage_m": 535.2,
-            "danger_stage_m": 536.5,
-            "hfl_m": 538.2,
+            "alert_stage_m": 541.50,
+            "warning_stage_m": 542.73,
+            "danger_stage_m": 543.33,
+            "extreme_stage_m": 544.33,
+            "hfl_m": 545.33,
+            "markerColor": "#0284c7",
         },
         "forecast": rajaram_forecast,
     }
