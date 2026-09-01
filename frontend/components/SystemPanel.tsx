@@ -50,6 +50,7 @@ function Countdown({ nextCycle }: { nextCycle?: string }) {
 export default function SystemPanel({ pipeline }: { pipeline: any }) {
   const { data: history } = useSWR("history", () => api.pipelineHistory(48), { refreshInterval: 60000 });
   const { data: status } = useSWR("status", api.status, { refreshInterval: 20000 });
+  const { data: logsData } = useSWR("logs", api.logs, { refreshInterval: 10000 });
 
   const defaultSteps = [
     { step_number: 1, step_name: "Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)", duration_seconds: 4.2, status: "success" },
@@ -295,20 +296,18 @@ export default function SystemPanel({ pipeline }: { pipeline: any }) {
           <span className="text-[11px] font-mono-code text-slate-500">Live Simulation Log Stream</span>
         </div>
         <div className="font-mono-code text-[11px] max-h-56 overflow-y-auto bg-slate-900 text-slate-200 p-4 rounded-lg border border-slate-800 space-y-1.5">
-          {[
-            { t: "12:00:01", lv: "INFO", msg: `Forecast cycle ${cycleId} initiated by scheduler` },
-            { t: "12:00:05", lv: "INFO", msg: "Open-Meteo 90-hr precipitation forecast downloaded for 18 Panchganga stations" },
-            { t: "12:00:07", lv: "INFO", msg: "Dynamic subbasin selector evaluated: S1→Karvir (6.6mm), S2→Sangarul (10.7mm), S3→Bajar Bhogaon (12.5mm)" },
-            { t: "12:00:08", lv: "INFO", msg: "Dynamic replacement applied: S6→Gaganbawda (67.4mm substituted for Karanjphen 49.6mm due to storm peak)" },
-            { t: "12:00:09", lv: "INFO", msg: "Dynamic candidate evaluated: S9→Kasaba Walawe (37.0mm selected across 5 candidate stations)" },
-            { t: "12:00:11", lv: "INFO", msg: "HEC-DSS hyetograph time-series written: /PANCHGANGA/*/PRECIP-INC/1HOUR/" },
-            { t: "12:00:15", lv: "INFO", msg: "HMS_Automation_RJKT hydrologic compute running: SCS-CN loss & Muskingum routing across R1–R8" },
-            { t: "12:00:29", lv: "INFO", msg: "HEC-HMS compute completed. Peak discharge 864.0 m³/s at Panchganga basin outlet" },
-            { t: "12:00:31", lv: "INFO", msg: "Hydraulic stage-discharge rating applied: Shivaji Bridge (537.92m MSL) & Rajaram Weir (534.80m MSL)" },
-            { t: "12:00:32", lv: "WARN", msg: "River Alert: Shivaji Bridge projected to reach WARNING stage (537.50m) at T+18h" },
-            { t: "12:00:34", lv: "INFO", msg: "Database sync complete: 18 station telemetry & subbasin forecast records updated" },
-            { t: "12:00:36", lv: "INFO", msg: `Forecast cycle ${cycleId} completed successfully in 36.9s. Dashboard updated` },
-          ].map((log, idx) => {
+          {(logsData && logsData.length > 0 ? logsData : [
+            { t: "12:00:01", lv: "INFO", msg: `Forecast cycle ${cycleId} initiated across 18 Panchganga stations` },
+            { t: "12:00:05", lv: "INFO", msg: "Open-Meteo 90-hr precipitation forecast downloaded successfully" },
+            { t: "12:00:07", lv: "INFO", msg: "Dynamic subbasin selector evaluated: S1→Karvir, S2→Sangarul, S6→Gaganbawda" },
+            { t: "12:00:11", lv: "INFO", msg: "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/" },
+            { t: "12:00:15", lv: "INFO", msg: "HMS_Automation_RJKT hydrologic compute running: SCS-CN loss & Muskingum routing" },
+            { t: "12:00:29", lv: "INFO", msg: "HEC-HMS compute finished: Peak Discharge 859.1 m³/s at T+22h" },
+            { t: "12:00:31", lv: "INFO", msg: "Hydraulic rating applied: Shivaji Bridge Peak 538.60m MSL" },
+            { t: "12:00:32", lv: "WARN", msg: "River Alert: Shivaji Bridge projected to reach WARNING stage (538.60m) at T+18h" },
+            { t: "12:00:34", lv: "INFO", msg: "Dashboard pipeline state dumped to public/data/latest_pipeline_state.json" },
+            { t: "12:00:36", lv: "INFO", msg: `Forecast cycle ${cycleId} completed in 36.9s. Dashboard live broadcast pushed` },
+          ]).map((log: any, idx: number) => {
             const isWarn = log.lv === "WARN";
             return (
               <div key={idx} className="flex items-start gap-2 py-0.5 border-b border-slate-800/60">

@@ -288,8 +288,10 @@ function generateMockData() {
 
 export async function fetchDashboardData() {
   try {
-    const res = await fetch(`${BASE}/api/v1/dashboard`, { next: { revalidate: 300 } });
-    if (!res.ok) throw new Error("Backend offline");
+    // Check if running on server vs browser
+    const url = typeof window !== "undefined" ? "/api/v1/dashboard" : `${BASE}/api/v1/dashboard`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error("API route response not ok");
     return await res.json();
   } catch {
     return generateMockData();
@@ -304,76 +306,70 @@ export const api = {
   gaugeHyetographs: async () => (await fetchDashboardData()).gauges,
   runoffHydrograph: async () => (await fetchDashboardData()).hydrograph,
   outletHydrograph: async () => (await fetchDashboardData()).hydrograph,
-  runoffSummary: async () => ({
-    outlet: {
-      peak_discharge_m3s: 864.0,
-      lead_hours_to_peak: 22,
-      total_volume_mcm: 142.5,
-      time_to_peak_hours: 22,
-    },
-    subbasins: (await fetchDashboardData()).stations,
-    bridges: [
-      {
+  pipeline: async () => (await fetchDashboardData()).pipeline,
+  logs: async () => (await fetchDashboardData()).logs ?? [],
+  runoffSummary: async () => {
+    const data = await fetchDashboardData();
+    const peakQ = data?.status?.last_cycle?.peak_discharge_m3s ?? 859.1;
+    const peakStageShivaji = data?.bridgeShivaji?.forecast?.reduce((max: number, f: any) => Math.max(max, f.stage_m), 535.1) ?? 538.60;
+    const peakStageRajaram = data?.bridgeRajaram?.forecast?.reduce((max: number, f: any) => Math.max(max, f.stage_m), 533.4) ?? 534.80;
+
+    return {
+      outlet: {
+        peak_discharge_m3s: peakQ,
+        lead_hours_to_peak: 22,
+        total_volume_mcm: 89.5,
+        time_to_peak_hours: 22,
+        alert_level: data?.status?.last_cycle?.alert_level ?? "WARNING",
+      },
+      subbasins: data.stations,
+      bridges: [
+        {
+          site_id: "SHIVAJI_BRIDGE",
+          site_name: "Shivaji Bridge (Panchganga Ghat)",
+          stage_m: data?.bridgeShivaji?.forecast?.[0]?.stage_m ?? 535.10,
+          current_stage_m: data?.bridgeShivaji?.forecast?.[0]?.stage_m ?? 535.10,
+          peak_stage_m: peakStageShivaji,
+          warning_stage_m: 537.50,
+          danger_stage_m: 538.50,
+          hfl_m: 541.00,
+          alert_level: peakStageShivaji >= 538.5 ? "DANGER" : peakStageShivaji >= 537.5 ? "WARNING" : "NORMAL",
+          is_above_danger: peakStageShivaji >= 538.5,
+        },
+        {
+          site_id: "RAJARAM_BRIDGE",
+          site_name: "Rajaram K.T. Weir",
+          stage_m: data?.bridgeRajaram?.forecast?.[0]?.stage_m ?? 533.40,
+          current_stage_m: data?.bridgeRajaram?.forecast?.[0]?.stage_m ?? 533.40,
+          peak_stage_m: peakStageRajaram,
+          warning_stage_m: 535.20,
+          danger_stage_m: 536.50,
+          hfl_m: 538.20,
+          alert_level: peakStageRajaram >= 536.5 ? "DANGER" : peakStageRajaram >= 535.2 ? "WARNING" : "ALERT",
+          is_above_danger: peakStageRajaram >= 536.5,
+        },
+      ],
+    };
+  },
+  alerts: async () => {
+    const data = await fetchDashboardData();
+    const alertsList = [];
+    const shivajiPeak = data?.bridgeShivaji?.forecast?.reduce((max: number, f: any) => Math.max(max, f.stage_m), 535.1) ?? 538.60;
+    if (shivajiPeak >= 537.5) {
+      alertsList.push({
+        id: "ALT-SHIVAJI-01",
         site_id: "SHIVAJI_BRIDGE",
         site_name: "Shivaji Bridge (Panchganga Ghat)",
-        stage_m: 535.10,
-        current_stage_m: 535.10,
-        peak_stage_m: 537.92,
-        warning_stage_m: 537.50,
-        danger_stage_m: 538.50,
-        hfl_m: 541.00,
-        alert_level: "WARNING",
-        is_above_danger: false,
-      },
-      {
-        site_id: "RAJARAM_BRIDGE",
-        site_name: "Rajaram K.T. Weir",
-        stage_m: 533.40,
-        current_stage_m: 533.40,
-        peak_stage_m: 534.80,
-        warning_stage_m: 535.20,
-        danger_stage_m: 536.50,
-        hfl_m: 538.20,
-        alert_level: "ALERT",
-        is_above_danger: false,
-      },
-    ],
-  }),
-  alerts: async () => [
-    {
-      id: "ALT-SHIVAJI-01",
-      site_id: "SHIVAJI_BRIDGE",
-      site_name: "Shivaji Bridge (Panchganga Ghat)",
-      alert_type: "WARNING",
-      current_stage_m: 537.92,
-      warning_stage_m: 537.5,
-      danger_stage_m: 538.5,
-      lead_hours: 18,
-      message: "Water level projected to exceed Warning Level (537.50m MSL) at T+18h",
-    },
-    {
-      id: "ALT-RAJARAM-02",
-      site_id: "RAJARAM_BRIDGE",
-      site_name: "Rajaram K.T. Weir",
-      alert_type: "ALERT",
-      current_stage_m: 534.8,
-      warning_stage_m: 535.2,
-      danger_stage_m: 536.5,
-      lead_hours: 22,
-      message: "Approaching alert threshold. Inflow 501 m³/s expected.",
-    },
-  ],
-  pipeline: async () => ({
-    stage: "IDLE",
-    cycle: "CYC_20260901_12z",
-    next_run_in_mins: 142,
-    components: {
-      open_meteo: "ONLINE",
-      stage_rating: "ONLINE",
-      database: "CONNECTED",
-      hec_hms: "CALIBRATED_RJKT",
-    },
-  }),
+        alert_type: shivajiPeak >= 538.5 ? "DANGER" : "WARNING",
+        current_stage_m: data?.bridgeShivaji?.forecast?.[0]?.stage_m ?? 535.10,
+        warning_stage_m: 537.5,
+        danger_stage_m: 538.5,
+        lead_hours: 18,
+        message: `Projected peak stage ${shivajiPeak.toFixed(2)}m MSL reaches WARNING threshold at T+18h`,
+      });
+    }
+    return alertsList;
+  },
   bridgeShivaji: async () => (await fetchDashboardData()).bridgeShivaji,
   bridgeRajaram: async () => (await fetchDashboardData()).bridgeRajaram,
   bridgeStage: async (siteId: string) => {
@@ -385,10 +381,10 @@ export const api = {
     return Array.from({ length: 8 }, (_, i) => ({
       run_id: `CYCLE-20260901-${String(i * 6).padStart(2, "0")}00`,
       start_time: new Date(now.getTime() - (8 - i) * 6 * 3600 * 1000).toISOString(),
-      duration_seconds: 180 + Math.floor(Math.sin(i) * 40),
+      duration_seconds: 36.9 + (i % 3) * 2.1,
       status: "completed",
-      total_rainfall_mm: 35.4 + (i * 3.2),
-      peak_discharge_m3s: 720.0 + (i * 18.5),
+      total_rainfall_mm: 67.4,
+      peak_discharge_m3s: 859.1,
     }));
   },
   ratingCurves: async () => ({
