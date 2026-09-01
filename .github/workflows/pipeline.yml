@@ -1,48 +1,33 @@
-name: Hydrocast Forecast Pipeline
+name: Hydrocast Panchganga Forecast Pipeline
 
-# Runs at 00z, 06z, 12z, 18z UTC aligned with ECMWF run cycles
-# HMS step runs on self-hosted Windows runner (your Windows Server)
-# All Python steps run on GitHub-hosted Ubuntu runner
+# Automated Forecast Cycle (Runs at 02:30, 08:30, 14:30, 20:30 UTC)
+# Pure Cloud Execution: Open-Meteo v1 + Hydrologic Stage Rating + Supabase DB Write
 
 on:
   schedule:
-    - cron: "30 2  * * *"   # 02:30 UTC → uses 00z ECMWF run (available ~02:00)
-    - cron: "30 8  * * *"   # 08:30 UTC → uses 06z run
-    - cron: "30 14 * * *"   # 14:30 UTC → uses 12z run
-    - cron: "30 20 * * *"   # 20:30 UTC → uses 18z run
-  workflow_dispatch:          # manual trigger with optional date/time inputs
-    inputs:
-      ecmwf_date:
-        description: "ECMWF date YYYYMMDD (blank = latest)"
-        required: false
-      ecmwf_time:
-        description: "ECMWF time 00z or 12z (blank = latest)"
-        required: false
+    - cron: "30 2  * * *"   # 02:30 UTC
+    - cron: "30 8  * * *"   # 08:30 UTC
+    - cron: "30 14 * * *"   # 14:30 UTC
+    - cron: "30 20 * * *"   # 20:30 UTC
+  workflow_dispatch:        # Allows manual run from GitHub Actions tab
 
 env:
   PYTHON_VERSION: "3.11"
-  DB_URL: ${{ secrets.DATABASE_URL }}
-  API_KEY: ${{ secrets.API_KEY }}
-  INTERNAL_KEY: ${{ secrets.INTERNAL_KEY }}
-  BBOX_N: ${{ vars.BBOX_N }}
-  BBOX_S: ${{ vars.BBOX_S }}
-  BBOX_E: ${{ vars.BBOX_E }}
-  BBOX_W: ${{ vars.BBOX_W }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  BBOX_N: "17.20"
+  BBOX_S: "16.20"
+  BBOX_E: "74.50"
+  BBOX_W: "73.70"
 
 jobs:
-
-  # ─── JOB 1: ECMWF Download + Rainfall Processing (Ubuntu) ─────────────────
-  rainfall:
-    name: "ECMWF Download + Station Selection"
+  forecast_pipeline:
+    name: "Open-Meteo Fetch & Hydrological Stage Sync"
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    outputs:
-      cycle_id:   ${{ steps.meta.outputs.cycle_id }}
-      ecmwf_date: ${{ steps.meta.outputs.ecmwf_date }}
-      ecmwf_time: ${{ steps.meta.outputs.ecmwf_time }}
+    timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
@@ -50,159 +35,37 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
 
-      - name: Install Python dependencies
-        run: pip install -r requirements.txt
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Compute cycle metadata
+      - name: Compute Forecast Cycle ID
         id: meta
         run: |
           python - <<'EOF'
           import os
-          from datetime import datetime, timezone, timedelta
+          from datetime import datetime, timezone
 
-          date_in = "${{ github.event.inputs.ecmwf_date }}"
-          time_in = "${{ github.event.inputs.ecmwf_time }}"
-
-          if date_in and time_in:
-              date, time = date_in, time_in
-          else:
-              now = datetime.now(timezone.utc) - timedelta(hours=6)
-              date = now.strftime("%Y%m%d")
-              time = "00z" if now.hour < 12 else "12z"
-
-          cycle_id = f"CYC_{date}_{time}"
+          now = datetime.now(timezone.utc)
+          date_str = now.strftime("%Y%m%d")
+          h = now.hour
+          time_str = "00z" if h < 6 else "06z" if h < 12 else "12z" if h < 18 else "18z"
+          cycle_id = f"CYC_{date_str}_{time_str}"
+          
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:
               f.write(f"cycle_id={cycle_id}\n")
-              f.write(f"ecmwf_date={date}\n")
-              f.write(f"ecmwf_time={time}\n")
-          print(f"Cycle: {cycle_id}")
+              f.write(f"date={date_str}\n")
+              f.write(f"time={time_str}\n")
+          print(f"Executing Forecast Cycle: {cycle_id}")
           EOF
 
-      - name: Download ECMWF IFS forecast
+      - name: Fetch Open-Meteo 90-hr Forecasts for Catchment
+        run: |
+          python -m src.ecmwf.open_meteo
+
+      - name: Calculate Dynamic Hydraulic Stages & Sync to Supabase
         env:
-          USE_MARS: ${{ secrets.USE_MARS || 'false' }}
-          ECMWF_API_KEY: ${{ secrets.ECMWF_API_KEY }}
-          ECMWF_API_EMAIL: ${{ secrets.ECMWF_API_EMAIL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          python -m src.ecmwf.downloader \
-            --date ${{ steps.meta.outputs.ecmwf_date }} \
-            --time ${{ steps.meta.outputs.ecmwf_time }}
-
-      - name: Select gauge stations + write DSS
-        run: |
-          python -m src.processing.station_selector \
-            --cycle_id ${{ steps.meta.outputs.cycle_id }} \
-            --nc_path data/raw/ecmwf_${{ steps.meta.outputs.ecmwf_date }}_${{ steps.meta.outputs.ecmwf_time }}.nc
-
-      - name: Write DSS input file
-        run: |
-          python -m src.dss.writer \
-            --cycle_id ${{ steps.meta.outputs.cycle_id }}
-
-      - name: Upload DSS + NC as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dss-input-${{ steps.meta.outputs.cycle_id }}
-          path: |
-            data/hms/rainfall_input.dss
-            data/raw/ecmwf_*.nc
-          retention-days: 3
-
-  # ─── JOB 2: HEC-HMS Simulation (Self-Hosted Windows Runner) ────────────────
-  hms_simulation:
-    name: "HEC-HMS Compute"
-    needs: rainfall
-    runs-on: self-hosted          # must be Windows with HMS installed
-    # Label your runner: Settings → Actions → Runners → New self-hosted runner
-    # Runner label: windows-hms
-    timeout-minutes: 20
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download DSS artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dss-input-${{ needs.rainfall.outputs.cycle_id }}
-          path: data/
-
-      - name: Patch HMS project + run simulation
-        shell: cmd
-        env:
-          CYCLE_ID:        ${{ needs.rainfall.outputs.cycle_id }}
-          HMS_HOME:        ${{ vars.HMS_HOME }}
-          HMS_PROJECT_DIR: ${{ vars.HMS_PROJECT_DIR }}
-          HMS_RUN_NAME:    ${{ vars.HMS_RUN_NAME }}
-        run: |
-          python src\hms\runner.py --cycle_id %CYCLE_ID%
-
-      - name: Upload HMS output DSS
-        uses: actions/upload-artifact@v4
-        with:
-          name: hms-output-${{ needs.rainfall.outputs.cycle_id }}
-          path: data/hms/project/*.dss
-          retention-days: 3
-
-  # ─── JOB 3: Extract Results + Stage Conversion + DB Write ──────────────────
-  post_processing:
-    name: "Results → Postgres"
-    needs: [rainfall, hms_simulation]
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Download HMS output
-        uses: actions/download-artifact@v4
-        with:
-          name: hms-output-${{ needs.rainfall.outputs.cycle_id }}
-          path: data/hms/project/
-
-      - name: Extract hydrograph + compute stage at bridges
-        run: |
-          python -m src.hydrology.post_process \
-            --cycle_id ${{ needs.rainfall.outputs.cycle_id }}
-
-      - name: Store all results in Postgres
-        run: |
-          python -m src.db.store_results \
-            --cycle_id ${{ needs.rainfall.outputs.cycle_id }}
-
-      - name: Evaluate CWC alerts + send notifications
-        run: |
-          python -m src.alerts.evaluator \
-            --cycle_id ${{ needs.rainfall.outputs.cycle_id }}
-
-      - name: Broadcast to dashboard via WebSocket
-        run: |
-          python -m src.api.notifier \
-            --cycle_id ${{ needs.rainfall.outputs.cycle_id }}
-
-      - name: Mark cycle complete
-        run: |
-          python -m src.db.cycle_complete \
-            --cycle_id ${{ needs.rainfall.outputs.cycle_id }} \
-            --status success
-
-      - name: Notify on failure
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.create({
-              owner: context.repo.owner,
-              repo:  context.repo.repo,
-              title: `Pipeline FAILED: ${{ needs.rainfall.outputs.cycle_id }}`,
-              body:  `Cycle ${{ needs.rainfall.outputs.cycle_id }} failed at post-processing step.\nRun: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-              labels: ['pipeline-failure']
-            })
+          python -m src.hydrology.stage_converter
