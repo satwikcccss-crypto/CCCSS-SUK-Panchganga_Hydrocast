@@ -24,13 +24,41 @@ interface StationMetadata {
 }
 
 export const USER_STATIONS_DATA: Record<string, StationMetadata> = {
-  KARANJPHEN: { id: "KARANJPHEN", name: "Karanjphen (Upper Ghats)", subbasin: "SUB_GHATS_UPPER", lat: 16.7850973, lon: 73.9036487, elevation: "640m", fc90: 55.4 },
-  RADHANAGARI: { id: "RADHANAGARI", name: "Radhanagari Dam", subbasin: "SUB_RADHANAGARI_DAM", lat: 16.41021, lon: 73.9971822, elevation: "615m", fc90: 38.1 },
-  SALWAN: { id: "SALWAN", name: "Salwan", subbasin: "SUB_BHOGAWATI_MID", lat: 16.671222, lon: 73.973457, elevation: "595m", fc90: 25.5 },
-  KOTOLI: { id: "KOTOLI", name: "Kotoli", subbasin: "SUB_KASARI_UPPER", lat: 16.7820174, lon: 74.0518705, elevation: "585m", fc90: 11.5 },
-  BEED: { id: "BEED", name: "Beed", subbasin: "SUB_TULSHI_CONFLUENCE", lat: 16.647984, lon: 74.1288964, elevation: "565m", fc90: 9.9 },
-  SANGARUL: { id: "SANGARUL", name: "Sangarul", subbasin: "SUB_KUMBHI_MID", lat: 16.6841962, lon: 74.0931627, elevation: "572m", fc90: 9.7 },
-  KARVEER: { id: "KARVEER", name: "Karveer (Panchganga Plain)", subbasin: "SUB_PANCHGANGA_LOWER", lat: 16.706369, lon: 74.2481772, elevation: "550m", fc90: 6.2 },
+  // S1
+  KARVIR: { id: "KARVIR", name: "Karvir", subbasin: "S1", lat: 16.706369, lon: 74.2481772, elevation: "550m", fc90: 6.2 },
+
+  // S2
+  SANGARUL: { id: "SANGARUL", name: "Sangarul (Primary)", subbasin: "S2", lat: 16.6841962, lon: 74.0931627, elevation: "572m", fc90: 9.7 },
+  BALINGA: { id: "BALINGA", name: "Balinga (Alt)", subbasin: "S2", lat: 16.6878443, lon: 74.17031, elevation: "560m", fc90: 8.4 },
+  KALE: { id: "KALE", name: "Kale (Alt)", subbasin: "S2", lat: 16.7228087, lon: 74.0564499, elevation: "580m", fc90: 12.1 },
+
+  // S3
+  KOTOLI: { id: "KOTOLI", name: "Kotoli (Primary)", subbasin: "S3", lat: 16.7820174, lon: 74.0518705, elevation: "585m", fc90: 11.5 },
+  BAJAR_BHOGAON: { id: "BAJAR_BHOGAON", name: "Bajar Bhogaon (Alt)", subbasin: "S3", lat: 16.8086769, lon: 74.1107824, elevation: "590m", fc90: 14.8 },
+  PADAL: { id: "PADAL", name: "Padal (Alt)", subbasin: "S3", lat: 16.7446006, lon: 74.115187, elevation: "575m", fc90: 10.2 },
+
+  // S4
+  BEED: { id: "BEED", name: "Beed", subbasin: "S4", lat: 16.647984, lon: 74.1288964, elevation: "565m", fc90: 9.9 },
+
+  // S5
+  SALWAN: { id: "SALWAN", name: "Salwan", subbasin: "S5", lat: 16.6712, lon: 73.9735, elevation: "595m", fc90: 25.5 },
+
+  // S6
+  KARANJPHEN: { id: "KARANJPHEN", name: "Karanjphen (Primary)", subbasin: "S6", lat: 16.7850973, lon: 73.9036487, elevation: "640m", fc90: 55.4 },
+  GAGANBAWDA: { id: "GAGANBAWDA", name: "Gaganbawda (Alt)", subbasin: "S6", lat: 16.5469926, lon: 73.8346738, elevation: "680m", fc90: 68.2 },
+
+  // S7
+  RADHANAGARI: { id: "RADHANAGARI", name: "Radhanagari Dam", subbasin: "S7", lat: 16.41021, lon: 73.9971822, elevation: "615m", fc90: 38.1 },
+
+  // S8
+  SHIROLI_DHUMALA: { id: "SHIROLI_DHUMALA", name: "Shiroli-Dhumala", subbasin: "S8", lat: 16.6166768, lon: 74.1062828, elevation: "560m", fc90: 15.6 },
+
+  // S9
+  HALADI: { id: "HALADI", name: "Haladi (Alt)", subbasin: "S9", lat: 16.5932632, lon: 74.156292, elevation: "555m", fc90: 18.3 },
+  RASHIWADE_BK: { id: "RASHIWADE_BK", name: "Rashiwade Bk. (Alt)", subbasin: "S9", lat: 16.5475641, lon: 74.1019728, elevation: "570m", fc90: 22.4 },
+  AAVALI_BK: { id: "AAVALI_BK", name: "Aavali Bk. (Alt)", subbasin: "S9", lat: 16.481009, lon: 74.0549812, elevation: "585m", fc90: 29.8 },
+  KASABA_TARALE: { id: "KASABA_TARALE", name: "Kasaba Tarale (Alt)", subbasin: "S9", lat: 16.4478876, lon: 74.021589, elevation: "595m", fc90: 34.0 },
+  KASABA_WALAWE: { id: "KASABA_WALAWE", name: "Kasaba Walawe (Alt)", subbasin: "S9", lat: 16.41021, lon: 73.9971822, elevation: "615m", fc90: 37.8 },
 };
 
 export default function StationDetailsCard({
