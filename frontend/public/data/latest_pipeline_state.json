@@ -8756,7 +8756,7 @@
       "discharge_m3s": 88.2,
       "surface_runoff_m3s": 4.2,
       "baseflow_m3s": 84.0,
-      "stage_m": 535.5,
+      "stage_m": 535.49,
       "is_peak": false
     },
     {
@@ -10744,37 +10744,37 @@
   },
   "logs": [
     {
-      "t": "15:15:07",
+      "t": "15:29:45",
       "lv": "INFO",
       "msg": "Forecast cycle CYC_20260901_06z initiated across 18 Panchganga stations"
     },
     {
-      "t": "15:15:30",
+      "t": "15:30:11",
       "lv": "INFO",
       "msg": "Open-Meteo 90-hr precipitation forecast downloaded successfully"
     },
     {
-      "t": "15:15:30",
+      "t": "15:30:11",
       "lv": "INFO",
       "msg": "Dynamic subbasin selector evaluated: S1\u2192Karvir, S2\u2192Sangarul, S6\u2192Gaganbawda"
     },
     {
-      "t": "15:15:30",
+      "t": "15:30:11",
       "lv": "INFO",
       "msg": "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/"
     },
     {
-      "t": "15:15:30",
+      "t": "15:30:14",
       "lv": "INFO",
-      "msg": "HEC-HMS compute finished: Peak Discharge 859.1 m\u00b3/s at T+22h"
+      "msg": "HEC-HMS 4.13 execution completed (COMPLETED_BINARY): Peak Discharge 859.1 m\u00b3/s at T+22h in 2.66s"
     },
     {
-      "t": "15:15:30",
+      "t": "15:30:14",
       "lv": "INFO",
       "msg": "Hydraulic rating applied: Shivaji Bridge Peak 538.60m MSL"
     },
     {
-      "t": "15:15:30",
+      "t": "15:30:14",
       "lv": "WARN",
       "msg": "River Alert: Shivaji Bridge projected to reach WARNING stage (538.60m) at T+18h"
     }

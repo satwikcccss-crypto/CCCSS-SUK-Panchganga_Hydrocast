@@ -19,6 +19,7 @@ import pandas as pd
 import requests
 
 from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_gages
+from src.hms.runner import execute_hec_hms
 
 log = logging.getLogger(__name__)
 
@@ -160,16 +161,16 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
 
     record_log("INFO", "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/")
 
-    # Hydrologic Runoff Hydrograph Simulation
-    peak_h = 22
-    basin_avg_rain = float(np.mean([info.get("cumulative_mm", 15.0) for info in governing_subbasin_gages.values()]))
-    peak_q = round(float(420.0 + (basin_avg_rain * 18.5)), 1)
+    # Real HEC-HMS 4.13 Simulation Run
+    hms_result = execute_hec_hms(start_dt)
+    peak_h = hms_result["lead_hours_to_peak"]
+    peak_q = hms_result["peak_discharge_m3s"]
     baseflow = 84.0
 
     hydrograph = []
     for h in range(90):
-        surface_q = float(np.exp(-((h - peak_h) ** 2) / 140) * (peak_q - baseflow))
-        total_q = float(surface_q + baseflow)
+        total_q = hms_result["hydrograph"][h]["discharge_m3s"]
+        surface_q = hms_result["hydrograph"][h]["surface_runoff_m3s"]
         stg = convert_discharge_to_stage(total_q, "SHIVAJI_BRIDGE")
         hydrograph.append({
             "hour": h,
@@ -182,7 +183,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "is_peak": h == peak_h,
         })
 
-    record_log("INFO", f"HEC-HMS compute finished: Peak Discharge {peak_q} m³/s at T+{peak_h}h")
+    record_log("INFO", f"HEC-HMS 4.13 execution completed ({hms_result['status']}): Peak Discharge {peak_q} m³/s at T+{peak_h}h in {hms_result['runtime_seconds']}s")
 
     # Bridge Stage Forecasts
     shivaji_forecast = []
