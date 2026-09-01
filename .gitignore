@@ -5,6 +5,7 @@ frontend/out/
 frontend/build/
 frontend/.env
 frontend/.env.local
+*.tsbuildinfo
 
 # Python
 __pycache__/
