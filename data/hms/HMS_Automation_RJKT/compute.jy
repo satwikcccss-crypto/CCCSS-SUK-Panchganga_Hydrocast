@@ -1,0 +1,12 @@
+# HEC-HMS 4.13 Batch Compute Script
+from hms.model.Project import Project
+
+print "Opening HEC-HMS Project: E:/hydrocast_complete/system/data/hms/HMS_Automation_RJKT/HMS_Automation_RJKT.hms"
+project = Project.open("E:/hydrocast_complete/system/data/hms/HMS_Automation_RJKT/HMS_Automation_RJKT.hms")
+
+print "Executing simulation run: Run 1"
+project.computeRun("Run 1")
+
+print "Closing HEC-HMS Project..."
+project.close()
+print "HEC-HMS Computation Finished Successfully."

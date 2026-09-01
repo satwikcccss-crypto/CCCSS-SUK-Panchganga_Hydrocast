@@ -1,7 +1,7 @@
 name: Hydrocast Panchganga Forecast Pipeline
 
 # Automated Forecast Cycle (Runs at 02:30, 08:30, 14:30, 20:30 UTC)
-# Pure Cloud Execution: Open-Meteo v1 + Dynamic Station Selector + HEC-HMS Simulation + Hydraulic Rating + Supabase DB Write
+# Pure Cloud Execution: Open-Meteo v1 + Dynamic Station Selector + HEC-HMS 4.13 Simulation + Hydraulic Rating + Supabase DB Write
 
 on:
   schedule:
@@ -21,7 +21,7 @@ env:
 
 jobs:
   forecast_pipeline:
-    name: "Open-Meteo Fetch, Dynamic Selector & HEC-HMS Hydrological Cycle"
+    name: "Open-Meteo Fetch, Dynamic Selector & HEC-HMS 4.13 Hydrological Cycle"
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -35,7 +35,18 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
 
-      - name: Install Dependencies
+      - name: Set up Java OpenJDK (for HEC-HMS engine)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Install System Dependencies (Headless X11 & GDAL)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgdal-dev libgeos-dev
+
+      - name: Install Python Dependencies
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
@@ -64,9 +75,9 @@ jobs:
         run: |
           python -m src.ecmwf.open_meteo
 
-      - name: 2. Execute HEC-HMS Hydrological Simulation Cycle
+      - name: 2. Execute HEC-HMS 4.13 Headless Hydrological Run
         run: |
-          python -m src.hms.runner
+          xvfb-run -a python -m src.hms.runner
 
       - name: 3. Calculate Hydraulic Bridge Stages & Sync to Supabase
         env:
