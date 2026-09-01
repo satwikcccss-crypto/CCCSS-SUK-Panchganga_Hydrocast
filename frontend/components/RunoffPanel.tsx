@@ -86,7 +86,7 @@ function BridgeCard({ siteId, summary }: { siteId: string; summary: any }) {
               <h3 className="text-sm font-extrabold text-slate-900">{site.site_name ?? siteId}</h3>
             </div>
             <div className="text-xs text-slate-500 mt-0.5 font-medium">
-              CWC Station · {(site.latitude ?? 17.68).toFixed(4)}°N, {(site.longitude ?? 74.01).toFixed(4)}°E
+              River Gauge Station · {(site.latitude ?? 17.68).toFixed(4)}°N, {(site.longitude ?? 74.01).toFixed(4)}°E
             </div>
           </div>
           <span
@@ -169,7 +169,7 @@ function BridgeCard({ siteId, summary }: { siteId: string; summary: any }) {
           </span>
         </div>
         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-          CWC Telemetry
+          Bridge Telemetry
         </span>
       </div>
     </div>
@@ -199,11 +199,11 @@ export default function RunoffPanel({ summary }: { summary: any }) {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
             <h1 className="text-base font-extrabold tracking-tight text-slate-900">
-              Hydrological Runoff Discharge & Bridge Flood Stage Forecast
+              Hydrological Runoff Discharge &amp; Bridge Flood Stage Forecast
             </h1>
           </div>
           <p className="text-xs text-slate-500 mt-1 font-medium">
-            HEC-HMS Engine · SCS-CN Loss Method · Muskingum Channel Routing · Manning's Hydraulic Rating · CWC Alert Stages
+            HEC-HMS Engine · SCS-CN Loss Method · Muskingum Channel Routing · Manning's Hydraulic Rating · Flood Alert Stages
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs font-medium">
@@ -251,9 +251,9 @@ export default function RunoffPanel({ summary }: { summary: any }) {
           label="Basin Alert Status"
           value={alertLvl}
           unit=""
-          subtext="CWC Standard Criteria"
+          subtext="Hydrological Criteria"
           color={alertLvl === "WARNING" ? "#D97706" : "#10B981"}
-          badge="CWC"
+          badge="BASIN"
         />
       </div>
 
@@ -261,7 +261,7 @@ export default function RunoffPanel({ summary }: { summary: any }) {
       <div className={CARD}>
         <div className={CARD_HEADER}>
           <span className="flex items-center gap-1.5 font-bold text-slate-800">
-            <span>📈</span> Sink Node (J_Outlet) Discharge & Flood Stage Hydrograph
+            <span>📈</span> Sink Node (J_Outlet) Discharge &amp; Flood Stage Hydrograph
           </span>
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-semibold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
@@ -282,7 +282,7 @@ export default function RunoffPanel({ summary }: { summary: any }) {
       {/* Bridge Stations Flood Forecast */}
       <div>
         <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-          Downstream CWC Bridge Monitoring Stations
+          Downstream River Bridge Monitoring Stations
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <BridgeCard siteId="SHIVAJI_BRIDGE" summary={summary} />

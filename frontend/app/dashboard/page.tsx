@@ -112,7 +112,7 @@ export default function Dashboard() {
           <div
             className={`px-2 py-1 rounded text-xs font-semibold border ${alertBadge.bg} ${alertBadge.text} ${alertBadge.border}`}
           >
-            CWC: {worstAlert}
+            Flood Status: {worstAlert}
           </div>
         </div>
       </header>

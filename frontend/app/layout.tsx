@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "HydroCast — Real-Time Flood Forecasting & Basin Intelligence",
-  description: "Advanced rainfall-runoff hydrological monitoring and CWC flood warning system",
+  description: "Advanced rainfall-runoff hydrological monitoring and real-time flood warning system",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

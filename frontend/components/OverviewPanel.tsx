@@ -129,10 +129,10 @@ export default function OverviewPanel({
           />
         </div>
 
-        {/* CWC Bridge Water Level Hydraulic Stage Gauges */}
+        {/* River Bridge Water Level Hydraulic Stage Gauges */}
         <div className={`lg:col-span-5 ${CARD} flex flex-col`}>
           <div className={CARD_HEADER}>
-            <span>CWC Key Flood Monitoring Sites</span>
+            <span>Key River Flood Monitoring Sites</span>
             <button
               onClick={() => onNavigateTab("runoff")}
               className="text-xs text-blue-600 hover:underline"

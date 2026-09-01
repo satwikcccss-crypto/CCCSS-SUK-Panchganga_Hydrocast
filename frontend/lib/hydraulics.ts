@@ -1,7 +1,6 @@
 /**
  * hydraulics.ts
- * 
- * Computes Stage-Discharge relationship for CWC gauging sites using surveyed cross sections.
+ * Computes Stage-Discharge relationship for river gauging sites using surveyed cross sections.
  */
 
 // Format: [Northing, Easting, RL]

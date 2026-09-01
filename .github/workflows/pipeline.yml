@@ -1,14 +1,14 @@
 name: Hydrocast Panchganga Forecast Pipeline
 
 # Automated Forecast Cycle (Runs at 02:30, 08:30, 14:30, 20:30 UTC)
-# Pure Cloud Execution: Open-Meteo v1 + Hydrologic Stage Rating + Supabase DB Write
+# Pure Cloud Execution: Open-Meteo v1 + Dynamic Station Selector + HEC-HMS Simulation + Hydraulic Rating + Supabase DB Write
 
 on:
   schedule:
-    - cron: "30 2  * * *"   # 02:30 UTC
-    - cron: "30 8  * * *"   # 08:30 UTC
-    - cron: "30 14 * * *"   # 14:30 UTC
-    - cron: "30 20 * * *"   # 20:30 UTC
+    - cron: "30 2  * * *"   # 02:30 UTC (06z ECMWF cycle)
+    - cron: "30 8  * * *"   # 08:30 UTC (12z ECMWF cycle)
+    - cron: "30 14 * * *"   # 14:30 UTC (18z ECMWF cycle)
+    - cron: "30 20 * * *"   # 20:30 UTC (00z ECMWF cycle)
   workflow_dispatch:        # Allows manual run from GitHub Actions tab
 
 env:
@@ -21,7 +21,7 @@ env:
 
 jobs:
   forecast_pipeline:
-    name: "Open-Meteo Fetch & Hydrological Stage Sync"
+    name: "Open-Meteo Fetch, Dynamic Selector & HEC-HMS Hydrological Cycle"
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -60,11 +60,15 @@ jobs:
           print(f"Executing Forecast Cycle: {cycle_id}")
           EOF
 
-      - name: Fetch Open-Meteo 90-hr Forecasts for Catchment
+      - name: 1. Fetch Open-Meteo 90-hr Forecasts & Dynamic Station Selection (S1-S9)
         run: |
           python -m src.ecmwf.open_meteo
 
-      - name: Calculate Dynamic Hydraulic Stages & Sync to Supabase
+      - name: 2. Execute HEC-HMS Hydrological Simulation Cycle
+        run: |
+          python -m src.hms.runner
+
+      - name: 3. Calculate Hydraulic Bridge Stages & Sync to Supabase
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |

@@ -175,7 +175,7 @@ export default function BasinMap({
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-500 border border-rose-700" />
-            <span>CWC Bridge Gauges</span>
+            <span>River Bridge Flood Gauges</span>
           </div>
         </div>
       </div>
