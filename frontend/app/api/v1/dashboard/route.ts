@@ -26,7 +26,7 @@ const STATIONS = [
 
 function convertDischargeToStage(q: number, site: string): number {
   if (site === "SHIVAJI_BRIDGE") {
-    return 533.80 + 0.165 * Math.pow(Math.max(q, 1.0), 0.52);
+    return 539.20 + 0.165 * Math.pow(Math.max(q, 1.0), 0.52);
   } else {
     return 531.50 + 0.145 * Math.pow(Math.max(q, 1.0), 0.50);
   }
@@ -147,22 +147,28 @@ export async function GET() {
   const bridgeShivaji = {
     site: {
       site_id: "SHIVAJI_BRIDGE",
-      site_name: "Shivaji Bridge (Panchganga Ghat)",
+      site_name: "Chhatrapati Shivaji Maharaj Bridge",
+      district: "Kolhapur",
+      authority: "Kolhapur Municipal Corporation (KMC)",
+      description: "Ultrasonic radar sensor on the Chhatrapati Shivaji Maharaj Bridge over the Panchganga River, Kolhapur. Monitors real-time water stage at the primary urban crossing. Alert thresholds referenced to Rajaram KT Weir MSL datum (WRD Maharashtra).",
       latitude: 16.708917,
       longitude: 74.219278,
-      alert_stage_m: 535.5,
-      warning_stage_m: 537.5,
-      danger_stage_m: 538.5,
-      hfl_m: 541.0,
+      alert_stage_m: 541.50,
+      warning_stage_m: 542.73,
+      danger_stage_m: 543.33,
+      extreme_stage_m: 544.33,
+      hfl_m: 545.33,
+      markerColor: "#0f4c81",
     },
     forecast: Array.from({ length: 90 }, (_, h) => {
       const q = hydrograph[h].discharge_m3s * 0.76;
       const stage = convertDischargeToStage(q, "SHIVAJI_BRIDGE");
       let alert_level = "NORMAL";
-      if (stage >= 541.0) alert_level = "HFL_EXCEEDED";
-      else if (stage >= 538.5) alert_level = "DANGER";
-      else if (stage >= 537.5) alert_level = "WARNING";
-      else if (stage >= 535.5) alert_level = "ALERT";
+      if (stage >= 545.33) alert_level = "HFL_EXCEEDED";
+      else if (stage >= 544.33) alert_level = "EXTREME";
+      else if (stage >= 543.33) alert_level = "DANGER";
+      else if (stage >= 542.73) alert_level = "WARNING";
+      else if (stage >= 541.50) alert_level = "ALERT";
 
       return {
         forecast_time: new Date(cycleDate.getTime() + h * 3600 * 1000).toISOString(),
@@ -170,7 +176,7 @@ export async function GET() {
         stage_m: parseFloat(stage.toFixed(2)),
         discharge_m3s: parseFloat(q.toFixed(1)),
         alert_level,
-        is_above_danger: stage >= 538.5,
+        is_above_danger: stage >= 543.33,
       };
     }),
   };

@@ -326,19 +326,26 @@ export const api = {
       bridges: [
         {
           site_id: "SHIVAJI_BRIDGE",
-          site_name: "Shivaji Bridge (Panchganga Ghat)",
-          stage_m: data?.bridgeShivaji?.forecast?.[0]?.stage_m ?? 535.10,
-          current_stage_m: data?.bridgeShivaji?.forecast?.[0]?.stage_m ?? 535.10,
+          site_name: "Chhatrapati Shivaji Maharaj Bridge",
+          district: "Kolhapur",
+          authority: "Kolhapur Municipal Corporation (KMC)",
+          description: "Ultrasonic radar sensor on the Chhatrapati Shivaji Maharaj Bridge over the Panchganga River, Kolhapur. Monitors real-time water stage at the primary urban crossing. Alert thresholds referenced to Rajaram KT Weir MSL datum (WRD Maharashtra).",
+          stage_m: data?.bridgeShivaji?.forecast?.[0]?.stage_m ?? 541.00,
+          current_stage_m: data?.bridgeShivaji?.forecast?.[0]?.stage_m ?? 541.00,
           peak_stage_m: peakStageShivaji,
-          warning_stage_m: 537.50,
-          danger_stage_m: 538.50,
-          hfl_m: 541.00,
-          alert_level: peakStageShivaji >= 538.5 ? "DANGER" : peakStageShivaji >= 537.5 ? "WARNING" : "NORMAL",
-          is_above_danger: peakStageShivaji >= 538.5,
+          warning_stage_m: 542.73,
+          danger_stage_m: 543.33,
+          extreme_stage_m: 544.33,
+          hfl_m: 545.33,
+          alert_level: peakStageShivaji >= 543.33 ? "DANGER" : peakStageShivaji >= 542.73 ? "WARNING" : peakStageShivaji >= 541.50 ? "ALERT" : "NORMAL",
+          is_above_danger: peakStageShivaji >= 543.33,
+          markerColor: "#0f4c81",
         },
         {
           site_id: "RAJARAM_BRIDGE",
-          site_name: "Rajaram K.T. Weir",
+          site_name: "Rajaram K.T. Weir (Kasba Bawada)",
+          district: "Kolhapur",
+          authority: "WRD Maharashtra",
           stage_m: data?.bridgeRajaram?.forecast?.[0]?.stage_m ?? 533.40,
           current_stage_m: data?.bridgeRajaram?.forecast?.[0]?.stage_m ?? 533.40,
           peak_stage_m: peakStageRajaram,
@@ -347,6 +354,7 @@ export const api = {
           hfl_m: 538.20,
           alert_level: peakStageRajaram >= 536.5 ? "DANGER" : peakStageRajaram >= 535.2 ? "WARNING" : "ALERT",
           is_above_danger: peakStageRajaram >= 536.5,
+          markerColor: "#0284c7",
         },
       ],
     };
@@ -354,18 +362,20 @@ export const api = {
   alerts: async () => {
     const data = await fetchDashboardData();
     const alertsList = [];
-    const shivajiPeak = data?.bridgeShivaji?.forecast?.reduce((max: number, f: any) => Math.max(max, f.stage_m), 535.1) ?? 538.60;
-    if (shivajiPeak >= 537.5) {
+    const shivajiPeak = data?.bridgeShivaji?.forecast?.reduce((max: number, f: any) => Math.max(max, f.stage_m), 541.0) ?? 544.01;
+    if (shivajiPeak >= 542.73) {
       alertsList.push({
         id: "ALT-SHIVAJI-01",
         site_id: "SHIVAJI_BRIDGE",
-        site_name: "Shivaji Bridge (Panchganga Ghat)",
-        alert_type: shivajiPeak >= 538.5 ? "DANGER" : "WARNING",
-        current_stage_m: data?.bridgeShivaji?.forecast?.[0]?.stage_m ?? 535.10,
-        warning_stage_m: 537.5,
-        danger_stage_m: 538.5,
+        site_name: "Chhatrapati Shivaji Maharaj Bridge",
+        alert_type: shivajiPeak >= 543.33 ? "DANGER" : "WARNING",
+        current_stage_m: data?.bridgeShivaji?.forecast?.[0]?.stage_m ?? 541.00,
+        warning_stage_m: 542.73,
+        danger_stage_m: 543.33,
+        extreme_stage_m: 544.33,
+        hfl_m: 545.33,
         lead_hours: 18,
-        message: `Projected peak stage ${shivajiPeak.toFixed(2)}m MSL reaches WARNING threshold at T+18h`,
+        message: `Projected peak stage ${shivajiPeak.toFixed(2)}m MSL reaches ${shivajiPeak >= 543.33 ? "DANGER" : "WARNING"} threshold (WRD Maharashtra) at T+18h`,
       });
     }
     return alertsList;

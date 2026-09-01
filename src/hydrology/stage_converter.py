@@ -31,10 +31,11 @@ class CrossSection:
     n_flood:        float = 0.070    # Manning's n — floodplain
     slope:          float = 0.00025  # bed slope m/m
     datum_m:        float = 0.0      # datum offset
-    alert_stage_m:   float = 535.50
-    warning_stage_m: float = 537.50
-    danger_stage_m:  float = 538.50
-    hfl_m:           float = 541.00
+    alert_stage_m:   float = 541.50
+    warning_stage_m: float = 542.73
+    danger_stage_m:  float = 543.33
+    extreme_stage_m: float = 544.33
+    hfl_m:           float = 545.33
     station_m:      np.ndarray = field(default_factory=lambda: np.array([]))
     elevation_m:    np.ndarray = field(default_factory=lambda: np.array([]))
 
@@ -821,15 +822,18 @@ def run_pipeline():
     
     # 1. Shivaji Bridge
     cs_shivaji = load_cross_section_array("SHIVAJI_BRIDGE", SHIVAJI_SURVEY, {
-        "name": "Shivaji Bridge (Panchganga Ghat)",
+        "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
+        "district": "Kolhapur",
+        "authority": "Kolhapur Municipal Corporation (KMC)",
         "latitude": 16.708917,
         "longitude": 74.219278,
         "slope": 0.00025,
         "n_main": 0.035,
-        "alert_stage_m": 535.50,
-        "warning_stage_m": 537.50,
-        "danger_stage_m": 538.50,
-        "hfl_m": 541.00,
+        "alert_stage_m": 541.50,
+        "warning_stage_m": 542.73,
+        "danger_stage_m": 543.33,
+        "extreme_stage_m": 544.33,
+        "hfl_m": 545.33,
     })
     df_shivaji = build_rating_curve(cs_shivaji)
     log.info("Shivaji Rating Curve: Stage %.2f-%.2f m | Q 0-%.1f m3/s", 

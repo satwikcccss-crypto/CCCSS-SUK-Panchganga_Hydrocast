@@ -80,7 +80,8 @@ def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarr
 
 def convert_discharge_to_stage(q: float, site: str) -> float:
     if site == "SHIVAJI_BRIDGE":
-        return float(533.80 + 0.165 * (max(q, 1.0) ** 0.52))
+        # Calibrated to WRD Maharashtra datum: Warning 542.73m, Danger 543.33m, HFL 545.33m
+        return float(539.20 + 0.165 * (max(q, 1.0) ** 0.52))
     else:
         return float(531.50 + 0.145 * (max(q, 1.0) ** 0.50))
 
@@ -193,10 +194,11 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         q_shivaji = hydrograph[h]["discharge_m3s"] * 0.76
         stg_shivaji = convert_discharge_to_stage(q_shivaji, "SHIVAJI_BRIDGE")
         lvl_s = "NORMAL"
-        if stg_shivaji >= 541.0: lvl_s = "HFL_EXCEEDED"
-        elif stg_shivaji >= 538.5: lvl_s = "DANGER"
-        elif stg_shivaji >= 537.5: lvl_s = "WARNING"
-        elif stg_shivaji >= 535.5: lvl_s = "ALERT"
+        if stg_shivaji >= 545.33: lvl_s = "HFL_EXCEEDED"
+        elif stg_shivaji >= 544.33: lvl_s = "EXTREME"
+        elif stg_shivaji >= 543.33: lvl_s = "DANGER"
+        elif stg_shivaji >= 542.73: lvl_s = "WARNING"
+        elif stg_shivaji >= 541.50: lvl_s = "ALERT"
 
         shivaji_forecast.append({
             "forecast_time": (start_dt + timedelta(hours=h)).isoformat(),
@@ -204,7 +206,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "stage_m": round(stg_shivaji, 2),
             "discharge_m3s": round(q_shivaji, 1),
             "alert_level": lvl_s,
-            "is_above_danger": stg_shivaji >= 538.5,
+            "is_above_danger": stg_shivaji >= 543.33,
         })
 
         q_rajaram = hydrograph[h]["discharge_m3s"] * 0.58
@@ -227,13 +229,18 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     bridge_shivaji = {
         "site": {
             "site_id": "SHIVAJI_BRIDGE",
-            "site_name": "Shivaji Bridge (Panchganga Ghat)",
+            "site_name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
+            "district": "Kolhapur",
+            "authority": "Kolhapur Municipal Corporation (KMC) / WRD Maharashtra",
+            "description": "Ultrasonic radar sensor on the Chhatrapati Shivaji Maharaj Bridge over the Panchganga River, Kolhapur. Monitors real-time water stage at the primary urban crossing. Alert thresholds referenced to Rajaram KT Weir MSL datum (WRD Maharashtra).",
             "latitude": 16.708917,
             "longitude": 74.219278,
-            "alert_stage_m": 535.5,
-            "warning_stage_m": 537.5,
-            "danger_stage_m": 538.5,
-            "hfl_m": 541.0,
+            "alert_stage_m": 541.50,
+            "warning_stage_m": 542.73,
+            "danger_stage_m": 543.33,
+            "extreme_stage_m": 544.33,
+            "hfl_m": 545.33,
+            "markerColor": "#0f4c81",
         },
         "forecast": shivaji_forecast,
     }
