@@ -449,3 +449,6 @@ export function convertDischargeToStage(targetQ: number, siteId: string): number
   
   return maxStage;
 }
+
+export const SHIVAJI_SURVEY_POINTS = SHIVAJI_DATA;
+export const RAJARAM_SURVEY_POINTS = RAJARAM_DATA;

@@ -5,6 +5,7 @@ import useSWR from "swr";
 import { api } from "@/lib/api";
 import HydrographChart from "@/components/charts/HydrographChart";
 import StageGauge from "@/components/StageGauge";
+import CrossSectionViewer from "@/components/CrossSectionViewer";
 
 const CARD = "bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs transition-shadow hover:shadow-md";
 const CARD_HEADER = "text-xs font-bold tracking-wider text-slate-500 uppercase flex items-center justify-between mb-3";
@@ -178,6 +179,8 @@ function BridgeCard({ siteId, summary }: { siteId: string; summary: any }) {
 
 export default function RunoffPanel({ summary }: { summary: any }) {
   const { data: hgData } = useSWR("hydrograph", api.outletHydrograph, { refreshInterval: 60000 });
+  const { data: bShivaji } = useSWR("bridge-SHIVAJI_BRIDGE", api.bridgeShivaji, { refreshInterval: 60000 });
+  const { data: bRajaram } = useSWR("bridge-RAJARAM_BRIDGE", api.bridgeRajaram, { refreshInterval: 60000 });
 
   const outlet = summary?.outlet ?? {};
   const peakQ = outlet.peak_discharge_m3s ?? 864;
@@ -203,7 +206,7 @@ export default function RunoffPanel({ summary }: { summary: any }) {
             </h1>
           </div>
           <p className="text-xs text-slate-500 mt-1 font-medium">
-            HEC-HMS Engine · SCS-CN Loss Method · Muskingum Channel Routing · Manning's Hydraulic Rating · Flood Alert Stages
+            HEC-HMS 4.13 Simulation · SCS-CN Loss Method · Muskingum Channel Routing · 2D Surveyed Hydraulic Rating
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs font-medium">
@@ -279,7 +282,25 @@ export default function RunoffPanel({ summary }: { summary: any }) {
         </div>
       </div>
 
-      {/* Bridge Stations Flood Forecast */}
+      {/* Interactive 2D River Cross Section & Hydraulic Simulation (HEC-RAS Style) */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+            <span>🌊</span> Interactive 2D River Cross-Section &amp; Water Surface Simulation
+          </div>
+          <span className="text-[11px] font-semibold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
+            Survey Cross-Sections + Dynamic HEC-HMS Rating
+          </span>
+        </div>
+
+        <CrossSectionViewer
+          bridgeShivaji={bShivaji}
+          bridgeRajaram={bRajaram}
+          defaultSite="SHIVAJI_BRIDGE"
+        />
+      </div>
+
+      {/* Bridge Stations Flood Forecast Cards */}
       <div>
         <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
           Downstream River Bridge Monitoring Stations
