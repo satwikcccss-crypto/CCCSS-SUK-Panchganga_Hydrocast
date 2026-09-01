@@ -1,0 +1,179 @@
+# Jython script to create/populate rainfall_input.dss in HEC-DSSVue
+from hec.script import *
+from hec.heclib.dss import HecDss
+from hec.heclib.util import HecTime
+from hec.io import TimeSeriesContainer
+
+dss = HecDss.open("E:/hydrocast_complete/system/data/openmeteo_dss/dss/rainfall_input.dss")
+
+
+# Record for KARVEER
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/KARVEER/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.10, 0.00, 0.00, 0.10, 0.10, 0.10, 0.20, 0.20, 0.20, 0.10, 0.10, 0.00, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.20, 0.40, 0.10, 0.30, 0.20, 0.20, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.20, 0.30, 0.10, 0.20, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.20, 0.40, 0.20, 0.20, 0.50, 0.30, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for SANGARUL
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/SANGARUL/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.20, 0.20, 0.30, 0.20, 0.10, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.30, 0.50, 0.40, 0.40, 0.30, 0.20, 0.20, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.20, 0.40, 0.30, 0.60, 0.30, 0.30, 0.20, 0.10, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.10, 0.10, 0.00, 0.00, 0.00, 0.10, 0.10, 0.00, 0.10, 0.30, 0.20, 0.60, 0.30, 0.20, 0.10, 0.10, 0.00, 0.00, 0.00, 0.10, 0.10]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for KOTOLI
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/KOTOLI/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.00, 0.10, 0.10, 0.10, 0.10, 0.00, 0.10, 0.10, 0.40, 0.20, 0.10, 0.30, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.20, 0.30, 0.60, 0.70, 0.50, 0.30, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.00, 0.00, 0.00, 0.10, 0.00, 0.00, 0.00, 0.00, 0.10, 0.10, 0.30, 0.60, 0.90, 0.60, 0.30, 0.20, 0.10, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.00, 0.00, 0.00, 0.10, 0.10, 0.00, 0.10, 0.40, 0.30, 0.50, 0.60, 0.30, 0.00, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for KARANJPHEN
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/KARANJPHEN/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.50, 0.30, 0.50, 0.60, 0.50, 0.80, 0.60, 1.30, 1.50, 0.60, 0.50, 1.20, 0.50, 0.20, 0.20, 0.20, 0.30, 0.30, 0.20, 0.10, 0.30, 0.80, 0.30, 0.10, 0.10, 0.30, 0.10, 0.20, 0.40, 0.70, 1.10, 1.00, 0.60, 0.60, 0.70, 1.10, 0.40, 0.40, 0.60, 0.20, 0.30, 0.20, 0.30, 0.30, 0.50, 0.30, 0.40, 0.40, 0.50, 0.30, 0.20, 0.20, 0.40, 0.80, 0.80, 1.10, 0.70, 1.00, 1.40, 1.80, 1.00, 0.70, 0.90, 0.70, 0.60, 0.40, 0.20, 0.20, 0.20, 0.30, 0.60, 0.40, 0.40, 0.40, 0.80, 0.60, 0.40, 0.90, 1.20, 0.90, 2.10, 2.30, 0.90, 0.60, 1.00, 0.70, 0.80, 0.50, 0.90, 1.00]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for SALWAN
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/SALWAN/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.20, 0.20, 0.20, 0.30, 0.30, 0.30, 0.40, 0.60, 0.50, 0.30, 0.30, 0.30, 0.30, 0.20, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.20, 0.30, 0.10, 0.10, 0.00, 0.20, 0.10, 0.00, 0.10, 0.40, 0.50, 1.00, 0.80, 0.60, 0.30, 0.40, 0.20, 0.10, 0.20, 0.00, 0.10, 0.00, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.20, 0.30, 0.50, 0.70, 0.70, 0.90, 0.60, 0.70, 0.60, 0.40, 0.30, 0.20, 0.30, 0.10, 0.10, 0.00, 0.20, 0.20, 0.40, 0.10, 0.00, 0.10, 0.40, 0.40, 0.30, 0.40, 0.50, 0.40, 1.30, 0.40, 0.50, 0.30, 0.20, 0.10, 0.20, 0.20, 0.20, 0.40]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for BEED
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/BEED/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.10, 0.00, 0.10, 0.10, 0.10, 0.10, 0.10, 0.20, 0.20, 0.20, 0.30, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.20, 0.40, 0.50, 0.40, 0.40, 0.30, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.20, 0.50, 0.50, 0.30, 0.30, 0.30, 0.20, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.00, 0.00, 0.00, 0.00, 0.10, 0.00, 0.10, 0.20, 0.60, 1.00, 0.20, 0.30, 0.20, 0.10, 0.00, 0.00, 0.00, 0.00, 0.10]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for RADHANAGARI
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/RADHANAGARI/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.30, 0.30, 0.30, 0.20, 0.50, 0.80, 0.50, 0.60, 0.70, 0.50, 0.50, 1.10, 0.90, 0.40, 0.30, 0.20, 0.10, 0.10, 0.20, 0.20, 0.40, 0.40, 0.40, 0.30, 0.10, 0.10, 0.00, 0.10, 0.20, 0.50, 0.70, 1.40, 0.70, 0.70, 1.10, 0.10, 0.40, 0.20, 0.20, 0.20, 0.10, 0.30, 0.20, 0.10, 0.20, 0.20, 0.20, 0.10, 0.10, 0.00, 0.10, 0.20, 0.10, 0.30, 0.50, 1.20, 0.60, 0.70, 1.30, 1.20, 0.90, 0.50, 0.60, 0.50, 0.50, 0.30, 0.20, 0.20, 0.20, 0.20, 0.30, 0.10, 0.20, 0.20, 0.30, 0.30, 0.40, 0.50, 0.60, 0.80, 1.10, 0.80, 0.70, 0.80, 0.30, 0.40, 0.50, 0.30, 0.50, 0.30]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for SUB_PANCHGANGA_LOWER
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/SUB_PANCHGANGA_LOWER/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.10, 0.00, 0.00, 0.10, 0.10, 0.10, 0.20, 0.20, 0.20, 0.10, 0.10, 0.00, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.20, 0.40, 0.10, 0.30, 0.20, 0.20, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.20, 0.30, 0.10, 0.20, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.20, 0.40, 0.20, 0.20, 0.50, 0.30, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for SUB_KUMBHI_MID
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/SUB_KUMBHI_MID/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.20, 0.20, 0.30, 0.20, 0.10, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.30, 0.50, 0.40, 0.40, 0.30, 0.20, 0.20, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.20, 0.40, 0.30, 0.60, 0.30, 0.30, 0.20, 0.10, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.10, 0.10, 0.00, 0.00, 0.00, 0.10, 0.10, 0.00, 0.10, 0.30, 0.20, 0.60, 0.30, 0.20, 0.10, 0.10, 0.00, 0.00, 0.00, 0.10, 0.10]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for SUB_KASARI_UPPER
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/SUB_KASARI_UPPER/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.00, 0.10, 0.10, 0.10, 0.10, 0.00, 0.10, 0.10, 0.40, 0.20, 0.10, 0.30, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.20, 0.30, 0.60, 0.70, 0.50, 0.30, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.00, 0.00, 0.00, 0.10, 0.00, 0.00, 0.00, 0.00, 0.10, 0.10, 0.30, 0.60, 0.90, 0.60, 0.30, 0.20, 0.10, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.00, 0.00, 0.00, 0.10, 0.10, 0.00, 0.10, 0.40, 0.30, 0.50, 0.60, 0.30, 0.00, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for SUB_GHATS_UPPER
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/SUB_GHATS_UPPER/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.50, 0.30, 0.50, 0.60, 0.50, 0.80, 0.60, 1.30, 1.50, 0.60, 0.50, 1.20, 0.50, 0.20, 0.20, 0.20, 0.30, 0.30, 0.20, 0.10, 0.30, 0.80, 0.30, 0.10, 0.10, 0.30, 0.10, 0.20, 0.40, 0.70, 1.10, 1.00, 0.60, 0.60, 0.70, 1.10, 0.40, 0.40, 0.60, 0.20, 0.30, 0.20, 0.30, 0.30, 0.50, 0.30, 0.40, 0.40, 0.50, 0.30, 0.20, 0.20, 0.40, 0.80, 0.80, 1.10, 0.70, 1.00, 1.40, 1.80, 1.00, 0.70, 0.90, 0.70, 0.60, 0.40, 0.20, 0.20, 0.20, 0.30, 0.60, 0.40, 0.40, 0.40, 0.80, 0.60, 0.40, 0.90, 1.20, 0.90, 2.10, 2.30, 0.90, 0.60, 1.00, 0.70, 0.80, 0.50, 0.90, 1.00]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for SUB_BHOGAWATI_MID
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/SUB_BHOGAWATI_MID/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.20, 0.20, 0.20, 0.30, 0.30, 0.30, 0.40, 0.60, 0.50, 0.30, 0.30, 0.30, 0.30, 0.20, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.20, 0.30, 0.10, 0.10, 0.00, 0.20, 0.10, 0.00, 0.10, 0.40, 0.50, 1.00, 0.80, 0.60, 0.30, 0.40, 0.20, 0.10, 0.20, 0.00, 0.10, 0.00, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.20, 0.30, 0.50, 0.70, 0.70, 0.90, 0.60, 0.70, 0.60, 0.40, 0.30, 0.20, 0.30, 0.10, 0.10, 0.00, 0.20, 0.20, 0.40, 0.10, 0.00, 0.10, 0.40, 0.40, 0.30, 0.40, 0.50, 0.40, 1.30, 0.40, 0.50, 0.30, 0.20, 0.10, 0.20, 0.20, 0.20, 0.40]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for SUB_TULSHI_CONFLUENCE
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/SUB_TULSHI_CONFLUENCE/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.10, 0.00, 0.10, 0.10, 0.10, 0.10, 0.10, 0.20, 0.20, 0.20, 0.30, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.20, 0.40, 0.50, 0.40, 0.40, 0.30, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.20, 0.50, 0.50, 0.30, 0.30, 0.30, 0.20, 0.10, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.10, 0.00, 0.00, 0.00, 0.00, 0.10, 0.00, 0.10, 0.20, 0.60, 1.00, 0.20, 0.30, 0.20, 0.10, 0.00, 0.00, 0.00, 0.00, 0.10]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+# Record for SUB_RADHANAGARI_DAM
+tsc = TimeSeriesContainer()
+tsc.fullName = "/PANCHGANGA/SUB_RADHANAGARI_DAM/PRECIP-INC/30AUG2026/1HOUR/OPENMETEO-V1/"
+tsc.interval = 60
+tsc.units = "MM"
+tsc.type = "INST-VAL"
+tsc.startTime = HecTime("30AUG2026 18:30:00").value()
+tsc.values = [0.30, 0.30, 0.30, 0.20, 0.50, 0.80, 0.50, 0.60, 0.70, 0.50, 0.50, 1.10, 0.90, 0.40, 0.30, 0.20, 0.10, 0.10, 0.20, 0.20, 0.40, 0.40, 0.40, 0.30, 0.10, 0.10, 0.00, 0.10, 0.20, 0.50, 0.70, 1.40, 0.70, 0.70, 1.10, 0.10, 0.40, 0.20, 0.20, 0.20, 0.10, 0.30, 0.20, 0.10, 0.20, 0.20, 0.20, 0.10, 0.10, 0.00, 0.10, 0.20, 0.10, 0.30, 0.50, 1.20, 0.60, 0.70, 1.30, 1.20, 0.90, 0.50, 0.60, 0.50, 0.50, 0.30, 0.20, 0.20, 0.20, 0.20, 0.30, 0.10, 0.20, 0.20, 0.30, 0.30, 0.40, 0.50, 0.60, 0.80, 1.10, 0.80, 0.70, 0.80, 0.30, 0.40, 0.50, 0.30, 0.50, 0.30]
+tsc.numberValues = len(tsc.values)
+dss.put(tsc)
+print "Written: " + tsc.fullName
+
+dss.close()
+print "DSS Import Completed Successfully."

@@ -1,0 +1,33 @@
+# Core weather/data
+openmeteo-requests>=0.2
+requests-cache>=1.2
+retry-requests>=2.0
+cfgrib>=0.9.12
+xarray>=2024.1
+eccodes>=2.3
+
+# Scientific
+numpy>=1.26
+scipy>=1.12
+pandas>=2.2
+
+# HEC-DSS
+pydsstools>=0.3.3   # requires Java JDK 11+ on PATH
+
+# Database
+psycopg2-binary>=2.9.9
+asyncpg>=0.29.0
+
+# API
+fastapi>=0.111
+uvicorn[standard]>=0.29
+httpx>=0.27
+
+# Notifications
+python-telegram-bot>=21.3
+requests>=2.31
+
+# Utils
+python-dotenv>=1.0
+click>=8.1
+tqdm>=4.66
