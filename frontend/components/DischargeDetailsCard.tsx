@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
-import { Bar, Line } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS, CategoryScale, LinearScale,
   BarElement, PointElement, LineElement, Title, Tooltip, Legend, Filler,
@@ -14,61 +14,21 @@ ChartJS.register(
 );
 
 export default function DischargeDetailsCard({ siteId = "RAJARAM_BRIDGE" }: { siteId?: string }) {
-  const [activeTab, setActiveTab] = useState<"forecast" | "logged" | "logs">("forecast");
+  const [activeTab, setActiveTab] = useState<"forecast" | "logs">("forecast");
   const { data: bData } = useSWR(`bridge-${siteId}`, () => api.bridgeStage(siteId), { refreshInterval: 60000 });
 
-  const site = bData?.site ?? { site_name: "Rajaram K.T. Weir", alert_stage_m: 3.2, warning_stage_m: 5.2, danger_stage_m: 6.5, hfl_m: 8.2 };
+  const site = bData?.site;
   const forecast = bData?.forecast ?? [];
 
-  // Generate realistic past 90 days data
-  const past90DaysData = useMemo(() => {
-    const points = [];
-    let currentStage = 2.0;
-    for (let d = 90; d >= 0; d--) {
-      currentStage += (Math.random() - 0.4) * 0.3;
-      if (currentStage < 1.0) currentStage = 1.0;
-      
-      const dt = new Date();
-      dt.setDate(dt.getDate() - d);
-      points.push({
-        dateStr: dt.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-        stage_m: parseFloat(currentStage.toFixed(2)),
-      });
-    }
-    return points;
-  }, []);
+  const noData = !site || forecast.length === 0;
 
-  const next90HoursData = useMemo(() => {
-    if (forecast.length > 0) return forecast;
-    const points = [];
-    let currentStage = past90DaysData[past90DaysData.length - 1]?.stage_m || 2.0;
-    for (let h = 0; h < 90; h++) {
-      currentStage += (Math.random() - 0.3) * 0.1;
-      points.push({
-        timeStr: `+${h}h`,
-        stage_m: parseFloat(currentStage.toFixed(2)),
-        discharge_m3s: currentStage * 50,
-      });
-    }
-    return points;
-  }, [forecast, past90DaysData]);
-
-  const pastLogs = useMemo(() => {
-    return [
-      { time: "2 hours ago", event: "Water level crossed Alert Stage", value: "3.25m" },
-      { time: "1 day ago", event: "Steady rise in water level", value: "2.8m" },
-      { time: "2 days ago", event: "Normal conditions", value: "2.1m" },
-      { time: "3 days ago", event: "Minor fluctuation detected", value: "1.9m" },
-    ];
-  }, []);
-
-  const forecastChart = {
-    labels: next90HoursData.map((p: any, i: number) => p.timeStr || `+${i}h`),
+  const forecastChart = useMemo(() => ({
+    labels: forecast.map((p: any, i: number) => `+${p.lead_hours ?? i}h`),
     datasets: [
       {
         type: "line" as const,
-        label: "Forecast Stage (m)",
-        data: next90HoursData.map((p: any) => p.stage_m),
+        label: "Forecast Stage (m MSL)",
+        data: forecast.map((p: any) => p.stage_m),
         borderColor: "#333",
         backgroundColor: "rgba(0,0,0,0)",
         borderWidth: 1.5,
@@ -76,23 +36,7 @@ export default function DischargeDetailsCard({ siteId = "RAJARAM_BRIDGE" }: { si
         tension: 0.1,
       },
     ],
-  };
-
-  const loggedChart = {
-    labels: past90DaysData.map((p: any) => p.dateStr),
-    datasets: [
-      {
-        type: "line" as const,
-        label: "Logged Stage (m)",
-        data: past90DaysData.map((p: any) => p.stage_m),
-        borderColor: "#666",
-        backgroundColor: "rgba(0,0,0,0)",
-        borderWidth: 1.5,
-        pointRadius: 0,
-        tension: 0.1,
-      },
-    ],
-  };
+  }), [forecast]);
 
   const chartOptions = {
     responsive: true,
@@ -105,6 +49,63 @@ export default function DischargeDetailsCard({ siteId = "RAJARAM_BRIDGE" }: { si
       y: { grid: { color: "#f0f0f0" }, ticks: { font: { size: 10 } } },
     },
   };
+
+  // Real alert log from forecast data
+  const alertEvents = useMemo(() => {
+    if (forecast.length === 0 || !site) return [];
+    const events: { time: string; event: string; value: string }[] = [];
+
+    const currentStage = forecast[0]?.stage_m ?? 0;
+    events.push({
+      time: "Now (T+0h)",
+      event: `Current water level`,
+      value: `${currentStage.toFixed(2)}m MSL`,
+    });
+
+    const peakEntry = forecast.reduce((best: any, f: any) =>
+      (f.stage_m > (best?.stage_m ?? 0)) ? f : best, forecast[0]);
+    if (peakEntry) {
+      events.push({
+        time: `T+${peakEntry.lead_hours}h`,
+        event: `Peak forecast stage`,
+        value: `${peakEntry.stage_m.toFixed(2)}m MSL`,
+      });
+    }
+
+    // Check threshold crossings
+    const warnThreshold = site.warning_stage_m;
+    const dangerThreshold = site.danger_stage_m;
+    if (warnThreshold) {
+      const firstWarn = forecast.find((f: any) => f.stage_m >= warnThreshold);
+      if (firstWarn) {
+        events.push({
+          time: `T+${firstWarn.lead_hours}h`,
+          event: `Warning threshold crossed (${warnThreshold}m)`,
+          value: `${firstWarn.stage_m.toFixed(2)}m MSL`,
+        });
+      }
+    }
+    if (dangerThreshold) {
+      const firstDanger = forecast.find((f: any) => f.stage_m >= dangerThreshold);
+      if (firstDanger) {
+        events.push({
+          time: `T+${firstDanger.lead_hours}h`,
+          event: `Danger threshold crossed (${dangerThreshold}m)`,
+          value: `${firstDanger.stage_m.toFixed(2)}m MSL`,
+        });
+      }
+    }
+
+    return events;
+  }, [forecast, site]);
+
+  if (noData) {
+    return (
+      <div className="bg-white border border-gray-200 rounded p-5 text-center text-gray-400 text-sm py-10">
+        Awaiting discharge forecast data for {siteId.replace(/_/g, " ")}...
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white border border-gray-200 rounded p-5">
@@ -121,30 +122,27 @@ export default function DischargeDetailsCard({ siteId = "RAJARAM_BRIDGE" }: { si
           Forecast (90h)
         </button>
         <button
-          onClick={() => setActiveTab("logged")}
-          className={`text-sm ${activeTab === "logged" ? "text-black font-medium border-b-2 border-black" : "text-gray-500"}`}
-        >
-          Logged (90d)
-        </button>
-        <button
           onClick={() => setActiveTab("logs")}
           className={`text-sm ${activeTab === "logs" ? "text-black font-medium border-b-2 border-black" : "text-gray-500"}`}
         >
-          Alert Logs
+          Alert Log
         </button>
       </div>
 
       <div style={{ height: 200 }} className="w-full">
         {activeTab === "forecast" && <Line data={forecastChart} options={chartOptions as any} />}
-        {activeTab === "logged" && <Line data={loggedChart} options={chartOptions as any} />}
         {activeTab === "logs" && (
           <div className="overflow-y-auto h-full text-sm text-gray-700">
-            {pastLogs.map((log, i) => (
-              <div key={i} className="flex justify-between py-2 border-b border-gray-50 last:border-0">
-                <span><span className="text-gray-400 w-24 inline-block">{log.time}</span> {log.event}</span>
-                <span className="font-mono">{log.value}</span>
-              </div>
-            ))}
+            {alertEvents.length === 0 ? (
+              <div className="text-center text-gray-400 py-8">No alert events in current forecast</div>
+            ) : (
+              alertEvents.map((log, i) => (
+                <div key={i} className="flex justify-between py-2 border-b border-gray-50 last:border-0">
+                  <span><span className="text-gray-400 w-24 inline-block">{log.time}</span> {log.event}</span>
+                  <span className="font-mono">{log.value}</span>
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>

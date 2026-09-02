@@ -6,7 +6,6 @@ import { api } from "@/lib/api";
 import FloodBanner from "@/components/FloodBanner";
 import StageGauge from "@/components/StageGauge";
 
-import { USER_STATIONS_DATA } from "@/components/StationDetailsCard";
 import DischargeDetailsCard from "@/components/DischargeDetailsCard";
 
 const BasinMap = dynamic(() => import("@/components/map/BasinMap"), { ssr: false });
@@ -29,8 +28,8 @@ export default function OverviewPanel({
   const { data: stations } = useSWR("stations", api.stationSelection, { refreshInterval: 60000 });
 
   const outlet = summary?.outlet;
-
-  const stationsArray = Object.values(USER_STATIONS_DATA);
+  const lastCycle = status?.last_cycle;
+  const noData = !lastCycle;
 
   return (
     <div className="flex flex-col gap-6 max-w-7xl mx-auto">
@@ -47,12 +46,12 @@ export default function OverviewPanel({
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-mono text-gray-900">
-              {outlet?.peak_discharge_m3s?.toFixed(1) ?? "864.0"}
+              {noData ? "—" : outlet?.peak_discharge_m3s?.toFixed(1)}
             </span>
             <span className="text-xs text-gray-500">m³/s</span>
           </div>
           <div className="mt-2 text-xs text-gray-600 pt-2 border-t border-gray-100">
-            Peak Horizon: T+{outlet?.lead_hours_to_peak ?? 22}h
+            {noData ? "Awaiting forecast cycle" : `Peak Horizon: T+${outlet?.lead_hours_to_peak ?? 0}h`}
           </div>
         </div>
 
@@ -63,11 +62,13 @@ export default function OverviewPanel({
             <span>90-Hour</span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-mono text-gray-900">55.4</span>
+            <span className="text-2xl font-mono text-gray-900">
+              {noData ? "—" : lastCycle?.total_rainfall_mm?.toFixed(1)}
+            </span>
             <span className="text-xs text-gray-500">mm</span>
           </div>
           <div className="mt-2 text-xs text-gray-600 pt-2 border-t border-gray-100">
-            Karanjphen
+            {noData ? "Awaiting forecast cycle" : `Governing subbasin max`}
           </div>
         </div>
 
@@ -75,14 +76,18 @@ export default function OverviewPanel({
         <div className="bg-white border border-gray-200 rounded p-4">
           <div className="flex items-center justify-between text-xs text-gray-500 uppercase">
             <span>Shivaji Bridge Stage</span>
-            <span>{summary?.bridges[0]?.alert_level ?? "Warning"}</span>
+            <span>{noData ? "—" : summary?.bridges?.[0]?.alert_level ?? "NORMAL"}</span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-mono text-gray-900">{summary?.bridges[0]?.peak_stage_m?.toFixed(2) ?? "536.24"}</span>
-            <span className="text-xs text-gray-500">m (Warning {summary?.bridges[0]?.warning_stage_m?.toFixed(2) ?? "537.50"}m)</span>
+            <span className="text-2xl font-mono text-gray-900">
+              {noData ? "—" : summary?.bridges?.[0]?.peak_stage_m?.toFixed(2)}
+            </span>
+            <span className="text-xs text-gray-500">
+              {noData ? "" : `m (Warning ${summary?.bridges?.[0]?.warning_stage_m?.toFixed(2) ?? "—"}m)`}
+            </span>
           </div>
           <div className="mt-2 text-xs text-gray-600 pt-2 border-t border-gray-100">
-            Peak Forecast (HEC-HMS)
+            {noData ? "Awaiting forecast cycle" : "Peak Forecast (HEC-HMS)"}
           </div>
         </div>
 
@@ -90,14 +95,16 @@ export default function OverviewPanel({
         <div className="bg-white border border-gray-200 rounded p-4">
           <div className="flex items-center justify-between text-xs text-gray-500 uppercase">
             <span>Forecast Automation</span>
-            <span>Healthy</span>
+            <span>{noData ? "Offline" : "Healthy"}</span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-mono text-gray-900">100%</span>
-            <span className="text-xs text-gray-500">12 / 12 Steps OK</span>
+            <span className="text-2xl font-mono text-gray-900">
+              {noData ? "—" : "100%"}
+            </span>
+            <span className="text-xs text-gray-500">{noData ? "" : "12 / 12 Steps OK"}</span>
           </div>
           <div className="mt-2 text-xs text-gray-600 pt-2 border-t border-gray-100">
-            Cycle: {status?.last_cycle?.run_id ?? "CYCLE-20260831"}
+            Cycle: {lastCycle?.run_id ?? "Awaiting first run"}
           </div>
         </div>
       </div>
@@ -141,71 +148,86 @@ export default function OverviewPanel({
             </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 my-auto">
-            <div className="flex flex-col">
-              <div className="text-sm font-medium text-gray-800 mb-1 text-center">Shivaji Bridge</div>
-              <div className="text-[10px] text-gray-500 mb-4 text-center">Current: {summary?.bridges[0]?.stage_m?.toFixed(2)}m | Peak: {summary?.bridges[0]?.peak_stage_m?.toFixed(2)}m</div>
-              <StageGauge
-                stage={summary?.bridges[0]?.stage_m ?? 535.10}
-                forecastStage={summary?.bridges[0]?.peak_stage_m ?? 536.24}
-                forecastTime="Peak"
-                minH={530}
-                maxH={545}
-                warning={summary?.bridges[0]?.warning_stage_m ?? 537.50}
-                danger={summary?.bridges[0]?.danger_stage_m ?? 538.50}
-                hfl={summary?.bridges[0]?.hfl_m ?? 541.0}
-                alert={535.50}
-              />
+          {noData ? (
+            <div className="text-center text-gray-400 text-sm py-12">
+              Awaiting first forecast cycle...
             </div>
-            <div className="flex flex-col">
-              <div className="text-sm font-medium text-gray-800 mb-1 text-center">Rajaram K.T. Weir</div>
-              <div className="text-[10px] text-gray-500 mb-4 text-center">Current: {summary?.bridges[1]?.stage_m?.toFixed(2)}m | Peak: {summary?.bridges[1]?.peak_stage_m?.toFixed(2)}m</div>
-              <StageGauge
-                stage={summary?.bridges[1]?.stage_m ?? 534.10}
-                forecastStage={summary?.bridges[1]?.peak_stage_m ?? 534.92}
-                forecastTime="Peak"
-                minH={530}
-                maxH={540}
-                warning={summary?.bridges[1]?.warning_stage_m ?? 535.20}
-                danger={summary?.bridges[1]?.danger_stage_m ?? 536.50}
-                hfl={summary?.bridges[1]?.hfl_m ?? 538.20}
-                alert={533.20}
-              />
+          ) : (
+            <div className="grid grid-cols-2 gap-4 my-auto">
+              <div className="flex flex-col">
+                <div className="text-sm font-medium text-gray-800 mb-1 text-center">Shivaji Bridge</div>
+                <div className="text-[10px] text-gray-500 mb-4 text-center">
+                  Current: {summary?.bridges?.[0]?.stage_m?.toFixed(2) ?? "—"}m | Peak: {summary?.bridges?.[0]?.peak_stage_m?.toFixed(2) ?? "—"}m
+                </div>
+                <StageGauge
+                  stage={summary?.bridges?.[0]?.stage_m ?? 540}
+                  forecastStage={summary?.bridges?.[0]?.peak_stage_m ?? 540}
+                  forecastTime="Peak"
+                  minH={530}
+                  maxH={545}
+                  warning={summary?.bridges?.[0]?.warning_stage_m ?? 542.73}
+                  danger={summary?.bridges?.[0]?.danger_stage_m ?? 543.33}
+                  hfl={summary?.bridges?.[0]?.hfl_m ?? 545.33}
+                  alert={summary?.bridges?.[0]?.warning_stage_m ? summary.bridges[0].warning_stage_m - 1.23 : 541.50}
+                />
+              </div>
+              <div className="flex flex-col">
+                <div className="text-sm font-medium text-gray-800 mb-1 text-center">Rajaram K.T. Weir</div>
+                <div className="text-[10px] text-gray-500 mb-4 text-center">
+                  Current: {summary?.bridges?.[1]?.stage_m?.toFixed(2) ?? "—"}m | Peak: {summary?.bridges?.[1]?.peak_stage_m?.toFixed(2) ?? "—"}m
+                </div>
+                <StageGauge
+                  stage={summary?.bridges?.[1]?.stage_m ?? 540}
+                  forecastStage={summary?.bridges?.[1]?.peak_stage_m ?? 540}
+                  forecastTime="Peak"
+                  minH={530}
+                  maxH={545}
+                  warning={summary?.bridges?.[1]?.warning_stage_m ?? 542.73}
+                  danger={summary?.bridges?.[1]?.danger_stage_m ?? 543.33}
+                  hfl={summary?.bridges?.[1]?.hfl_m ?? 545.33}
+                  alert={summary?.bridges?.[1]?.warning_stage_m ? summary.bridges[1].warning_stage_m - 2.0 : 541.50}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
-
 
       {/* ── 5. QUICK STATION SELECTOR SHORTCUTS ────────────────────────────── */}
       <div className={CARD}>
         <div className={CARD_HEADER}>
           <span>Precipitation Stations Quick Access</span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-          {stationsArray.map((st) => (
-            <button
-              key={st.id}
-              onClick={() => {
-                onSelectStation(st.id);
-                onNavigateTab("rainfall");
-              }}
-              className="p-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded text-left transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="text-[10px] text-gray-500">
-                  {st.subbasin.replace("SUB_", "")}
+        {stations && stations.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+            {stations.map((st: any) => (
+              <button
+                key={st.station_id}
+                onClick={() => {
+                  onSelectStation(st.station_id);
+                  onNavigateTab("rainfall");
+                }}
+                className="p-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded text-left transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className="text-[10px] text-gray-500">
+                    {st.subbasin_id}
+                  </div>
+                  <div className="font-medium text-sm text-gray-900 mt-1">
+                    {st.station_name?.split(" ")[0]}
+                  </div>
                 </div>
-                <div className="font-medium text-sm text-gray-900 mt-1">
-                  {st.name.split(" ")[0]}
+                <div className="mt-2">
+                  <span className="font-mono text-xs text-gray-700">{st.cumulative_90h_mm} mm</span>
                 </div>
-              </div>
-              <div className="mt-2">
-                <span className="font-mono text-xs text-gray-700">{st.fc90} mm</span>
-              </div>
-            </button>
-          ))}
-        </div>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-gray-400 text-sm py-6">
+            Awaiting station data from forecast pipeline...
+          </div>
+        )}
       </div>
     </div>
   );

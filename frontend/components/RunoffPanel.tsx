@@ -50,17 +50,28 @@ export default function RunoffPanel({ summary }: { summary: any }) {
   const { data: bShivaji } = useSWR("bridge-SHIVAJI_BRIDGE", api.bridgeShivaji, { refreshInterval: 60000 });
   const { data: bRajaram } = useSWR("bridge-RAJARAM_BRIDGE", api.bridgeRajaram, { refreshInterval: 60000 });
 
-  const outlet = summary?.outlet ?? {};
-  const peakQ = outlet.peak_discharge_m3s ?? 864;
-  const peakAt = outlet.lead_hours_to_peak ?? 22;
-  const totalVol = outlet.total_runoff_volume_m3 ?? 148500000;
-  const alertLvl = (outlet.alert_level ?? "WARNING").toUpperCase();
+  const outlet = summary?.outlet;
+  const noData = !outlet || !outlet.peak_discharge_m3s;
+
+  const peakQ = outlet?.peak_discharge_m3s ?? 0;
+  const peakAt = outlet?.lead_hours_to_peak ?? 0;
+  const totalVolMcm = outlet?.total_volume_mcm ?? 0;
+  const alertLvl = (outlet?.alert_level ?? "NORMAL").toUpperCase();
 
   const chartData = (hgData ?? []).map((r: any, i: number) => ({
     hour: i,
     q: r.discharge_m3s ?? 0,
     stage: r.stage_m ?? 0,
   }));
+
+  if (noData) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+        <div className="text-lg font-semibold mb-2">Awaiting Forecast Data</div>
+        <div className="text-sm">Run the pipeline to generate hydrological computations.</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-5 max-w-7xl mx-auto">
@@ -91,7 +102,7 @@ export default function RunoffPanel({ summary }: { summary: any }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <KpiCard
           label="Current Discharge"
-          value={(chartData[0]?.q ?? 45).toFixed(0)}
+          value={chartData[0]?.q?.toFixed(0) ?? "—"}
           unit="m³/s"
           subtext="Baseflow + Surface Runoff"
           color="#0284C7"
@@ -102,7 +113,7 @@ export default function RunoffPanel({ summary }: { summary: any }) {
           unit="m³/s"
           subtext="HEC-HMS Simulation Peak"
           color="#F59E0B"
-          badge="High"
+          badge={peakQ > 500 ? "High" : peakQ > 200 ? "Moderate" : "Low"}
         />
         <KpiCard
           label="Time to Peak (Tp)"
@@ -113,8 +124,8 @@ export default function RunoffPanel({ summary }: { summary: any }) {
         />
         <KpiCard
           label="90-hr Runoff Volume"
-          value={(totalVol / 1e6).toFixed(1)}
-          unit="Mm³"
+          value={totalVolMcm.toFixed(1)}
+          unit="MCM"
           subtext="Cumulative Basin Outflow"
           color="#0369A1"
         />
@@ -123,7 +134,7 @@ export default function RunoffPanel({ summary }: { summary: any }) {
           value={alertLvl}
           unit=""
           subtext="Hydrological Criteria"
-          color={alertLvl === "WARNING" ? "#D97706" : "#10B981"}
+          color={alertLvl === "WARNING" ? "#D97706" : alertLvl === "DANGER" ? "#DC2626" : "#10B981"}
           badge="BASIN"
         />
       </div>
