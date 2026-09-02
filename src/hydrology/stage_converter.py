@@ -853,5 +853,39 @@ def run_pipeline():
         log.warning("No DATABASE_URL found. Rating curves calculated in-memory.")
 
 
+_SHIVAJI_RC_CACHE = None
+_RAJARAM_RC_CACHE = None
+
+def get_shivaji_rating_curve() -> pd.DataFrame:
+    global _SHIVAJI_RC_CACHE
+    if _SHIVAJI_RC_CACHE is None:
+        cs = load_cross_section_array("SHIVAJI_BRIDGE", SHIVAJI_SURVEY, {
+            "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
+            "district": "Kolhapur",
+            "authority": "Kolhapur Municipal Corporation (KMC)",
+            "latitude": 16.708917,
+            "longitude": 74.219278,
+            "slope": 0.00025,
+            "n_main": 0.035,
+            "alert_stage_m": 542.10,
+            "warning_stage_m": 542.70,
+            "danger_stage_m": 543.30,
+            "extreme_stage_m": 544.00,
+            "hfl_m": 545.33,
+        })
+        _SHIVAJI_RC_CACHE = build_rating_curve(cs)
+    return _SHIVAJI_RC_CACHE
+
+
+def convert_discharge_to_stage_manning(q_m3s: float, site_id: str = "SHIVAJI_BRIDGE") -> float:
+    """Accurately calculates water stage elevation (m MSL) from Manning hydraulic cross-section."""
+    df_rc = get_shivaji_rating_curve()
+    stage = discharge_to_stage(max(float(q_m3s), 1.0), df_rc)
+    if site_id == "RAJARAM_WEIR" or site_id == "RAJARAM_BRIDGE":
+        # Rajaram K.T. Weir hydraulic offset (~0.12m downstream water surface drop)
+        stage = stage - 0.12
+    return float(round(stage, 2))
+
+
 if __name__ == "__main__":
     run_pipeline()

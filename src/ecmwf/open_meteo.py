@@ -22,6 +22,7 @@ import requests
 from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_gages
 from src.hms.runner import execute_hec_hms
 from src.sensors.thingspeak_gauge import fetch_shivaji_live_telemetry
+from src.hydrology.stage_converter import convert_discharge_to_stage_manning
 
 log = logging.getLogger(__name__)
 
@@ -87,12 +88,8 @@ def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarr
 
 
 def convert_discharge_to_stage(q: float, site: str) -> float:
-    if site == "SHIVAJI_BRIDGE":
-        # Calibrated to WRD Maharashtra datum: Warning 542.73m, Danger 543.33m, Extreme 544.33m, HFL 545.33m
-        return float(539.20 + 0.165 * (max(q, 1.0) ** 0.52))
-    else:
-        # Rajaram KT Weir - Calibrated to WRD Maharashtra MSL datum: Warning 542.73m, Danger 543.33m, Extreme 544.33m, HFL 545.33m
-        return float(539.10 + 0.168 * (max(q, 1.0) ** 0.52))
+    """Converts river discharge (m3/s) to water stage (m MSL) using Manning's equation & survey geometry."""
+    return convert_discharge_to_stage_manning(q, site)
 
 
 def sync_to_supabase(state: dict, db_url: str):
@@ -304,7 +301,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     hms_result = execute_hec_hms(start_dt, subbasin_arrays)
     peak_h = hms_result["lead_hours_to_peak"]
     peak_q = hms_result["peak_discharge_m3s"]
-    baseflow = 55.0
+    baseflow = float(hms_result["hydrograph"][0]["baseflow_m3s"])
 
     hydrograph = []
     for h in range(90):
@@ -317,7 +314,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "lead_hours": h,
             "discharge_m3s": round(total_q, 1),
             "surface_runoff_m3s": round(surface_q, 1),
-            "baseflow_m3s": baseflow,
+            "baseflow_m3s": round(baseflow, 1),
             "stage_m": round(stg, 2),
             "is_peak": h == peak_h,
         })
