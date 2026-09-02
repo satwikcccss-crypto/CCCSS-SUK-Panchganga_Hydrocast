@@ -147,14 +147,36 @@ export default function RunoffPanel({ summary }: { summary: any }) {
           </span>
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-semibold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
-              Dual Axis: Q (m³/s) + Stage (m)
+              Dual Axis: Q (m³/s) + Stage (m MSL)
             </span>
           </div>
         </div>
+
+        {/* Threshold Reference Indicator Bar */}
+        <div className="flex flex-wrap items-center gap-3 mb-3 p-2.5 bg-gray-50 rounded-lg border border-gray-100 text-xs">
+          <span className="font-bold text-gray-600 uppercase tracking-wider text-[10px]">Hydrological Thresholds:</span>
+          <span className="flex items-center gap-1 font-mono text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            Alert: <b>1,200 m³/s</b>
+          </span>
+          <span className="flex items-center gap-1 font-mono text-[11px] text-orange-700 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+            <span className="w-2 h-2 rounded-full bg-orange-500" />
+            Warning: <b>1,500 m³/s</b>
+          </span>
+          <span className="flex items-center gap-1 font-mono text-[11px] text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-200">
+            <span className="w-2 h-2 rounded-full bg-red-500" />
+            Danger: <b>2,000 m³/s</b>
+          </span>
+          <span className="flex items-center gap-1 font-mono text-[11px] text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+            <span className="w-2 h-2 rounded-full bg-purple-500" />
+            HFL / Extreme: <b>3,000 m³/s</b>
+          </span>
+        </div>
+
         <div className="mt-2">
           <HydrographChart
             data={chartData}
-            thresholds={{ alert: 1800, warning: 2200, danger: 2800, hfl: 3800 }}
+            thresholds={{ alert: 1200, warning: 1500, danger: 2000, hfl: 3000 }}
             showStage
             height={280}
           />

@@ -117,15 +117,28 @@ export default function HydrographChart({
       },
       y: {
         position: "left",
+        suggestedMax: Math.max(...qValues, alertThresh ?? 1200, 1400) * 1.1,
         ticks: { color: "#4B5563", font: { size: 10, family: "monospace" } },
         grid: { color: "#F3F4F6" },
+        title: {
+          display: true,
+          text: "Discharge (m³/s)",
+          color: "#2563EB",
+          font: { size: 11, weight: "bold" },
+        },
       },
       ...(showStage
         ? {
             y2: {
               position: "right",
-              ticks: { color: "#4B5563", font: { size: 10, family: "monospace" } },
+              ticks: { color: "#7C3AED", font: { size: 10, family: "monospace" } },
               grid: { drawOnChartArea: false },
+              title: {
+                display: true,
+                text: "Stage (m MSL)",
+                color: "#7C3AED",
+                font: { size: 11, weight: "bold" },
+              },
             },
           }
         : {}),
@@ -142,19 +155,23 @@ export default function HydrographChart({
 function hline(y: number, color: string, label: string) {
   return {
     type: "line" as const,
+    scaleID: "y",
     yMin: y,
     yMax: y,
     borderColor: color,
-    borderWidth: 1,
-    borderDash: [4, 4],
+    borderWidth: 1.5,
+    borderDash: [6, 4],
     label: {
       display: true,
-      content: `${label} (${y})`,
-      backgroundColor: "transparent",
+      content: `${label} (${y} m³/s)`,
+      backgroundColor: "rgba(255, 255, 255, 0.95)",
+      borderColor: color,
+      borderWidth: 1,
+      borderRadius: 3,
       color: color,
-      font: { size: 10, family: "monospace" },
+      font: { size: 10, family: "monospace", weight: "bold" as const },
       position: "end" as const,
-      padding: 2,
+      padding: { top: 2, bottom: 2, left: 4, right: 4 },
     },
   };
 }
