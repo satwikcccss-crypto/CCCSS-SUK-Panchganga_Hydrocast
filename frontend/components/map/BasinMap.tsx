@@ -1,6 +1,6 @@
 "use client";
 // frontend/components/map/BasinMap.tsx
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -9,54 +9,69 @@ import {
   Popup,
   Tooltip,
   LayersControl,
+  useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import {
+  MapPin,
+  Navigation,
+  Search,
+  Layers,
+  Waves,
+  CloudRain,
+  Compass,
+  ChevronRight,
+  Filter,
+  ShieldCheck,
+  ShieldAlert,
+  Info,
+} from "lucide-react";
 
-// Full List of Primary and Alternate Stations across S1–S9 (Metadata only - NO hardcoded rainfall)
+// Complete Registry of 18 Primary & Alternate Rainfall Stations (S1–S9)
 export const ALL_GAUGE_STATIONS = [
   // S1
-  { id: "KARVIR", name: "Karvir", subbasin: "S1", lon: 74.2481772, lat: 16.706369, isPrimary: true, elevation: "550m" },
+  { id: "KARVIR", name: "Karvir", subbasin: "S1", lon: 74.2481772, lat: 16.706369, isPrimary: true, elevation: "550m", taluka: "Karvir" },
 
   // S2
-  { id: "SANGARUL", name: "Sangarul", subbasin: "S2", lon: 74.0931627, lat: 16.6841962, isPrimary: true, elevation: "572m" },
-  { id: "BALINGA", name: "Balinga (Alt)", subbasin: "S2", lon: 74.17031, lat: 16.6878443, isPrimary: false, elevation: "560m" },
-  { id: "KALE", name: "Kale (Alt)", subbasin: "S2", lon: 74.0564499, lat: 16.7228087, isPrimary: false, elevation: "580m" },
+  { id: "SANGARUL", name: "Sangarul", subbasin: "S2", lon: 74.0931627, lat: 16.6841962, isPrimary: true, elevation: "572m", taluka: "Karvir" },
+  { id: "BALINGA", name: "Balinga", subbasin: "S2", lon: 74.17031, lat: 16.6878443, isPrimary: false, elevation: "560m", taluka: "Karvir" },
+  { id: "KALE", name: "Kale", subbasin: "S2", lon: 74.0564499, lat: 16.7228087, isPrimary: false, elevation: "580m", taluka: "Panhala" },
 
   // S3
-  { id: "KOTOLI", name: "Kotoli", subbasin: "S3", lon: 74.0518705, lat: 16.7820174, isPrimary: true, elevation: "585m" },
-  { id: "BAJAR_BHOGAON", name: "Bajar Bhogaon (Alt)", subbasin: "S3", lon: 74.1107824, lat: 16.8086769, isPrimary: false, elevation: "590m" },
-  { id: "PADAL", name: "Padal (Alt)", subbasin: "S3", lon: 74.115187, lat: 16.7446006, isPrimary: false, elevation: "575m" },
+  { id: "KOTOLI", name: "Kotoli", subbasin: "S3", lon: 74.0518705, lat: 16.7820174, isPrimary: true, elevation: "585m", taluka: "Panhala" },
+  { id: "BAJAR_BHOGAON", name: "Bajar Bhogaon", subbasin: "S3", lon: 74.1107824, lat: 16.8086769, isPrimary: false, elevation: "590m", taluka: "Panhala" },
+  { id: "PADAL", name: "Padal", subbasin: "S3", lon: 74.115187, lat: 16.7446006, isPrimary: false, elevation: "575m", taluka: "Panhala" },
 
   // S4
-  { id: "BEED", name: "Beed", subbasin: "S4", lon: 74.1288964, lat: 16.647984, isPrimary: true, elevation: "565m" },
+  { id: "BEED", name: "Beed", subbasin: "S4", lon: 74.1288964, lat: 16.647984, isPrimary: true, elevation: "565m", taluka: "Karvir" },
 
   // S5
-  { id: "SALWAN", name: "Salwan", subbasin: "S5", lon: 73.9735, lat: 16.6712, isPrimary: true, elevation: "595m" },
+  { id: "SALWAN", name: "Salwan", subbasin: "S5", lon: 73.9735, lat: 16.6712, isPrimary: true, elevation: "595m", taluka: "Gaganbawda" },
 
   // S6
-  { id: "KARANJPHEN", name: "Karanjphen", subbasin: "S6", lon: 73.9036487, lat: 16.7850973, isPrimary: true, elevation: "640m" },
-  { id: "GAGANBAWDA", name: "Gaganbawda (Alt)", subbasin: "S6", lon: 73.8346738, lat: 16.5469926, isPrimary: false, elevation: "680m" },
+  { id: "KARANJPHEN", name: "Karanjphen", subbasin: "S6", lon: 73.9036487, lat: 16.7850973, isPrimary: true, elevation: "640m", taluka: "Radhanagari" },
+  { id: "GAGANBAWDA", name: "Gaganbawda", subbasin: "S6", lon: 73.8346738, lat: 16.5469926, isPrimary: false, elevation: "680m", taluka: "Gaganbawda" },
 
   // S7
-  { id: "RADHANAGARI", name: "Radhanagari", subbasin: "S7", lon: 73.9971822, lat: 16.41021, isPrimary: true, elevation: "615m" },
+  { id: "RADHANAGARI", name: "Radhanagari", subbasin: "S7", lon: 73.9971822, lat: 16.41021, isPrimary: true, elevation: "615m", taluka: "Radhanagari" },
 
   // S8
-  { id: "SHIROLI_DHUMALA", name: "Shiroli-Dhumala", subbasin: "S8", lon: 74.1062828, lat: 16.6166768, isPrimary: false, elevation: "560m" },
+  { id: "SHIROLI_DHUMALA", name: "Shiroli-Dhumala", subbasin: "S8", lon: 74.1062828, lat: 16.6166768, isPrimary: false, elevation: "560m", taluka: "Karvir" },
 
   // S9
-  { id: "HALADI", name: "Haladi", subbasin: "S9", lon: 74.156292, lat: 16.5932632, isPrimary: false, elevation: "555m" },
-  { id: "RASHIWADE_BK", name: "Rashiwade Bk.", subbasin: "S9", lon: 74.1019728, lat: 16.5475641, isPrimary: false, elevation: "570m" },
-  { id: "AAVALI_BK", name: "Aavali Bk.", subbasin: "S9", lon: 74.0549812, lat: 16.481009, isPrimary: false, elevation: "585m" },
-  { id: "KASABA_TARALE", name: "Kasaba Tarale", subbasin: "S9", lon: 74.021589, lat: 16.4478876, isPrimary: false, elevation: "595m" },
-  { id: "KASABA_WALAWE", name: "Kasaba Walawe", subbasin: "S9", lon: 73.9971822, lat: 16.41021, isPrimary: false, elevation: "615m" },
+  { id: "HALADI", name: "Haladi", subbasin: "S9", lon: 74.156292, lat: 16.5932632, isPrimary: false, elevation: "555m", taluka: "Kagal" },
+  { id: "RASHIWADE_BK", name: "Rashiwade Bk.", subbasin: "S9", lon: 74.1019728, lat: 16.5475641, isPrimary: false, elevation: "570m", taluka: "Radhanagari" },
+  { id: "AAVALI_BK", name: "Aavali Bk.", subbasin: "S9", lon: 74.0549812, lat: 16.481009, isPrimary: false, elevation: "585m", taluka: "Radhanagari" },
+  { id: "KASABA_TARALE", name: "Kasaba Tarale", subbasin: "S9", lon: 74.021589, lat: 16.4478876, isPrimary: false, elevation: "595m", taluka: "Radhanagari" },
+  { id: "KASABA_WALAWE", name: "Kasaba Walawe", subbasin: "S9", lon: 73.9971822, lat: 16.41021, isPrimary: false, elevation: "615m", taluka: "Radhanagari" },
 ];
 
 export const GAUGE_STATIONS = ALL_GAUGE_STATIONS;
 
-const BRIDGES = [
+export const BRIDGES = [
   {
     id: "SHIVAJI_BRIDGE",
-    name: "Chhatrapati Shivaji Maharaj Bridge",
+    name: "Shivaji Bridge (Panchganga Ghat)",
     district: "Kolhapur",
     lat: 16.708917,
     lon: 74.219278,
@@ -64,7 +79,7 @@ const BRIDGES = [
     danger: "543.30m MSL",
     extreme: "544.00m MSL",
     hfl: "545.33m MSL",
-    desc: "Primary urban river crossing in Kolhapur City (Panchganga Ghat)",
+    desc: "Primary urban river crossing in Kolhapur City. Ultrasonic radar level sensor mounted on bridge deck.",
     markerColor: "#0f4c81",
   },
   {
@@ -73,31 +88,58 @@ const BRIDGES = [
     district: "Kolhapur",
     lat: 16.736167,
     lon: 74.235889,
-    warning: "542.70m MSL",
+    warning: "542.07m MSL",
     danger: "543.30m MSL",
     extreme: "544.00m MSL",
     hfl: "545.33m MSL",
-    desc: "Primary Panchganga flood & water-level monitoring barrage",
+    desc: "Primary Panchganga barrage & hydraulic rating station for urban flood risk assessment.",
     markerColor: "#0284c7",
   },
 ];
 
 function getIntensityColor(mm: number): { fill: string; stroke: string } {
-  if (mm >= 40) return { fill: "#EF4444", stroke: "#B91C1C" };
-  if (mm >= 20) return { fill: "#F59E0B", stroke: "#D97706" };
-  if (mm >= 10) return { fill: "#FBBF24", stroke: "#B45309" };
+  if (mm >= 50) return { fill: "#EF4444", stroke: "#B91C1C" };
+  if (mm >= 30) return { fill: "#F59E0B", stroke: "#D97706" };
+  if (mm >= 15) return { fill: "#FBBF24", stroke: "#B45309" };
   if (mm >= 5)  return { fill: "#38BDF8", stroke: "#0284C7" };
   return { fill: "#BAE6FD", stroke: "#0284C7" };
+}
+
+// Map Controller for Smooth Fly-To & Pane Initialization
+function MapController({ targetLocation }: { targetLocation: { lat: number; lon: number; id: string } | null }) {
+  const map = useMap();
+
+  useEffect(() => {
+    // Ensure high-priority marker panes sit above GeoJSON polygons (zIndex > 600)
+    if (!map.getPane("stationsPane")) {
+      const sp = map.createPane("stationsPane");
+      sp.style.zIndex = "650";
+      sp.style.pointerEvents = "auto";
+    }
+    if (!map.getPane("bridgesPane")) {
+      const bp = map.createPane("bridgesPane");
+      bp.style.zIndex = "660";
+      bp.style.pointerEvents = "auto";
+    }
+  }, [map]);
+
+  useEffect(() => {
+    if (targetLocation) {
+      map.flyTo([targetLocation.lat, targetLocation.lon], 12, { duration: 1.2 });
+    }
+  }, [targetLocation, map]);
+
+  return null;
 }
 
 export default function BasinMap({
   subbasins,
   ecmwf = {},
   stations = [],
-  selectedStationId = "KARANJPHEN",
+  selectedStationId = "KARVIR",
   onSelectStation,
 }: {
-  subbasins: string[];
+  subbasins?: string[];
   ecmwf?: Record<string, any[]>;
   stations?: any[];
   selectedStationId?: string;
@@ -106,7 +148,9 @@ export default function BasinMap({
   const [selectedSub, setSelectedSub] = useState<string | null>(null);
   const [subbasinGeo, setSubbasinGeo] = useState<any>(null);
   const [riverGeo, setRiverGeo] = useState<any>(null);
-  const [showAlternates, setShowAlternates] = useState<boolean>(true);
+  const [filterMode, setFilterMode] = useState<"all" | "governing" | "backup" | "river">("governing");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [flyTarget, setFlyTarget] = useState<{ lat: number; lon: number; id: string } | null>(null);
 
   const CENTER: [number, number] = [16.65, 74.12];
 
@@ -127,12 +171,10 @@ export default function BasinMap({
   }, []);
 
   function getSubRainfall(subId: string) {
-    // 1. First check if ecmwf subbasin series is available
     if (ecmwf && ecmwf[subId] && ecmwf[subId].length > 0) {
       const sum = ecmwf[subId].reduce((acc: number, p: any) => acc + (p.mm_hr ?? 0), 0);
       return parseFloat(sum.toFixed(1));
     }
-    // 2. Check stations prop
     const stMatch = stations?.find((s: any) => s.subbasin_id === subId);
     if (stMatch && stMatch.cumulative_90h_mm !== undefined) {
       return stMatch.cumulative_90h_mm;
@@ -140,250 +182,508 @@ export default function BasinMap({
     return 0.0;
   }
 
-  const displayedStations = useMemo(() => {
-    const baseList = showAlternates
-      ? ALL_GAUGE_STATIONS
-      : ALL_GAUGE_STATIONS.filter((g) => g.isPrimary);
-
-    return baseList.map((g) => {
-      // Find live rainfall value from pipeline stations array or subbasin ecmwf
-      const stMatch = stations?.find((s: any) =>
-        s.station_id === g.id || s.station_name?.toLowerCase().includes(g.name.split(" ")[0].toLowerCase())
+  // Unified stations list with real live precipitation data
+  const enrichedStations = useMemo(() => {
+    return ALL_GAUGE_STATIONS.map((g) => {
+      const stMatch = stations?.find(
+        (s: any) =>
+          s.station_id === g.id ||
+          s.station_name?.toLowerCase().includes(g.name.split(" ")[0].toLowerCase())
       );
+
       let rainVal = stMatch?.cumulative_90h_mm;
       if (rainVal === undefined) {
         rainVal = getSubRainfall(g.subbasin);
       }
+
+      // Check if this station is active governing selection in HEC-HMS (subbasins S1-S9)
+      const isGoverning = stMatch?.is_governing ?? (
+        // Fallback exact 9 governing stations mapped to S1-S9
+        g.id === "KARVIR" || // S1
+        g.id === "SANGARUL" || // S2
+        g.id === "BAJAR_BHOGAON" || // S3
+        g.id === "BEED" || // S4
+        g.id === "SALWAN" || // S5
+        g.id === "GAGANBAWDA" || // S6
+        g.id === "RADHANAGARI" || // S7
+        g.id === "SHIROLI_DHUMALA" || // S8
+        g.id === "KASABA_WALAWE" // S9
+      );
+      const peakRate = stMatch?.peak_rate_mmh ?? (rainVal > 0 ? (rainVal / 18).toFixed(1) : "0.0");
+
       return {
         ...g,
         fc90: rainVal ?? 0.0,
+        isGoverning,
+        peakRate,
       };
     });
-  }, [showAlternates, stations, ecmwf]);
+  }, [stations, ecmwf]);
+
+  // Filtered stations for side navigator
+  const filteredList = useMemo(() => {
+    let list = enrichedStations;
+    if (filterMode === "governing") {
+      list = list.filter((s) => s.isGoverning);
+    } else if (filterMode === "backup") {
+      list = list.filter((s) => !s.isGoverning);
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (s) =>
+          s.name.toLowerCase().includes(q) ||
+          s.subbasin.toLowerCase().includes(q) ||
+          s.taluka?.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [enrichedStations, filterMode, searchQuery]);
+
+  const handleLocationClick = (loc: { lat: number; lon: number; id: string }) => {
+    setFlyTarget({ lat: loc.lat, lon: loc.lon, id: loc.id });
+    if (onSelectStation) {
+      onSelectStation(loc.id);
+    }
+  };
 
   return (
-    <div className="relative w-full h-[520px] rounded-xl overflow-hidden border border-slate-200 shadow-xs bg-slate-900 z-0">
-      {/* Header Overlay with Toggle */}
-      <div className="absolute top-3 left-14 z-[1000] bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-lg border border-slate-200 shadow-xs text-xs pointer-events-auto flex items-center gap-4">
-        <div>
-          <div className="font-bold text-slate-900 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-sky-500 animate-ping" />
-            Panchganga Dynamic Station Selection &amp; River Model
+    <div className="flex flex-col lg:flex-row gap-3 w-full bg-slate-900 rounded-xl overflow-hidden border border-slate-700 shadow-md">
+      {/* ── LEFT: INTERACTIVE LOCATIONS & GAUGE NAVIGATOR PANEL ──────────── */}
+      <div className="w-full lg:w-80 bg-slate-800 border-r border-slate-700 flex flex-col h-[560px] flex-shrink-0 z-10">
+        {/* Panel Header */}
+        <div className="p-3.5 border-b border-slate-700 bg-slate-850">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                HEC-HMS Sensors ({filterMode === "governing" ? "9 Subbasins" : `${enrichedStations.length} Total`})
+              </h3>
+            </div>
+            <span className="text-[10px] text-emerald-400 font-mono font-bold">HEC-HMS 4.13</span>
           </div>
-          <div className="text-[11px] text-slate-500 font-medium mt-0.5">
-            Auto-selects max volume &amp; nearest fallback stations across S1–S9
+
+          {/* Search Box */}
+          <div className="relative mt-2.5">
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search station, subbasin S1–S9..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all font-sans"
+            />
+          </div>
+
+          {/* Filter Pills */}
+          <div className="flex items-center gap-1 mt-2.5 overflow-x-auto pb-0.5">
+            <button
+              onClick={() => setFilterMode("governing")}
+              className={`px-2.5 py-1 rounded text-[10px] font-bold whitespace-nowrap transition-all flex items-center gap-1 ${
+                filterMode === "governing"
+                  ? "bg-emerald-600 text-white shadow-xs"
+                  : "bg-slate-700/60 text-slate-300 hover:bg-slate-700"
+              }`}
+            >
+              <span>★ HEC-HMS Active (9)</span>
+            </button>
+            <button
+              onClick={() => setFilterMode("all")}
+              className={`px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap transition-all ${
+                filterMode === "all"
+                  ? "bg-sky-500 text-white shadow-xs"
+                  : "bg-slate-700/60 text-slate-300 hover:bg-slate-700"
+              }`}
+            >
+              All (18)
+            </button>
+            <button
+              onClick={() => setFilterMode("river")}
+              className={`px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap transition-all ${
+                filterMode === "river"
+                  ? "bg-rose-600 text-white shadow-xs"
+                  : "bg-slate-700/60 text-slate-300 hover:bg-slate-700"
+              }`}
+            >
+              🌊 River (2)
+            </button>
           </div>
         </div>
 
-        <button
-          onClick={() => setShowAlternates(!showAlternates)}
-          className={`px-2.5 py-1 rounded text-[10px] font-bold border transition-colors ${
-            showAlternates
-              ? "bg-sky-50 text-sky-700 border-sky-300 hover:bg-sky-100"
-              : "bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200"
-          }`}
+        {/* List of Stations */}
+        <div className="flex-grow overflow-y-auto p-2 space-y-1.5 custom-scrollbar">
+          {/* River Bridge Flood Gauges (If mode is 'all' or 'river') */}
+          {(filterMode === "all" || filterMode === "river") && (
+            <div className="mb-2">
+              <div className="text-[10px] font-bold text-rose-400 uppercase tracking-wider px-2 py-1 flex items-center gap-1.5">
+                <Waves className="w-3 h-3" /> River Flood Monitoring Gauges
+              </div>
+              <div className="space-y-1 mt-0.5">
+                {BRIDGES.map((b) => (
+                  <button
+                    key={b.id}
+                    onClick={() => handleLocationClick({ lat: b.lat, lon: b.lon, id: b.id })}
+                    className="w-full text-left p-2.5 rounded-lg bg-rose-950/30 hover:bg-rose-900/50 border border-rose-900/50 hover:border-rose-600 transition-all flex items-center justify-between group"
+                  >
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-rose-500" />
+                        <span className="text-xs font-bold text-white group-hover:text-rose-200">
+                          {b.name}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-rose-300/80 mt-0.5 font-mono">
+                        Warning: {b.warning} · Danger: {b.danger}
+                      </div>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-rose-400 group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Rainfall Stations */}
+          {filterMode !== "river" && (
+            <div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 flex items-center gap-1.5">
+                <CloudRain className="w-3 h-3" /> Open-Meteo ECMWF Rain Gages (S1–S9)
+              </div>
+              <div className="space-y-1 mt-0.5">
+                {filteredList.map((st) => {
+                  const isSelected = selectedStationId === st.id;
+                  return (
+                    <button
+                      key={st.id}
+                      onClick={() => handleLocationClick({ lat: st.lat, lon: st.lon, id: st.id })}
+                      className={`w-full text-left p-2.5 rounded-lg border transition-all flex items-center justify-between group ${
+                        isSelected
+                          ? "bg-sky-900/60 border-sky-400 shadow-sm"
+                          : "bg-slate-750/70 hover:bg-slate-700/80 border-slate-700 hover:border-slate-500"
+                      }`}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                              st.isGoverning ? "bg-emerald-400" : "bg-purple-400"
+                            }`}
+                          />
+                          <span
+                            className={`text-xs font-bold truncate ${
+                              isSelected ? "text-sky-200" : "text-slate-100 group-hover:text-white"
+                            }`}
+                          >
+                            {st.name}
+                          </span>
+                          <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-slate-900 text-sky-400 border border-slate-700">
+                            {st.subbasin}
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-2">
+                          <span>Elev: {st.elevation}</span>
+                          <span>·</span>
+                          <span className="text-slate-300 font-mono">
+                            {st.lat.toFixed(2)}°N, {st.lon.toFixed(2)}°E
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="text-right flex-shrink-0 ml-2">
+                        <div className="text-xs font-mono font-bold text-sky-400">
+                          {st.fc90.toFixed(1)} mm
+                        </div>
+                        <div
+                          className={`text-[8px] font-bold uppercase tracking-wider px-1 py-0.2 rounded ${
+                            st.isGoverning
+                              ? "bg-emerald-950 text-emerald-300 border border-emerald-800"
+                              : "bg-purple-950 text-purple-300 border border-purple-800"
+                          }`}
+                        >
+                          {st.isGoverning ? "GOVERNING" : "BACKUP"}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── RIGHT: LEAFLET BASIN MAP ──────────────────────────────────────── */}
+      <div className="relative flex-1 h-[560px] bg-slate-950">
+        {/* Top Controls Overlay */}
+        <div className="absolute top-3 left-14 z-[1000] bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700 shadow-md text-xs pointer-events-auto flex items-center gap-3">
+          <div className="flex items-center gap-2 text-slate-200">
+            <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
+            <span className="font-bold text-[11px]">Dynamic Spatial Allocation</span>
+          </div>
+          <span className="text-[10px] text-slate-400 border-l border-slate-700 pl-2">
+            Click any station marker or sidebar item to inspect live data
+          </span>
+        </div>
+
+        {/* Legend */}
+        <div className="absolute bottom-3 right-3 z-[1000] bg-slate-900/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-700 shadow-md text-[10px] pointer-events-auto">
+          <div className="font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+            <Layers className="w-3 h-3 text-sky-400" /> Map Layers &amp; Markers
+          </div>
+          <div className="flex flex-col gap-1 text-slate-300">
+            <div className="flex items-center gap-1.5">
+              <span className="w-3.5 h-1 bg-sky-400 rounded-full" />
+              <span>Panchganga River Reaches</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 border border-emerald-600" />
+              <span>Governing HMS Rain Gage</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-purple-400 border border-purple-600" />
+              <span>Backup Rain Gage</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 border border-rose-700" />
+              <span>River Bridge Telemetry</span>
+            </div>
+          </div>
+        </div>
+
+        <MapContainer
+          center={CENTER}
+          zoom={10}
+          scrollWheelZoom={true}
+          className="w-full h-full z-0"
+          zoomControl={true}
+          attributionControl={true}
         >
-          {showAlternates ? "Showing: All 17 Stations (Primary + Alt)" : "Showing: Primary 7 Only"}
-        </button>
-      </div>
+          <MapController targetLocation={flyTarget} />
 
-      {/* Floating Legend */}
-      <div className="absolute bottom-3 right-3 z-[1000] bg-white/95 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-200 shadow-xs text-[10px] pointer-events-auto">
-        <div className="font-bold text-slate-700 uppercase tracking-wider mb-1.5">Stations &amp; Layers</div>
-        <div className="flex flex-col gap-1 text-slate-600 font-medium">
-          <div className="flex items-center gap-1.5">
-            <span className="w-3.5 h-1 bg-sky-500 rounded-full" />
-            <span>Panchganga River Network</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-emerald-700" />
-            <span>Primary HMS Gages (Governing)</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-purple-500 border border-purple-700" />
-            <span>Alternate &amp; Fallback Gages</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 border border-rose-700" />
-            <span>River Bridge Flood Gauges</span>
-          </div>
-        </div>
-      </div>
+          <LayersControl position="topright">
+            <LayersControl.BaseLayer checked name="OpenStreetMap Standard">
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+            </LayersControl.BaseLayer>
+            <LayersControl.BaseLayer name="Esri Topographic Relief">
+              <TileLayer
+                attribution='Tiles &copy; Esri'
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+              />
+            </LayersControl.BaseLayer>
+            <LayersControl.BaseLayer name="Esri World Satellite">
+              <TileLayer
+                attribution='Tiles &copy; Esri'
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              />
+            </LayersControl.BaseLayer>
+            <LayersControl.BaseLayer name="CartoDB Dark Canvas">
+              <TileLayer
+                attribution='&copy; CARTO'
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              />
+            </LayersControl.BaseLayer>
+          </LayersControl>
 
-      <MapContainer
-        center={CENTER}
-        zoom={10}
-        scrollWheelZoom={false}
-        className="w-full h-full z-0"
-        zoomControl={true}
-        attributionControl={true}
-      >
-        <LayersControl position="topright">
-          <LayersControl.BaseLayer checked name="OpenStreetMap">
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          {/* Subbasin Shapefile / GeoJSON Polygons (Background Layer) */}
+          {subbasinGeo && (
+            <GeoJSON
+              key={`subbasins-${selectedSub}`}
+              data={subbasinGeo}
+              style={(feature) => {
+                const name = feature?.properties?.name || "Subbasin";
+                const cumVal = getSubRainfall(name);
+                const { fill, stroke } = getIntensityColor(cumVal);
+                const isSelected = selectedSub === name;
+                return {
+                  fillColor: fill,
+                  fillOpacity: isSelected ? 0.45 : 0.20,
+                  color: isSelected ? "#0284C7" : stroke,
+                  weight: isSelected ? 2.5 : 1.2,
+                };
+              }}
+              onEachFeature={(feature, layer) => {
+                const props = feature.properties || {};
+                const name = props.name || "Subbasin";
+                const cumVal = getSubRainfall(name);
+
+                layer.on({
+                  click: () => setSelectedSub(name),
+                });
+
+                layer.bindTooltip(
+                  `<div style="font-family: Inter, sans-serif; padding: 3px;">
+                    <div style="font-weight: 700; color: #0284C7;">Subbasin ${name}</div>
+                    <div style="font-size: 10px; color: #475569;">Slope: <b>${(props.basin_slo || 0).toFixed(3)}</b> · Relief: <b>${props.basin_rel || 0}m</b></div>
+                    <div style="font-size: 11px; color: #0F172A; font-weight: 600; margin-top: 2px;">90-hr Forecast: <span style="color: #0284C7;">${cumVal.toFixed(1)} mm</span></div>
+                  </div>`,
+                  { direction: "top", sticky: true, opacity: 0.95 }
+                );
+              }}
             />
-          </LayersControl.BaseLayer>
-          <LayersControl.BaseLayer name="Esri Topographic">
-            <TileLayer
-              attribution='Tiles &copy; Esri'
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+          )}
+
+          {/* Panchganga River Network Polylines */}
+          {riverGeo && (
+            <GeoJSON
+              key="rivers-geojson"
+              data={riverGeo}
+              style={() => ({
+                color: "#0284C7",
+                weight: 3.5,
+                opacity: 0.85,
+              })}
+              onEachFeature={(feature, layer) => {
+                const props = feature.properties || {};
+                layer.bindTooltip(
+                  `<div style="font-family: Inter, sans-serif; padding: 2px;">
+                    <div style="font-weight: 700; color: #0284C7;">Panchganga River Reach</div>
+                    <div style="font-size: 10px; color: #475569;">Channel Flowpath Segment</div>
+                  </div>`,
+                  { direction: "top", sticky: true, opacity: 0.95 }
+                );
+              }}
             />
-          </LayersControl.BaseLayer>
-          <LayersControl.BaseLayer name="Esri Satellite">
-            <TileLayer
-              attribution='Tiles &copy; Esri'
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            />
-          </LayersControl.BaseLayer>
-          <LayersControl.BaseLayer name="CartoDB Dark">
-            <TileLayer
-              attribution='&copy; CARTO'
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            />
-          </LayersControl.BaseLayer>
-        </LayersControl>
+          )}
 
-        {/* Watershed Subbasin Polygons from GeoJSON */}
-        {subbasinGeo && (
-          <GeoJSON
-            key={`subbasins-${selectedSub}`}
-            data={subbasinGeo}
-            style={(feature) => {
-              const name = feature?.properties?.name || "Subbasin";
-              const cumVal = getSubRainfall(name);
-              const { fill, stroke } = getIntensityColor(cumVal);
-              const isSelected = selectedSub === name;
-              return {
-                fillColor: fill,
-                fillOpacity: isSelected ? 0.60 : 0.30,
-                color: isSelected ? "#0369A1" : stroke,
-                weight: isSelected ? 3 : 1.5,
-              };
-            }}
-            onEachFeature={(feature, layer) => {
-              const props = feature.properties || {};
-              const name = props.name || "Subbasin";
-              const cumVal = getSubRainfall(name);
+          {/* Rain Gauge Station Markers (Pane: stationsPane, zIndex: 650) */}
+          {enrichedStations.map((g) => {
+            const isSelected = selectedStationId === g.id;
+            const isGov = g.isGoverning;
+            const markerColor = isGov ? "#059669" : "#7C3AED";
+            const markerFill = isGov ? "#10B981" : "#A78BFA";
 
-              layer.on({
-                click: () => setSelectedSub(name),
-              });
+            return (
+              <CircleMarker
+                key={`st_${g.id}`}
+                center={[g.lat, g.lon]}
+                radius={isSelected ? 10 : isGov ? 7.5 : 5.5}
+                pane="markerPane"
+                pathOptions={{
+                  color: isSelected ? "#38BDF8" : markerColor,
+                  fillColor: isSelected ? "#0284C7" : markerFill,
+                  fillOpacity: 0.95,
+                  weight: isSelected ? 3.5 : isGov ? 2 : 1.5,
+                }}
+                eventHandlers={{
+                  click: () => handleLocationClick({ lat: g.lat, lon: g.lon, id: g.id }),
+                }}
+              >
+                <Popup>
+                  <div style={{ fontFamily: "Inter, sans-serif", minWidth: 220, padding: "4px 2px" }}>
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
+                      <div>
+                        <div className="font-bold text-sm text-slate-900">{g.name}</div>
+                        <div className="text-[10px] text-slate-500 font-mono">ID: {g.id} · {g.taluka}</div>
+                      </div>
+                      <span
+                        className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${
+                          isGov ? "bg-emerald-100 text-emerald-800" : "bg-purple-100 text-purple-800"
+                        }`}
+                      >
+                        {isGov ? "GOVERNING" : "BACKUP"}
+                      </span>
+                    </div>
 
-              layer.bindTooltip(
-                `<div style="font-family: Inter, sans-serif; padding: 2px;">
-                  <div style="font-weight: 700; color: #0369A1;">Subbasin ${name}</div>
-                  <div style="font-size: 11px; color: #475569;">Basin Slope: <b>${(props.basin_slo || 0).toFixed(3)}</b> · Relief: <b>${props.basin_rel || 0}m</b></div>
-                  <div style="font-size: 11px; color: #0F172A; margin-top: 2px;">90-hr Forecast: <b style="color: #0284C7;">${cumVal.toFixed(1)} mm</b></div>
-                </div>`,
-                { direction: "top", sticky: true, opacity: 0.95 }
-              );
-            }}
-          />
-        )}
+                    <div className="text-[11px] text-slate-600 mt-2 space-y-1.5">
+                      <div className="flex justify-between">
+                        <span>Assigned Subbasin:</span>
+                        <b className="text-sky-700 font-mono">{g.subbasin}</b>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>GPS Coordinates:</span>
+                        <span className="font-mono text-slate-800 font-medium">
+                          {g.lat.toFixed(4)}°N, {g.lon.toFixed(4)}°E
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Elevation MSL:</span>
+                        <b>{g.elevation}</b>
+                      </div>
+                      <div className="flex justify-between pt-1.5 border-t border-slate-100">
+                        <span className="font-semibold text-slate-800">90-hr Forecast Total:</span>
+                        <span className="text-sky-600 font-mono font-bold text-xs">{g.fc90.toFixed(1)} mm</span>
+                      </div>
+                    </div>
 
-        {/* Panchganga River Flowpaths from GeoJSON */}
-        {riverGeo && (
-          <GeoJSON
-            key="rivers-geojson"
-            data={riverGeo}
-            style={() => ({
-              color: "#0284C7",
-              weight: 3,
-              opacity: 0.9,
-            })}
-            onEachFeature={(feature, layer) => {
-              const props = feature.properties || {};
-              layer.bindTooltip(
-                `<div style="font-family: Inter, sans-serif; padding: 2px;">
-                  <div style="font-weight: 700; color: #0284C7;">Panchganga Reach (${props.subbasin || "Main Channel"})</div>
-                  <div style="font-size: 10px; color: #475569;">Flowpath Stream Segment</div>
-                </div>`,
-                { direction: "top", sticky: true, opacity: 0.95 }
-              );
-            }}
-          />
-        )}
+                    <div className="mt-3 pt-2 border-t border-slate-200 flex justify-end">
+                      <button
+                        onClick={() => {
+                          if (onSelectStation) onSelectStation(g.id);
+                        }}
+                        className="text-[10px] font-bold text-white bg-sky-600 hover:bg-sky-700 px-2.5 py-1 rounded transition-colors"
+                      >
+                        Select for Hyetograph Analysis →
+                      </button>
+                    </div>
+                  </div>
+                </Popup>
 
-        {/* Render Primary & Alternate Stations */}
-        {displayedStations.map((g) => {
-          const isSelected = selectedStationId === g.id;
-          const isPrimary = g.isPrimary;
-          const markerColor = isPrimary ? "#059669" : "#7C3AED";
-          const markerFill = isPrimary ? "#10B981" : "#A78BFA";
+                <Tooltip direction="top" offset={[0, -8]} opacity={0.95}>
+                  <div className="font-mono text-[10px] font-bold text-slate-900">
+                    {g.name} ({g.fc90.toFixed(1)}mm) {isGov ? "★" : "○"}
+                  </div>
+                </Tooltip>
+              </CircleMarker>
+            );
+          })}
 
-          return (
+          {/* River Flood Monitoring Gauge Markers (Pane: markerPane, zIndex: 660) */}
+          {BRIDGES.map((b) => (
             <CircleMarker
-              key={g.id}
-              center={[g.lat, g.lon]}
-              radius={isSelected ? 11 : isPrimary ? 8 : 6}
+              key={`br_${b.id}`}
+              center={[b.lat, b.lon]}
+              radius={9}
+              pane="markerPane"
               pathOptions={{
-                color: isSelected ? "#0284C7" : markerColor,
-                fillColor: isSelected ? "#38BDF8" : markerFill,
+                color: "#B91C1C",
+                fillColor: "#EF4444",
                 fillOpacity: 0.95,
-                weight: isSelected ? 4 : isPrimary ? 2 : 1.5,
+                weight: 2.5,
               }}
               eventHandlers={{
-                click: () => {
-                  if (onSelectStation) onSelectStation(g.id);
-                },
+                click: () => handleLocationClick({ lat: b.lat, lon: b.lon, id: b.id }),
               }}
             >
               <Popup>
-                <div style={{ fontFamily: "Inter, sans-serif", minWidth: 190, padding: 4 }}>
-                  <div className="flex items-center justify-between font-bold text-slate-900 border-b border-slate-100 pb-1">
-                    <span>{g.name}</span>
-                    <span
-                      className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
-                        isPrimary
-                          ? "bg-emerald-100 text-emerald-800"
-                          : "bg-purple-100 text-purple-800"
-                      }`}
-                    >
-                      {isPrimary ? "PRIMARY GAGE" : "ALTERNATE GAGE"}
-                    </span>
+                <div style={{ fontFamily: "Inter, sans-serif", minWidth: 230, padding: "4px 2px" }}>
+                  <div className="font-bold text-sm text-rose-900 border-b border-rose-200 pb-1">
+                    {b.name}
                   </div>
-                  <div className="text-[11px] text-slate-600 mt-2 space-y-1">
-                    <div>Assigned Subbasin: <b className="text-sky-700">{g.subbasin}</b></div>
-                    <div>Coordinates: <span className="font-mono text-slate-700">{g.lat.toFixed(4)}°N, {g.lon.toFixed(4)}°E</span></div>
-                    <div>Elevation: <b>{g.elevation}</b></div>
-                    <div className="pt-1 border-t border-slate-100 text-slate-800 font-semibold">
-                      90hr Rain Volume: <span className="text-sky-600 font-mono font-bold">{g.fc90.toFixed(1)} mm</span>
+                  <div className="text-[10px] text-slate-500 mt-1">{b.desc}</div>
+                  <div className="text-[11px] text-slate-700 mt-2 space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-amber-700 font-medium">Alert Level:</span>
+                      <b className="font-mono">542.10 m MSL</b>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-orange-700 font-medium">Warning Level:</span>
+                      <b className="font-mono">{b.warning}</b>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-red-700 font-medium">Danger Level:</span>
+                      <b className="font-mono">{b.danger}</b>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-purple-700 font-medium">High Flood Level (HFL):</span>
+                      <b className="font-mono">{b.hfl}</b>
                     </div>
                   </div>
                 </div>
               </Popup>
-              <Tooltip direction="top" offset={[0, -8]} opacity={0.95}>
-                <span className="font-mono text-[10px] font-bold">
-                  {g.name} ({g.fc90}mm) {isPrimary ? "★" : "○"}
+
+              <Tooltip permanent direction="bottom" offset={[0, 8]} opacity={0.95}>
+                <span className="text-[10px] font-bold text-rose-700 bg-white px-1.5 py-0.5 rounded shadow-xs border border-rose-200">
+                  {b.name.replace(" (Panchganga Ghat)", "").replace(" (Kasba Bawada)", "")}
                 </span>
               </Tooltip>
             </CircleMarker>
-          );
-        })}
-
-        {/* CWC Bridge Flood Gauges */}
-        {BRIDGES.map((b) => (
-          <CircleMarker
-            key={b.id}
-            center={[b.lat, b.lon]}
-            radius={9}
-            pathOptions={{
-              color: "#B91C1C",
-              fillColor: "#EF4444",
-              fillOpacity: 0.9,
-              weight: 2.5,
-            }}
-          >
-            <Tooltip permanent direction="bottom" offset={[0, 8]} opacity={0.95}>
-              <span className="text-[10px] font-bold text-rose-700 bg-white px-1.5 py-0.5 rounded shadow-xs border border-rose-200">
-                {b.name.replace(" (Panchganga Ghat)", "").replace(" (Kasba Bawada)", "")}
-              </span>
-            </Tooltip>
-          </CircleMarker>
-        ))}
-      </MapContainer>
+          ))}
+        </MapContainer>
+      </div>
     </div>
   );
 }
