@@ -165,10 +165,10 @@ export default function OverviewPanel({
                   forecastTime="Peak"
                   minH={530}
                   maxH={545}
-                  warning={summary?.bridges?.[0]?.warning_stage_m ?? 542.73}
-                  danger={summary?.bridges?.[0]?.danger_stage_m ?? 543.33}
+                  warning={summary?.bridges?.[0]?.warning_stage_m ?? 542.70}
+                  danger={summary?.bridges?.[0]?.danger_stage_m ?? 543.30}
                   hfl={summary?.bridges?.[0]?.hfl_m ?? 545.33}
-                  alert={summary?.bridges?.[0]?.warning_stage_m ? summary.bridges[0].warning_stage_m - 1.23 : 541.50}
+                  alert={summary?.bridges?.[0]?.alert_stage_m ?? 542.10}
                 />
               </div>
               <div className="flex flex-col">
@@ -182,10 +182,10 @@ export default function OverviewPanel({
                   forecastTime="Peak"
                   minH={530}
                   maxH={545}
-                  warning={summary?.bridges?.[1]?.warning_stage_m ?? 542.73}
-                  danger={summary?.bridges?.[1]?.danger_stage_m ?? 543.33}
+                  warning={summary?.bridges?.[1]?.warning_stage_m ?? 542.70}
+                  danger={summary?.bridges?.[1]?.danger_stage_m ?? 543.30}
                   hfl={summary?.bridges?.[1]?.hfl_m ?? 545.33}
-                  alert={summary?.bridges?.[1]?.warning_stage_m ? summary.bridges[1].warning_stage_m - 2.0 : 541.50}
+                  alert={summary?.bridges?.[1]?.alert_stage_m ?? 542.10}
                 />
               </div>
             </div>

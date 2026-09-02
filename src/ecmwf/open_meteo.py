@@ -311,10 +311,10 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         stg_shivaji = convert_discharge_to_stage(q_shivaji, "SHIVAJI_BRIDGE")
         lvl_s = "NORMAL"
         if stg_shivaji >= 545.33: lvl_s = "HFL_EXCEEDED"
-        elif stg_shivaji >= 544.33: lvl_s = "EXTREME"
-        elif stg_shivaji >= 543.33: lvl_s = "DANGER"
-        elif stg_shivaji >= 542.73: lvl_s = "WARNING"
-        elif stg_shivaji >= 541.50: lvl_s = "ALERT"
+        elif stg_shivaji >= 544.00: lvl_s = "EXTREME"
+        elif stg_shivaji >= 543.30: lvl_s = "DANGER"
+        elif stg_shivaji >= 542.70: lvl_s = "WARNING"
+        elif stg_shivaji >= 542.10: lvl_s = "ALERT"
 
         shivaji_forecast.append({
             "forecast_time": (start_dt + timedelta(hours=h)).isoformat(),
@@ -322,17 +322,17 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "stage_m": round(stg_shivaji, 2),
             "discharge_m3s": round(q_shivaji, 1),
             "alert_level": lvl_s,
-            "is_above_danger": stg_shivaji >= 543.33,
+            "is_above_danger": stg_shivaji >= 543.30,
         })
 
         q_rajaram = hydrograph[h]["discharge_m3s"] * 0.72
         stg_rajaram = convert_discharge_to_stage(q_rajaram, "RAJARAM_WEIR")
         lvl_r = "NORMAL"
         if stg_rajaram >= 545.33: lvl_r = "HFL_EXCEEDED"
-        elif stg_rajaram >= 544.33: lvl_r = "EXTREME"
-        elif stg_rajaram >= 543.33: lvl_r = "DANGER"
-        elif stg_rajaram >= 542.73: lvl_r = "WARNING"
-        elif stg_rajaram >= 541.50: lvl_r = "ALERT"
+        elif stg_rajaram >= 544.00: lvl_r = "EXTREME"
+        elif stg_rajaram >= 543.30: lvl_r = "DANGER"
+        elif stg_rajaram >= 542.70: lvl_r = "WARNING"
+        elif stg_rajaram >= 542.10: lvl_r = "ALERT"
 
         rajaram_forecast.append({
             "forecast_time": (start_dt + timedelta(hours=h)).isoformat(),
@@ -340,7 +340,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "stage_m": round(stg_rajaram, 2),
             "discharge_m3s": round(q_rajaram, 1),
             "alert_level": lvl_r,
-            "is_above_danger": stg_rajaram >= 543.33,
+            "is_above_danger": stg_rajaram >= 543.30,
         })
 
     bridge_shivaji = {
@@ -352,10 +352,10 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "description": "Ultrasonic radar sensor on the Chhatrapati Shivaji Maharaj Bridge over the Panchganga River, Kolhapur. Monitors real-time water stage at the primary urban crossing. Alert thresholds referenced to Rajaram KT Weir MSL datum (WRD Maharashtra).",
             "latitude": 16.708917,
             "longitude": 74.219278,
-            "alert_stage_m": 541.50,
-            "warning_stage_m": 542.73,
-            "danger_stage_m": 543.33,
-            "extreme_stage_m": 544.33,
+            "alert_stage_m": 542.10,
+            "warning_stage_m": 542.70,
+            "danger_stage_m": 543.30,
+            "extreme_stage_m": 544.00,
             "hfl_m": 545.33,
             "markerColor": "#0f4c81",
         },
@@ -371,11 +371,11 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "description": "Primary Panchganga flood & water-level monitoring barrage (Kasba Bawada). Alert thresholds referenced to WRD Maharashtra MSL datum.",
             "latitude": 16.736167,
             "longitude": 74.235889,
-            "alert_stage_m": 533.20,
-            "warning_stage_m": 535.20,
-            "danger_stage_m": 536.50,
-            "extreme_stage_m": 537.50,
-            "hfl_m": 538.20,
+            "alert_stage_m": 542.10,
+            "warning_stage_m": 542.70,
+            "danger_stage_m": 543.30,
+            "extreme_stage_m": 544.00,
+            "hfl_m": 545.33,
             "markerColor": "#0284c7",
         },
         "forecast": rajaram_forecast,

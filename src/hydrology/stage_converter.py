@@ -31,10 +31,10 @@ class CrossSection:
     n_flood:        float = 0.070    # Manning's n — floodplain
     slope:          float = 0.00025  # bed slope m/m
     datum_m:        float = 0.0      # datum offset
-    alert_stage_m:   float = 541.50
-    warning_stage_m: float = 542.73
-    danger_stage_m:  float = 543.33
-    extreme_stage_m: float = 544.33
+    alert_stage_m:   float = 542.10
+    warning_stage_m: float = 542.70
+    danger_stage_m:  float = 543.30
+    extreme_stage_m: float = 544.00
     hfl_m:           float = 545.33
     station_m:      np.ndarray = field(default_factory=lambda: np.array([]))
     elevation_m:    np.ndarray = field(default_factory=lambda: np.array([]))
@@ -829,10 +829,10 @@ def run_pipeline():
         "longitude": 74.219278,
         "slope": 0.00025,
         "n_main": 0.035,
-        "alert_stage_m": 541.50,
-        "warning_stage_m": 542.73,
-        "danger_stage_m": 543.33,
-        "extreme_stage_m": 544.33,
+        "alert_stage_m": 542.10,
+        "warning_stage_m": 542.70,
+        "danger_stage_m": 543.30,
+        "extreme_stage_m": 544.00,
         "hfl_m": 545.33,
     })
     df_shivaji = build_rating_curve(cs_shivaji)

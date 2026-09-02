@@ -5,7 +5,7 @@ import useSWR from "swr";
 import dynamic from "next/dynamic";
 import { api } from "@/lib/api";
 import HyetographChart from "@/components/charts/HyetographChart";
-import StationDetailsCard, { USER_STATIONS_DATA } from "@/components/StationDetailsCard";
+import StationDetailsCard, { STATION_METADATA } from "@/components/StationDetailsCard";
 
 // Leaflet must be loaded client-side only
 const BasinMap = dynamic(() => import("@/components/map/BasinMap"), { ssr: false });
@@ -24,7 +24,28 @@ export default function RainfallPanel() {
   const selRows = stations ?? [];
   const palette = ["#0284C7", "#7C3AED", "#059669", "#D97706", "#EF4444"];
 
-  const stationList = Object.values(USER_STATIONS_DATA);
+  const noData = selRows.length === 0;
+
+  // Build station list from real API data, enriched with static metadata
+  const stationChips = selRows.map((s: any) => {
+    const meta = STATION_METADATA[s.station_id] || {
+      id: s.station_id,
+      name: s.station_name,
+      subbasin: s.subbasin_id,
+      lat: s.lat ?? 0,
+      lon: s.lon ?? 0,
+      elevation: s.elevation ?? "—",
+    };
+    return {
+      id: s.station_id,
+      name: s.station_name,
+      subbasin: s.subbasin_id,
+      cumulative: s.cumulative_90h_mm ?? 0,
+      lat: s.lat ?? meta.lat,
+      lon: s.lon ?? meta.lon,
+      elevation: s.elevation ?? meta.elevation,
+    };
+  });
 
   return (
     <div className="flex flex-col gap-6 max-w-7xl mx-auto">
@@ -38,7 +59,7 @@ export default function RainfallPanel() {
             </h1>
           </div>
           <p className="text-xs text-gray-500 mt-1 font-medium">
-            Open-Meteo Forecast v1 API · 90-Day Historical Observations · 90-Hour Forward Prediction Window · HEC-DSS Export
+            Open-Meteo Forecast v1 API · 90-Hour Forward Prediction Window · HEC-DSS Export
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs font-medium">
@@ -46,7 +67,7 @@ export default function RainfallPanel() {
             Open-Meteo v1 API
           </span>
           <span className="px-3 py-1 bg-emerald-50 text-emerald-800 font-bold rounded-md border border-emerald-200">
-            7 Active Raingauge Stations
+            {noData ? "Awaiting Data" : `${selRows.length} Active Stations`}
           </span>
         </div>
       </div>
@@ -56,31 +77,35 @@ export default function RainfallPanel() {
         <span className="text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap pl-1">
           Select Station:
         </span>
-        <div className="flex items-center gap-2">
-          {stationList.map((st) => {
-            const isSelected = selectedStationId === st.id;
-            return (
-              <button
-                key={st.id}
-                onClick={() => setSelectedStationId(st.id)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
-                  isSelected
-                    ? "bg-sky-600 text-white shadow-xs scale-105"
-                    : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200"
-                }`}
-              >
-                <span className={`w-2 h-2 rounded-full ${isSelected ? "bg-white" : "bg-emerald-500"}`} />
-                <span>{st.name.split(" ")[0]}</span>
-                <span className={`font-mono-code text-[11px] ${isSelected ? "text-sky-100" : "text-sky-700"}`}>
-                  {st.fc90}mm
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        {noData ? (
+          <span className="text-xs text-gray-400">Awaiting pipeline data...</span>
+        ) : (
+          <div className="flex items-center gap-2">
+            {stationChips.map((st: any) => {
+              const isSelected = selectedStationId === st.id;
+              return (
+                <button
+                  key={st.id}
+                  onClick={() => setSelectedStationId(st.id)}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+                    isSelected
+                      ? "bg-sky-600 text-white shadow-xs scale-105"
+                      : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200"
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full ${isSelected ? "bg-white" : "bg-emerald-500"}`} />
+                  <span>{st.name.split(" ")[0]}</span>
+                  <span className={`font-mono text-[11px] ${isSelected ? "text-sky-100" : "text-sky-700"}`}>
+                    {st.cumulative.toFixed(1)}mm
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {/* ── UNIFIED STATION KPI & TIME SERIES WIDGET (90d Past + 90h Future) ── */}
+      {/* ── UNIFIED STATION KPI & TIME SERIES WIDGET ── */}
       <StationDetailsCard
         stationId={selectedStationId}
         onSelectStation={(id) => setSelectedStationId(id)}
@@ -138,68 +163,74 @@ export default function RainfallPanel() {
             Click row to activate station analytics widget
           </span>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
-                <th className="py-3 px-4">Station Name</th>
-                <th className="py-3 px-4">Subbasin Reach</th>
-                <th className="py-3 px-4">90-hr Forecast</th>
-                <th className="py-3 px-4">Past 90d Logged</th>
-                <th className="py-3 px-4">Latitude</th>
-                <th className="py-3 px-4">Longitude</th>
-                <th className="py-3 px-4">Elevation</th>
-                <th className="py-3 px-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
-              {stationList.map((r) => {
-                const isSelected = selectedStationId === r.id;
-                return (
-                  <tr
-                    key={r.id}
-                    onClick={() => setSelectedStationId(r.id)}
-                    className={`cursor-pointer transition-colors ${
-                      isSelected
-                        ? "bg-sky-50 font-bold text-sky-950"
-                        : "hover:bg-slate-50/80"
-                    }`}
-                  >
-                    <td className="py-3 px-4 font-semibold text-slate-900 flex items-center gap-2">
-                      <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? "bg-sky-600" : "bg-emerald-500"}`} />
-                      {r.name}
-                    </td>
-                    <td className="py-3 px-4 font-mono-code text-slate-600 text-[11px]">{r.subbasin}</td>
-                    <td className="py-3 px-4 font-bold text-sky-700 font-mono-code">
-                      {r.fc90.toFixed(1)} mm
-                    </td>
-                    <td className="py-3 px-4 font-bold text-purple-700 font-mono-code">
-                      {(r.fc90 * 28 + 240).toFixed(0)} mm
-                    </td>
-                    <td className="py-3 px-4 font-mono-code text-slate-600">{r.lat.toFixed(4)}°N</td>
-                    <td className="py-3 px-4 font-mono-code text-slate-600">{r.lon.toFixed(4)}°E</td>
-                    <td className="py-3 px-4 font-bold text-slate-700">{r.elevation}</td>
-                    <td className="py-3 px-4">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedStationId(r.id);
-                        }}
-                        className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase transition-all ${
-                          isSelected
-                            ? "bg-sky-600 text-white shadow-xs"
-                            : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                        }`}
-                      >
-                        {isSelected ? "Active" : "Inspect"}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        {noData ? (
+          <div className="text-center text-gray-400 text-sm py-6">
+            Awaiting station data from forecast pipeline...
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
+                  <th className="py-3 px-4">Station Name</th>
+                  <th className="py-3 px-4">Subbasin Reach</th>
+                  <th className="py-3 px-4">90-hr Forecast</th>
+                  <th className="py-3 px-4">Method</th>
+                  <th className="py-3 px-4">Latitude</th>
+                  <th className="py-3 px-4">Longitude</th>
+                  <th className="py-3 px-4">Elevation</th>
+                  <th className="py-3 px-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {stationChips.map((r: any) => {
+                  const isSelected = selectedStationId === r.id;
+                  return (
+                    <tr
+                      key={r.id}
+                      onClick={() => setSelectedStationId(r.id)}
+                      className={`cursor-pointer transition-colors ${
+                        isSelected
+                          ? "bg-sky-50 font-bold text-sky-950"
+                          : "hover:bg-slate-50/80"
+                      }`}
+                    >
+                      <td className="py-3 px-4 font-semibold text-slate-900 flex items-center gap-2">
+                        <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? "bg-sky-600" : "bg-emerald-500"}`} />
+                        {r.name}
+                      </td>
+                      <td className="py-3 px-4 font-mono text-slate-600 text-[11px]">{r.subbasin}</td>
+                      <td className="py-3 px-4 font-bold text-sky-700 font-mono">
+                        {r.cumulative.toFixed(1)} mm
+                      </td>
+                      <td className="py-3 px-4 font-mono text-slate-600 text-[11px]">
+                        {selRows.find((s: any) => s.station_id === r.id)?.method ?? "—"}
+                      </td>
+                      <td className="py-3 px-4 font-mono text-slate-600">{r.lat.toFixed(4)}°N</td>
+                      <td className="py-3 px-4 font-mono text-slate-600">{r.lon.toFixed(4)}°E</td>
+                      <td className="py-3 px-4 font-bold text-slate-700">{r.elevation}</td>
+                      <td className="py-3 px-4">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedStationId(r.id);
+                          }}
+                          className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase transition-all ${
+                            isSelected
+                              ? "bg-sky-600 text-white shadow-xs"
+                              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                          }`}
+                        >
+                          {isSelected ? "Active" : "Inspect"}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
