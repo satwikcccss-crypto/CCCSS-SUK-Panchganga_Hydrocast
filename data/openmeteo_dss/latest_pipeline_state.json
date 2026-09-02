@@ -12,7 +12,7 @@
     "bridges": {
       "shivaji": {
         "site_name": "Chhatrapati Shivaji Maharaj Bridge",
-        "current_stage_m": 538.98,
+        "current_stage_m": 532.64,
         "peak_stage_m": 539.54,
         "alert_level": "NORMAL"
       },
@@ -17579,7 +17579,7 @@
       {
         "forecast_time": "2026-09-02T06:00:00+00:00",
         "lead_hours": 0,
-        "stage_m": 538.98,
+        "stage_m": 532.64,
         "discharge_m3s": 850.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18298,12 +18298,13 @@
       }
     ],
     "live_sensor": {
-      "status": "AWAITING_CHANNEL_ID",
-      "api_key": "TSUKPZEUN1BXODUF",
+      "status": "SUCCESS",
+      "channel_id": "3424513",
+      "timestamp": "2026-09-02T09:56:48Z",
+      "entry_id": 7329,
+      "raw_feet": 54.83,
       "sensor_datum_msl": 549.35,
-      "stage_m": null,
-      "raw_feet": null,
-      "timestamp": null
+      "stage_m": 532.64
     }
   },
   "bridgeRajaram": {
@@ -19161,29 +19162,34 @@
   },
   "logs": [
     {
-      "t": "15:23:53",
+      "t": "15:29:31",
       "lv": "INFO",
       "msg": "Forecast cycle CYC_20260902_06z initiated across 18 Panchganga stations"
     },
     {
-      "t": "15:24:18",
+      "t": "15:29:59",
       "lv": "INFO",
       "msg": "Open-Meteo 90-hr precipitation forecast downloaded successfully"
     },
     {
-      "t": "15:24:18",
+      "t": "15:29:59",
       "lv": "INFO",
       "msg": "Dynamic subbasin selector evaluated: S1\u2192Karvir, S2\u2192Sangarul, S6\u2192Gaganbawda"
     },
     {
-      "t": "15:24:18",
+      "t": "15:29:59",
       "lv": "INFO",
       "msg": "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/"
     },
     {
-      "t": "15:24:21",
+      "t": "15:30:02",
       "lv": "INFO",
-      "msg": "HEC-HMS 4.13 execution completed (COMPLETED_BINARY): Peak Discharge 1050.1 m\u00b3/s at T+83h in 2.55s"
+      "msg": "HEC-HMS 4.13 execution completed (COMPLETED_BINARY): Peak Discharge 1050.1 m\u00b3/s at T+83h in 2.69s"
+    },
+    {
+      "t": "15:30:03",
+      "lv": "INFO",
+      "msg": "ThingSpeak Live Ultrasonic Telemetry: 54.83 ft -> 532.64 m MSL"
     }
   ]
 }

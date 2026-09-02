@@ -18,7 +18,7 @@ from typing import Optional, Dict, Any
 log = logging.getLogger(__name__)
 
 THINGSPEAK_API_KEY = os.getenv("THINGSPEAK_API_KEY", "TSUKPZEUN1BXODUF")
-THINGSPEAK_CHANNEL_ID = os.getenv("THINGSPEAK_CHANNEL_ID", "")
+THINGSPEAK_CHANNEL_ID = os.getenv("THINGSPEAK_CHANNEL_ID", "3424513")
 SHIVAJI_SENSOR_DATUM_M = 549.35  # Elevation of sensor in meters MSL
 
 
@@ -78,19 +78,12 @@ def fetch_shivaji_live_telemetry(
             log.warning("No numeric field found in ThingSpeak feed: %s", data)
             return {"status": "NO_NUMERIC_FIELD", "stage_m": None, "raw_data": data}
 
-        # Conversion:
-        # If the ultrasonic sensor measures distance down from deck (e.g. ~28 ft = 8.5m down from 549.35m deck):
-        # Stage = 549.35 - (raw_val * 0.3048)
-        # If raw_val is already water level in feet MSL (~1774 ft = 540.8m MSL):
-        if raw_val > 1000:
-            stage_m = round(raw_val * 0.3048, 2)
-        elif raw_val < 50:  # Distance down from sensor in feet
-            stage_m = round(datum_msl - (raw_val * 0.3048), 2)
-        else:
-            stage_m = round(raw_val, 2)
+        # Water level calculation: Datum (549.35m MSL) - Distance down (raw_val in feet * 0.3048)
+        distance_m = raw_val * 0.3048
+        stage_m = round(datum_msl - distance_m, 2)
 
-        log.info("✓ ThingSpeak Shivaji Live Telemetry: Raw=%.2f ft -> Stage=%.2f m MSL (Datum: %.2f m)", 
-                 raw_val, stage_m, datum_msl)
+        log.info("✓ ThingSpeak Shivaji Live Telemetry: Distance=%.2f ft (%.2f m) -> Water Level=%.2f m MSL (Datum: %.2f m)", 
+                 raw_val, distance_m, stage_m, datum_msl)
 
         return {
             "status": "SUCCESS",
