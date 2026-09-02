@@ -12,43 +12,43 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Full List of Primary and Alternate Stations across S1–S9
+// Full List of Primary and Alternate Stations across S1–S9 (Metadata only - NO hardcoded rainfall)
 export const ALL_GAUGE_STATIONS = [
   // S1
-  { id: "KARVIR", name: "Karvir", subbasin: "S1", lon: 74.2481772, lat: 16.706369, isPrimary: true, elevation: "550m", fc90: 6.2 },
+  { id: "KARVIR", name: "Karvir", subbasin: "S1", lon: 74.2481772, lat: 16.706369, isPrimary: true, elevation: "550m" },
 
   // S2
-  { id: "SANGARUL", name: "Sangarul", subbasin: "S2", lon: 74.0931627, lat: 16.6841962, isPrimary: true, elevation: "572m", fc90: 9.7 },
-  { id: "BALINGA", name: "Balinga (Alt)", subbasin: "S2", lon: 74.17031, lat: 16.6878443, isPrimary: false, elevation: "560m", fc90: 8.4 },
-  { id: "KALE", name: "Kale (Alt)", subbasin: "S2", lon: 74.0564499, lat: 16.7228087, isPrimary: false, elevation: "580m", fc90: 12.1 },
+  { id: "SANGARUL", name: "Sangarul", subbasin: "S2", lon: 74.0931627, lat: 16.6841962, isPrimary: true, elevation: "572m" },
+  { id: "BALINGA", name: "Balinga (Alt)", subbasin: "S2", lon: 74.17031, lat: 16.6878443, isPrimary: false, elevation: "560m" },
+  { id: "KALE", name: "Kale (Alt)", subbasin: "S2", lon: 74.0564499, lat: 16.7228087, isPrimary: false, elevation: "580m" },
 
   // S3
-  { id: "KOTOLI", name: "Kotoli", subbasin: "S3", lon: 74.0518705, lat: 16.7820174, isPrimary: true, elevation: "585m", fc90: 11.5 },
-  { id: "BAJAR_BHOGAON", name: "Bajar Bhogaon (Alt)", subbasin: "S3", lon: 74.1107824, lat: 16.8086769, isPrimary: false, elevation: "590m", fc90: 14.8 },
-  { id: "PADAL", name: "Padal (Alt)", subbasin: "S3", lon: 74.115187, lat: 16.7446006, isPrimary: false, elevation: "575m", fc90: 10.2 },
+  { id: "KOTOLI", name: "Kotoli", subbasin: "S3", lon: 74.0518705, lat: 16.7820174, isPrimary: true, elevation: "585m" },
+  { id: "BAJAR_BHOGAON", name: "Bajar Bhogaon (Alt)", subbasin: "S3", lon: 74.1107824, lat: 16.8086769, isPrimary: false, elevation: "590m" },
+  { id: "PADAL", name: "Padal (Alt)", subbasin: "S3", lon: 74.115187, lat: 16.7446006, isPrimary: false, elevation: "575m" },
 
   // S4
-  { id: "BEED", name: "Beed", subbasin: "S4", lon: 74.1288964, lat: 16.647984, isPrimary: true, elevation: "565m", fc90: 9.9 },
+  { id: "BEED", name: "Beed", subbasin: "S4", lon: 74.1288964, lat: 16.647984, isPrimary: true, elevation: "565m" },
 
   // S5
-  { id: "SALWAN", name: "Salwan", subbasin: "S5", lon: 73.9735, lat: 16.6712, isPrimary: true, elevation: "595m", fc90: 25.5 },
+  { id: "SALWAN", name: "Salwan", subbasin: "S5", lon: 73.9735, lat: 16.6712, isPrimary: true, elevation: "595m" },
 
   // S6
-  { id: "KARANJPHEN", name: "Karanjphen", subbasin: "S6", lon: 73.9036487, lat: 16.7850973, isPrimary: true, elevation: "640m", fc90: 55.4 },
-  { id: "GAGANBAWDA", name: "Gaganbawda (Alt)", subbasin: "S6", lon: 73.8346738, lat: 16.5469926, isPrimary: false, elevation: "680m", fc90: 68.2 },
+  { id: "KARANJPHEN", name: "Karanjphen", subbasin: "S6", lon: 73.9036487, lat: 16.7850973, isPrimary: true, elevation: "640m" },
+  { id: "GAGANBAWDA", name: "Gaganbawda (Alt)", subbasin: "S6", lon: 73.8346738, lat: 16.5469926, isPrimary: false, elevation: "680m" },
 
   // S7
-  { id: "RADHANAGARI", name: "Radhanagari", subbasin: "S7", lon: 73.9971822, lat: 16.41021, isPrimary: true, elevation: "615m", fc90: 38.1 },
+  { id: "RADHANAGARI", name: "Radhanagari", subbasin: "S7", lon: 73.9971822, lat: 16.41021, isPrimary: true, elevation: "615m" },
 
   // S8
-  { id: "SHIROLI_DHUMALA", name: "Shiroli-Dhumala", subbasin: "S8", lon: 74.1062828, lat: 16.6166768, isPrimary: false, elevation: "560m", fc90: 15.6 },
+  { id: "SHIROLI_DHUMALA", name: "Shiroli-Dhumala", subbasin: "S8", lon: 74.1062828, lat: 16.6166768, isPrimary: false, elevation: "560m" },
 
   // S9
-  { id: "HALADI", name: "Haladi", subbasin: "S9", lon: 74.156292, lat: 16.5932632, isPrimary: false, elevation: "555m", fc90: 18.3 },
-  { id: "RASHIWADE_BK", name: "Rashiwade Bk.", subbasin: "S9", lon: 74.1019728, lat: 16.5475641, isPrimary: false, elevation: "570m", fc90: 22.4 },
-  { id: "AAVALI_BK", name: "Aavali Bk.", subbasin: "S9", lon: 74.0549812, lat: 16.481009, isPrimary: false, elevation: "585m", fc90: 29.8 },
-  { id: "KASABA_TARALE", name: "Kasaba Tarale", subbasin: "S9", lon: 74.021589, lat: 16.4478876, isPrimary: false, elevation: "595m", fc90: 34.0 },
-  { id: "KASABA_WALAWE", name: "Kasaba Walawe", subbasin: "S9", lon: 73.9971822, lat: 16.41021, isPrimary: false, elevation: "615m", fc90: 37.8 },
+  { id: "HALADI", name: "Haladi", subbasin: "S9", lon: 74.156292, lat: 16.5932632, isPrimary: false, elevation: "555m" },
+  { id: "RASHIWADE_BK", name: "Rashiwade Bk.", subbasin: "S9", lon: 74.1019728, lat: 16.5475641, isPrimary: false, elevation: "570m" },
+  { id: "AAVALI_BK", name: "Aavali Bk.", subbasin: "S9", lon: 74.0549812, lat: 16.481009, isPrimary: false, elevation: "585m" },
+  { id: "KASABA_TARALE", name: "Kasaba Tarale", subbasin: "S9", lon: 74.021589, lat: 16.4478876, isPrimary: false, elevation: "595m" },
+  { id: "KASABA_WALAWE", name: "Kasaba Walawe", subbasin: "S9", lon: 73.9971822, lat: 16.41021, isPrimary: false, elevation: "615m" },
 ];
 
 export const GAUGE_STATIONS = ALL_GAUGE_STATIONS;
@@ -58,30 +58,26 @@ const BRIDGES = [
     id: "SHIVAJI_BRIDGE",
     name: "Chhatrapati Shivaji Maharaj Bridge",
     district: "Kolhapur",
-    authority: "Kolhapur Municipal Corporation (KMC)",
     lat: 16.708917,
     lon: 74.219278,
-    dms: "16°42'32.1\" N, 74°13'09.4\" E",
-    warning: "542.73m MSL",
-    danger: "543.33m MSL",
-    extreme: "544.33m MSL",
+    warning: "542.70m MSL",
+    danger: "543.30m MSL",
+    extreme: "544.00m MSL",
     hfl: "545.33m MSL",
-    desc: "Ultrasonic radar sensor on the Chhatrapati Shivaji Maharaj Bridge over the Panchganga River, Kolhapur. Monitors real-time water stage at the primary urban crossing. Alert thresholds referenced to Rajaram KT Weir MSL datum (WRD Maharashtra).",
+    desc: "Primary urban river crossing in Kolhapur City (Panchganga Ghat)",
     markerColor: "#0f4c81",
   },
   {
     id: "RAJARAM_BRIDGE",
     name: "Rajaram K.T. Weir (Kasba Bawada)",
     district: "Kolhapur",
-    authority: "WRD Maharashtra",
     lat: 16.736167,
     lon: 74.235889,
-    dms: "16°44'10.2\" N, 74°14'09.2\" E",
-    warning: "535.20m MSL",
-    danger: "536.50m MSL",
-    extreme: "537.50m MSL",
-    hfl: "538.20m MSL",
-    desc: "Primary Panchganga flood & water-level monitoring barrage (Gage 1)",
+    warning: "542.70m MSL",
+    danger: "543.30m MSL",
+    extreme: "544.00m MSL",
+    hfl: "545.33m MSL",
+    desc: "Primary Panchganga flood & water-level monitoring barrage",
     markerColor: "#0284c7",
   },
 ];
@@ -131,15 +127,39 @@ export default function BasinMap({
   }, []);
 
   function getSubRainfall(subId: string) {
-    const matchedStation = ALL_GAUGE_STATIONS.find((g) => g.subbasin === subId || g.id === subId);
-    return matchedStation?.fc90 ?? 25.0;
+    // 1. First check if ecmwf subbasin series is available
+    if (ecmwf && ecmwf[subId] && ecmwf[subId].length > 0) {
+      const sum = ecmwf[subId].reduce((acc: number, p: any) => acc + (p.mm_hr ?? 0), 0);
+      return parseFloat(sum.toFixed(1));
+    }
+    // 2. Check stations prop
+    const stMatch = stations?.find((s: any) => s.subbasin_id === subId);
+    if (stMatch && stMatch.cumulative_90h_mm !== undefined) {
+      return stMatch.cumulative_90h_mm;
+    }
+    return 0.0;
   }
 
   const displayedStations = useMemo(() => {
-    return showAlternates
+    const baseList = showAlternates
       ? ALL_GAUGE_STATIONS
       : ALL_GAUGE_STATIONS.filter((g) => g.isPrimary);
-  }, [showAlternates]);
+
+    return baseList.map((g) => {
+      // Find live rainfall value from pipeline stations array or subbasin ecmwf
+      const stMatch = stations?.find((s: any) =>
+        s.station_id === g.id || s.station_name?.toLowerCase().includes(g.name.split(" ")[0].toLowerCase())
+      );
+      let rainVal = stMatch?.cumulative_90h_mm;
+      if (rainVal === undefined) {
+        rainVal = getSubRainfall(g.subbasin);
+      }
+      return {
+        ...g,
+        fc90: rainVal ?? 0.0,
+      };
+    });
+  }, [showAlternates, stations, ecmwf]);
 
   return (
     <div className="relative w-full h-[520px] rounded-xl overflow-hidden border border-slate-200 shadow-xs bg-slate-900 z-0">

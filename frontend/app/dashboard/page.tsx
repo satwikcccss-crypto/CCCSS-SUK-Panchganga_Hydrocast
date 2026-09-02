@@ -68,8 +68,11 @@ export default function Dashboard() {
   }, "NORMAL");
 
   const alertBadge = ALERT_BADGES[worstAlert] ?? ALERT_BADGES.NORMAL;
-  const peakQ = summary?.outlet?.peak_discharge_m3s ?? 864;
-  const peakAt = summary?.outlet?.lead_hours_to_peak ?? 22;
+  const peakQ = summary?.outlet?.peak_discharge_m3s ?? 0;
+  const peakAt = summary?.outlet?.lead_hours_to_peak ?? 0;
+
+  const shivajiBridge = summary?.bridges?.[0];
+  const rajaramBridge = summary?.bridges?.[1];
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
@@ -115,7 +118,7 @@ export default function Dashboard() {
           <div className="text-right hidden lg:block text-xs text-gray-500">
             {status?.last_cycle?.start_time
               ? new Date(status.last_cycle.start_time).toUTCString().replace(" GMT", " UTC")
-              : "2026-08-31 12:00:00 UTC"}
+              : "Live Pipeline State"}
           </div>
 
           <div
@@ -178,11 +181,11 @@ export default function Dashboard() {
               <div className="space-y-1 text-xs">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Peak Discharge</span>
-                  <span className="font-mono">{peakQ.toFixed(0)} m³/s</span>
+                  <span className="font-mono">{peakQ ? `${peakQ.toFixed(0)} m³/s` : "—"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Time of Peak</span>
-                  <span className="font-mono">T+{peakAt}h</span>
+                  <span className="font-mono">{peakAt ? `T+${peakAt}h` : "—"}</span>
                 </div>
               </div>
             </div>
@@ -191,12 +194,16 @@ export default function Dashboard() {
               <div className="text-xs font-medium text-gray-500 mb-2">Critical Bridges</div>
               <div className="space-y-2">
                 <div className="flex flex-col text-xs bg-white p-2 rounded border border-gray-100">
-                  <span className="text-gray-800">Shivaji Bridge</span>
-                  <span className="font-mono text-orange-600">6.24m [WARN]</span>
+                  <span className="text-gray-800">{shivajiBridge?.site_name ?? "Shivaji Bridge"}</span>
+                  <span className="font-mono text-sky-700">
+                    {shivajiBridge?.peak_stage_m ? `${shivajiBridge.peak_stage_m.toFixed(2)}m [${shivajiBridge.alert_level}]` : "—"}
+                  </span>
                 </div>
                 <div className="flex flex-col text-xs bg-white p-2 rounded border border-gray-100">
-                  <span className="text-gray-800">Rajaram K.T. Weir</span>
-                  <span className="font-mono text-yellow-600">4.92m [ALERT]</span>
+                  <span className="text-gray-800">{rajaramBridge?.site_name ?? "Rajaram K.T. Weir"}</span>
+                  <span className="font-mono text-sky-700">
+                    {rajaramBridge?.peak_stage_m ? `${rajaramBridge.peak_stage_m.toFixed(2)}m [${rajaramBridge.alert_level}]` : "—"}
+                  </span>
                 </div>
               </div>
             </div>
