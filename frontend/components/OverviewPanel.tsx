@@ -186,6 +186,7 @@ export default function OverviewPanel({
             subbasins={Object.keys(ecmwf ?? {})}
             ecmwf={ecmwf ?? {}}
             stations={stations ?? []}
+            showSidebar={false}
             onSelectStation={(id) => {
               onSelectStation(id);
               onNavigateTab("rainfall");
@@ -230,32 +231,44 @@ export default function OverviewPanel({
         </div>
       </div>
 
-      {/* ── 5. QUICK STATION SELECTOR SHORTCUTS ────────────────────────────── */}
+      {/* ── 5. HEC-DSS ACTIVE SUBBASIN PRECIPITATION STATIONS (S1–S9) ─────── */}
       <div className={CARD}>
         <div className={CARD_HEADER}>
-          <span>Precipitation Stations Quick Access</span>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+            <span>HEC-DSS Simulation Rain Gages (Subbasins S1–S9 Max-Volume Governed)</span>
+          </div>
+          <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-mono font-bold border border-emerald-200">
+            9 Active Catchment Gages
+          </span>
         </div>
         {stations && stations.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-            {stations.map((st: any) => (
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-9 gap-3">
+            {stations.filter((st: any) => st.is_governing !== false).slice(0, 9).map((st: any) => (
               <button
                 key={st.station_id}
                 onClick={() => {
                   onSelectStation(st.station_id);
                   onNavigateTab("rainfall");
                 }}
-                className="p-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded text-left transition-all flex flex-col justify-between"
+                className="p-3 bg-white hover:bg-sky-50/50 border border-gray-200 hover:border-sky-300 rounded-lg text-left transition-all flex flex-col justify-between shadow-xs group"
               >
                 <div>
-                  <div className="text-[10px] text-gray-500">
-                    {st.subbasin_id}
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 border border-blue-200 font-mono">
+                      {st.subbasin_id}
+                    </span>
+                    <span className="text-[8px] font-bold uppercase text-emerald-700 bg-emerald-50 px-1 rounded">
+                      ACTIVE
+                    </span>
                   </div>
-                  <div className="font-medium text-sm text-gray-900 mt-1">
+                  <div className="font-bold text-xs text-gray-900 mt-2 group-hover:text-blue-600 truncate">
                     {st.station_name?.split(" ")[0]}
                   </div>
                 </div>
-                <div className="mt-2">
-                  <span className="font-mono text-xs text-gray-700">{st.cumulative_90h_mm} mm</span>
+                <div className="mt-3 pt-2 border-t border-gray-100 flex items-baseline justify-between">
+                  <span className="text-[10px] text-gray-400">90h Total</span>
+                  <span className="font-mono text-xs font-bold text-blue-600">{st.cumulative_90h_mm} mm</span>
                 </div>
               </button>
             ))}

@@ -1,6 +1,6 @@
 "use client";
 // frontend/components/map/BasinMap.tsx
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -13,18 +13,12 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import {
-  MapPin,
-  Navigation,
   Search,
   Layers,
   Waves,
   CloudRain,
-  Compass,
   ChevronRight,
   Filter,
-  ShieldCheck,
-  ShieldAlert,
-  Info,
 } from "lucide-react";
 
 // Complete Registry of 18 Primary & Alternate Rainfall Stations (S1–S9)
@@ -110,7 +104,6 @@ function MapController({ targetLocation }: { targetLocation: { lat: number; lon:
   const map = useMap();
 
   useEffect(() => {
-    // Ensure high-priority marker panes sit above GeoJSON polygons (zIndex > 600)
     if (!map.getPane("stationsPane")) {
       const sp = map.createPane("stationsPane");
       sp.style.zIndex = "650";
@@ -137,18 +130,20 @@ export default function BasinMap({
   ecmwf = {},
   stations = [],
   selectedStationId = "KARVIR",
+  showSidebar = false,
   onSelectStation,
 }: {
   subbasins?: string[];
   ecmwf?: Record<string, any[]>;
   stations?: any[];
   selectedStationId?: string;
+  showSidebar?: boolean;
   onSelectStation?: (stationId: string) => void;
 }) {
   const [selectedSub, setSelectedSub] = useState<string | null>(null);
   const [subbasinGeo, setSubbasinGeo] = useState<any>(null);
   const [riverGeo, setRiverGeo] = useState<any>(null);
-  const [filterMode, setFilterMode] = useState<"all" | "governing" | "backup" | "river">("governing");
+  const [filterMode, setFilterMode] = useState<"governing" | "all" | "river">("governing");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [flyTarget, setFlyTarget] = useState<{ lat: number; lon: number; id: string } | null>(null);
 
@@ -198,7 +193,6 @@ export default function BasinMap({
 
       // Check if this station is active governing selection in HEC-HMS (subbasins S1-S9)
       const isGoverning = stMatch?.is_governing ?? (
-        // Fallback exact 9 governing stations mapped to S1-S9
         g.id === "KARVIR" || // S1
         g.id === "SANGARUL" || // S2
         g.id === "BAJAR_BHOGAON" || // S3
@@ -220,13 +214,18 @@ export default function BasinMap({
     });
   }, [stations, ecmwf]);
 
-  // Filtered stations for side navigator
+  // Filtered stations for side navigator and map
+  const displayedMapStations = useMemo(() => {
+    if (filterMode === "governing") {
+      return enrichedStations.filter((s) => s.isGoverning);
+    }
+    return enrichedStations;
+  }, [enrichedStations, filterMode]);
+
   const filteredList = useMemo(() => {
     let list = enrichedStations;
     if (filterMode === "governing") {
       list = list.filter((s) => s.isGoverning);
-    } else if (filterMode === "backup") {
-      list = list.filter((s) => !s.isGoverning);
     }
 
     if (searchQuery.trim()) {
@@ -249,204 +248,139 @@ export default function BasinMap({
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-3 w-full bg-slate-900 rounded-xl overflow-hidden border border-slate-700 shadow-md">
-      {/* ── LEFT: INTERACTIVE LOCATIONS & GAUGE NAVIGATOR PANEL ──────────── */}
-      <div className="w-full lg:w-80 bg-slate-800 border-r border-slate-700 flex flex-col h-[560px] flex-shrink-0 z-10">
-        {/* Panel Header */}
-        <div className="p-3.5 border-b border-slate-700 bg-slate-850">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                HEC-HMS Sensors ({filterMode === "governing" ? "9 Subbasins" : `${enrichedStations.length} Total`})
-              </h3>
-            </div>
-            <span className="text-[10px] text-emerald-400 font-mono font-bold">HEC-HMS 4.13</span>
-          </div>
-
-          {/* Search Box */}
-          <div className="relative mt-2.5">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search station, subbasin S1–S9..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all font-sans"
-            />
-          </div>
-
-          {/* Filter Pills */}
-          <div className="flex items-center gap-1 mt-2.5 overflow-x-auto pb-0.5">
-            <button
-              onClick={() => setFilterMode("governing")}
-              className={`px-2.5 py-1 rounded text-[10px] font-bold whitespace-nowrap transition-all flex items-center gap-1 ${
-                filterMode === "governing"
-                  ? "bg-emerald-600 text-white shadow-xs"
-                  : "bg-slate-700/60 text-slate-300 hover:bg-slate-700"
-              }`}
-            >
-              <span>★ HEC-HMS Active (9)</span>
-            </button>
-            <button
-              onClick={() => setFilterMode("all")}
-              className={`px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap transition-all ${
-                filterMode === "all"
-                  ? "bg-sky-500 text-white shadow-xs"
-                  : "bg-slate-700/60 text-slate-300 hover:bg-slate-700"
-              }`}
-            >
-              All (18)
-            </button>
-            <button
-              onClick={() => setFilterMode("river")}
-              className={`px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap transition-all ${
-                filterMode === "river"
-                  ? "bg-rose-600 text-white shadow-xs"
-                  : "bg-slate-700/60 text-slate-300 hover:bg-slate-700"
-              }`}
-            >
-              🌊 River (2)
-            </button>
-          </div>
-        </div>
-
-        {/* List of Stations */}
-        <div className="flex-grow overflow-y-auto p-2 space-y-1.5 custom-scrollbar">
-          {/* River Bridge Flood Gauges (If mode is 'all' or 'river') */}
-          {(filterMode === "all" || filterMode === "river") && (
-            <div className="mb-2">
-              <div className="text-[10px] font-bold text-rose-400 uppercase tracking-wider px-2 py-1 flex items-center gap-1.5">
-                <Waves className="w-3 h-3" /> River Flood Monitoring Gauges
+    <div className="flex flex-col lg:flex-row gap-0 w-full bg-white rounded-xl overflow-hidden border border-gray-200 shadow-xs">
+      {/* ── LEFT: OPTIONAL SIDEBAR (Only if showSidebar=true) ──────────────── */}
+      {showSidebar && (
+        <div className="w-full lg:w-80 bg-gray-50 border-r border-gray-200 flex flex-col h-[520px] flex-shrink-0 z-10">
+          <div className="p-3 border-b border-gray-200 bg-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">
+                  HEC-HMS Stations ({filterMode === "governing" ? "9 Active" : `${enrichedStations.length} Total`})
+                </h3>
               </div>
-              <div className="space-y-1 mt-0.5">
-                {BRIDGES.map((b) => (
-                  <button
-                    key={b.id}
-                    onClick={() => handleLocationClick({ lat: b.lat, lon: b.lon, id: b.id })}
-                    className="w-full text-left p-2.5 rounded-lg bg-rose-950/30 hover:bg-rose-900/50 border border-rose-900/50 hover:border-rose-600 transition-all flex items-center justify-between group"
-                  >
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-rose-500" />
-                        <span className="text-xs font-bold text-white group-hover:text-rose-200">
-                          {b.name}
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-rose-300/80 mt-0.5 font-mono">
-                        Warning: {b.warning} · Danger: {b.danger}
-                      </div>
+              <span className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-mono font-bold border border-emerald-200">
+                DSS Linked
+              </span>
+            </div>
+
+            <div className="relative mt-2">
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search station, subbasin S1–S9..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white border border-gray-200 rounded-md pl-8 pr-3 py-1.5 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-all font-sans"
+              />
+            </div>
+
+            <div className="flex items-center gap-1 mt-2">
+              <button
+                onClick={() => setFilterMode("governing")}
+                className={`px-2.5 py-1 rounded text-[10px] font-bold transition-all ${
+                  filterMode === "governing"
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                ★ HEC-DSS Active (9)
+              </button>
+              <button
+                onClick={() => setFilterMode("all")}
+                className={`px-2.5 py-1 rounded text-[10px] font-bold transition-all ${
+                  filterMode === "all"
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                All (18)
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-grow overflow-y-auto p-2 space-y-1">
+            {filteredList.map((st) => {
+              const isSelected = selectedStationId === st.id;
+              return (
+                <button
+                  key={st.id}
+                  onClick={() => handleLocationClick({ lat: st.lat, lon: st.lon, id: st.id })}
+                  className={`w-full text-left p-2 rounded-lg border transition-all flex items-center justify-between group ${
+                    isSelected
+                      ? "bg-sky-50 border-sky-300 shadow-xs"
+                      : "bg-white hover:bg-gray-50 border-gray-200"
+                  }`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className={`w-2 h-2 rounded-full ${st.isGoverning ? "bg-emerald-500" : "bg-purple-500"}`} />
+                      <span className="text-xs font-bold text-gray-900 truncate">{st.name}</span>
+                      <span className="text-[9px] font-bold px-1 rounded bg-gray-100 text-gray-700 border border-gray-200">
+                        {st.subbasin}
+                      </span>
                     </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-rose-400 group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Rainfall Stations */}
-          {filterMode !== "river" && (
-            <div>
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 flex items-center gap-1.5">
-                <CloudRain className="w-3 h-3" /> Open-Meteo ECMWF Rain Gages (S1–S9)
-              </div>
-              <div className="space-y-1 mt-0.5">
-                {filteredList.map((st) => {
-                  const isSelected = selectedStationId === st.id;
-                  return (
-                    <button
-                      key={st.id}
-                      onClick={() => handleLocationClick({ lat: st.lat, lon: st.lon, id: st.id })}
-                      className={`w-full text-left p-2.5 rounded-lg border transition-all flex items-center justify-between group ${
-                        isSelected
-                          ? "bg-sky-900/60 border-sky-400 shadow-sm"
-                          : "bg-slate-750/70 hover:bg-slate-700/80 border-slate-700 hover:border-slate-500"
-                      }`}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5">
-                          <span
-                            className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                              st.isGoverning ? "bg-emerald-400" : "bg-purple-400"
-                            }`}
-                          />
-                          <span
-                            className={`text-xs font-bold truncate ${
-                              isSelected ? "text-sky-200" : "text-slate-100 group-hover:text-white"
-                            }`}
-                          >
-                            {st.name}
-                          </span>
-                          <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-slate-900 text-sky-400 border border-slate-700">
-                            {st.subbasin}
-                          </span>
-                        </div>
-                        <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-2">
-                          <span>Elev: {st.elevation}</span>
-                          <span>·</span>
-                          <span className="text-slate-300 font-mono">
-                            {st.lat.toFixed(2)}°N, {st.lon.toFixed(2)}°E
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="text-right flex-shrink-0 ml-2">
-                        <div className="text-xs font-mono font-bold text-sky-400">
-                          {st.fc90.toFixed(1)} mm
-                        </div>
-                        <div
-                          className={`text-[8px] font-bold uppercase tracking-wider px-1 py-0.2 rounded ${
-                            st.isGoverning
-                              ? "bg-emerald-950 text-emerald-300 border border-emerald-800"
-                              : "bg-purple-950 text-purple-300 border border-purple-800"
-                          }`}
-                        >
-                          {st.isGoverning ? "GOVERNING" : "BACKUP"}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+                    <div className="text-[10px] text-gray-500 mt-0.5">
+                      {st.taluka} · {st.elevation}
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0 ml-2">
+                    <div className="text-xs font-mono font-bold text-blue-600">{st.fc90.toFixed(1)} mm</div>
+                    <div className={`text-[8px] font-bold uppercase px-1 rounded ${st.isGoverning ? "text-emerald-700 bg-emerald-50" : "text-purple-700 bg-purple-50"}`}>
+                      {st.isGoverning ? "DSS GOVERNING" : "BACKUP"}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* ── RIGHT: LEAFLET BASIN MAP ──────────────────────────────────────── */}
-      <div className="relative flex-1 h-[560px] bg-slate-950">
+      {/* ── MAP CONTAINER (Light, Clean Styling) ─────────────────────────── */}
+      <div className="relative flex-1 h-[520px] bg-slate-50">
         {/* Top Controls Overlay */}
-        <div className="absolute top-3 left-14 z-[1000] bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700 shadow-md text-xs pointer-events-auto flex items-center gap-3">
-          <div className="flex items-center gap-2 text-slate-200">
-            <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
-            <span className="font-bold text-[11px]">Dynamic Spatial Allocation</span>
+        <div className="absolute top-3 left-14 z-[1000] bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-lg border border-gray-200 shadow-xs text-xs pointer-events-auto flex items-center gap-3">
+          <div className="flex items-center gap-1.5 text-gray-800">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="font-bold text-[11px]">
+              {filterMode === "governing" ? "HEC-DSS Active Simulation Stations (S1–S9)" : "All Panchganga Stations"}
+            </span>
           </div>
-          <span className="text-[10px] text-slate-400 border-l border-slate-700 pl-2">
-            Click any station marker or sidebar item to inspect live data
-          </span>
+          <div className="flex items-center gap-1 border-l border-gray-200 pl-2">
+            <button
+              onClick={() => setFilterMode(filterMode === "governing" ? "all" : "governing")}
+              className="text-[10px] font-bold text-blue-600 hover:text-blue-700 px-1.5 py-0.5 rounded hover:bg-blue-50 transition-colors"
+            >
+              {filterMode === "governing" ? "Show All 18 Gages" : "Show 9 DSS Gages"}
+            </button>
+          </div>
         </div>
 
-        {/* Legend */}
-        <div className="absolute bottom-3 right-3 z-[1000] bg-slate-900/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-700 shadow-md text-[10px] pointer-events-auto">
-          <div className="font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-            <Layers className="w-3 h-3 text-sky-400" /> Map Layers &amp; Markers
+        {/* Floating Legend */}
+        <div className="absolute bottom-3 right-3 z-[1000] bg-white/95 backdrop-blur-md px-3 py-2 rounded-lg border border-gray-200 shadow-xs text-[10px] pointer-events-auto">
+          <div className="font-bold text-gray-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+            <Layers className="w-3 h-3 text-blue-600" /> Legend
           </div>
-          <div className="flex flex-col gap-1 text-slate-300">
+          <div className="flex flex-col gap-1 text-gray-600 font-medium">
             <div className="flex items-center gap-1.5">
-              <span className="w-3.5 h-1 bg-sky-400 rounded-full" />
-              <span>Panchganga River Reaches</span>
+              <span className="w-3 h-1 bg-sky-500 rounded-full" />
+              <span>Panchganga Stream Network</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 border border-emerald-600" />
-              <span>Governing HMS Rain Gage</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-emerald-700" />
+              <span>HEC-DSS Active Station (Governing)</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-400 border border-purple-600" />
-              <span>Backup Rain Gage</span>
-            </div>
+            {filterMode === "all" && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-purple-500 border border-purple-700" />
+                <span>Alternate / Backup Gage</span>
+              </div>
+            )}
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-rose-500 border border-rose-700" />
-              <span>River Bridge Telemetry</span>
+              <span>River Bridge Flood Gauge</span>
             </div>
           </div>
         </div>
@@ -480,15 +414,9 @@ export default function BasinMap({
                 url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
               />
             </LayersControl.BaseLayer>
-            <LayersControl.BaseLayer name="CartoDB Dark Canvas">
-              <TileLayer
-                attribution='&copy; CARTO'
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-              />
-            </LayersControl.BaseLayer>
           </LayersControl>
 
-          {/* Subbasin Shapefile / GeoJSON Polygons (Background Layer) */}
+          {/* Subbasin Shapefile / GeoJSON Polygons (Light background fill) */}
           {subbasinGeo && (
             <GeoJSON
               key={`subbasins-${selectedSub}`}
@@ -500,7 +428,7 @@ export default function BasinMap({
                 const isSelected = selectedSub === name;
                 return {
                   fillColor: fill,
-                  fillOpacity: isSelected ? 0.45 : 0.20,
+                  fillOpacity: isSelected ? 0.35 : 0.15,
                   color: isSelected ? "#0284C7" : stroke,
                   weight: isSelected ? 2.5 : 1.2,
                 };
@@ -515,7 +443,7 @@ export default function BasinMap({
                 });
 
                 layer.bindTooltip(
-                  `<div style="font-family: Inter, sans-serif; padding: 3px;">
+                  `<div style="font-family: Inter, sans-serif; padding: 2px;">
                     <div style="font-weight: 700; color: #0284C7;">Subbasin ${name}</div>
                     <div style="font-size: 10px; color: #475569;">Slope: <b>${(props.basin_slo || 0).toFixed(3)}</b> · Relief: <b>${props.basin_rel || 0}m</b></div>
                     <div style="font-size: 11px; color: #0F172A; font-weight: 600; margin-top: 2px;">90-hr Forecast: <span style="color: #0284C7;">${cumVal.toFixed(1)} mm</span></div>
@@ -526,22 +454,20 @@ export default function BasinMap({
             />
           )}
 
-          {/* Panchganga River Network Polylines */}
+          {/* Panchganga River Flowpaths */}
           {riverGeo && (
             <GeoJSON
               key="rivers-geojson"
               data={riverGeo}
               style={() => ({
                 color: "#0284C7",
-                weight: 3.5,
+                weight: 3,
                 opacity: 0.85,
               })}
               onEachFeature={(feature, layer) => {
-                const props = feature.properties || {};
                 layer.bindTooltip(
                   `<div style="font-family: Inter, sans-serif; padding: 2px;">
                     <div style="font-weight: 700; color: #0284C7;">Panchganga River Reach</div>
-                    <div style="font-size: 10px; color: #475569;">Channel Flowpath Segment</div>
                   </div>`,
                   { direction: "top", sticky: true, opacity: 0.95 }
                 );
@@ -549,8 +475,8 @@ export default function BasinMap({
             />
           )}
 
-          {/* Rain Gauge Station Markers (Pane: stationsPane, zIndex: 650) */}
-          {enrichedStations.map((g) => {
+          {/* Rainfall Station Markers (Pane: markerPane, zIndex: 650) */}
+          {displayedMapStations.map((g) => {
             const isSelected = selectedStationId === g.id;
             const isGov = g.isGoverning;
             const markerColor = isGov ? "#059669" : "#7C3AED";
@@ -563,8 +489,8 @@ export default function BasinMap({
                 radius={isSelected ? 10 : isGov ? 7.5 : 5.5}
                 pane="markerPane"
                 pathOptions={{
-                  color: isSelected ? "#38BDF8" : markerColor,
-                  fillColor: isSelected ? "#0284C7" : markerFill,
+                  color: isSelected ? "#0284C7" : markerColor,
+                  fillColor: isSelected ? "#38BDF8" : markerFill,
                   fillOpacity: 0.95,
                   weight: isSelected ? 3.5 : isGov ? 2 : 1.5,
                 }}
@@ -573,57 +499,57 @@ export default function BasinMap({
                 }}
               >
                 <Popup>
-                  <div style={{ fontFamily: "Inter, sans-serif", minWidth: 220, padding: "4px 2px" }}>
-                    <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
+                  <div style={{ fontFamily: "Inter, sans-serif", minWidth: 210, padding: 2 }}>
+                    <div className="flex items-center justify-between border-b border-gray-200 pb-1">
                       <div>
-                        <div className="font-bold text-sm text-slate-900">{g.name}</div>
-                        <div className="text-[10px] text-slate-500 font-mono">ID: {g.id} · {g.taluka}</div>
+                        <div className="font-bold text-sm text-gray-900">{g.name}</div>
+                        <div className="text-[10px] text-gray-500 font-mono">{g.taluka}</div>
                       </div>
                       <span
                         className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${
                           isGov ? "bg-emerald-100 text-emerald-800" : "bg-purple-100 text-purple-800"
                         }`}
                       >
-                        {isGov ? "GOVERNING" : "BACKUP"}
+                        {isGov ? "DSS ACTIVE" : "BACKUP"}
                       </span>
                     </div>
 
-                    <div className="text-[11px] text-slate-600 mt-2 space-y-1.5">
+                    <div className="text-[11px] text-gray-600 mt-2 space-y-1">
                       <div className="flex justify-between">
                         <span>Assigned Subbasin:</span>
-                        <b className="text-sky-700 font-mono">{g.subbasin}</b>
+                        <b className="text-blue-700 font-mono">{g.subbasin}</b>
                       </div>
                       <div className="flex justify-between">
                         <span>GPS Coordinates:</span>
-                        <span className="font-mono text-slate-800 font-medium">
-                          {g.lat.toFixed(4)}°N, {g.lon.toFixed(4)}°E
+                        <span className="font-mono text-gray-800 font-medium">
+                          {g.lat.toFixed(3)}°N, {g.lon.toFixed(3)}°E
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Elevation MSL:</span>
+                        <span>Elevation:</span>
                         <b>{g.elevation}</b>
                       </div>
-                      <div className="flex justify-between pt-1.5 border-t border-slate-100">
-                        <span className="font-semibold text-slate-800">90-hr Forecast Total:</span>
-                        <span className="text-sky-600 font-mono font-bold text-xs">{g.fc90.toFixed(1)} mm</span>
+                      <div className="flex justify-between pt-1 border-t border-gray-100">
+                        <span className="font-semibold text-gray-800">90-hr Forecast Total:</span>
+                        <span className="text-blue-600 font-mono font-bold text-xs">{g.fc90.toFixed(1)} mm</span>
                       </div>
                     </div>
 
-                    <div className="mt-3 pt-2 border-t border-slate-200 flex justify-end">
+                    <div className="mt-2.5 pt-2 border-t border-gray-200 flex justify-end">
                       <button
                         onClick={() => {
                           if (onSelectStation) onSelectStation(g.id);
                         }}
-                        className="text-[10px] font-bold text-white bg-sky-600 hover:bg-sky-700 px-2.5 py-1 rounded transition-colors"
+                        className="text-[10px] font-bold text-white bg-blue-600 hover:bg-blue-700 px-2.5 py-1 rounded transition-colors"
                       >
-                        Select for Hyetograph Analysis →
+                        View Station Hyetograph →
                       </button>
                     </div>
                   </div>
                 </Popup>
 
                 <Tooltip direction="top" offset={[0, -8]} opacity={0.95}>
-                  <div className="font-mono text-[10px] font-bold text-slate-900">
+                  <div className="font-mono text-[10px] font-bold text-gray-900">
                     {g.name} ({g.fc90.toFixed(1)}mm) {isGov ? "★" : "○"}
                   </div>
                 </Tooltip>
@@ -631,7 +557,7 @@ export default function BasinMap({
             );
           })}
 
-          {/* River Flood Monitoring Gauge Markers (Pane: markerPane, zIndex: 660) */}
+          {/* River Bridge Flood Monitoring Gauge Markers */}
           {BRIDGES.map((b) => (
             <CircleMarker
               key={`br_${b.id}`}
@@ -649,12 +575,12 @@ export default function BasinMap({
               }}
             >
               <Popup>
-                <div style={{ fontFamily: "Inter, sans-serif", minWidth: 230, padding: "4px 2px" }}>
+                <div style={{ fontFamily: "Inter, sans-serif", minWidth: 220, padding: 2 }}>
                   <div className="font-bold text-sm text-rose-900 border-b border-rose-200 pb-1">
                     {b.name}
                   </div>
-                  <div className="text-[10px] text-slate-500 mt-1">{b.desc}</div>
-                  <div className="text-[11px] text-slate-700 mt-2 space-y-1">
+                  <div className="text-[10px] text-gray-500 mt-1">{b.desc}</div>
+                  <div className="text-[11px] text-gray-700 mt-2 space-y-1">
                     <div className="flex justify-between">
                       <span className="text-amber-700 font-medium">Alert Level:</span>
                       <b className="font-mono">542.10 m MSL</b>
