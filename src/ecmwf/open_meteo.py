@@ -102,6 +102,58 @@ def sync_to_supabase(state: dict, db_url: str):
 
         conn = psycopg2.connect(db_url)
         with conn.cursor() as cur:
+            # Auto-initialize database schema if tables do not exist yet
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS simulation_runs (
+                    run_id VARCHAR(64) PRIMARY KEY,
+                    cycle_date DATE NOT NULL,
+                    cycle_time VARCHAR(16) NOT NULL,
+                    start_time TIMESTAMPTZ NOT NULL,
+                    end_time TIMESTAMPTZ,
+                    status VARCHAR(32) NOT NULL,
+                    model_version VARCHAR(64) NOT NULL,
+                    created_at TIMESTAMPTZ DEFAULT NOW()
+                );
+
+                CREATE TABLE IF NOT EXISTS hydrograph_results (
+                    id BIGSERIAL PRIMARY KEY,
+                    run_id VARCHAR(64) NOT NULL,
+                    basin_id VARCHAR(64) NOT NULL,
+                    outlet_node VARCHAR(64) NOT NULL,
+                    timestamp TIMESTAMPTZ NOT NULL,
+                    lead_hours INT NOT NULL,
+                    discharge_m3s NUMERIC(10,2) NOT NULL,
+                    surface_runoff_m3s NUMERIC(10,2) NOT NULL,
+                    baseflow_m3s NUMERIC(10,2) NOT NULL,
+                    is_peak BOOLEAN DEFAULT FALSE,
+                    created_at TIMESTAMPTZ DEFAULT NOW()
+                );
+
+                CREATE TABLE IF NOT EXISTS bridge_stage_forecast (
+                    id BIGSERIAL PRIMARY KEY,
+                    site_id VARCHAR(64) NOT NULL,
+                    forecast_run_id VARCHAR(64) NOT NULL,
+                    forecast_time TIMESTAMPTZ NOT NULL,
+                    lead_hours INT NOT NULL,
+                    discharge_m3s NUMERIC(10,2) NOT NULL,
+                    stage_m NUMERIC(10,2) NOT NULL,
+                    alert_level VARCHAR(32) NOT NULL,
+                    is_above_danger BOOLEAN DEFAULT FALSE,
+                    created_at TIMESTAMPTZ DEFAULT NOW()
+                );
+
+                CREATE TABLE IF NOT EXISTS pipeline_step_log (
+                    cycle_id VARCHAR(64) NOT NULL,
+                    step_number INT NOT NULL,
+                    step_name VARCHAR(256) NOT NULL,
+                    status VARCHAR(32) NOT NULL,
+                    start_time TIMESTAMPTZ NOT NULL,
+                    end_time TIMESTAMPTZ NOT NULL,
+                    duration_seconds NUMERIC(10,2) NOT NULL,
+                    PRIMARY KEY (cycle_id, step_number)
+                );
+            """)
+
             last_c = state["status"]["last_cycle"]
             start_dt_val = datetime.fromisoformat(last_c["start_time"])
             end_dt_val = datetime.fromisoformat(last_c["end_time"])
@@ -504,7 +556,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     record_log("INFO", f"Dashboard pipeline state dumped to {public_file}")
 
     # Sync to Supabase Postgres if DATABASE_URL is available
-    db_url = os.getenv("DATABASE_URL")
+    db_url = os.getenv("DATABASE_URL") or os.getenv("SUPABASE_DB_URL") or os.getenv("SUPABASE_DATABASE_URL")
     if db_url:
         sync_to_supabase(pipeline_state, db_url)
 

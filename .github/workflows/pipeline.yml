@@ -76,7 +76,9 @@ jobs:
 
       - name: 1. Fetch Open-Meteo 90-hr Forecasts, Run Hydrological Cycle & Sync DB
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DATABASE_URL }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DATABASE_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
           THINGSPEAK_CHANNEL_ID: "3424513"
           THINGSPEAK_API_KEY: "TSUKPZEUN1BXODUF"
         run: |
@@ -84,7 +86,9 @@ jobs:
 
       - name: 2. Calculate Hydraulic Bridge Stages & Store Rating Curves
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DATABASE_URL }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DATABASE_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
         run: |
           python -m src.hydrology.stage_converter
 
