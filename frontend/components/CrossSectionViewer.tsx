@@ -44,36 +44,40 @@ export default function CrossSectionViewer({
   // Site Configuration & Thresholds
   const siteConfig = useMemo(() => {
     if (selectedSite === "SHIVAJI_BRIDGE") {
+      const site = bridgeShivaji?.site ?? {};
       return {
         id: "SHIVAJI_BRIDGE",
-        name: "Chhatrapati Shivaji Maharaj Bridge",
-        river: "Panchganga River",
+        name: site.site_name ?? "Chhatrapati Shivaji Maharaj Bridge",
+        river: site.river_name ?? "Panchganga River",
         reach: "Panchganga Ghat (Kolhapur Urban)",
         rawPoints: SHIVAJI_SURVEY_POINTS,
         bankLeftStation: 124.29,
         bankRightStation: 261.66,
-        warningStage: 542.73,
-        dangerStage: 543.33,
-        extremeStage: 544.33,
-        hflStage: 545.33,
+        alertStage: site.alert_stage_m ?? 541.50,
+        warningStage: site.warning_stage_m ?? 542.73,
+        dangerStage: site.danger_stage_m ?? 543.33,
+        extremeStage: (site.danger_stage_m ?? 543.33) + 1.0,
+        hflStage: site.hfl_m ?? 545.33,
         forecast: bridgeShivaji?.forecast ?? [],
-        siteInfo: bridgeShivaji?.site ?? {},
+        siteInfo: site,
       };
     } else {
+      const site = bridgeRajaram?.site ?? {};
       return {
         id: "RAJARAM_BRIDGE",
-        name: "Rajaram K.T. Weir (Kasba Bawada)",
-        river: "Panchganga River",
+        name: site.site_name ?? "Rajaram K.T. Weir (Kasba Bawada)",
+        river: site.river_name ?? "Panchganga River",
         reach: "Kasba Bawada Barrage",
         rawPoints: RAJARAM_SURVEY_POINTS,
         bankLeftStation: 79.87,
         bankRightStation: 342.96,
-        warningStage: 542.73,
-        dangerStage: 543.33,
-        extremeStage: 544.33,
-        hflStage: 545.33,
+        alertStage: site.alert_stage_m ?? 533.20,
+        warningStage: site.warning_stage_m ?? 535.20,
+        dangerStage: site.danger_stage_m ?? 536.50,
+        extremeStage: (site.danger_stage_m ?? 536.50) + 1.0,
+        hflStage: site.hfl_m ?? 538.20,
         forecast: bridgeRajaram?.forecast ?? [],
-        siteInfo: bridgeRajaram?.site ?? {},
+        siteInfo: site,
       };
     }
   }, [selectedSite, bridgeShivaji, bridgeRajaram]);
@@ -270,55 +274,78 @@ export default function CrossSectionViewer({
   const alertBadge = useMemo(() => {
     const wse = currentForecast.stage_m;
     if (wse >= siteConfig.hflStage) {
-      return { label: "HFL EXCEEDED", bg: "bg-purple-950", text: "text-purple-300", border: "border-purple-600" };
+      return { label: "HFL EXCEEDED", bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200" };
     }
     if (wse >= siteConfig.extremeStage) {
-      return { label: "EXTREME FLOOD", bg: "bg-red-950", text: "text-red-300", border: "border-red-600" };
+      return { label: "EXTREME FLOOD", bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200" };
     }
     if (wse >= siteConfig.dangerStage) {
-      return { label: "DANGER LEVEL", bg: "bg-rose-950", text: "text-rose-300", border: "border-rose-600" };
+      return { label: "DANGER LEVEL", bg: "bg-red-50", text: "text-red-700", border: "border-red-200" };
     }
     if (wse >= siteConfig.warningStage) {
-      return { label: "WARNING LEVEL", bg: "bg-amber-950", text: "text-amber-300", border: "border-amber-600" };
+      return { label: "WARNING LEVEL", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" };
     }
-    return { label: "NORMAL STAGE", bg: "bg-emerald-950", text: "text-emerald-300", border: "border-emerald-600" };
+    if (wse >= (siteConfig.alertStage ?? siteConfig.warningStage - 2.0)) {
+      return { label: "ALERT STAGE", bg: "bg-yellow-50", text: "text-yellow-800", border: "border-yellow-200" };
+    }
+    return { label: "NORMAL STAGE", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" };
   }, [currentForecast.stage_m, siteConfig]);
 
+  // Projected Threshold Breach Timing
+  const arrivalInfo = useMemo(() => {
+    const fc = siteConfig.forecast;
+    const breached = fc.find((f: any) => f.alert_level && f.alert_level !== "NORMAL");
+    if (breached) {
+      return {
+        hasBreach: true,
+        text: `T+${breached.lead_hours}h (${new Date(breached.forecast_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} UTC)`,
+        level: breached.alert_level,
+      };
+    }
+    return {
+      hasBreach: false,
+      text: "No threshold breach projected in 90-hour forecast window",
+      level: "NORMAL",
+    };
+  }, [siteConfig.forecast]);
+
+  const hflSafetyMargin = siteConfig.hflStage - currentForecast.stage_m;
+
   return (
-    <div className="bg-white border border-gray-200 rounded shadow-sm overflow-hidden font-sans text-gray-800 mb-6">
-      {/* ── Top HEC-RAS Title Bar ───────────────────────────────────────────── */}
-      <div className="bg-gray-50 px-4 py-2.5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3">
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden font-sans text-gray-800 mb-6">
+      {/* ── Top HEC-RAS & Bridge Station Header ─────────────────────────────── */}
+      <div className="bg-gray-50 px-5 py-3.5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="flex items-center justify-center w-7 h-7 rounded bg-blue-50 text-blue-600 border border-blue-200 text-xs font-bold font-mono-code">
+          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 text-xs font-bold font-mono-code shadow-xs">
             2D
           </span>
           <div>
-            <div className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+            <div className="text-sm font-bold text-gray-900 flex items-center gap-2">
               <span>{siteConfig.name}</span>
-              <span className="text-[11px] font-normal text-gray-500 font-mono-code">
-                [XSec: {selectedSite === "SHIVAJI_BRIDGE" ? "Shivaji Ghat" : "Rajaram Barrage"}]
+              <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-mono-code">
+                {selectedSite === "SHIVAJI_BRIDGE" ? "Shivaji Ghat Reach" : "Kasba Bawada Barrage Reach"}
               </span>
             </div>
-            <div className="text-[11px] text-gray-500">
-              River: <span className="text-gray-700 font-medium">{siteConfig.river}</span> | Reach:{" "}
-              <span className="text-gray-700 font-medium">{siteConfig.reach}</span> | Source:{" "}
-              <span className="text-blue-600">Surveyed Geometry &amp; Rating</span>
+            <div className="text-[11px] text-gray-500 mt-0.5">
+              River Gauge Station · <span className="text-gray-700 font-semibold font-mono-code">{selectedSite === "SHIVAJI_BRIDGE" ? "16.7089°N, 74.2193°E" : "16.7362°N, 74.2359°E"}</span> | River:{" "}
+              <span className="text-gray-700 font-semibold">{siteConfig.river}</span> | Datum:{" "}
+              <span className="text-gray-700 font-semibold">MSL</span>
             </div>
           </div>
         </div>
 
-        {/* Site Switcher Toggle Buttons */}
-        <div className="flex items-center gap-2">
-          <div className="bg-gray-100 p-0.5 rounded border border-gray-200 flex items-center">
+        {/* Site Switcher Toggle Buttons & Live Status */}
+        <div className="flex items-center gap-3">
+          <div className="bg-gray-200/80 p-1 rounded-lg border border-gray-200 flex items-center shadow-inner">
             <button
               onClick={() => {
                 setSelectedSite("SHIVAJI_BRIDGE");
                 setSelectedHour(0);
               }}
-              className={`px-3 py-1.5 rounded text-xs font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                 selectedSite === "SHIVAJI_BRIDGE"
-                  ? "bg-white text-gray-800 shadow-sm border border-gray-200"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white text-gray-900 shadow-sm border border-gray-200"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               Shivaji Bridge
@@ -328,10 +355,10 @@ export default function CrossSectionViewer({
                 setSelectedSite("RAJARAM_BRIDGE");
                 setSelectedHour(0);
               }}
-              className={`px-3 py-1.5 rounded text-xs font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                 selectedSite === "RAJARAM_BRIDGE"
-                  ? "bg-white text-gray-800 shadow-sm border border-gray-200"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white text-gray-900 shadow-sm border border-gray-200"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               Rajaram Weir
@@ -339,54 +366,97 @@ export default function CrossSectionViewer({
           </div>
 
           <div
-            className={`px-3 py-1 rounded-md text-xs font-bold font-mono-code uppercase tracking-wider border ${alertBadge.bg} ${alertBadge.text} ${alertBadge.border}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono-code uppercase tracking-wider border shadow-xs ${alertBadge.bg} ${alertBadge.text} ${alertBadge.border}`}
           >
             ● {alertBadge.label}
           </div>
         </div>
       </div>
 
+      {/* ── Fused Bridge Flood Thresholds & Safety Clearance Banner ───────────── */}
+      <div className="bg-white px-5 py-3 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+        {/* 4 Standard Threshold Levels */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="px-2.5 py-1 bg-yellow-50 border border-yellow-200 rounded-md flex items-center gap-1.5">
+            <span className="text-[10px] font-bold text-yellow-800 uppercase">Alert</span>
+            <span className="font-extrabold text-yellow-900 font-mono-code">{siteConfig.alertStage.toFixed(2)}m</span>
+          </div>
+          <div className="px-2.5 py-1 bg-amber-50 border border-amber-200 rounded-md flex items-center gap-1.5">
+            <span className="text-[10px] font-bold text-amber-800 uppercase">Warning</span>
+            <span className="font-extrabold text-amber-900 font-mono-code">{siteConfig.warningStage.toFixed(2)}m</span>
+          </div>
+          <div className="px-2.5 py-1 bg-rose-50 border border-rose-200 rounded-md flex items-center gap-1.5">
+            <span className="text-[10px] font-bold text-rose-800 uppercase">Danger</span>
+            <span className="font-extrabold text-rose-900 font-mono-code">{siteConfig.dangerStage.toFixed(2)}m</span>
+          </div>
+          <div className="px-2.5 py-1 bg-purple-50 border border-purple-200 rounded-md flex items-center gap-1.5">
+            <span className="text-[10px] font-bold text-purple-800 uppercase">HFL</span>
+            <span className="font-extrabold text-purple-900 font-mono-code">{siteConfig.hflStage.toFixed(2)}m</span>
+          </div>
+        </div>
+
+        {/* HFL Safety Margin & Breach Timing */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-gray-50 border border-gray-200">
+            <span className="text-gray-500 font-medium">HFL Clearance:</span>
+            <span
+              className={`font-extrabold font-mono-code ${
+                hflSafetyMargin <= 0 ? "text-rose-600" : hflSafetyMargin <= 1.5 ? "text-amber-600" : "text-emerald-600"
+              }`}
+            >
+              {hflSafetyMargin <= 0 ? `+${Math.abs(hflSafetyMargin).toFixed(2)}m (BREACHED)` : `${hflSafetyMargin.toFixed(2)}m`}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 text-gray-600">
+            <span className="font-semibold text-gray-800">Threshold Timing:</span>
+            <span className={arrivalInfo.hasBreach ? "font-bold text-amber-700 font-mono-code" : "text-gray-500 font-mono-code"}>
+              {arrivalInfo.text}
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* ── Real-Time Hydraulic Telemetry Bar ──────────────────────────────── */}
-      <div className="bg-white px-4 py-2 border-b border-gray-200 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs font-mono-code">
-        <div className="bg-gray-50 p-2 rounded border border-gray-100">
-          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">Water Stage (WSE)</div>
-          <div className="text-base font-semibold text-blue-600">
+      <div className="bg-gray-50/70 px-5 py-2.5 border-b border-gray-200 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs font-mono-code">
+        <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
+          <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">Water Stage (WSE)</div>
+          <div className="text-base font-bold text-blue-600 mt-0.5">
             {currentForecast.stage_m.toFixed(2)} <span className="text-[11px] font-normal text-gray-400">m MSL</span>
           </div>
         </div>
-        <div className="bg-gray-50 p-2 rounded border border-gray-100">
-          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">River Discharge (Q)</div>
-          <div className="text-base font-semibold text-indigo-600">
+        <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
+          <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">River Discharge (Q)</div>
+          <div className="text-base font-bold text-indigo-600 mt-0.5">
             {currentForecast.discharge_m3s.toFixed(1)} <span className="text-[11px] font-normal text-gray-400">m³/s</span>
           </div>
         </div>
-        <div className="bg-gray-50 p-2 rounded border border-gray-100">
-          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">Max Water Depth</div>
-          <div className="text-base font-semibold text-cyan-600">
+        <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
+          <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">Max Water Depth</div>
+          <div className="text-base font-bold text-cyan-600 mt-0.5">
             {hydraulicStats.maxDepth.toFixed(2)} <span className="text-[11px] font-normal text-gray-400">m</span>
           </div>
         </div>
-        <div className="bg-gray-50 p-2 rounded border border-gray-100">
-          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">Top Surface Width</div>
-          <div className="text-base font-semibold text-teal-600">
+        <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
+          <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">Top Surface Width</div>
+          <div className="text-base font-bold text-teal-600 mt-0.5">
             {hydraulicStats.topWidth.toFixed(1)} <span className="text-[11px] font-normal text-gray-400">m</span>
           </div>
         </div>
-        <div className="bg-gray-50 p-2 rounded border border-gray-100">
-          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">Wetted Flow Area</div>
-          <div className="text-base font-semibold text-amber-600">
+        <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
+          <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">Wetted Flow Area</div>
+          <div className="text-base font-bold text-amber-600 mt-0.5">
             {hydraulicStats.wettedArea.toFixed(0)} <span className="text-[11px] font-normal text-gray-400">m²</span>
           </div>
         </div>
-        <div className="bg-gray-50 p-2 rounded border border-gray-100">
-          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">Warning Clearance</div>
+        <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
+          <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">Warning Clearance</div>
           <div
-            className={`text-base font-extrabold ${
-              hydraulicStats.freeboardWarning <= 0 ? "text-rose-400" : "text-emerald-400"
+            className={`text-base font-extrabold mt-0.5 ${
+              hydraulicStats.freeboardWarning <= 0 ? "text-rose-600" : "text-emerald-600"
             }`}
           >
             {hydraulicStats.freeboardWarning <= 0
-              ? `+${Math.abs(hydraulicStats.freeboardWarning).toFixed(2)}m (EXCEEDED)`
+              ? `+${Math.abs(hydraulicStats.freeboardWarning).toFixed(2)}m`
               : `-${hydraulicStats.freeboardWarning.toFixed(2)}m`}
           </div>
         </div>

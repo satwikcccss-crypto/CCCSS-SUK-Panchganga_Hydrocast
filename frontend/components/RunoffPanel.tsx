@@ -4,19 +4,10 @@
 import useSWR from "swr";
 import { api } from "@/lib/api";
 import HydrographChart from "@/components/charts/HydrographChart";
-import StageGauge from "@/components/StageGauge";
 import CrossSectionViewer from "@/components/CrossSectionViewer";
 
-const CARD = "bg-white border border-gray-200 rounded p-4";
+const CARD = "bg-white border border-gray-200 rounded-xl p-5 shadow-xs";
 const CARD_HEADER = "text-sm font-semibold text-gray-800 mb-4 flex items-center justify-between";
-
-const ALERT_BADGES: Record<string, { bg: string; text: string; border: string }> = {
-  NORMAL: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
-  ALERT: { bg: "bg-yellow-50", text: "text-yellow-800", border: "border-yellow-200" },
-  WARNING: { bg: "bg-amber-50", text: "text-amber-800", border: "border-amber-200" },
-  DANGER: { bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200" },
-  HFL_EXCEEDED: { bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200" },
-};
 
 function KpiCard({
   label,
@@ -54,129 +45,6 @@ function KpiCard({
   );
 }
 
-function BridgeCard({ siteId, summary }: { siteId: string; summary: any }) {
-  const { data: bData } = useSWR(`bridge-${siteId}`, () => api.bridgeStage(siteId), { refreshInterval: 60000 });
-
-  const site = bData?.site ?? {};
-  const forecast = bData?.forecast ?? [];
-  const curr = forecast[0] ?? {};
-  const level = (curr.alert_level ?? "NORMAL").toUpperCase();
-  const badgeStyle = ALERT_BADGES[level] ?? ALERT_BADGES.NORMAL;
-
-  const stageData = forecast.map((f: any, i: number) => ({
-    hour: i,
-    q: f.discharge_m3s ?? 0,
-    stage: f.stage_m ?? 0,
-  }));
-
-  const arrivalRow = forecast.find((f: any) => f.alert_level && f.alert_level !== "NORMAL");
-  const arrivalStr = arrivalRow
-    ? `T+${arrivalRow.lead_hours ?? "?"}h (${new Date(arrivalRow.forecast_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} UTC)`
-    : "No threshold breach projected in 90h window";
-
-  const isAlert = ["WARNING", "DANGER", "HFL_EXCEEDED"].includes(level);
-
-  return (
-    <div className={`${CARD} flex flex-col justify-between`}>
-      <div>
-        {/* Header */}
-        <div className="flex justify-between items-start mb-4 pb-3 border-b border-slate-100">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-              <h3 className="text-sm font-extrabold text-slate-900">{site.site_name ?? siteId}</h3>
-            </div>
-            <div className="text-xs text-slate-500 mt-0.5 font-medium">
-              River Gauge Station · {(site.latitude ?? 17.68).toFixed(4)}°N, {(site.longitude ?? 74.01).toFixed(4)}°E
-            </div>
-          </div>
-          <span
-            className={`px-3 py-1 text-xs font-bold uppercase rounded-md border tracking-wider ${badgeStyle.bg} ${badgeStyle.text} ${badgeStyle.border}`}
-          >
-            ● {level}
-          </span>
-        </div>
-
-        {/* Inner layout: Gauge + Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-          {/* SVG Gauge */}
-          <div className="md:col-span-4 flex justify-center">
-            <StageGauge
-              stage={curr.stage_m ?? 4.2}
-              alert={site.alert_stage_m ?? 3.5}
-              warning={site.warning_stage_m ?? 5.5}
-              danger={site.danger_stage_m ?? 6.8}
-              hfl={site.hfl_m ?? 8.5}
-            />
-          </div>
-
-          {/* Details & Hydrograph Chart */}
-          <div className="md:col-span-8 flex flex-col gap-3">
-            {/* Threshold matrix */}
-            <div className="grid grid-cols-4 gap-2 text-center text-xs">
-              <div className="p-2 bg-yellow-50/70 border border-yellow-200 rounded-lg">
-                <div className="text-[10px] font-bold text-yellow-800 uppercase">Alert</div>
-                <div className="font-extrabold text-yellow-900 font-mono-code">{site.alert_stage_m ?? 3.5}m</div>
-              </div>
-              <div className="p-2 bg-amber-50/70 border border-amber-200 rounded-lg">
-                <div className="text-[10px] font-bold text-amber-800 uppercase">Warning</div>
-                <div className="font-extrabold text-amber-900 font-mono-code">{site.warning_stage_m ?? 5.5}m</div>
-              </div>
-              <div className="p-2 bg-rose-50/70 border border-rose-200 rounded-lg">
-                <div className="text-[10px] font-bold text-rose-800 uppercase">Danger</div>
-                <div className="font-extrabold text-rose-900 font-mono-code">{site.danger_stage_m ?? 6.8}m</div>
-              </div>
-              <div className="p-2 bg-purple-50/70 border border-purple-200 rounded-lg">
-                <div className="text-[10px] font-bold text-purple-800 uppercase">HFL</div>
-                <div className="font-extrabold text-purple-900 font-mono-code">{site.hfl_m ?? 8.5}m</div>
-              </div>
-            </div>
-
-            {/* Current Stats */}
-            <div className="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs">
-              <div>
-                <div className="text-[10px] text-slate-500 font-medium">Discharge Q</div>
-                <div className="font-bold text-sky-700 font-mono-code">{(curr.discharge_m3s ?? 310).toFixed(0)} m³/s</div>
-              </div>
-              <div>
-                <div className="text-[10px] text-slate-500 font-medium">Stage Height</div>
-                <div className="font-bold text-slate-900 font-mono-code">{(curr.stage_m ?? 4.2).toFixed(2)} m</div>
-              </div>
-              <div>
-                <div className="text-[10px] text-slate-500 font-medium">HFL Safety Margin</div>
-                <div className="font-bold text-emerald-600 font-mono-code">
-                  {((site.hfl_m ?? 8.5) - (curr.stage_m ?? 4.2)).toFixed(2)} m
-                </div>
-              </div>
-            </div>
-
-            {/* Stage mini-chart */}
-            <div>
-              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                90-Hour Stage Time Series (Manning's Q→H)
-              </div>
-              <HydrographChart data={stageData} thresholds={{}} showStage height={105} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer / Flood arrival */}
-      <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-        <div className="text-slate-600 font-medium">
-          <span className="font-bold text-slate-800">Threshold Timing: </span>
-          <span className={isAlert ? "font-semibold text-amber-700 font-mono-code" : "text-slate-500 font-mono-code"}>
-            {arrivalStr}
-          </span>
-        </div>
-        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-          Bridge Telemetry
-        </span>
-      </div>
-    </div>
-  );
-}
-
 export default function RunoffPanel({ summary }: { summary: any }) {
   const { data: hgData } = useSWR("hydrograph", api.outletHydrograph, { refreshInterval: 60000 });
   const { data: bShivaji } = useSWR("bridge-SHIVAJI_BRIDGE", api.bridgeShivaji, { refreshInterval: 60000 });
@@ -197,11 +65,11 @@ export default function RunoffPanel({ summary }: { summary: any }) {
   return (
     <div className="flex flex-col gap-5 max-w-7xl mx-auto">
       {/* Top Title Banner */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-          <h1 className="text-base font-bold text-gray-900">
+            <h1 className="text-base font-bold text-gray-900">
               Hydrological Runoff Discharge &amp; Bridge Flood Stage Forecast
             </h1>
           </div>
@@ -282,14 +150,14 @@ export default function RunoffPanel({ summary }: { summary: any }) {
         </div>
       </div>
 
-      {/* Interactive 2D River Cross Section & Hydraulic Simulation (HEC-RAS Style) */}
+      {/* Unified Interactive 2D River Cross Section & Hydraulic Station Telemetry */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-            <span>🌊</span> Interactive 2D River Cross-Section &amp; Water Surface Simulation
+          <div className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-2">
+            <span>🌊</span> Downstream River Bridge Gauges &amp; 2D Cross-Section Simulation
           </div>
           <span className="text-[11px] font-semibold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
-            Survey Cross-Sections + Dynamic HEC-HMS Rating
+            Surveyed Geometry + Dynamic Manning Rating
           </span>
         </div>
 
@@ -298,17 +166,6 @@ export default function RunoffPanel({ summary }: { summary: any }) {
           bridgeRajaram={bRajaram}
           defaultSite="SHIVAJI_BRIDGE"
         />
-      </div>
-
-      {/* Bridge Stations Flood Forecast Cards */}
-      <div>
-        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-          Downstream River Bridge Monitoring Stations
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <BridgeCard siteId="SHIVAJI_BRIDGE" summary={summary} />
-          <BridgeCard siteId="RAJARAM_BRIDGE" summary={summary} />
-        </div>
       </div>
     </div>
   );
