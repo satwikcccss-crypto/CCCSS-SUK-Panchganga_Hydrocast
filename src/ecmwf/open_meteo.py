@@ -321,29 +321,43 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
 
     record_log("INFO", f"HEC-HMS 4.13 execution completed ({hms_result['status']}): Peak Discharge {peak_q} m³/s at T+{peak_h}h in {hms_result['runtime_seconds']}s")
 
+    # Fetch live ThingSpeak IoT telemetry for Shivaji Bridge (Ground Truth Observed Water Level)
+    shivaji_telemetry = fetch_shivaji_live_telemetry()
+    live_stage = shivaji_telemetry.get("stage_m", 532.60)
+    record_log("INFO", f"ThingSpeak Shivaji Live Ground Truth: Distance={shivaji_telemetry.get('raw_feet', 54.83):.2f} ft -> Water Level={live_stage:.2f} m MSL")
+
+    # Base hydraulic stage at hour 0 discharge
+    q0_shivaji = hydrograph[0]["discharge_m3s"]
+    base_stg_shivaji = convert_discharge_to_stage(q0_shivaji, "SHIVAJI_BRIDGE")
+
     # Bridge Stage Forecasts
     shivaji_forecast = []
     rajaram_forecast = []
 
     for h in range(90):
+        # Shivaji Bridge stage anchored directly to live_stage at T+0h
         q_shivaji = hydrograph[h]["discharge_m3s"]
-        stg_shivaji = convert_discharge_to_stage(q_shivaji, "SHIVAJI_BRIDGE")
+        calc_stg_s = convert_discharge_to_stage(q_shivaji, "SHIVAJI_BRIDGE")
+        stg_increment_s = max(0.0, calc_stg_s - base_stg_shivaji)
+        actual_stage_s = round(live_stage + stg_increment_s, 2)
+
         lvl_s = "NORMAL"
-        if stg_shivaji >= 545.33: lvl_s = "HFL_EXCEEDED"
-        elif stg_shivaji >= 544.00: lvl_s = "EXTREME"
-        elif stg_shivaji >= 543.30: lvl_s = "DANGER"
-        elif stg_shivaji >= 542.70: lvl_s = "WARNING"
-        elif stg_shivaji >= 542.10: lvl_s = "ALERT"
+        if actual_stage_s >= 545.33: lvl_s = "HFL_EXCEEDED"
+        elif actual_stage_s >= 544.00: lvl_s = "EXTREME"
+        elif actual_stage_s >= 543.30: lvl_s = "DANGER"
+        elif actual_stage_s >= 542.70: lvl_s = "WARNING"
+        elif actual_stage_s >= 542.10: lvl_s = "ALERT"
 
         shivaji_forecast.append({
             "forecast_time": (start_dt + timedelta(hours=h)).isoformat(),
             "lead_hours": h,
-            "stage_m": round(stg_shivaji, 2),
+            "stage_m": actual_stage_s,
             "discharge_m3s": round(q_shivaji, 1),
             "alert_level": lvl_s,
-            "is_above_danger": stg_shivaji >= 543.30,
+            "is_above_danger": actual_stage_s >= 543.30,
         })
 
+        # Rajaram K.T. Weir stage
         q_rajaram = hydrograph[h]["discharge_m3s"]
         stg_rajaram = convert_discharge_to_stage(q_rajaram, "RAJARAM_WEIR")
         lvl_r = "NORMAL"
@@ -361,31 +375,6 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "alert_level": lvl_r,
             "is_above_danger": stg_rajaram >= 543.30,
         })
-
-    # Hydrological Data Assimilation: Smooth Nudging from Observed T+0h to Forecast T+90h
-    shivaji_telemetry = fetch_shivaji_live_telemetry()
-    if shivaji_telemetry.get("stage_m") is not None and shivaji_telemetry["stage_m"] >= 535.0:
-        live_stage = shivaji_telemetry["stage_m"]
-        record_log("INFO", f"ThingSpeak Live Ultrasonic Telemetry: {shivaji_telemetry['raw_feet']:.2f} ft -> {live_stage:.2f} m MSL (Assimilation Enabled)")
-        delta_h = live_stage - shivaji_forecast[0]["stage_m"]
-        # Smoothly assimilate delta_h across forecast horizon with 18-hour decay window
-        for h in range(90):
-            weight = float(np.exp(-h / 18.0))
-            nudged = round(float(shivaji_forecast[h]["stage_m"] + delta_h * weight), 2)
-            shivaji_forecast[h]["stage_m"] = nudged
-            if nudged >= 545.33: lvl = "HFL_EXCEEDED"
-            elif nudged >= 544.00: lvl = "EXTREME"
-            elif nudged >= 543.30: lvl = "DANGER"
-            elif nudged >= 542.70: lvl = "WARNING"
-            elif nudged >= 542.10: lvl = "ALERT"
-            else: lvl = "NORMAL"
-            shivaji_forecast[h]["alert_level"] = lvl
-            shivaji_forecast[h]["is_above_danger"] = nudged >= 543.30
-    else:
-        # Physical baseline stage for Shivaji Bridge (~538.98m MSL at 850 m3/s)
-        live_stage = shivaji_forecast[0]["stage_m"]
-        shivaji_telemetry["stage_m"] = live_stage
-        shivaji_telemetry["raw_feet"] = round((549.35 - live_stage) / 0.3048, 2)
 
     bridge_shivaji = {
         "site": {

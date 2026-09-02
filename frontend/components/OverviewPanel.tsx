@@ -28,13 +28,17 @@ export default function OverviewPanel({
   const { data: ecmwf } = useSWR("ecmwf", api.ecmwfHyetograph, { refreshInterval: 60000 });
   const { data: stations } = useSWR("stations", api.stationSelection, { refreshInterval: 60000 });
 
+  const { data: bShivaji } = useSWR("bridge-SHIVAJI_BRIDGE", api.bridgeShivaji, { refreshInterval: 30000 });
+  const { data: bRajaram } = useSWR("bridge-RAJARAM_BRIDGE", api.bridgeRajaram, { refreshInterval: 30000 });
+
   const outlet = summary?.outlet;
   const noData = !status && !summary;
   const lastCycle = status?.current_cycle;
 
-  // Sensor definitions
-  const b0: any = summary?.bridges?.[0];
-  const b1: any = summary?.bridges?.[1];
+  // Dynamic Live Bridge Data
+  const bridgesAny: any = summary?.bridges;
+  const b0: any = bridgesAny?.shivaji ?? bridgesAny?.[0];
+  const b1: any = bridgesAny?.rajaram ?? bridgesAny?.[1];
 
   const shivajiSensor: GaugeSensor = {
     id: "SHIVAJI_BRIDGE",
@@ -43,23 +47,21 @@ export default function OverviewPanel({
     location: { lat: 16.7089, lng: 74.2193 },
     markerColor: "#0f4c81",
     dangerLevels: {
-      alert: b0?.alert_stage_m ?? 542.10,
-      warning: b0?.warning_stage_m ?? 542.70,
-      danger: b0?.danger_stage_m ?? 543.30,
-      hfl: b0?.hfl_m ?? 545.33,
+      alert: bShivaji?.site?.alert_stage_m ?? b0?.alert_stage_m ?? 542.10,
+      warning: bShivaji?.site?.warning_stage_m ?? b0?.warning_stage_m ?? 542.70,
+      danger: bShivaji?.site?.danger_stage_m ?? b0?.danger_stage_m ?? 543.30,
+      hfl: bShivaji?.site?.hfl_m ?? b0?.hfl_m ?? 545.33,
     },
   };
 
-  const shivajiLvl = b0?.current_stage_m ?? b0?.stage_m ?? 538.98;
-  const shivajiPeak = b0?.peak_stage_m ?? 539.54;
+  const shivajiLvl = bShivaji?.live_sensor?.stage_m ?? b0?.current_stage_m ?? b0?.stage_m ?? 532.60;
+  const shivajiPeak = b0?.peak_stage_m ?? (bShivaji?.forecast ? Math.max(...bShivaji.forecast.map((f: any) => f.stage_m)) : shivajiLvl);
   const shivajiData: GaugeData = {
     waterLevel: shivajiLvl,
     forecastLevel: shivajiPeak,
     forecastTime: "Peak T+83h",
     alertLevel: b0?.alert_level ?? "normal",
-    history: [
-      shivajiLvl - 0.08, shivajiLvl - 0.05, shivajiLvl - 0.03, shivajiLvl - 0.01, shivajiLvl, shivajiLvl
-    ],
+    history: bShivaji?.forecast ? bShivaji.forecast.slice(0, 8).map((f: any) => f.stage_m) : [shivajiLvl],
   };
 
   const rajaramSensor: GaugeSensor = {
@@ -69,23 +71,21 @@ export default function OverviewPanel({
     location: { lat: 16.7362, lng: 74.2359 },
     markerColor: "#0284c7",
     dangerLevels: {
-      alert: b1?.alert_stage_m ?? 541.50,
-      warning: b1?.warning_stage_m ?? 542.07,
-      danger: b1?.danger_stage_m ?? 543.30,
-      hfl: b1?.hfl_m ?? 545.33,
+      alert: bRajaram?.site?.alert_stage_m ?? b1?.alert_stage_m ?? 541.50,
+      warning: bRajaram?.site?.warning_stage_m ?? b1?.warning_stage_m ?? 542.07,
+      danger: bRajaram?.site?.danger_stage_m ?? b1?.danger_stage_m ?? 543.30,
+      hfl: bRajaram?.site?.hfl_m ?? b1?.hfl_m ?? 545.33,
     },
   };
 
-  const rajaramLvl = b1?.current_stage_m ?? b1?.stage_m ?? 539.42;
-  const rajaramPeak = b1?.peak_stage_m ?? 539.42;
+  const rajaramLvl = b1?.current_stage_m ?? b1?.stage_m ?? 538.86;
+  const rajaramPeak = b1?.peak_stage_m ?? (bRajaram?.forecast ? Math.max(...bRajaram.forecast.map((f: any) => f.stage_m)) : rajaramLvl);
   const rajaramData: GaugeData = {
     waterLevel: rajaramLvl,
     forecastLevel: rajaramPeak,
     forecastTime: "Peak T+83h",
     alertLevel: b1?.alert_level ?? "normal",
-    history: [
-      rajaramLvl - 0.12, rajaramLvl - 0.08, rajaramLvl - 0.05, rajaramLvl - 0.02, rajaramLvl, rajaramLvl
-    ],
+    history: bRajaram?.forecast ? bRajaram.forecast.slice(0, 8).map((f: any) => f.stage_m) : [rajaramLvl],
   };
 
   return (
