@@ -20,6 +20,8 @@ export interface GaugeSensor {
 
 export interface GaugeData {
   waterLevel: number;
+  forecastLevel?: number;
+  forecastTime?: string;
   alertLevel?: 'normal' | 'alert' | 'warning' | 'danger' | 'hfl_exceeded' | string;
   history?: Array<number | { timestamp: string; waterLevel: number }>;
 }
@@ -49,22 +51,30 @@ export const EngineeringGauge: React.FC<{
   noHeader?: boolean;
 }> = ({ sensor, data, onClick, noHeader = false }) => {
   const level = data?.waterLevel || 0;
+  const forecastLevel = data?.forecastLevel;
   const alertConfig = getAlertConfig(data?.alertLevel || 'normal');
   const color = alertConfig.color;
 
   const H = 400, W = 204, TX = 62, TW = 78, PADT = 30, PADB = 22;
-  const TR = TX + TW, UH = H - PADT - PADB, ZM = 2.4;
+  const TR = TX + TW, UH = H - PADT - PADB;
+  
+  // Use a zoom range that covers both current level and forecast peak
+  const maxRef = Math.max(level, forecastLevel ?? level, sensor.dangerLevels.alert - 1.0);
+  const minRef = Math.min(level, forecastLevel ?? level);
+  const ZM = Math.max(2.8, (maxRef - minRef) + 1.8);
 
-  const lo = level - ZM;
-  const hi = level + ZM;
+  const lo = Math.min(minRef - 1.0, level - 2.0);
+  const hi = lo + ZM * 2;
 
   const eY = (e: number) => PADT + UH * (1 - (e - lo) / (hi - lo));
   const wY = eY(level);
   const wH = H - PADB - wY;
 
+  const fcY = forecastLevel !== undefined && forecastLevel <= hi && forecastLevel >= lo ? eY(forecastLevel) : null;
   const wnY = sensor.dangerLevels.warning <= hi && sensor.dangerLevels.warning >= lo ? eY(sensor.dangerLevels.warning) : null;
   const dnY = sensor.dangerLevels.danger <= hi && sensor.dangerLevels.danger >= lo ? eY(sensor.dangerLevels.danger) : null;
-  
+  const alY = sensor.dangerLevels.alert <= hi && sensor.dangerLevels.alert >= lo ? eY(sensor.dangerLevels.alert) : null;
+
   const bands: React.ReactNode[] = [];
   let b = Math.floor(lo * 2) / 2;
   while (b < hi + 0.01) {
@@ -126,10 +136,17 @@ export const EngineeringGauge: React.FC<{
       onClick={onClick}
     >
       {!noHeader && (
-        <div className="flex items-center justify-between mb-4 flex-shrink-0">
+        <div className="flex items-center justify-between mb-3 flex-shrink-0">
           <div>
             <h4 className="text-xs font-bold text-slate-900 tracking-wider leading-tight">{sensor.name}</h4>
-            <span className="text-[9px] font-bold text-slate-400 font-mono">PNCHGN-RTDAS-RWL-{sensor.id.toUpperCase()}</span>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-[9px] font-bold text-slate-400 font-mono">MSL DATUM</span>
+              {data.forecastLevel && (
+                <span className="text-[9px] font-bold text-cyan-700 bg-cyan-50 px-1.5 py-0.2 rounded border border-cyan-200">
+                  Peak: {data.forecastLevel.toFixed(2)}m
+                </span>
+              )}
+            </div>
           </div>
           <div className="text-right">
             <div className="text-base font-black font-mono tracking-tighter" style={{ color: alertConfig.color }}>
@@ -173,24 +190,44 @@ export const EngineeringGauge: React.FC<{
             <path className="svg-water-wave" d={wp} fill={color} opacity=".5" />
           </g>
 
+          {/* Alert Level Line */}
+          {alY !== null && (
+            <g>
+              <line x1={TX} y1={alY.toFixed(1)} x2={TR} y2={alY.toFixed(1)} stroke="#eab308" strokeWidth="1.2" strokeDasharray="4,2" />
+              <text x={TR + 3} y={(alY + 3).toFixed(1)} fontSize="6" fontFamily="'JetBrains Mono', monospace" fill="#eab308" fontWeight="bold">ALT {sensor.dangerLevels.alert.toFixed(1)}m</text>
+            </g>
+          )}
+
+          {/* Warning Level Line */}
           {wnY !== null && (
             <g>
               <line x1={TX} y1={wnY.toFixed(1)} x2={TR} y2={wnY.toFixed(1)} stroke="#f97316" strokeWidth="1.5" strokeDasharray="6,3" />
-              <line x1={TR} y1={wnY.toFixed(1)} x2={TR + 15} y2={wnY.toFixed(1)} stroke="#f97316" strokeWidth="1.5" strokeDasharray="6,3" />
-              <text x={TR + 3} y={(wnY + 3.5).toFixed(1)} fontSize="6.5" fontFamily="'JetBrains Mono', monospace" fill="#f97316" fontWeight="bold" letterSpacing=".08em">WRN</text>
+              <text x={TR + 3} y={(wnY + 3).toFixed(1)} fontSize="6.5" fontFamily="'JetBrains Mono', monospace" fill="#f97316" fontWeight="bold">WRN {sensor.dangerLevels.warning.toFixed(2)}m</text>
             </g>
           )}
+
+          {/* Danger Level Line */}
           {dnY !== null && (
             <g>
               <line x1={TX} y1={dnY.toFixed(1)} x2={TR} y2={dnY.toFixed(1)} stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3,2" />
-              <line x1={TR} y1={dnY.toFixed(1)} x2={TR + 15} y2={dnY.toFixed(1)} stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3,2" />
-              <text x={TR + 3} y={(dnY + 3.5).toFixed(1)} fontSize="6.5" fontFamily="'JetBrains Mono', monospace" fill="#ef4444" fontWeight="bold" letterSpacing=".08em">DNG</text>
+              <text x={TR + 3} y={(dnY + 3).toFixed(1)} fontSize="6.5" fontFamily="'JetBrains Mono', monospace" fill="#ef4444" fontWeight="bold">DNG {sensor.dangerLevels.danger.toFixed(1)}m</text>
+            </g>
+          )}
+
+          {/* Forecast Peak Stage Marker */}
+          {fcY !== null && (
+            <g>
+              <line x1={TX} y1={fcY.toFixed(1)} x2={TR} y2={fcY.toFixed(1)} stroke="#0891b2" strokeWidth="2" strokeDasharray="3,2" />
+              <polygon points={`${TX - 2},${fcY.toFixed(1)} ${TX - 9},${(fcY - 4).toFixed(1)} ${TX - 9},${(fcY + 4).toFixed(1)}`} fill="#0891b2" />
+              <rect x={TX - 54} y={(fcY - 7).toFixed(1)} width="43" height="14" rx="2" fill="#0891b2" />
+              <text x={TX - 33} y={(fcY + 3).toFixed(1)} textAnchor="middle" fontSize="6.5" fontFamily="'JetBrains Mono', monospace" fontWeight="bold" fill="#ffffff">FCST {forecastLevel?.toFixed(2)}m</text>
             </g>
           )}
 
           <rect x={TX} y={PADT} width="3" height={UH} fill="#fff" opacity=".3" clipPath={`url(#cpTube_${sensor.id})`} />
           <rect x={TX} y={PADT} width={TW} height={UH} fill="none" stroke="#cbd5e1" strokeWidth="1.5" rx="1" />
 
+          {/* Current Level Badge */}
           <rect x={TX + 2} y={(bY - 17).toFixed(1)} width="62" height="18" rx="2" fill="#ffffff" stroke={color} strokeWidth="1.5" />
           <text x={TX + 33} y={(bY - 4.5).toFixed(1)} textAnchor="middle" fontSize="9.5" fontFamily="'JetBrains Mono', monospace" fontWeight="bold" fill={color} letterSpacing=".05em">{level.toFixed(2)} m</text>
 

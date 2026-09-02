@@ -13,7 +13,7 @@ ChartJS.register(
 
 interface HydrographProps {
   data: { hour: number; q: number; stage?: number }[];
-  thresholds?: { watch?: number; warning?: number; emergency?: number };
+  thresholds?: { alert?: number; warning?: number; danger?: number; hfl?: number; watch?: number; emergency?: number };
   showStage?: boolean;
   highlightPeak?: boolean;
   height?: number;
@@ -21,7 +21,7 @@ interface HydrographProps {
 
 export default function HydrographChart({
   data,
-  thresholds = { watch: 500, warning: 750, emergency: 1000 },
+  thresholds = { alert: 1800, warning: 2200, danger: 2800, hfl: 3800 },
   showStage = false,
   height = 240,
 }: HydrographProps) {
@@ -57,7 +57,7 @@ export default function HydrographChart({
 
   if (showStage) {
     datasets.push({
-      label: "Stage (m)",
+      label: "Stage (m MSL)",
       data: stgValues,
       borderColor: "#7C3AED", // Tailwind violet-600
       backgroundColor: "transparent",
@@ -72,9 +72,15 @@ export default function HydrographChart({
   }
 
   const annotations: any = {};
-  if (thresholds.watch) annotations.watch = hline(thresholds.watch, "#EAB308", "Watch");
-  if (thresholds.warning) annotations.warning = hline(thresholds.warning, "#F97316", "Warning");
-  if (thresholds.emergency) annotations.emergency = hline(thresholds.emergency, "#EF4444", "Danger");
+  const alertThresh = thresholds.alert || thresholds.watch;
+  const warnThresh = thresholds.warning;
+  const dangThresh = thresholds.danger || thresholds.emergency;
+  const hflThresh = thresholds.hfl;
+
+  if (alertThresh) annotations.alert = hline(alertThresh, "#EAB308", "Alert");
+  if (warnThresh) annotations.warning = hline(warnThresh, "#F97316", "Warning");
+  if (dangThresh) annotations.danger = hline(dangThresh, "#EF4444", "Danger");
+  if (hflThresh) annotations.hfl = hline(hflThresh, "#9333EA", "HFL");
 
   const options: any = {
     responsive: true,

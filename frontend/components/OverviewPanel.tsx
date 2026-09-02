@@ -33,6 +33,9 @@ export default function OverviewPanel({
   const lastCycle = status?.current_cycle;
 
   // Sensor definitions
+  const b0: any = summary?.bridges?.[0];
+  const b1: any = summary?.bridges?.[1];
+
   const shivajiSensor: GaugeSensor = {
     id: "SHIVAJI_BRIDGE",
     name: "Shivaji Bridge (Panchganga Ghat)",
@@ -40,18 +43,22 @@ export default function OverviewPanel({
     location: { lat: 16.7089, lng: 74.2193 },
     markerColor: "#0f4c81",
     dangerLevels: {
-      alert: summary?.bridges?.[0]?.alert_stage_m ?? 542.10,
-      warning: summary?.bridges?.[0]?.warning_stage_m ?? 542.70,
-      danger: summary?.bridges?.[0]?.danger_stage_m ?? 543.30,
-      hfl: summary?.bridges?.[0]?.hfl_m ?? 545.33,
+      alert: b0?.alert_stage_m ?? 542.10,
+      warning: b0?.warning_stage_m ?? 542.70,
+      danger: b0?.danger_stage_m ?? 543.30,
+      hfl: b0?.hfl_m ?? 545.33,
     },
   };
 
+  const shivajiLvl = b0?.current_stage_m ?? b0?.stage_m ?? 538.98;
+  const shivajiPeak = b0?.peak_stage_m ?? 539.54;
   const shivajiData: GaugeData = {
-    waterLevel: summary?.bridges?.[0]?.stage_m ?? 532.64,
-    alertLevel: summary?.bridges?.[0]?.alert_level ?? "normal",
+    waterLevel: shivajiLvl,
+    forecastLevel: shivajiPeak,
+    forecastTime: "Peak T+83h",
+    alertLevel: b0?.alert_level ?? "normal",
     history: [
-      532.60, 532.62, 532.63, 532.64, 532.64, 532.64
+      shivajiLvl - 0.08, shivajiLvl - 0.05, shivajiLvl - 0.03, shivajiLvl - 0.01, shivajiLvl, shivajiLvl
     ],
   };
 
@@ -62,18 +69,22 @@ export default function OverviewPanel({
     location: { lat: 16.7362, lng: 74.2359 },
     markerColor: "#0284c7",
     dangerLevels: {
-      alert: summary?.bridges?.[1]?.alert_stage_m ?? 541.50,
-      warning: summary?.bridges?.[1]?.warning_stage_m ?? 542.07,
-      danger: summary?.bridges?.[1]?.danger_stage_m ?? 543.30,
-      hfl: summary?.bridges?.[1]?.hfl_m ?? 545.33,
+      alert: b1?.alert_stage_m ?? 541.50,
+      warning: b1?.warning_stage_m ?? 542.07,
+      danger: b1?.danger_stage_m ?? 543.30,
+      hfl: b1?.hfl_m ?? 545.33,
     },
   };
 
+  const rajaramLvl = b1?.current_stage_m ?? b1?.stage_m ?? 539.42;
+  const rajaramPeak = b1?.peak_stage_m ?? 539.42;
   const rajaramData: GaugeData = {
-    waterLevel: summary?.bridges?.[1]?.stage_m ?? 539.42,
-    alertLevel: summary?.bridges?.[1]?.alert_level ?? "normal",
+    waterLevel: rajaramLvl,
+    forecastLevel: rajaramPeak,
+    forecastTime: "Peak T+83h",
+    alertLevel: b1?.alert_level ?? "normal",
     history: [
-      538.80, 538.90, 539.10, 539.25, 539.38, 539.42
+      rajaramLvl - 0.12, rajaramLvl - 0.08, rajaramLvl - 0.05, rajaramLvl - 0.02, rajaramLvl, rajaramLvl
     ],
   };
 

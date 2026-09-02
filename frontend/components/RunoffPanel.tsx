@@ -154,7 +154,7 @@ export default function RunoffPanel({ summary }: { summary: any }) {
         <div className="mt-2">
           <HydrographChart
             data={chartData}
-            thresholds={{ watch: 450, warning: 750, emergency: 1000 }}
+            thresholds={{ alert: 1800, warning: 2200, danger: 2800, hfl: 3800 }}
             showStage
             height={280}
           />
