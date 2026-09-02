@@ -77,6 +77,8 @@ jobs:
       - name: 1. Fetch Open-Meteo 90-hr Forecasts, Run Hydrological Cycle & Sync DB
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          THINGSPEAK_CHANNEL_ID: "3424513"
+          THINGSPEAK_API_KEY: "TSUKPZEUN1BXODUF"
         run: |
           python -m src.ecmwf.open_meteo
 
