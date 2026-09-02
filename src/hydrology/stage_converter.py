@@ -29,7 +29,7 @@ class CrossSection:
     longitude:      float
     n_main:         float = 0.035    # Manning's n — main channel
     n_flood:        float = 0.070    # Manning's n — floodplain
-    slope:          float = 0.00025  # bed slope m/m
+    slope:          float = 0.005858 # bed slope m/m (surveyed, Shivaji default)
     datum_m:        float = 0.0      # datum offset
     alert_stage_m:   float = 542.10
     warning_stage_m: float = 542.70
@@ -697,7 +697,7 @@ def load_cross_section_array(site_id: str, pts: np.ndarray, meta: dict) -> Cross
         longitude=meta["longitude"],
         n_main=meta.get("n_main", 0.035),
         n_flood=meta.get("n_flood", 0.070),
-        slope=meta.get("slope", 0.00025),
+        slope=meta.get("slope", 0.005858),
         datum_m=meta.get("datum_m", 0.0),
         alert_stage_m=meta["alert_stage_m"],
         warning_stage_m=meta["warning_stage_m"],
@@ -834,14 +834,14 @@ def store_rating_curve_db(conn, cs: CrossSection, rating_df: pd.DataFrame):
 def run_pipeline():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     
-    # 1. Shivaji Bridge
+    # 1. Shivaji Bridge (surveyed bed slope S₀ = 0.005858 m/m)
     cs_shivaji = load_cross_section_array("SHIVAJI_BRIDGE", SHIVAJI_SURVEY, {
         "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
         "district": "Kolhapur",
         "authority": "Kolhapur Municipal Corporation (KMC)",
         "latitude": 16.708917,
         "longitude": 74.219278,
-        "slope": 0.00025,
+        "slope": 0.005858,
         "n_main": 0.035,
         "alert_stage_m": 542.10,
         "warning_stage_m": 542.70,
@@ -850,17 +850,38 @@ def run_pipeline():
         "hfl_m": 545.33,
     })
     df_shivaji = build_rating_curve(cs_shivaji)
-    log.info("Shivaji Rating Curve: Stage %.2f-%.2f m | Q 0-%.1f m3/s", 
+    log.info("Shivaji Rating Curve (S₀=0.005858): Stage %.2f-%.2f m | Q 0-%.1f m3/s", 
              df_shivaji.stage_m.min(), df_shivaji.stage_m.max(), df_shivaji.q_m3s.max())
 
-    db_url = os.getenv("DATABASE_URL")
+    # 2. Rajaram K.T. Weir (surveyed bed slope S₀ = 0.002318 m/m)
+    #    Uses same cross-section geometry (pending independent survey) with its own hydraulic slope
+    cs_rajaram = load_cross_section_array("RAJARAM_BRIDGE", SHIVAJI_SURVEY, {
+        "name": "Rajaram K.T. Weir (Kasba Bawada)",
+        "district": "Kolhapur",
+        "authority": "Irrigation Department, Kolhapur",
+        "latitude": 16.6903,
+        "longitude": 74.2308,
+        "slope": 0.002318,
+        "n_main": 0.035,
+        "alert_stage_m": 541.50,
+        "warning_stage_m": 542.07,
+        "danger_stage_m": 543.30,
+        "extreme_stage_m": 544.00,
+        "hfl_m": 545.33,
+    })
+    df_rajaram = build_rating_curve(cs_rajaram)
+    log.info("Rajaram Rating Curve (S₀=0.002318): Stage %.2f-%.2f m | Q 0-%.1f m3/s", 
+             df_rajaram.stage_m.min(), df_rajaram.stage_m.max(), df_rajaram.q_m3s.max())
+
+    db_url = os.getenv("DATABASE_URL") or os.getenv("SUPABASE_DB_URL") or os.getenv("SUPABASE_DATABASE_URL")
     if db_url:
         try:
             import psycopg2
             conn = psycopg2.connect(db_url)
             store_rating_curve_db(conn, cs_shivaji, df_shivaji)
+            store_rating_curve_db(conn, cs_rajaram, df_rajaram)
             conn.close()
-            log.info("Database sync completed successfully!")
+            log.info("Database sync completed successfully for both bridge sites!")
         except Exception as e:
             log.error("Database sync failed: %s", e)
     else:
@@ -871,15 +892,14 @@ _SHIVAJI_RC_CACHE = None
 _RAJARAM_RC_CACHE = None
 
 def get_shivaji_rating_curve() -> pd.DataFrame:
+    """Build and cache Shivaji Bridge rating curve (S₀ = 0.005858 m/m)."""
     global _SHIVAJI_RC_CACHE
     if _SHIVAJI_RC_CACHE is None:
         cs = load_cross_section_array("SHIVAJI_BRIDGE", SHIVAJI_SURVEY, {
             "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
-            "district": "Kolhapur",
-            "authority": "Kolhapur Municipal Corporation (KMC)",
             "latitude": 16.708917,
             "longitude": 74.219278,
-            "slope": 0.00025,
+            "slope": 0.005858,
             "n_main": 0.035,
             "alert_stage_m": 542.10,
             "warning_stage_m": 542.70,
@@ -887,29 +907,66 @@ def get_shivaji_rating_curve() -> pd.DataFrame:
             "extreme_stage_m": 544.00,
             "hfl_m": 545.33,
         })
-        _SHIVAJI_RC_CACHE = build_rating_curve(cs)
+        _SHIVAJI_RC_CACHE = build_rating_curve(cs, n_points=200)
     return _SHIVAJI_RC_CACHE
 
 
+def get_rajaram_rating_curve() -> pd.DataFrame:
+    """Build and cache Rajaram K.T. Weir rating curve (S₀ = 0.002318 m/m).
+    
+    Uses the same cross-section geometry as Shivaji (pending independent survey)
+    but with the surveyed Rajaram bed slope. Since Q ∝ √S, the lower slope at
+    Rajaram produces lower discharge for the same stage — matching the physical
+    reality of the gentler gradient approaching the weir.
+    """
+    global _RAJARAM_RC_CACHE
+    if _RAJARAM_RC_CACHE is None:
+        cs = load_cross_section_array("RAJARAM_BRIDGE", SHIVAJI_SURVEY, {
+            "name": "Rajaram K.T. Weir (Kasba Bawada)",
+            "latitude": 16.6903,
+            "longitude": 74.2308,
+            "slope": 0.002318,
+            "n_main": 0.035,
+            "alert_stage_m": 541.50,
+            "warning_stage_m": 542.07,
+            "danger_stage_m": 543.30,
+            "extreme_stage_m": 544.00,
+            "hfl_m": 545.33,
+        })
+        _RAJARAM_RC_CACHE = build_rating_curve(cs, n_points=200)
+    return _RAJARAM_RC_CACHE
+
+
 def convert_discharge_to_stage_manning(q_m3s: float, site_id: str = "SHIVAJI_BRIDGE") -> float:
-    """Accurately calculates water stage elevation (m MSL) from Manning hydraulic cross-section."""
-    df_rc = get_shivaji_rating_curve()
+    """Convert discharge Q (m³/s) → stage (m MSL) using site-specific Manning rating curve.
+    
+    Each bridge site has its own independent rating curve built from surveyed slopes:
+      - Shivaji Bridge:   S₀ = 0.005858 m/m
+      - Rajaram K.T. Weir: S₀ = 0.002318 m/m
+    """
+    if site_id in ("RAJARAM_WEIR", "RAJARAM_BRIDGE"):
+        df_rc = get_rajaram_rating_curve()
+    else:
+        df_rc = get_shivaji_rating_curve()
     stage = discharge_to_stage(max(float(q_m3s), 0.01), df_rc)
-    if site_id == "RAJARAM_WEIR" or site_id == "RAJARAM_BRIDGE":
-        # Rajaram K.T. Weir hydraulic offset (~0.12m downstream water surface drop)
-        stage = stage - 0.12
     return float(round(stage, 2))
 
 
 def convert_stage_to_discharge_manning(stage_m: float, site_id: str = "SHIVAJI_BRIDGE") -> float:
-    """Accurately calculates river discharge (m3/s) corresponding to an observed water stage (m MSL)."""
-    df_rc = get_shivaji_rating_curve()
-    stg_val = float(stage_m)
-    if site_id == "RAJARAM_WEIR" or site_id == "RAJARAM_BRIDGE":
-        stg_val = stg_val + 0.12
-    q = stage_to_discharge(stg_val, df_rc)
+    """Convert stage (m MSL) → discharge Q (m³/s) using site-specific Manning rating curve.
+    
+    Each bridge site has its own independent rating curve built from surveyed slopes:
+      - Shivaji Bridge:   S₀ = 0.005858 m/m
+      - Rajaram K.T. Weir: S₀ = 0.002318 m/m
+    """
+    if site_id in ("RAJARAM_WEIR", "RAJARAM_BRIDGE"):
+        df_rc = get_rajaram_rating_curve()
+    else:
+        df_rc = get_shivaji_rating_curve()
+    q = stage_to_discharge(float(stage_m), df_rc)
     return float(round(max(0.1, q), 1))
 
 
 if __name__ == "__main__":
     run_pipeline()
+
