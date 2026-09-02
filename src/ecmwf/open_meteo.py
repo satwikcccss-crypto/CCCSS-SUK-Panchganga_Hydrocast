@@ -243,7 +243,6 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     record_log("INFO", f"Dynamic subbasin selector evaluated: S1→{governing_subbasin_gages.get('S1', {}).get('station_name')}, S2→{governing_subbasin_gages.get('S2', {}).get('station_name')}, S6→{governing_subbasin_gages.get('S6', {}).get('station_name')}")
 
     # Build subbasin hyetographs from governing stations
-    subbasin_stations_summary = []
     subbasins_list = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"]
     subbasin_arrays: Dict[str, np.ndarray] = {}
 
@@ -262,19 +261,41 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             })
         ecmwf_hyetographs[sub] = hyeto
 
-        subbasin_stations_summary.append({
-            "subbasin_id": sub,
-            "station_id": st_id,
-            "station_name": info.get("station_name", st_id),
-            "method": info.get("method", "MAX_RAIN_VOLUME"),
-            "candidate_count": info.get("candidate_count", 1),
-            "distance_km": info.get("distance_km", 0.0),
-            "cumulative_90h_mm": round(float(info.get("cumulative_mm", 0.0)), 2),
+    # Build comprehensive list and individual hyetographs for ALL 18 stations
+    all_stations_summary = []
+    gauge_hyetographs: Dict[str, list] = {}
+
+    for st in STATION_REGISTRY:
+        series = station_time_series.get(st.station_id, np.zeros(90))
+        tot_rain = station_cumulatives.get(st.station_id, 0.0)
+        is_gov = (governing_subbasin_gages.get(st.subbasin, {}).get("selected_station_id") == st.station_id)
+
+        st_hyeto = []
+        for h in range(90):
+            st_hyeto.append({
+                "hour": h,
+                "timestamp": (start_dt + timedelta(hours=h)).isoformat(),
+                "mm_hr": round(float(series[h]), 2),
+            })
+        gauge_hyetographs[st.station_id] = st_hyeto
+
+        all_stations_summary.append({
+            "station_id": st.station_id,
+            "station_name": st.name,
+            "subbasin_id": st.subbasin,
+            "lat": st.lat,
+            "lon": st.lon,
+            "elevation": f"{int(st.elevation_m)}m",
+            "cumulative_90h_mm": tot_rain,
+            "is_primary": st.is_primary,
+            "is_governing": is_gov,
+            "method": "GOVERNING (MAX_VOL)" if is_gov else "OBSERVED_POINT",
             "active_telemetry": True,
-            "lat": info.get("lat", 16.7),
-            "lon": info.get("lon", 74.2),
-            "elevation": "580m",
         })
+
+    # Also include subbasin keys in gauge_hyetographs for backwards compatibility
+    for sub, hyeto in ecmwf_hyetographs.items():
+        gauge_hyetographs[sub] = hyeto
 
     record_log("INFO", "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/")
 
@@ -331,8 +352,8 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         if stg_rajaram >= 545.33: lvl_r = "HFL_EXCEEDED"
         elif stg_rajaram >= 544.00: lvl_r = "EXTREME"
         elif stg_rajaram >= 543.30: lvl_r = "DANGER"
-        elif stg_rajaram >= 542.70: lvl_r = "WARNING"
-        elif stg_rajaram >= 542.10: lvl_r = "ALERT"
+        elif stg_rajaram >= 542.07: lvl_r = "WARNING"
+        elif stg_rajaram >= 541.50: lvl_r = "ALERT"
 
         rajaram_forecast.append({
             "forecast_time": (start_dt + timedelta(hours=h)).isoformat(),
@@ -371,8 +392,8 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "description": "Primary Panchganga flood & water-level monitoring barrage (Kasba Bawada). Alert thresholds referenced to WRD Maharashtra MSL datum.",
             "latitude": 16.736167,
             "longitude": 74.235889,
-            "alert_stage_m": 542.10,
-            "warning_stage_m": 542.70,
+            "alert_stage_m": 541.50,
+            "warning_stage_m": 542.07,
             "danger_stage_m": 543.30,
             "extreme_stage_m": 544.00,
             "hfl_m": 545.33,
@@ -383,13 +404,14 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
 
     peak_stg_shivaji = max([f["stage_m"] for f in shivaji_forecast])
     record_log("INFO", f"Hydraulic rating applied: Shivaji Bridge Peak {peak_stg_shivaji:.2f}m MSL")
-    if peak_stg_shivaji >= 542.73:
+    if peak_stg_shivaji >= 542.70:
         record_log("WARN", f"River Alert: Shivaji Bridge projected to reach WARNING stage ({peak_stg_shivaji:.2f}m) at T+{peak_h}h")
 
     pipeline_state = {
         "ecmwf": ecmwf_hyetographs,
-        "stations": subbasin_stations_summary,
-        "gauges": ecmwf_hyetographs,
+        "stations": all_stations_summary,
+        "subbasin_stations": [s for s in all_stations_summary if s.get("is_governing")],
+        "gauges": gauge_hyetographs,
         "hydrograph": hydrograph,
         "bridgeShivaji": bridge_shivaji,
         "bridgeRajaram": bridge_rajaram,

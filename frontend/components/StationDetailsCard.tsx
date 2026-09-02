@@ -53,6 +53,7 @@ export default function StationDetailsCard({
   // Fetch the real forecast hyetograph from the pipeline API
   const { data: ecmwf } = useSWR("ecmwf", api.ecmwfHyetograph, { refreshInterval: 60000 });
   const { data: stations } = useSWR("stations", api.stationSelection, { refreshInterval: 60000 });
+  const { data: gauges } = useSWR("gauges", api.gaugeHyetographs, { refreshInterval: 60000 });
 
   const meta = STATION_METADATA[stationId] || STATION_METADATA.KARANJPHEN;
 
@@ -62,9 +63,9 @@ export default function StationDetailsCard({
   );
   const realCumulative = stationRow?.cumulative_90h_mm ?? null;
 
-  // Get the real hyetograph for this station's subbasin
+  // Get the real hyetograph for this station (from gauges dictionary or subbasin)
   const subbasinKey = meta.subbasin;
-  const hyetograph = ecmwf?.[subbasinKey] ?? [];
+  const hyetograph = gauges?.[stationId] ?? gauges?.[meta.id] ?? ecmwf?.[subbasinKey] ?? [];
 
   const noData = hyetograph.length === 0;
 

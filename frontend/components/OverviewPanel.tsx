@@ -182,10 +182,10 @@ export default function OverviewPanel({
                   forecastTime="Peak"
                   minH={530}
                   maxH={545}
-                  warning={summary?.bridges?.[1]?.warning_stage_m ?? 542.70}
+                  warning={summary?.bridges?.[1]?.warning_stage_m ?? 542.07}
                   danger={summary?.bridges?.[1]?.danger_stage_m ?? 543.30}
                   hfl={summary?.bridges?.[1]?.hfl_m ?? 545.33}
-                  alert={summary?.bridges?.[1]?.alert_stage_m ?? 542.10}
+                  alert={summary?.bridges?.[1]?.alert_stage_m ?? 541.50}
                 />
               </div>
             </div>
