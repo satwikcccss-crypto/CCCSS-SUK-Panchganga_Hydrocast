@@ -326,7 +326,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     rajaram_forecast = []
 
     for h in range(90):
-        q_shivaji = hydrograph[h]["discharge_m3s"] * 0.76
+        q_shivaji = hydrograph[h]["discharge_m3s"]
         stg_shivaji = convert_discharge_to_stage(q_shivaji, "SHIVAJI_BRIDGE")
         lvl_s = "NORMAL"
         if stg_shivaji >= 545.33: lvl_s = "HFL_EXCEEDED"
@@ -344,7 +344,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "is_above_danger": stg_shivaji >= 543.30,
         })
 
-        q_rajaram = hydrograph[h]["discharge_m3s"] * 0.72
+        q_rajaram = hydrograph[h]["discharge_m3s"]
         stg_rajaram = convert_discharge_to_stage(q_rajaram, "RAJARAM_WEIR")
         lvl_r = "NORMAL"
         if stg_rajaram >= 545.33: lvl_r = "HFL_EXCEEDED"
@@ -411,11 +411,37 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     }
 
     peak_stg_shivaji = max([f["stage_m"] for f in shivaji_forecast])
-    record_log("INFO", f"Hydraulic rating applied: Shivaji Bridge Peak {peak_stg_shivaji:.2f}m MSL")
-    if peak_stg_shivaji >= 542.70:
-        record_log("WARN", f"River Alert: Shivaji Bridge projected to reach WARNING stage ({peak_stg_shivaji:.2f}m) at T+{peak_h}h")
+    peak_stg_rajaram = max([f["stage_m"] for f in rajaram_forecast])
+    total_vol_mcm = round(float(np.sum([h["discharge_m3s"] for h in hydrograph]) * 3600.0 / 1e6), 1)
+
+    summary_obj = {
+        "cycle_id": cycle_id,
+        "forecast_date": start_dt.strftime("%d %b %Y"),
+        "cycle_time": cycle_id.split("_")[-1] if "_" in cycle_id else "06z",
+        "peak_discharge_m3s": round(peak_q, 1),
+        "baseflow_m3s": round(baseflow, 1),
+        "lead_hours_to_peak": peak_h,
+        "peak_time": (start_dt + timedelta(hours=peak_h)).isoformat(),
+        "total_volume_mcm": total_vol_mcm,
+        "bridges": {
+            "shivaji": {
+                "site_name": "Chhatrapati Shivaji Maharaj Bridge",
+                "current_stage_m": shivaji_forecast[0]["stage_m"],
+                "peak_stage_m": round(peak_stg_shivaji, 2),
+                "alert_level": shivaji_forecast[0]["alert_level"],
+            },
+            "rajaram": {
+                "site_name": "Rajaram K.T. Weir",
+                "current_stage_m": rajaram_forecast[0]["stage_m"],
+                "peak_stage_m": round(peak_stg_rajaram, 2),
+                "alert_level": rajaram_forecast[0]["alert_level"],
+            }
+        }
+    }
 
     pipeline_state = {
+        "cycle_id": cycle_id,
+        "summary": summary_obj,
         "ecmwf": ecmwf_hyetographs,
         "stations": all_stations_summary,
         "subbasin_stations": [s for s in all_stations_summary if s.get("is_governing")],

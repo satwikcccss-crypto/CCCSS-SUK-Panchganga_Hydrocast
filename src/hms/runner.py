@@ -180,7 +180,7 @@ def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, n
     ia = 0.05 * s_ret
 
     # Saturated monsoon baseflow from 5 upstream reservoir catchments (Radhanagari, Tulsi, Kumbhi, Kasari, Bhogawati)
-    baseflow = float(os.getenv("MONSOON_BASEFLOW", "720.0"))
+    baseflow = float(os.getenv("MONSOON_BASEFLOW", "850.0"))
 
     # Calculate cumulative runoff
     cum_p = np.cumsum(p_basin)
