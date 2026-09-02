@@ -823,58 +823,62 @@ export default function CrossSectionViewer({
               Legend
             </text>
 
-            <text x="32" y="32" fill="#6b7280" fontSize="9">
+            <line x1="8" y1="30" x2="28" y2="30" stroke="#4b5563" strokeWidth="2" />
+            <text x="32" y="33" fill="#6b7280" fontSize="9">
               Ground Profile
             </text>
+
+            <line x1="8" y1="46" x2="28" y2="46" stroke="#9333ea" strokeWidth="1.5" strokeDasharray="2 2" />
+            <text x="32" y="49" fill="#6b7280" fontSize="9">
               Bank Station
             </text>
 
-            <line x1="8" y1="70" x2="28" y2="70" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="3 2" />
-            <text x="34" y="73" fill="#cbd5e1" fontSize="9" fontFamily="monospace">
-              Warning Level
+            <line x1="8" y1="62" x2="28" y2="62" stroke="#0284c7" strokeWidth="2" />
+            <text x="32" y="65" fill="#6b7280" fontSize="9">
+              Water Level
             </text>
           </g>
         </svg>
       </div>
 
       {/* ── 90-Hour Interactive Flood Simulation Slider & Animation Controls ── */}
-      <div className="bg-slate-950 p-4 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-gray-50 p-4 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Playback Controls */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setSelectedHour(0)}
-            className="p-2 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold"
+            className="p-2 rounded bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 text-xs font-bold shadow-sm"
             title="Jump to T+0h Start"
           >
             ⏮
           </button>
           <button
             onClick={() => setSelectedHour((prev) => Math.max(0, prev - 1))}
-            className="p-2 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold"
+            className="p-2 rounded bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 text-xs font-bold shadow-sm"
             title="Step Back 1h"
           >
             ◀
           </button>
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className={`px-3 py-1.5 rounded flex items-center gap-1.5 text-xs font-bold transition-all ${
+            className={`px-3 py-1.5 rounded flex items-center gap-1.5 text-xs font-bold transition-all shadow-sm ${
               isPlaying
-                ? "bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-900/30"
-                : "bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-900/30"
+                ? "bg-rose-600 hover:bg-rose-500 text-white"
+                : "bg-blue-600 hover:bg-blue-500 text-white"
             }`}
           >
             <span>{isPlaying ? "⏸ Pause" : "▶ Play Hydrograph Wave"}</span>
           </button>
           <button
             onClick={() => setSelectedHour((prev) => Math.min(89, prev + 1))}
-            className="p-2 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold"
+            className="p-2 rounded bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 text-xs font-bold shadow-sm"
             title="Step Forward 1h"
           >
             ▶
           </button>
           <button
             onClick={() => setSelectedHour(89)}
-            className="p-2 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold"
+            className="p-2 rounded bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 text-xs font-bold shadow-sm"
             title="Jump to T+90h End"
           >
             ⏭
@@ -883,7 +887,7 @@ export default function CrossSectionViewer({
 
         {/* Forecast Timeline Slider */}
         <div className="flex-1 w-full flex items-center gap-3">
-          <span className="text-xs font-bold text-sky-400 font-mono-code whitespace-nowrap min-w-[70px]">
+          <span className="text-xs font-bold text-blue-600 font-mono-code whitespace-nowrap min-w-[70px]">
             T+{selectedHour}h
           </span>
           <input
@@ -892,15 +896,15 @@ export default function CrossSectionViewer({
             max="89"
             value={selectedHour}
             onChange={(e) => setSelectedHour(parseInt(e.target.value))}
-            className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-500"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
           />
-          <span className="text-xs text-slate-400 font-mono-code whitespace-nowrap">T+90h</span>
+          <span className="text-xs text-gray-500 font-mono-code whitespace-nowrap">T+90h</span>
         </div>
 
         {/* Current Time Display */}
-        <div className="text-xs text-slate-400 font-mono-code whitespace-nowrap">
+        <div className="text-xs text-gray-500 font-mono-code whitespace-nowrap">
           Sim Time:{" "}
-          <span className="text-slate-200 font-bold">
+          <span className="text-gray-800 font-bold">
             {new Date(currentForecast.time).toLocaleDateString([], {
               month: "short",
               day: "numeric",

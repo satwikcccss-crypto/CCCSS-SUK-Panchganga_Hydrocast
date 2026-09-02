@@ -92,7 +92,7 @@ export const api = {
   },
   alerts: async () => {
     const data = await fetchDashboardData();
-    const alertsList = [];
+    const alertsList: any[] = [];
     if (!data) return alertsList;
     
     const shivajiPeak = data.bridgeShivaji?.forecast?.reduce((max: number, f: any) => Math.max(max, f.stage_m), 0) ?? 0;
