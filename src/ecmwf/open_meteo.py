@@ -21,6 +21,7 @@ import requests
 
 from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_gages
 from src.hms.runner import execute_hec_hms
+from src.sensors.thingspeak_gauge import fetch_shivaji_live_telemetry
 
 log = logging.getLogger(__name__)
 
@@ -364,15 +365,24 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "is_above_danger": stg_rajaram >= 543.30,
         })
 
+    # Fetch live ThingSpeak IoT telemetry for Shivaji Bridge
+    shivaji_telemetry = fetch_shivaji_live_telemetry()
+    if shivaji_telemetry.get("stage_m") is not None:
+        live_stage = shivaji_telemetry["stage_m"]
+        record_log("INFO", f"ThingSpeak Live Ultrasonic Telemetry: {shivaji_telemetry['raw_feet']:.2f} ft -> {live_stage:.2f} m MSL")
+        shivaji_forecast[0]["stage_m"] = live_stage
+
     bridge_shivaji = {
         "site": {
             "site_id": "SHIVAJI_BRIDGE",
             "site_name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
             "district": "Kolhapur",
             "authority": "Kolhapur Municipal Corporation (KMC) / WRD Maharashtra",
-            "description": "Ultrasonic radar sensor on the Chhatrapati Shivaji Maharaj Bridge over the Panchganga River, Kolhapur. Monitors real-time water stage at the primary urban crossing. Alert thresholds referenced to Rajaram KT Weir MSL datum (WRD Maharashtra).",
+            "description": "Ultrasonic radar sensor on the Chhatrapati Shivaji Maharaj Bridge over the Panchganga River, Kolhapur. Monitors real-time water stage at the primary urban crossing. Sensor Mount Elevation: 549.35m MSL.",
             "latitude": 16.708917,
             "longitude": 74.219278,
+            "sensor_elevation_msl": 549.35,
+            "sensor_type": "Ultrasonic Radar Level Transmitter (ThingSpeak IoT)",
             "alert_stage_m": 542.10,
             "warning_stage_m": 542.70,
             "danger_stage_m": 543.30,
@@ -381,6 +391,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "markerColor": "#0f4c81",
         },
         "forecast": shivaji_forecast,
+        "live_sensor": shivaji_telemetry,
     }
 
     bridge_rajaram = {

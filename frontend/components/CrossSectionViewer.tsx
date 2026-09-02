@@ -58,6 +58,7 @@ export default function CrossSectionViewer({
         dangerStage: site.danger_stage_m ?? 543.30,
         extremeStage: site.extreme_stage_m ?? 544.00,
         hflStage: site.hfl_m ?? 545.33,
+        sensorDeckElevation: 549.35,
         forecast: bridgeShivaji?.forecast ?? [],
         siteInfo: site,
       };
