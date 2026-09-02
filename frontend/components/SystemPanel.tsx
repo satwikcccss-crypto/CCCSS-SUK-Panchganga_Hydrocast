@@ -12,8 +12,8 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-const CARD = "bg-white border border-slate-200 rounded-xl p-5 shadow-xs transition-shadow hover:shadow-md";
-const CARD_HEADER = "text-xs font-bold tracking-wider text-slate-700 uppercase flex items-center justify-between mb-3.5";
+const CARD = "bg-white border border-gray-200 rounded p-4";
+const CARD_HEADER = "text-sm font-semibold text-gray-800 mb-4 flex items-center justify-between";
 
 const STEP_STYLES: Record<string, { icon: string; bg: string; text: string; border: string; spin?: boolean }> = {
   success: { icon: "✓", bg: "bg-emerald-50", text: "text-emerald-800", border: "border-emerald-200" },
@@ -135,11 +135,11 @@ export default function SystemPanel({ pipeline }: { pipeline: any }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-purple-600" />
-            <h1 className="text-base font-extrabold tracking-tight text-slate-900">
+          <h1 className="text-base font-bold text-gray-900">
               Panchganga Hydrological Pipeline &amp; System Telemetry
             </h1>
           </div>
-          <p className="text-xs text-slate-600 mt-1 font-medium">
+          <p className="text-xs text-gray-500 mt-1 font-medium">
             12-Stage Automated Pipeline · Dynamic Station Selector · HEC-HMS Automation RJKT · Stage-Discharge Rating
           </p>
         </div>
@@ -186,7 +186,7 @@ export default function SystemPanel({ pipeline }: { pipeline: any }) {
         {/* Pipeline Step Log */}
         <div className={`lg:col-span-7 ${CARD}`}>
           <div className={CARD_HEADER}>
-            <span className="flex items-center gap-1.5 font-bold text-slate-800">
+            <span className="flex items-center gap-1.5 font-semibold text-gray-800">
               <span>⚙</span> 12-Step Execution Pipeline (Latest Cycle)
             </span>
             <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
@@ -231,7 +231,7 @@ export default function SystemPanel({ pipeline }: { pipeline: any }) {
         {/* Data Source Telemetry */}
         <div className={`lg:col-span-5 ${CARD}`}>
           <div className={CARD_HEADER}>
-            <span className="flex items-center gap-1.5 font-bold text-slate-800">
+            <span className="flex items-center gap-1.5 font-semibold text-gray-800">
               <span>📡</span> Data Source Health &amp; Subbasin Feeds
             </span>
             <span className="text-[11px] font-semibold text-slate-500">7 Active Components</span>
@@ -277,7 +277,7 @@ export default function SystemPanel({ pipeline }: { pipeline: any }) {
       {/* Cycle Duration Bar Chart */}
       <div className={CARD}>
         <div className={CARD_HEADER}>
-          <span className="flex items-center gap-1.5 font-bold text-slate-800">
+          <span className="flex items-center gap-1.5 font-semibold text-gray-800">
             <span>⏱</span> Historical Execution Performance (Last 48 Forecast Cycles)
           </span>
           <span className="text-[11px] font-semibold text-slate-600">60-Second SLA Limit</span>
@@ -290,7 +290,7 @@ export default function SystemPanel({ pipeline }: { pipeline: any }) {
       {/* Live System Activity Log Viewer */}
       <div className={CARD}>
         <div className={CARD_HEADER}>
-          <span className="flex items-center gap-1.5 font-bold text-slate-800">
+          <span className="flex items-center gap-1.5 font-semibold text-gray-800">
             <span>📜</span> Panchganga Hydrological Pipeline Activity Log
           </span>
           <span className="text-[11px] font-mono-code text-slate-500">Live Simulation Log Stream</span>

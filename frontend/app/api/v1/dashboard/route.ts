@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { convertDischargeToStage } from "../../../../lib/hydraulics";
 
 // 18 Panchganga Stations
 const STATIONS = [
@@ -24,13 +25,6 @@ const STATIONS = [
   { id: "KASABA_WALAWE", name: "Kasaba Walawe", subbasin: "S9", lat: 16.41021, lon: 73.9971822, elevation: "615m", type: "Alternate" },
 ];
 
-function convertDischargeToStage(q: number, site: string): number {
-  if (site === "SHIVAJI_BRIDGE") {
-    return 539.20 + 0.165 * Math.pow(Math.max(q, 1.0), 0.52);
-  } else {
-    return 531.50 + 0.145 * Math.pow(Math.max(q, 1.0), 0.50);
-  }
-}
 
 export async function GET() {
   try {

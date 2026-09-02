@@ -47,10 +47,12 @@ def find_hec_hms() -> Tuple[Optional[Path], str]:
                 return cand, "Custom Path"
 
     candidates = [
-        # Windows
+        # Windows Installed Path
+        (Path(r"C:\Program Files\HEC\HEC-HMS\4.13\HEC-HMS.exe"), "4.13 (C:\\Program Files\\HEC\\HEC-HMS\\4.13)"),
+        (Path(r"C:\Program Files\HEC\HEC-HMS\4.13\hec-hms.cmd"), "4.13 (C:\\Program Files\\HEC\\HEC-HMS\\4.13 cmd)"),
         (Path(r"C:\Program Files\HEC\HEC-HMS-4.13\HEC-HMS.exe"), "4.13 (Windows)"),
         (Path(r"C:\HEC\HEC-HMS-4.13\HEC-HMS.exe"), "4.13 (Windows C:\\HEC)"),
-        (Path(r"C:\Program Files\HEC\HEC-HMS-4.13\bin\HEC-HMS.exe"), "4.13 (Windows bin)"),
+        (Path(r"C:\HEC\HEC-HMS\4.13\HEC-HMS.exe"), "4.13 (Windows C:\\HEC)"),
         (Path(r"C:\Program Files\HEC\HEC-HMS-4.12\HEC-HMS.exe"), "4.12 (Windows)"),
         (Path(r"C:\HEC\HEC-HMS-4.12\HEC-HMS.exe"), "4.12 (Windows C:\\HEC)"),
         (Path(r"C:\Program Files\HEC\HEC-HMS-4.11\HEC-HMS.exe"), "4.11 (Windows)"),

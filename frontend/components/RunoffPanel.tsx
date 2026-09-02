@@ -7,8 +7,8 @@ import HydrographChart from "@/components/charts/HydrographChart";
 import StageGauge from "@/components/StageGauge";
 import CrossSectionViewer from "@/components/CrossSectionViewer";
 
-const CARD = "bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs transition-shadow hover:shadow-md";
-const CARD_HEADER = "text-xs font-bold tracking-wider text-slate-500 uppercase flex items-center justify-between mb-3";
+const CARD = "bg-white border border-gray-200 rounded p-4";
+const CARD_HEADER = "text-sm font-semibold text-gray-800 mb-4 flex items-center justify-between";
 
 const ALERT_BADGES: Record<string, { bg: string; text: string; border: string }> = {
   NORMAL: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
@@ -35,7 +35,7 @@ function KpiCard({
 }) {
   return (
     <div className={CARD}>
-      <div className="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+      <div className="flex items-center justify-between text-xs font-bold text-gray-500 uppercase tracking-wider">
         <span>{label}</span>
         {badge && (
           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
@@ -47,9 +47,9 @@ function KpiCard({
         <span className="text-3xl font-extrabold font-mono-code" style={{ color: color || "#0F172A" }}>
           {value}
         </span>
-        {unit && <span className="text-sm font-bold text-slate-500 ml-1.5">{unit}</span>}
+        {unit && <span className="text-sm font-bold text-gray-500 ml-1.5">{unit}</span>}
       </div>
-      {subtext && <div className="mt-2 text-xs text-slate-500 font-medium">{subtext}</div>}
+      {subtext && <div className="mt-2 text-xs text-gray-500 font-medium">{subtext}</div>}
     </div>
   );
 }
@@ -201,11 +201,11 @@ export default function RunoffPanel({ summary }: { summary: any }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-            <h1 className="text-base font-extrabold tracking-tight text-slate-900">
+          <h1 className="text-base font-bold text-gray-900">
               Hydrological Runoff Discharge &amp; Bridge Flood Stage Forecast
             </h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1 font-medium">
+          <p className="text-xs text-gray-500 mt-1 font-medium">
             HEC-HMS 4.13 Simulation · SCS-CN Loss Method · Muskingum Channel Routing · 2D Surveyed Hydraulic Rating
           </p>
         </div>
@@ -263,7 +263,7 @@ export default function RunoffPanel({ summary }: { summary: any }) {
       {/* Main Outlet Hydrograph */}
       <div className={CARD}>
         <div className={CARD_HEADER}>
-          <span className="flex items-center gap-1.5 font-bold text-slate-800">
+          <span className="flex items-center gap-1.5 font-semibold text-gray-800">
             <span>📈</span> Sink Node (J_Outlet) Discharge &amp; Flood Stage Hydrograph
           </span>
           <div className="flex items-center gap-2">

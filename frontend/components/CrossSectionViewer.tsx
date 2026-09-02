@@ -285,40 +285,40 @@ export default function CrossSectionViewer({
   }, [currentForecast.stage_m, siteConfig]);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden font-sans text-slate-100 mb-6">
+    <div className="bg-white border border-gray-200 rounded shadow-sm overflow-hidden font-sans text-gray-800 mb-6">
       {/* ── Top HEC-RAS Title Bar ───────────────────────────────────────────── */}
-      <div className="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-gray-50 px-4 py-2.5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="flex items-center justify-center w-7 h-7 rounded bg-sky-500/20 text-sky-400 border border-sky-500/40 text-xs font-bold font-mono-code">
+          <span className="flex items-center justify-center w-7 h-7 rounded bg-blue-50 text-blue-600 border border-blue-200 text-xs font-bold font-mono-code">
             2D
           </span>
           <div>
-            <div className="text-sm font-extrabold tracking-wide text-slate-100 flex items-center gap-2">
+            <div className="text-sm font-semibold text-gray-800 flex items-center gap-2">
               <span>{siteConfig.name}</span>
-              <span className="text-[11px] font-normal text-slate-400 font-mono-code">
+              <span className="text-[11px] font-normal text-gray-500 font-mono-code">
                 [XSec: {selectedSite === "SHIVAJI_BRIDGE" ? "Shivaji Ghat" : "Rajaram Barrage"}]
               </span>
             </div>
-            <div className="text-[11px] text-slate-400">
-              River: <span className="text-slate-300 font-semibold">{siteConfig.river}</span> | Reach:{" "}
-              <span className="text-slate-300 font-semibold">{siteConfig.reach}</span> | Source:{" "}
-              <span className="text-sky-400">Surveyed Geometry &amp; HEC-HMS Rating</span>
+            <div className="text-[11px] text-gray-500">
+              River: <span className="text-gray-700 font-medium">{siteConfig.river}</span> | Reach:{" "}
+              <span className="text-gray-700 font-medium">{siteConfig.reach}</span> | Source:{" "}
+              <span className="text-blue-600">Surveyed Geometry &amp; Rating</span>
             </div>
           </div>
         </div>
 
         {/* Site Switcher Toggle Buttons */}
         <div className="flex items-center gap-2">
-          <div className="bg-slate-900 p-0.5 rounded-lg border border-slate-800 flex items-center">
+          <div className="bg-gray-100 p-0.5 rounded border border-gray-200 flex items-center">
             <button
               onClick={() => {
                 setSelectedSite("SHIVAJI_BRIDGE");
                 setSelectedHour(0);
               }}
-              className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-all ${
                 selectedSite === "SHIVAJI_BRIDGE"
-                  ? "bg-sky-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-white text-gray-800 shadow-sm border border-gray-200"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               Shivaji Bridge
@@ -328,10 +328,10 @@ export default function CrossSectionViewer({
                 setSelectedSite("RAJARAM_BRIDGE");
                 setSelectedHour(0);
               }}
-              className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-all ${
                 selectedSite === "RAJARAM_BRIDGE"
-                  ? "bg-sky-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-white text-gray-800 shadow-sm border border-gray-200"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               Rajaram Weir
@@ -347,39 +347,39 @@ export default function CrossSectionViewer({
       </div>
 
       {/* ── Real-Time Hydraulic Telemetry Bar ──────────────────────────────── */}
-      <div className="bg-slate-900/90 px-4 py-2 border-b border-slate-800/80 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs font-mono-code">
-        <div className="bg-slate-950/60 p-2 rounded border border-slate-800">
-          <div className="text-[10px] text-slate-400 font-sans font-medium uppercase">Water Stage (WSE)</div>
-          <div className="text-base font-extrabold text-sky-400">
-            {currentForecast.stage_m.toFixed(2)} <span className="text-[11px] font-normal text-slate-400">m MSL</span>
+      <div className="bg-white px-4 py-2 border-b border-gray-200 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs font-mono-code">
+        <div className="bg-gray-50 p-2 rounded border border-gray-100">
+          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">Water Stage (WSE)</div>
+          <div className="text-base font-semibold text-blue-600">
+            {currentForecast.stage_m.toFixed(2)} <span className="text-[11px] font-normal text-gray-400">m MSL</span>
           </div>
         </div>
-        <div className="bg-slate-950/60 p-2 rounded border border-slate-800">
-          <div className="text-[10px] text-slate-400 font-sans font-medium uppercase">River Discharge (Q)</div>
-          <div className="text-base font-extrabold text-indigo-400">
-            {currentForecast.discharge_m3s.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">m³/s</span>
+        <div className="bg-gray-50 p-2 rounded border border-gray-100">
+          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">River Discharge (Q)</div>
+          <div className="text-base font-semibold text-indigo-600">
+            {currentForecast.discharge_m3s.toFixed(1)} <span className="text-[11px] font-normal text-gray-400">m³/s</span>
           </div>
         </div>
-        <div className="bg-slate-950/60 p-2 rounded border border-slate-800">
-          <div className="text-[10px] text-slate-400 font-sans font-medium uppercase">Max Water Depth</div>
-          <div className="text-base font-extrabold text-cyan-300">
-            {hydraulicStats.maxDepth.toFixed(2)} <span className="text-[11px] font-normal text-slate-400">m</span>
+        <div className="bg-gray-50 p-2 rounded border border-gray-100">
+          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">Max Water Depth</div>
+          <div className="text-base font-semibold text-cyan-600">
+            {hydraulicStats.maxDepth.toFixed(2)} <span className="text-[11px] font-normal text-gray-400">m</span>
           </div>
         </div>
-        <div className="bg-slate-950/60 p-2 rounded border border-slate-800">
-          <div className="text-[10px] text-slate-400 font-sans font-medium uppercase">Top Surface Width</div>
-          <div className="text-base font-extrabold text-teal-300">
-            {hydraulicStats.topWidth.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">m</span>
+        <div className="bg-gray-50 p-2 rounded border border-gray-100">
+          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">Top Surface Width</div>
+          <div className="text-base font-semibold text-teal-600">
+            {hydraulicStats.topWidth.toFixed(1)} <span className="text-[11px] font-normal text-gray-400">m</span>
           </div>
         </div>
-        <div className="bg-slate-950/60 p-2 rounded border border-slate-800">
-          <div className="text-[10px] text-slate-400 font-sans font-medium uppercase">Wetted Flow Area</div>
-          <div className="text-base font-extrabold text-amber-300">
-            {hydraulicStats.wettedArea.toFixed(0)} <span className="text-[11px] font-normal text-slate-400">m²</span>
+        <div className="bg-gray-50 p-2 rounded border border-gray-100">
+          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">Wetted Flow Area</div>
+          <div className="text-base font-semibold text-amber-600">
+            {hydraulicStats.wettedArea.toFixed(0)} <span className="text-[11px] font-normal text-gray-400">m²</span>
           </div>
         </div>
-        <div className="bg-slate-950/60 p-2 rounded border border-slate-800">
-          <div className="text-[10px] text-slate-400 font-sans font-medium uppercase">Warning Clearance</div>
+        <div className="bg-gray-50 p-2 rounded border border-gray-100">
+          <div className="text-[10px] text-gray-500 font-sans font-medium uppercase">Warning Clearance</div>
           <div
             className={`text-base font-extrabold ${
               hydraulicStats.freeboardWarning <= 0 ? "text-rose-400" : "text-emerald-400"
@@ -393,10 +393,10 @@ export default function CrossSectionViewer({
       </div>
 
       {/* ── Interactive 2D Cross Section SVG Canvas ────────────────────────── */}
-      <div className="p-4 bg-slate-950 relative">
+      <div className="p-4 bg-gray-50 relative">
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          className="w-full h-auto max-h-[380px] select-none"
+          className="w-full h-auto max-h-[380px] select-none touch-none"
           onMouseMove={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
             const mouseX = ((e.clientX - rect.left) / rect.width) * svgWidth;
@@ -423,25 +423,51 @@ export default function CrossSectionViewer({
               setHoverPt(null);
             }
           }}
+          onTouchMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const touch = e.touches[0];
+            const mouseX = ((touch.clientX - rect.left) / rect.width) * svgWidth;
+            const mouseY = ((touch.clientY - rect.top) / rect.height) * svgHeight;
+            if (mouseX >= pad.left && mouseX <= svgWidth - pad.right && mouseY >= pad.top && mouseY <= svgHeight - pad.bottom) {
+              const st = fromSvgX(mouseX);
+              let closest = crossSectionPoints[0];
+              let minDist = 9999;
+              for (const p of crossSectionPoints) {
+                const dist = Math.abs(p.station - st);
+                if (dist < minDist) {
+                  minDist = dist;
+                  closest = p;
+                }
+              }
+              setHoverPt({
+                x: mouseX,
+                y: mouseY,
+                station: closest?.station ?? st,
+                elevation: closest?.elevation ?? bounds.minY,
+              });
+            } else {
+              setHoverPt(null);
+            }
+          }}
           onMouseLeave={() => setHoverPt(null)}
+          onTouchEnd={() => setHoverPt(null)}
         >
           <defs>
             {/* Water Linear Gradient */}
             <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.85" />
-              <stop offset="60%" stopColor="#0284c7" stopOpacity="0.90" />
-              <stop offset="100%" stopColor="#0369a1" stopOpacity="0.95" />
+              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="#0284c7" stopOpacity="0.9" />
             </linearGradient>
 
             {/* Subsurface Soil Gradient */}
             <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1e293b" stopOpacity="1" />
-              <stop offset="100%" stopColor="#0f172a" stopOpacity="1" />
+              <stop offset="0%" stopColor="#e5e7eb" stopOpacity="1" />
+              <stop offset="100%" stopColor="#d1d5db" stopOpacity="1" />
             </linearGradient>
 
             {/* Riverbed Hatch Pattern */}
             <pattern id="bedHatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <line x1="0" y1="0" x2="0" y2="8" stroke="#334155" strokeWidth="1" strokeOpacity="0.6" />
+              <line x1="0" y1="0" x2="0" y2="8" stroke="#9ca3af" strokeWidth="1" strokeOpacity="0.5" />
             </pattern>
           </defs>
 
@@ -456,7 +482,7 @@ export default function CrossSectionViewer({
                   y1={yPos}
                   x2={svgWidth - pad.right}
                   y2={yPos}
-                  stroke="#1e293b"
+                  stroke="#d1d5db"
                   strokeWidth="1"
                   strokeDasharray="3 3"
                 />
@@ -464,7 +490,7 @@ export default function CrossSectionViewer({
                   x={pad.left - 8}
                   y={yPos + 4}
                   textAnchor="end"
-                  fill="#64748b"
+                  fill="#6b7280"
                   fontSize="10"
                   fontFamily="monospace"
                 >
@@ -485,7 +511,7 @@ export default function CrossSectionViewer({
                   y1={pad.top}
                   x2={xPos}
                   y2={svgHeight - pad.bottom}
-                  stroke="#1e293b"
+                  stroke="#e5e7eb"
                   strokeWidth="1"
                   strokeDasharray="3 3"
                 />
@@ -493,7 +519,7 @@ export default function CrossSectionViewer({
                   x={xPos}
                   y={svgHeight - pad.bottom + 16}
                   textAnchor="middle"
-                  fill="#64748b"
+                  fill="#6b7280"
                   fontSize="10"
                   fontFamily="monospace"
                 >
@@ -523,7 +549,7 @@ export default function CrossSectionViewer({
             <path
               d={groundPathD}
               fill="none"
-              stroke="#94a3b8"
+              stroke="#6b7280"
               strokeWidth="2.5"
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -541,8 +567,8 @@ export default function CrossSectionViewer({
                 y={py - 2}
                 width="4"
                 height="4"
-                fill="#0f172a"
-                stroke="#cbd5e1"
+                fill="#ffffff"
+                stroke="#9ca3af"
                 strokeWidth="1"
               />
             );
@@ -783,34 +809,23 @@ export default function CrossSectionViewer({
             </g>
           )}
 
-          {/* Floating HEC-RAS Legend Box */}
           <g transform={`translate(${svgWidth - pad.right - 145}, ${pad.top + 8})`}>
             <rect
               width="140"
               height="80"
               rx="4"
-              fill="#020617"
-              stroke="#334155"
+              fill="#ffffff"
+              stroke="#e5e7eb"
               strokeWidth="1"
-              opacity="0.92"
+              opacity="0.95"
             />
-            <text x="8" y="15" fill="#e2e8f0" fontSize="10" fontWeight="bold">
+            <text x="8" y="15" fill="#4b5563" fontSize="10" fontWeight="bold">
               Legend
             </text>
 
-            <line x1="8" y1="28" x2="28" y2="28" stroke="#38bdf8" strokeWidth="2.5" />
-            <text x="34" y="31" fill="#cbd5e1" fontSize="9" fontFamily="monospace">
-              Water Surface
-            </text>
-
-            <line x1="8" y1="42" x2="28" y2="42" stroke="#94a3b8" strokeWidth="2" />
-            <rect x="16" y="40" width="4" height="4" fill="#0f172a" stroke="#cbd5e1" strokeWidth="1" />
-            <text x="34" y="45" fill="#cbd5e1" fontSize="9" fontFamily="monospace">
+            <text x="32" y="32" fill="#6b7280" fontSize="9">
               Ground Profile
             </text>
-
-            <circle cx="18" cy="56" r="3.5" fill="#ef4444" stroke="#ffffff" strokeWidth="1" />
-            <text x="34" y="59" fill="#cbd5e1" fontSize="9" fontFamily="monospace">
               Bank Station
             </text>
 

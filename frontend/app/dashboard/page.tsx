@@ -51,6 +51,7 @@ const ALERT_BADGES: Record<string, { bg: string; text: string; border: string }>
 
 export default function Dashboard() {
   const [panel, setPanel] = useState<"dashboard" | "rainfall" | "runoff" | "system">("dashboard");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedStationId, setSelectedStationId] = useState<string>("KARANJPHEN");
   const { connected, lastEvent } = useWebSocket();
 
@@ -79,6 +80,14 @@ export default function Dashboard() {
       <header className="bg-white border-b border-gray-200 px-6 h-14 shrink-0 flex items-center justify-between">
         {/* Brand & Basin Identity */}
         <div className="flex items-center gap-4">
+          <button 
+            className="md:hidden p-1 text-gray-500 hover:bg-gray-100 rounded"
+            onClick={() => setIsSidebarOpen(true)}
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-semibold text-gray-900">HYDROCAST</span>
@@ -118,9 +127,24 @@ export default function Dashboard() {
       </header>
 
       {/* ── MAIN WORKSPACE & SEGREGATED SIDEBAR ──────────────────────── */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         {/* ── SIDEBAR NAVIGATION ─────────────────────────────────────── */}
-        <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0 overflow-y-auto p-4">
+        {/* Mobile Backdrop */}
+        {isSidebarOpen && (
+          <div 
+            className="fixed inset-0 z-40 bg-gray-900/50 md:hidden" 
+            onClick={() => setIsSidebarOpen(false)} 
+          />
+        )}
+        <aside className={`fixed md:relative inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col shrink-0 overflow-y-auto p-4 transition-transform transform md:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:flex`}>
+          <div className="flex items-center justify-between md:hidden mb-4">
+            <span className="font-semibold text-gray-900">Menu</span>
+            <button onClick={() => setIsSidebarOpen(false)} className="p-1 text-gray-500 hover:bg-gray-100 rounded">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
           <div className="space-y-4">
             <div>
               <div className="text-xs font-medium text-gray-400 mb-2">Workspace</div>
@@ -130,7 +154,10 @@ export default function Dashboard() {
                   return (
                     <button
                       key={n.id}
-                      onClick={() => setPanel(n.id as any)}
+                      onClick={() => {
+                        setPanel(n.id as any);
+                        setIsSidebarOpen(false);
+                      }}
                       className={`w-full flex items-center justify-between p-2.5 rounded text-left ${
                         isActive
                           ? "bg-gray-100 text-gray-900 font-medium"

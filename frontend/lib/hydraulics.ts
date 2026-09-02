@@ -424,7 +424,9 @@ export function convertDischargeToStage(targetQ: number, siteId: string): number
     data = RAJARAM_DATA;
     minStage = Math.min(...RAJARAM_DATA.map(d => d[2]));
   } else {
-    return 535.0; // Fallback
+    // Fallback to SHIVAJI_DATA for Sink Node or unknown sites
+    data = SHIVAJI_DATA;
+    minStage = Math.min(...SHIVAJI_DATA.map(d => d[2]));
   }
 
   if (targetQ <= 0) return minStage;
@@ -439,6 +441,7 @@ export function convertDischargeToStage(targetQ: number, siteId: string): number
   for (let s = minStage; s <= maxStage; s += step) {
     const q = getDischargeForStage(s, data);
     if (q >= targetQ) {
+      if (q === prevQ) return prevStage;
       // Linearly interpolate for exact stage
       const slope = (s - prevStage) / (q - prevQ);
       return prevStage + slope * (targetQ - prevQ);

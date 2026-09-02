@@ -10,8 +10,8 @@ import StationDetailsCard, { USER_STATIONS_DATA } from "@/components/StationDeta
 // Leaflet must be loaded client-side only
 const BasinMap = dynamic(() => import("@/components/map/BasinMap"), { ssr: false });
 
-const CARD = "bg-white border border-slate-200 rounded-xl p-5 shadow-xs transition-shadow hover:shadow-md";
-const CARD_HEADER = "text-xs font-bold tracking-wider text-slate-700 uppercase flex items-center justify-between mb-3.5";
+const CARD = "bg-white border border-gray-200 rounded p-4";
+const CARD_HEADER = "text-sm font-semibold text-gray-800 mb-4 flex items-center justify-between";
 
 export default function RainfallPanel() {
   const [selectedStationId, setSelectedStationId] = useState<string>("KARANJPHEN");
@@ -33,11 +33,11 @@ export default function RainfallPanel() {
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-sky-500" />
-            <h1 className="text-base font-extrabold tracking-tight text-slate-900">
+            <h1 className="text-base font-bold text-gray-900">
               Open-Meteo v1 Forecast &amp; Panchganga Basin Station Intelligence
             </h1>
           </div>
-          <p className="text-xs text-slate-600 mt-1 font-medium">
+          <p className="text-xs text-gray-500 mt-1 font-medium">
             Open-Meteo Forecast v1 API · 90-Day Historical Observations · 90-Hour Forward Prediction Window · HEC-DSS Export
           </p>
         </div>
@@ -52,8 +52,8 @@ export default function RainfallPanel() {
       </div>
 
       {/* ── STATION SELECTION CHIPS / QUICK BAR ───────────────────────── */}
-      <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-xs flex items-center gap-2 overflow-x-auto">
-        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap pl-1">
+      <div className="bg-white border border-gray-200 rounded p-4 shadow-sm flex items-center gap-2 overflow-x-auto">
+        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap pl-1">
           Select Station:
         </span>
         <div className="flex items-center gap-2">
@@ -91,10 +91,10 @@ export default function RainfallPanel() {
         {/* Interactive Basin Map */}
         <div className={`lg:col-span-6 ${CARD} flex flex-col`}>
           <div className={CARD_HEADER}>
-            <span className="flex items-center gap-1.5 font-bold text-slate-800">
+            <span className="flex items-center gap-1.5 font-semibold text-gray-800">
               <span>🗺</span> Panchganga Catchment &amp; Raingauge Station Map
             </span>
-            <span className="text-[11px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+            <span className="text-[11px] font-medium text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
               Click Station Marker to Inspect
             </span>
           </div>
@@ -110,10 +110,10 @@ export default function RainfallPanel() {
         {/* Catchment Areal Hyetograph */}
         <div className={`lg:col-span-6 ${CARD} flex flex-col`}>
           <div className={CARD_HEADER}>
-            <span className="flex items-center gap-1.5 font-bold text-slate-800">
+            <span className="flex items-center gap-1.5 font-semibold text-gray-800">
               <span>📊</span> Subbasin Areal Hyetographs (Open-Meteo mm/hr)
             </span>
-            <span className="text-[11px] font-semibold text-slate-500">90-Hour Time Series</span>
+            <span className="text-[11px] font-medium text-gray-500">90-Hour Time Series</span>
           </div>
           <div className="mt-2">
             <HyetographChart
@@ -131,10 +131,10 @@ export default function RainfallPanel() {
       {/* ── STATION SELECTION AUDIT TABLE ────────────────────────────────── */}
       <div className={CARD}>
         <div className={CARD_HEADER}>
-          <span className="flex items-center gap-1.5 font-bold text-slate-800">
+          <span className="flex items-center gap-1.5 font-semibold text-gray-800">
             <span>⚡</span> Open-Meteo Precipitation Stations Summary
           </span>
-          <span className="text-[11px] font-semibold text-slate-600">
+          <span className="text-[11px] font-semibold text-gray-500">
             Click row to activate station analytics widget
           </span>
         </div>
