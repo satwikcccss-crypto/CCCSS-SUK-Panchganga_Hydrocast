@@ -120,7 +120,7 @@ print "HEC-HMS Computation Finished Successfully."
     return script_path
 
 
-def execute_hec_hms(run_dt: datetime) -> Dict[str, any]:
+def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, np.ndarray]] = None) -> Dict[str, any]:
     """
     Main entry point for HEC-HMS execution.
     Runs HEC-HMS 4.13 if binary is present, or runs calibrated Panchganga RJKT physical model.
@@ -150,21 +150,78 @@ def execute_hec_hms(run_dt: datetime) -> Dict[str, any]:
         log.info("HEC-HMS 4.13 binary not present in environment (%s). Running calibrated Panchganga RJKT physical engine...", ver)
         runtime_seconds = 14.8
 
-    # Extract or compute hydrograph
-    peak_h = 22
-    peak_q = 859.1
-    baseflow = 84.0
+    # Dynamic Hydrological Unit Hydrograph & SCS-CN Runoff Simulation
+    # Subbasin catchment areas (km2) and Curve Numbers
+    sub_areas = {
+        "S1": 180.0, "S2": 320.0, "S3": 310.0,
+        "S4": 210.0, "S5": 290.0, "S6": 350.0,
+        "S7": 380.0, "S8": 190.0, "S9": 340.0,
+    }
+    total_area_km2 = sum(sub_areas.values())  # ~2570 km2
+    baseflow = 55.0
+
+    # Calculate catchment-averaged precipitation time series P(t)
+    p_basin = np.zeros(90, dtype=np.float32)
+    if subbasin_hyetographs:
+        for sub_id, a in sub_areas.items():
+            if sub_id in subbasin_hyetographs:
+                p_basin += (a / total_area_km2) * subbasin_hyetographs[sub_id][:90]
+    else:
+        p_basin = np.full(90, 0.5, dtype=np.float32)
+
+    total_rain_mm = float(np.sum(p_basin))
+
+    # SCS-CN composite loss method (CN ~ 76 for wet monsoon Panchganga basin)
+    cn = 76.0
+    s_ret = (25400.0 / cn) - 254.0
+    ia = 0.2 * s_ret
+
+    # Calculate cumulative runoff
+    cum_p = np.cumsum(p_basin)
+    cum_q = np.zeros(90, dtype=np.float32)
+    for h in range(90):
+        if cum_p[h] > ia:
+            cum_q[h] = ((cum_p[h] - ia) ** 2) / (cum_p[h] + 0.8 * s_ret)
+
+    # Incremental excess rainfall (mm)
+    excess_p = np.diff(cum_q, prepend=0.0)
+    excess_p = np.maximum(0.0, excess_p)
+
+    # Unit hydrograph for 2570 km2 basin (lag time ~ 22h, time base ~ 48h)
+    lag_h = 22
+    t_uh = np.arange(48)
+    uh = (t_uh / 16.0) * np.exp(-t_uh / 8.0)
+    uh = uh / np.sum(uh)  # normalize
+
+    # Convolution of excess precipitation with unit hydrograph -> Discharge (m3/s)
+    # 1 mm excess over 2570 km2 = 2,570,000 m3 / 3600s = 713.88 m3/s-hr
+    m3s_per_mm = (total_area_km2 * 1e6 * 1e-3) / 3600.0  # 713.89 m3/s per mm
+
+    q_surface = np.convolve(excess_p * m3s_per_mm, uh)[:90]
+    # Ensure realistic minimum flow response to rainfall
+    q_surface = np.maximum(0.0, q_surface)
+
+    # Add baseflow
+    q_total = q_surface + baseflow
+
+    # Determine peak lead time and discharge
+    peak_idx = int(np.argmax(q_total))
+    peak_q = round(float(q_total[peak_idx]), 1)
+    peak_h = peak_idx
+
+    # Total runoff volume in MCM (Million Cubic Meters)
+    total_volume_mcm = round(float(np.sum(q_total) * 3600.0 / 1e6), 1)
 
     timestamps = [(run_dt + timedelta(hours=h)).isoformat() for h in range(90)]
     hydrograph = []
     for h in range(90):
-        surface_q = float(np.exp(-((h - peak_h) ** 2) / 140) * (peak_q - baseflow))
-        total_q = float(surface_q + baseflow)
+        s_q = round(float(q_surface[h]), 1)
+        t_q = round(float(q_total[h]), 1)
         hydrograph.append({
             "hour": h,
             "timestamp": timestamps[h],
-            "discharge_m3s": round(total_q, 1),
-            "surface_runoff_m3s": round(surface_q, 1),
+            "discharge_m3s": t_q,
+            "surface_runoff_m3s": s_q,
             "baseflow_m3s": baseflow,
             "is_peak": h == peak_h,
         })
@@ -177,7 +234,7 @@ def execute_hec_hms(run_dt: datetime) -> Dict[str, any]:
         "peak_discharge_m3s": peak_q,
         "lead_hours_to_peak": peak_h,
         "time_of_peak": timestamps[peak_h],
-        "total_volume_mcm": 89.5,
+        "total_volume_mcm": total_volume_mcm,
         "hydrograph": hydrograph,
     }
 

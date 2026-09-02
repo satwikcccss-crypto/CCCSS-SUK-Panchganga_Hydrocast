@@ -4,12 +4,13 @@ Open-Meteo Rainfall Downloader & Dynamic Station Selector for Panchganga
 Downloads 90-hour ECMWF IFS hourly forecasts for all 18 Primary & Alternate
 stations across Panchganga subbasins (S1 to S9).
 Evaluates rainfall volume per subbasin and selects governing gages for HEC-HMS.
-Generates DSS precipitation time-series and dumps latest pipeline state for the Dashboard.
+Generates DSS precipitation time-series and dumps latest pipeline state for the Dashboard & Supabase.
 """
 
 import json
 import logging
 import os
+import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -44,7 +45,7 @@ OM_URL = "https://api.open-meteo.com/v1/forecast"
 
 def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarray:
     """
-    Fetch 90-hr hourly precipitation (mm/hr) from Open-Meteo.
+    Fetch 90-hr hourly precipitation (mm/hr) from Open-Meteo with retries & rate-limiting.
     """
     params = {
         "latitude":      round(lat, 4),
@@ -53,29 +54,35 @@ def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarr
         "forecast_days": 4,
         "timezone":      "UTC",
     }
-    try:
-        resp = requests.get(OM_URL, params=params, timeout=25)
-        resp.raise_for_status()
-        data = resp.json()
-        hourly = data.get("hourly", {})
-        times  = hourly.get("time", [])
-        precip = hourly.get("precipitation", [])
+    for attempt in range(3):
+        try:
+            # Polite pause to avoid hitting rate-limits
+            time.sleep(0.25)
+            resp = requests.get(OM_URL, params=params, timeout=15)
+            resp.raise_for_status()
+            data = resp.json()
+            hourly = data.get("hourly", {})
+            times  = hourly.get("time", [])
+            precip = hourly.get("precipitation", [])
 
-        df = pd.DataFrame({"time": pd.to_datetime(times, utc=True), "precip": precip})
-        df = df[df["time"] >= start_dt].head(90)
+            df = pd.DataFrame({"time": pd.to_datetime(times, utc=True), "precip": precip})
+            df = df[df["time"] >= start_dt].head(90)
 
-        arr = np.zeros(90, dtype=np.float32)
-        if len(df) > 0:
-            arr[: len(df)] = df["precip"].fillna(0).values
-        return arr
-    except Exception as e:
-        log.warning("Open-Meteo fetch failed for (%.4f, %.4f): %s — generating physical fallback", lat, lon, e)
-        # Synthetic fallback
-        arr = np.zeros(90, dtype=np.float32)
-        peak_hr = 20
-        for h in range(90):
-            arr[h] = max(0.0, float(np.exp(-((h - peak_hr) ** 2) / 70) * (2.5 if lat < 16.6 else 1.2)))
-        return arr
+            arr = np.zeros(90, dtype=np.float32)
+            if len(df) > 0:
+                arr[: len(df)] = df["precip"].fillna(0).values
+            return arr
+        except Exception as e:
+            if attempt < 2:
+                time.sleep(1.0 * (attempt + 1))
+                continue
+            log.warning("Open-Meteo fetch failed for (%.4f, %.4f): %s — generating physical fallback", lat, lon, e)
+            # Synthetic fallback based on latitude
+            arr = np.zeros(90, dtype=np.float32)
+            peak_hr = 20
+            for h in range(90):
+                arr[h] = max(0.0, float(np.exp(-((h - peak_hr) ** 2) / 70) * (2.5 if lat < 16.6 else 1.2)))
+            return arr
 
 
 def convert_discharge_to_stage(q: float, site: str) -> float:
@@ -87,18 +94,124 @@ def convert_discharge_to_stage(q: float, site: str) -> float:
         return float(539.10 + 0.168 * (max(q, 1.0) ** 0.52))
 
 
+def sync_to_supabase(state: dict, db_url: str):
+    """
+    Syncs complete simulation cycle telemetry into Supabase PostgreSQL tables.
+    """
+    try:
+        import psycopg2
+        from psycopg2.extras import execute_values
+
+        conn = psycopg2.connect(db_url)
+        with conn.cursor() as cur:
+            last_c = state["status"]["last_cycle"]
+            start_dt_val = datetime.fromisoformat(last_c["start_time"])
+            end_dt_val = datetime.fromisoformat(last_c["end_time"])
+
+            # 1. simulation_runs
+            cur.execute("""
+                INSERT INTO simulation_runs (run_id, cycle_date, cycle_time, start_time, end_time, status, model_version)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (run_id) DO UPDATE SET
+                    end_time = EXCLUDED.end_time,
+                    status = EXCLUDED.status;
+            """, (
+                last_c["run_id"],
+                start_dt_val.date(),
+                last_c["run_id"].split("_")[-1] if "_" in last_c["run_id"] else "06z",
+                start_dt_val,
+                end_dt_val,
+                last_c["status"],
+                "HEC-HMS-4.13",
+            ))
+
+            # 2. hydrograph_results
+            cur.execute("DELETE FROM hydrograph_results WHERE run_id = %s;", (last_c["run_id"],))
+            hg_rows = [
+                (
+                    last_c["run_id"],
+                    "PANCHGANGA_BASIN",
+                    "J_Outlet",
+                    datetime.fromisoformat(h["timestamp"]),
+                    int(h["lead_hours"]),
+                    float(h["discharge_m3s"]),
+                    float(h["surface_runoff_m3s"]),
+                    float(h["baseflow_m3s"]),
+                    bool(h["is_peak"]),
+                )
+                for h in state["hydrograph"]
+            ]
+            execute_values(cur, """
+                INSERT INTO hydrograph_results
+                (run_id, basin_id, outlet_node, timestamp, lead_hours, discharge_m3s, surface_runoff_m3s, baseflow_m3s, is_peak)
+                VALUES %s
+            """, hg_rows)
+
+            # 3. bridge_stage_forecast
+            cur.execute("DELETE FROM bridge_stage_forecast WHERE forecast_run_id = %s;", (last_c["run_id"],))
+            bsf_rows = []
+            for b_key in ["bridgeShivaji", "bridgeRajaram"]:
+                b_site = state[b_key]["site"]["site_id"]
+                for f in state[b_key]["forecast"]:
+                    bsf_rows.append((
+                        b_site,
+                        last_c["run_id"],
+                        datetime.fromisoformat(f["forecast_time"]),
+                        int(f["lead_hours"]),
+                        float(f["discharge_m3s"]),
+                        float(f["stage_m"]),
+                        f["alert_level"],
+                        bool(f["is_above_danger"]),
+                    ))
+            execute_values(cur, """
+                INSERT INTO bridge_stage_forecast
+                (site_id, forecast_run_id, forecast_time, lead_hours, discharge_m3s, stage_m, alert_level, is_above_danger)
+                VALUES %s
+            """, bsf_rows)
+
+            # 4. pipeline_step_log
+            step_rows = [
+                (
+                    last_c["run_id"],
+                    int(s["step_number"]),
+                    s["step_name"],
+                    s["status"],
+                    datetime.now(timezone.utc),
+                    datetime.now(timezone.utc),
+                    float(s["duration_seconds"]),
+                )
+                for s in state["pipeline"]["steps"]
+            ]
+            execute_values(cur, """
+                INSERT INTO pipeline_step_log
+                (cycle_id, step_number, step_name, status, start_time, end_time, duration_seconds)
+                VALUES %s
+                ON CONFLICT (cycle_id, step_number) DO UPDATE SET
+                    status = EXCLUDED.status,
+                    duration_seconds = EXCLUDED.duration_seconds;
+            """, step_rows)
+
+        conn.commit()
+        conn.close()
+        log.info("✓ Telemetry successfully synced to Supabase Postgres (run_id: %s)", last_c["run_id"])
+    except Exception as e:
+        log.warning("Supabase sync skipped/failed: %s", e)
+
+
 def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     """
     Executes a complete forecast cycle:
     1. Downloads 90-hr rainfall for all 18 stations.
     2. Runs dynamic subbasin station selection.
     3. Calculates HEC-HMS runoff & river bridge stages.
-    4. Dumps real pipeline state for Next.js frontend.
+    4. Dumps real pipeline state for Next.js frontend & syncs to Supabase.
     """
     if start_dt is None:
         now = datetime.now(timezone.utc)
         h6 = (now.hour // 6) * 6
         start_dt = now.replace(hour=h6, minute=0, second=0, microsecond=0)
+    else:
+        h6 = start_dt.hour
 
     log_stream: List[dict] = []
     def record_log(lvl: str, msg: str):
@@ -109,7 +222,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         else:
             log.info(msg)
 
-    cycle_id = f"CYC_{start_dt.strftime('%Y%m%d')}_{String(h6) if 'String' in globals() else f'{start_dt.hour:02d}'}z"
+    cycle_id = f"CYC_{start_dt.strftime('%Y%m%d')}_{h6:02d}z"
     record_log("INFO", f"Forecast cycle {cycle_id} initiated across 18 Panchganga stations")
 
     station_time_series: Dict[str, np.ndarray] = {}
@@ -132,11 +245,13 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     # Build subbasin hyetographs from governing stations
     subbasin_stations_summary = []
     subbasins_list = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"]
+    subbasin_arrays: Dict[str, np.ndarray] = {}
 
     for sub in subbasins_list:
         info = governing_subbasin_gages.get(sub, {})
         st_id = info.get("selected_station_id", "KARVIR")
         series = station_time_series.get(st_id, np.zeros(90))
+        subbasin_arrays[sub] = series
 
         hyeto = []
         for h in range(90):
@@ -163,11 +278,11 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
 
     record_log("INFO", "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/")
 
-    # Real HEC-HMS 4.13 Simulation Run
-    hms_result = execute_hec_hms(start_dt)
+    # Real HEC-HMS 4.13 Simulation Run with Dynamic Basin Hyetographs
+    hms_result = execute_hec_hms(start_dt, subbasin_arrays)
     peak_h = hms_result["lead_hours_to_peak"]
     peak_q = hms_result["peak_discharge_m3s"]
-    baseflow = 84.0
+    baseflow = 55.0
 
     hydrograph = []
     for h in range(90):
@@ -256,11 +371,11 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "description": "Primary Panchganga flood & water-level monitoring barrage (Kasba Bawada). Alert thresholds referenced to WRD Maharashtra MSL datum.",
             "latitude": 16.736167,
             "longitude": 74.235889,
-            "alert_stage_m": 541.50,
-            "warning_stage_m": 542.73,
-            "danger_stage_m": 543.33,
-            "extreme_stage_m": 544.33,
-            "hfl_m": 545.33,
+            "alert_stage_m": 533.20,
+            "warning_stage_m": 535.20,
+            "danger_stage_m": 536.50,
+            "extreme_stage_m": 537.50,
+            "hfl_m": 538.20,
             "markerColor": "#0284c7",
         },
         "forecast": rajaram_forecast,
@@ -268,8 +383,8 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
 
     peak_stg_shivaji = max([f["stage_m"] for f in shivaji_forecast])
     record_log("INFO", f"Hydraulic rating applied: Shivaji Bridge Peak {peak_stg_shivaji:.2f}m MSL")
-    if peak_stg_shivaji >= 537.5:
-        record_log("WARN", f"River Alert: Shivaji Bridge projected to reach WARNING stage ({peak_stg_shivaji:.2f}m) at T+18h")
+    if peak_stg_shivaji >= 542.73:
+        record_log("WARN", f"River Alert: Shivaji Bridge projected to reach WARNING stage ({peak_stg_shivaji:.2f}m) at T+{peak_h}h")
 
     pipeline_state = {
         "ecmwf": ecmwf_hyetographs,
@@ -286,7 +401,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "components": {
                 "open_meteo": "ONLINE (18 STATIONS)",
                 "stage_rating": "ONLINE",
-                "database": "CONNECTED",
+                "database": "CONNECTED" if os.getenv("DATABASE_URL") else "STANDALONE",
                 "hec_hms": "CALIBRATED_RJKT (COMPUTED)",
             },
             "steps": [
@@ -319,7 +434,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
                 "total_rainfall_mm": round(max([float(v) for v in station_cumulatives.values()]), 1),
                 "peak_discharge_m3s": peak_q,
                 "peak_stage_m": peak_stg_shivaji,
-                "alert_level": "WARNING" if peak_stg_shivaji >= 537.5 else "NORMAL",
+                "alert_level": "WARNING" if peak_stg_shivaji >= 542.73 else "NORMAL",
             },
         },
         "logs": log_stream,
@@ -335,6 +450,12 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         json.dump(pipeline_state, f, indent=2)
 
     record_log("INFO", f"Dashboard pipeline state dumped to {public_file}")
+
+    # Sync to Supabase Postgres if DATABASE_URL is available
+    db_url = os.getenv("DATABASE_URL")
+    if db_url:
+        sync_to_supabase(pipeline_state, db_url)
+
     record_log("INFO", f"Forecast cycle {cycle_id} completed in 36.9s. Dashboard live broadcast pushed")
 
     return governing_subbasin_gages
@@ -347,3 +468,4 @@ if __name__ == "__main__":
     print("=" * 75)
     for sub, info in results.items():
         print(f"Subbasin {sub:3s} -> Gage: {info['station_name']:<25s} | 90hr Rain: {info['cumulative_mm']:5.1f} mm | Method: {info['method']}")
+
