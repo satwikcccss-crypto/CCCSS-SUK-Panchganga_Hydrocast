@@ -24,8 +24,9 @@ export const api = {
     const data = await fetchDashboardData();
     if (!data || !data.status?.last_cycle) return null;
 
-    const lastCycle = data.status.last_cycle;
-    const peakQ = lastCycle.peak_discharge_m3s ?? 0;
+    const lastCycle = data.status?.last_cycle ?? {};
+    const sumObj = data.summary ?? {};
+    const peakQ = sumObj.peak_discharge_m3s ?? (data.hydrograph?.length ? Math.max(...data.hydrograph.map((h: any) => h.discharge_m3s ?? 0)) : (lastCycle.peak_discharge_m3s ?? 0));
 
     const shivajiSite = data.bridgeShivaji?.site;
     const rajaramSite = data.bridgeRajaram?.site;
@@ -33,17 +34,17 @@ export const api = {
     // Compute peaks from actual forecast arrays
     const peakStageShivaji = data.bridgeShivaji?.forecast?.length
       ? data.bridgeShivaji.forecast.reduce((max: number, f: any) => Math.max(max, f.stage_m), 0)
-      : 0;
+      : (sumObj.bridges?.shivaji?.peak_stage_m ?? 0);
     const peakStageRajaram = data.bridgeRajaram?.forecast?.length
       ? data.bridgeRajaram.forecast.reduce((max: number, f: any) => Math.max(max, f.stage_m), 0)
-      : 0;
+      : (sumObj.bridges?.rajaram?.peak_stage_m ?? 0);
 
     const findPeakHour = (hydrograph: any[]) => {
-      if (!hydrograph || hydrograph.length === 0) return 0;
+      if (!hydrograph || hydrograph.length === 0) return sumObj.lead_hours_to_peak ?? 0;
       let maxQ = -1;
       let hr = 0;
       hydrograph.forEach((h: any) => {
-        if (h.discharge_m3s > maxQ) {
+        if ((h.discharge_m3s ?? 0) > maxQ) {
           maxQ = h.discharge_m3s;
           hr = h.lead_hours ?? h.hour ?? 0;
         }
@@ -54,9 +55,9 @@ export const api = {
     const peakHour = findPeakHour(data.hydrograph);
 
     // Compute total volume from actual hydrograph (MCM)
-    const totalVolumeMcm = data.hydrograph?.length
+    const totalVolumeMcm = sumObj.total_volume_mcm ?? (data.hydrograph?.length
       ? data.hydrograph.reduce((sum: number, h: any) => sum + ((h.discharge_m3s ?? 0) * 3600), 0) / 1e6
-      : 0;
+      : 0);
 
     // Determine alert levels from actual site thresholds
     const shivajiAlert = !shivajiSite ? "NORMAL"

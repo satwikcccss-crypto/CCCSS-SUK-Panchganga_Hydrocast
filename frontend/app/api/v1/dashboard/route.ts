@@ -2,18 +2,27 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   // Read the real pipeline state dumped by the Python hydrology runner
-  const pipelineFile = path.join(process.cwd(), "public", "data", "latest_pipeline_state.json");
+  const candidates = [
+    path.join(process.cwd(), "public", "data", "latest_pipeline_state.json"),
+    path.join(process.cwd(), "..", "data", "openmeteo_dss", "latest_pipeline_state.json"),
+    path.join(process.cwd(), "data", "openmeteo_dss", "latest_pipeline_state.json"),
+  ];
 
-  try {
-    if (fs.existsSync(pipelineFile)) {
-      const raw = fs.readFileSync(pipelineFile, "utf-8");
-      const data = JSON.parse(raw);
-      return NextResponse.json(data);
+  for (const pipelineFile of candidates) {
+    try {
+      if (fs.existsSync(pipelineFile)) {
+        const raw = fs.readFileSync(pipelineFile, "utf-8");
+        const data = JSON.parse(raw);
+        return NextResponse.json(data);
+      }
+    } catch (err) {
+      console.error("Failed to read pipeline state file:", err);
     }
-  } catch (err) {
-    console.error("Failed to read pipeline state file:", err);
   }
 
   // No pipeline data available — return a clean empty state
