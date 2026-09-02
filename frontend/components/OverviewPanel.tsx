@@ -1,10 +1,9 @@
-"use client";
-
+import { useState } from "react";
 import useSWR from "swr";
 import dynamic from "next/dynamic";
 import { api } from "@/lib/api";
 import FloodBanner from "@/components/FloodBanner";
-import StageGauge from "@/components/StageGauge";
+import EngineeringGauge, { ZoomedGauge, GaugeSensor, GaugeData } from "@/components/EngineeringGauge";
 
 import DischargeDetailsCard from "@/components/DischargeDetailsCard";
 
@@ -20,6 +19,8 @@ export default function OverviewPanel({
   onNavigateTab: (tab: string) => void;
   onSelectStation: (stationId: string) => void;
 }) {
+  const [activeModalSensor, setActiveModalSensor] = useState<{ sensor: GaugeSensor; data: GaugeData } | null>(null);
+
   const { data: status } = useSWR("status", api.status, { refreshInterval: 15000 });
   const { data: summary } = useSWR("summary", api.runoffSummary, { refreshInterval: 30000 });
   const { data: hydrograph } = useSWR("hydrograph", api.outletHydrograph, { refreshInterval: 60000 });
@@ -28,8 +29,53 @@ export default function OverviewPanel({
   const { data: stations } = useSWR("stations", api.stationSelection, { refreshInterval: 60000 });
 
   const outlet = summary?.outlet;
-  const lastCycle = status?.last_cycle;
-  const noData = !lastCycle;
+  const noData = !status && !summary;
+  const lastCycle = status?.current_cycle;
+
+  // Sensor definitions
+  const shivajiSensor: GaugeSensor = {
+    id: "SHIVAJI_BRIDGE",
+    name: "Shivaji Bridge (Panchganga Ghat)",
+    river: "Panchganga River",
+    location: { lat: 16.7089, lng: 74.2193 },
+    markerColor: "#0f4c81",
+    dangerLevels: {
+      alert: summary?.bridges?.[0]?.alert_stage_m ?? 542.10,
+      warning: summary?.bridges?.[0]?.warning_stage_m ?? 542.70,
+      danger: summary?.bridges?.[0]?.danger_stage_m ?? 543.30,
+      hfl: summary?.bridges?.[0]?.hfl_m ?? 545.33,
+    },
+  };
+
+  const shivajiData: GaugeData = {
+    waterLevel: summary?.bridges?.[0]?.stage_m ?? 532.64,
+    alertLevel: summary?.bridges?.[0]?.alert_level ?? "normal",
+    history: [
+      532.60, 532.62, 532.63, 532.64, 532.64, 532.64
+    ],
+  };
+
+  const rajaramSensor: GaugeSensor = {
+    id: "RAJARAM_BRIDGE",
+    name: "Rajaram K.T. Weir (Kasba Bawada)",
+    river: "Panchganga River",
+    location: { lat: 16.7362, lng: 74.2359 },
+    markerColor: "#0284c7",
+    dangerLevels: {
+      alert: summary?.bridges?.[1]?.alert_stage_m ?? 541.50,
+      warning: summary?.bridges?.[1]?.warning_stage_m ?? 542.07,
+      danger: summary?.bridges?.[1]?.danger_stage_m ?? 543.30,
+      hfl: summary?.bridges?.[1]?.hfl_m ?? 545.33,
+    },
+  };
+
+  const rajaramData: GaugeData = {
+    waterLevel: summary?.bridges?.[1]?.stage_m ?? 539.42,
+    alertLevel: summary?.bridges?.[1]?.alert_level ?? "normal",
+    history: [
+      538.80, 538.90, 539.10, 539.25, 539.38, 539.42
+    ],
+  };
 
   return (
     <div className="flex flex-col gap-6 max-w-7xl mx-auto">
@@ -153,39 +199,19 @@ export default function OverviewPanel({
               Awaiting first forecast cycle...
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4 my-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-auto">
               <div className="flex flex-col">
-                <div className="text-sm font-medium text-gray-800 mb-1 text-center">Shivaji Bridge</div>
-                <div className="text-[10px] text-gray-500 mb-4 text-center">
-                  Current: {summary?.bridges?.[0]?.stage_m?.toFixed(2) ?? "—"}m | Peak: {summary?.bridges?.[0]?.peak_stage_m?.toFixed(2) ?? "—"}m
-                </div>
-                <StageGauge
-                  stage={summary?.bridges?.[0]?.stage_m ?? 540}
-                  forecastStage={summary?.bridges?.[0]?.peak_stage_m ?? 540}
-                  forecastTime="Peak"
-                  minH={530}
-                  maxH={545}
-                  warning={summary?.bridges?.[0]?.warning_stage_m ?? 542.70}
-                  danger={summary?.bridges?.[0]?.danger_stage_m ?? 543.30}
-                  hfl={summary?.bridges?.[0]?.hfl_m ?? 545.33}
-                  alert={summary?.bridges?.[0]?.alert_stage_m ?? 542.10}
+                <EngineeringGauge
+                  sensor={shivajiSensor}
+                  data={shivajiData}
+                  onClick={() => setActiveModalSensor({ sensor: shivajiSensor, data: shivajiData })}
                 />
               </div>
               <div className="flex flex-col">
-                <div className="text-sm font-medium text-gray-800 mb-1 text-center">Rajaram K.T. Weir</div>
-                <div className="text-[10px] text-gray-500 mb-4 text-center">
-                  Current: {summary?.bridges?.[1]?.stage_m?.toFixed(2) ?? "—"}m | Peak: {summary?.bridges?.[1]?.peak_stage_m?.toFixed(2) ?? "—"}m
-                </div>
-                <StageGauge
-                  stage={summary?.bridges?.[1]?.stage_m ?? 540}
-                  forecastStage={summary?.bridges?.[1]?.peak_stage_m ?? 540}
-                  forecastTime="Peak"
-                  minH={530}
-                  maxH={545}
-                  warning={summary?.bridges?.[1]?.warning_stage_m ?? 542.07}
-                  danger={summary?.bridges?.[1]?.danger_stage_m ?? 543.30}
-                  hfl={summary?.bridges?.[1]?.hfl_m ?? 545.33}
-                  alert={summary?.bridges?.[1]?.alert_stage_m ?? 541.50}
+                <EngineeringGauge
+                  sensor={rajaramSensor}
+                  data={rajaramData}
+                  onClick={() => setActiveModalSensor({ sensor: rajaramSensor, data: rajaramData })}
                 />
               </div>
             </div>
@@ -229,6 +255,15 @@ export default function OverviewPanel({
           </div>
         )}
       </div>
+
+      {/* ── INTERACTIVE ZOOMED GAUGE MODAL ─────────────────────────────────── */}
+      {activeModalSensor && (
+        <ZoomedGauge
+          sensor={activeModalSensor.sensor}
+          data={activeModalSensor.data}
+          onClose={() => setActiveModalSensor(null)}
+        />
+      )}
     </div>
   );
 }
