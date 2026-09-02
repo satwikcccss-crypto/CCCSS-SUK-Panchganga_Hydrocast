@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS simulation_runs (
 
 CREATE INDEX IF NOT EXISTS idx_sim_runs_time ON simulation_runs (start_time DESC);
 
--- 3. Gauge Stations Table (Panchganga Rain Gauge Network)
+-- 3. Gauge Stations Table (18 Panchganga Rain Gauge Network S1-S9)
 CREATE TABLE IF NOT EXISTS gauge_stations (
     station_id          VARCHAR(30) PRIMARY KEY,
     station_name        VARCHAR(100) NOT NULL,
@@ -30,28 +30,39 @@ CREATE TABLE IF NOT EXISTS gauge_stations (
     longitude           DOUBLE PRECISION NOT NULL,
     geom                GEOMETRY(Point, 4326),
     elevation_m         REAL,
-    owner               VARCHAR(100) DEFAULT 'CWC',
+    is_primary          BOOLEAN DEFAULT TRUE,
     is_active           BOOLEAN DEFAULT TRUE,
     created_at          TIMESTAMPTZ DEFAULT NOW(),
     updated_at          TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Seed user's 7 Panchganga Rain Gauge Stations
-INSERT INTO gauge_stations (station_id, station_name, subbasin_id, latitude, longitude, elevation_m)
+-- Seed all 18 Panchganga Rain Gauge Stations
+INSERT INTO gauge_stations (station_id, station_name, subbasin_id, latitude, longitude, elevation_m, is_primary)
 VALUES
-    ('KARANJPHEN', 'Karanjphen (Upper Ghats)', 'SUB_GHATS_UPPER', 16.7850973, 73.9036487, 640.0),
-    ('RADHANAGARI', 'Radhanagari Dam', 'SUB_RADHANAGARI_DAM', 16.41021, 73.9971822, 615.0),
-    ('SALWAN', 'Salwan (Mid Bhogawati)', 'SUB_BHOGAWATI_MID', 16.671222, 73.973457, 595.0),
-    ('KOTOLI', 'Kotoli (Kasari Upper)', 'SUB_KASARI_UPPER', 16.7820174, 74.0518705, 585.0),
-    ('BEED', 'Beed (Tulshi Confluence)', 'SUB_TULSHI_CONFLUENCE', 16.647984, 74.1288964, 565.0),
-    ('SANGARUL', 'Sangarul (Kumbhi Mid)', 'SUB_KUMBHI_MID', 16.6841962, 74.0931627, 572.0),
-    ('KARVEER', 'Karveer (Lower Panchganga)', 'SUB_PANCHGANGA_LOWER', 16.706369, 74.2481772, 550.0)
+    ('KARVIR', 'Karvir', 'S1', 16.706369, 74.2481772, 550.0, TRUE),
+    ('SANGARUL', 'Sangarul', 'S2', 16.6841962, 74.0931627, 572.0, TRUE),
+    ('BALINGA', 'Balinga', 'S2', 16.6878443, 74.17031, 560.0, FALSE),
+    ('KALE', 'Kale', 'S2', 16.7228087, 74.0564499, 580.0, FALSE),
+    ('KOTOLI', 'Kotoli', 'S3', 16.7820174, 74.0518705, 585.0, TRUE),
+    ('BAJAR_BHOGAON', 'Bajar Bhogaon', 'S3', 16.8086769, 74.1107824, 590.0, FALSE),
+    ('PADAL', 'Padal', 'S3', 16.7446006, 74.115187, 575.0, FALSE),
+    ('BEED', 'Beed', 'S4', 16.647984, 74.1288964, 565.0, TRUE),
+    ('SALWAN', 'Salwan', 'S5', 16.6712, 73.9735, 595.0, TRUE),
+    ('KARANJPHEN', 'Karanjphen', 'S6', 16.7850973, 73.9036487, 640.0, TRUE),
+    ('GAGANBAWDA', 'Gaganbawda', 'S6', 16.5469926, 73.8346738, 680.0, FALSE),
+    ('RADHANAGARI', 'Radhanagari', 'S7', 16.41021, 73.9971822, 615.0, TRUE),
+    ('SHIROLI_DHUMALA', 'Shiroli-Dhumala', 'S8', 16.6166768, 74.1062828, 560.0, FALSE),
+    ('HALADI', 'Haladi', 'S9', 16.5932632, 74.156292, 555.0, FALSE),
+    ('RASHIWADE_BK', 'Rashiwade Bk.', 'S9', 16.5475641, 74.1019728, 570.0, FALSE),
+    ('AAVALI_BK', 'Aavali Bk.', 'S9', 16.481009, 74.0549812, 585.0, FALSE),
+    ('KASABA_TARALE', 'Kasaba Tarale', 'S9', 16.4478876, 74.021589, 595.0, FALSE),
+    ('KASABA_WALAWE', 'Kasaba Walawe', 'S9', 16.41021, 73.9971822, 615.0, FALSE)
 ON CONFLICT (station_id) DO UPDATE SET
     latitude = EXCLUDED.latitude,
     longitude = EXCLUDED.longitude,
     elevation_m = EXCLUDED.elevation_m;
 
--- 4. Bridge Sites (CWC Monitoring Stations)
+-- 4. Bridge Sites (River Flood Monitoring Stations)
 CREATE TABLE IF NOT EXISTS bridge_sites (
     site_id             VARCHAR(50) PRIMARY KEY,
     site_name           VARCHAR(100) NOT NULL,
@@ -71,15 +82,15 @@ CREATE TABLE IF NOT EXISTS bridge_sites (
     updated_at          TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Seed Shivaji Bridge & Rajaram Weir with CWC MSL levels
+-- Seed Shivaji Bridge & Rajaram Weir with official MSL flood levels
 INSERT INTO bridge_sites (site_id, site_name, latitude, longitude,
     alert_stage_m, warning_stage_m, danger_stage_m, hfl_m,
     bed_slope, datum_m)
 VALUES
-    ('SHIVAJI_BRIDGE', 'Shivaji Bridge (Panchganga Ghat)', 16.708917, 74.219278,
-     535.50, 537.50, 538.50, 541.00, 0.00025, 0.0),
+    ('SHIVAJI_BRIDGE', 'Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)', 16.708917, 74.219278,
+     542.10, 542.70, 543.30, 545.33, 0.00025, 0.0),
     ('RAJARAM_BRIDGE', 'Rajaram K.T. Weir (Kasba Bawada)', 16.736167, 74.235889,
-     533.20, 535.20, 536.50, 538.20, 0.00020, 0.0)
+     541.50, 542.07, 543.30, 545.33, 0.00020, 0.0)
 ON CONFLICT (site_id) DO UPDATE SET
     alert_stage_m = EXCLUDED.alert_stage_m,
     warning_stage_m = EXCLUDED.warning_stage_m,
