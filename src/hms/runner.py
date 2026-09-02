@@ -120,7 +120,7 @@ print "HEC-HMS Computation Finished Successfully."
     return script_path
 
 
-def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, np.ndarray]] = None) -> Dict[str, any]:
+def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, np.ndarray]] = None, live_stage_m: Optional[float] = None) -> Dict[str, any]:
     """
     Main entry point for HEC-HMS execution.
     Runs HEC-HMS 4.13 if binary is present, or runs calibrated Panchganga RJKT physical model.
@@ -161,7 +161,6 @@ def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, n
         "S7": 380.0, "S8": 190.0, "S9": 340.0,
     }
     total_area_km2 = sum(sub_areas.values())  # ~2570 km2
-    baseflow = 55.0
 
     # Calculate catchment-averaged precipitation time series P(t)
     p_basin = np.zeros(90, dtype=np.float32)
@@ -179,8 +178,12 @@ def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, n
     s_ret = (25400.0 / cn) - 254.0
     ia = 0.05 * s_ret
 
-    # Saturated monsoon baseflow from 5 upstream reservoir catchments (Radhanagari, Tulsi, Kumbhi, Kasari, Bhogawati)
-    baseflow = float(os.getenv("MONSOON_BASEFLOW", "850.0"))
+    # Calculate physical baseline river discharge corresponding to observed water stage
+    from src.hydrology.stage_converter import convert_stage_to_discharge_manning
+    if live_stage_m is not None:
+        baseflow = convert_stage_to_discharge_manning(live_stage_m, "SHIVAJI_BRIDGE")
+    else:
+        baseflow = float(os.getenv("MONSOON_BASEFLOW", "18.8"))
 
     # Calculate cumulative runoff
     cum_p = np.cumsum(p_basin)

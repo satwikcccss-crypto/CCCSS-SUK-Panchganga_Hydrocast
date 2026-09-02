@@ -154,29 +154,29 @@ export default function RunoffPanel({ summary }: { summary: any }) {
 
         {/* Threshold Reference Indicator Bar */}
         <div className="flex flex-wrap items-center gap-3 mb-3 p-2.5 bg-gray-50 rounded-lg border border-gray-100 text-xs">
-          <span className="font-bold text-gray-600 uppercase tracking-wider text-[10px]">Hydrological Thresholds:</span>
+          <span className="font-bold text-gray-600 uppercase tracking-wider text-[10px]">Panchganga Official Flood Thresholds:</span>
           <span className="flex items-center gap-1 font-mono text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
             <span className="w-2 h-2 rounded-full bg-amber-500" />
-            Alert: <b>1,200 m³/s</b>
+            Alert: <b>1,800 m³/s</b> (542.10m)
           </span>
           <span className="flex items-center gap-1 font-mono text-[11px] text-orange-700 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
             <span className="w-2 h-2 rounded-full bg-orange-500" />
-            Warning: <b>1,500 m³/s</b>
+            Warning: <b>2,200 m³/s</b> (542.70m)
           </span>
           <span className="flex items-center gap-1 font-mono text-[11px] text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-200">
             <span className="w-2 h-2 rounded-full bg-red-500" />
-            Danger: <b>2,000 m³/s</b>
+            Danger: <b>2,675 m³/s</b> (543.30m)
           </span>
           <span className="flex items-center gap-1 font-mono text-[11px] text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
             <span className="w-2 h-2 rounded-full bg-purple-500" />
-            HFL / Extreme: <b>3,000 m³/s</b>
+            HFL: <b>3,850 m³/s</b> (545.33m)
           </span>
         </div>
 
         <div className="mt-2">
           <HydrographChart
             data={chartData}
-            thresholds={{ alert: 1200, warning: 1500, danger: 2000, hfl: 3000 }}
+            thresholds={{ alert: 1800, warning: 2200, danger: 2675, hfl: 3850 }}
             showStage
             height={280}
           />

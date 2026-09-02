@@ -297,17 +297,27 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
 
     record_log("INFO", "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/")
 
-    # Real HEC-HMS 4.13 Simulation Run with Dynamic Basin Hyetographs
-    hms_result = execute_hec_hms(start_dt, subbasin_arrays)
+    # Fetch live ThingSpeak IoT telemetry for Shivaji Bridge (Ground Truth Observed Water Level)
+    shivaji_telemetry = fetch_shivaji_live_telemetry()
+    live_stage = shivaji_telemetry.get("stage_m", 532.60)
+    record_log("INFO", f"ThingSpeak Shivaji Live Ground Truth: Distance={shivaji_telemetry.get('raw_feet', 54.83):.2f} ft -> Water Level={live_stage:.2f} m MSL")
+
+    # Real HEC-HMS 4.13 Simulation Run with Dynamic Basin Hyetographs & Observed Stage Baseline
+    hms_result = execute_hec_hms(start_dt, subbasin_arrays, live_stage_m=live_stage)
     peak_h = hms_result["lead_hours_to_peak"]
     peak_q = hms_result["peak_discharge_m3s"]
     baseflow = float(hms_result["hydrograph"][0]["baseflow_m3s"])
 
     hydrograph = []
+    shivaji_forecast = []
+    rajaram_forecast = []
+
     for h in range(90):
         total_q = hms_result["hydrograph"][h]["discharge_m3s"]
         surface_q = hms_result["hydrograph"][h]["surface_runoff_m3s"]
-        stg = convert_discharge_to_stage(total_q, "SHIVAJI_BRIDGE")
+        stg_s = convert_discharge_to_stage(total_q, "SHIVAJI_BRIDGE")
+        stg_r = convert_discharge_to_stage(total_q, "RAJARAM_WEIR")
+
         hydrograph.append({
             "hour": h,
             "timestamp": (start_dt + timedelta(hours=h)).isoformat(),
@@ -315,71 +325,45 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "discharge_m3s": round(total_q, 1),
             "surface_runoff_m3s": round(surface_q, 1),
             "baseflow_m3s": round(baseflow, 1),
-            "stage_m": round(stg, 2),
+            "stage_m": round(stg_s, 2),
             "is_peak": h == peak_h,
         })
 
-    record_log("INFO", f"HEC-HMS 4.13 execution completed ({hms_result['status']}): Peak Discharge {peak_q} m³/s at T+{peak_h}h in {hms_result['runtime_seconds']}s")
-
-    # Fetch live ThingSpeak IoT telemetry for Shivaji Bridge (Ground Truth Observed Water Level)
-    shivaji_telemetry = fetch_shivaji_live_telemetry()
-    live_stage = shivaji_telemetry.get("stage_m", 532.60)
-    record_log("INFO", f"ThingSpeak Shivaji Live Ground Truth: Distance={shivaji_telemetry.get('raw_feet', 54.83):.2f} ft -> Water Level={live_stage:.2f} m MSL")
-
-    # Base hydraulic stages at hour 0 discharge
-    q0_shivaji = hydrograph[0]["discharge_m3s"]
-    base_stg_shivaji = convert_discharge_to_stage(q0_shivaji, "SHIVAJI_BRIDGE")
-    q0_rajaram = hydrograph[0]["discharge_m3s"]
-    base_stg_rajaram = convert_discharge_to_stage(q0_rajaram, "RAJARAM_WEIR")
-
-    # Bridge Stage Forecasts (Coupled Panchganga Reach: Shivaji Bridge -> Rajaram Weir 3.64km)
-    shivaji_forecast = []
-    rajaram_forecast = []
-
-    for h in range(90):
-        # Shivaji Bridge stage anchored directly to live_stage at T+0h
-        q_shivaji = hydrograph[h]["discharge_m3s"]
-        calc_stg_s = convert_discharge_to_stage(q_shivaji, "SHIVAJI_BRIDGE")
-        stg_increment_s = max(0.0, calc_stg_s - base_stg_shivaji)
-        actual_stage_s = round(live_stage + stg_increment_s, 2)
-
+        # Shivaji Bridge stage
         lvl_s = "NORMAL"
-        if actual_stage_s >= 545.33: lvl_s = "HFL_EXCEEDED"
-        elif actual_stage_s >= 544.00: lvl_s = "EXTREME"
-        elif actual_stage_s >= 543.30: lvl_s = "DANGER"
-        elif actual_stage_s >= 542.70: lvl_s = "WARNING"
-        elif actual_stage_s >= 542.10: lvl_s = "ALERT"
+        if stg_s >= 545.33: lvl_s = "HFL_EXCEEDED"
+        elif stg_s >= 544.00: lvl_s = "EXTREME"
+        elif stg_s >= 543.30: lvl_s = "DANGER"
+        elif stg_s >= 542.70: lvl_s = "WARNING"
+        elif stg_s >= 542.10: lvl_s = "ALERT"
 
         shivaji_forecast.append({
             "forecast_time": (start_dt + timedelta(hours=h)).isoformat(),
             "lead_hours": h,
-            "stage_m": actual_stage_s,
-            "discharge_m3s": round(q_shivaji, 1),
+            "stage_m": round(stg_s, 2),
+            "discharge_m3s": round(total_q, 1),
             "alert_level": lvl_s,
-            "is_above_danger": actual_stage_s >= 543.30,
+            "is_above_danger": stg_s >= 543.30,
         })
 
-        # Rajaram K.T. Weir stage anchored to the same live water surface elevation at T+0h
-        q_rajaram = hydrograph[h]["discharge_m3s"]
-        calc_stg_r = convert_discharge_to_stage(q_rajaram, "RAJARAM_WEIR")
-        stg_increment_r = max(0.0, calc_stg_r - base_stg_rajaram)
-        actual_stage_r = round(live_stage + stg_increment_r, 2)
-
+        # Rajaram K.T. Weir stage (coupled downstream reach)
         lvl_r = "NORMAL"
-        if actual_stage_r >= 545.33: lvl_r = "HFL_EXCEEDED"
-        elif actual_stage_r >= 544.00: lvl_r = "EXTREME"
-        elif actual_stage_r >= 543.30: lvl_r = "DANGER"
-        elif actual_stage_r >= 542.07: lvl_r = "WARNING"
-        elif actual_stage_r >= 541.50: lvl_r = "ALERT"
+        if stg_r >= 545.33: lvl_r = "HFL_EXCEEDED"
+        elif stg_r >= 544.00: lvl_r = "EXTREME"
+        elif stg_r >= 543.30: lvl_r = "DANGER"
+        elif stg_r >= 542.07: lvl_r = "WARNING"
+        elif stg_r >= 541.50: lvl_r = "ALERT"
 
         rajaram_forecast.append({
             "forecast_time": (start_dt + timedelta(hours=h)).isoformat(),
             "lead_hours": h,
-            "stage_m": actual_stage_r,
-            "discharge_m3s": round(q_rajaram, 1),
+            "stage_m": round(stg_r, 2),
+            "discharge_m3s": round(total_q, 1),
             "alert_level": lvl_r,
-            "is_above_danger": actual_stage_r >= 543.30,
+            "is_above_danger": stg_r >= 543.30,
         })
+
+    record_log("INFO", f"HEC-HMS 4.13 execution completed ({hms_result['status']}): Peak Discharge {peak_q} m³/s at T+{peak_h}h in {hms_result['runtime_seconds']}s")
 
     bridge_shivaji = {
         "site": {

@@ -785,6 +785,20 @@ def discharge_to_stage(q_m3s: float, rating_df: pd.DataFrame) -> float:
     return float(f_interp(q_m3s))
 
 
+def stage_to_discharge(stage_m: float, rating_df: pd.DataFrame) -> float:
+    """Interpolate river discharge Q (m3/s) from water stage elevation (m MSL)."""
+    h_col = rating_df["stage_m"].values
+    q_col = rating_df["q_m3s"].values
+
+    _, idx = np.unique(h_col, return_index=True)
+    h_u = h_col[idx]
+    q_u = q_col[idx]
+
+    f_interp = interp1d(h_u, q_u, kind="linear", bounds_error=False,
+                        fill_value=(q_u[0], q_u[-1]))
+    return float(f_interp(stage_m))
+
+
 def store_rating_curve_db(conn, cs: CrossSection, rating_df: pd.DataFrame):
     """Persist rating curves into Supabase/Postgres."""
     with conn.cursor() as cur:
@@ -880,11 +894,21 @@ def get_shivaji_rating_curve() -> pd.DataFrame:
 def convert_discharge_to_stage_manning(q_m3s: float, site_id: str = "SHIVAJI_BRIDGE") -> float:
     """Accurately calculates water stage elevation (m MSL) from Manning hydraulic cross-section."""
     df_rc = get_shivaji_rating_curve()
-    stage = discharge_to_stage(max(float(q_m3s), 1.0), df_rc)
+    stage = discharge_to_stage(max(float(q_m3s), 0.01), df_rc)
     if site_id == "RAJARAM_WEIR" or site_id == "RAJARAM_BRIDGE":
         # Rajaram K.T. Weir hydraulic offset (~0.12m downstream water surface drop)
         stage = stage - 0.12
     return float(round(stage, 2))
+
+
+def convert_stage_to_discharge_manning(stage_m: float, site_id: str = "SHIVAJI_BRIDGE") -> float:
+    """Accurately calculates river discharge (m3/s) corresponding to an observed water stage (m MSL)."""
+    df_rc = get_shivaji_rating_curve()
+    stg_val = float(stage_m)
+    if site_id == "RAJARAM_WEIR" or site_id == "RAJARAM_BRIDGE":
+        stg_val = stg_val + 0.12
+    q = stage_to_discharge(stg_val, df_rc)
+    return float(round(max(0.1, q), 1))
 
 
 if __name__ == "__main__":
