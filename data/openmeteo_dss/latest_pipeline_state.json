@@ -18,8 +18,8 @@
       },
       "rajaram": {
         "site_name": "Rajaram K.T. Weir",
-        "current_stage_m": 538.86,
-        "peak_stage_m": 539.42,
+        "current_stage_m": 532.63,
+        "peak_stage_m": 533.19,
         "alert_level": "NORMAL"
       }
     }
@@ -18300,8 +18300,8 @@
     "live_sensor": {
       "status": "SUCCESS",
       "channel_id": "3424513",
-      "timestamp": "2026-09-02T11:04:58Z",
-      "entry_id": 7342,
+      "timestamp": "2026-09-02T11:15:17Z",
+      "entry_id": 7344,
       "raw_feet": 54.86,
       "sensor_datum_msl": 549.35,
       "stage_m": 532.63
@@ -18327,7 +18327,7 @@
       {
         "forecast_time": "2026-09-02T06:00:00+00:00",
         "lead_hours": 0,
-        "stage_m": 538.86,
+        "stage_m": 532.63,
         "discharge_m3s": 850.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18335,7 +18335,7 @@
       {
         "forecast_time": "2026-09-02T07:00:00+00:00",
         "lead_hours": 1,
-        "stage_m": 538.86,
+        "stage_m": 532.63,
         "discharge_m3s": 850.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18343,7 +18343,7 @@
       {
         "forecast_time": "2026-09-02T08:00:00+00:00",
         "lead_hours": 2,
-        "stage_m": 538.86,
+        "stage_m": 532.63,
         "discharge_m3s": 850.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18351,7 +18351,7 @@
       {
         "forecast_time": "2026-09-02T09:00:00+00:00",
         "lead_hours": 3,
-        "stage_m": 538.86,
+        "stage_m": 532.63,
         "discharge_m3s": 850.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18359,7 +18359,7 @@
       {
         "forecast_time": "2026-09-02T10:00:00+00:00",
         "lead_hours": 4,
-        "stage_m": 538.87,
+        "stage_m": 532.64,
         "discharge_m3s": 852.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18367,7 +18367,7 @@
       {
         "forecast_time": "2026-09-02T11:00:00+00:00",
         "lead_hours": 5,
-        "stage_m": 538.89,
+        "stage_m": 532.66,
         "discharge_m3s": 858.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18375,7 +18375,7 @@
       {
         "forecast_time": "2026-09-02T12:00:00+00:00",
         "lead_hours": 6,
-        "stage_m": 538.91,
+        "stage_m": 532.68,
         "discharge_m3s": 866.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18383,7 +18383,7 @@
       {
         "forecast_time": "2026-09-02T13:00:00+00:00",
         "lead_hours": 7,
-        "stage_m": 538.94,
+        "stage_m": 532.71,
         "discharge_m3s": 875.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18391,7 +18391,7 @@
       {
         "forecast_time": "2026-09-02T14:00:00+00:00",
         "lead_hours": 8,
-        "stage_m": 538.97,
+        "stage_m": 532.74,
         "discharge_m3s": 884.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18399,7 +18399,7 @@
       {
         "forecast_time": "2026-09-02T15:00:00+00:00",
         "lead_hours": 9,
-        "stage_m": 539.0,
+        "stage_m": 532.77,
         "discharge_m3s": 893.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18407,7 +18407,7 @@
       {
         "forecast_time": "2026-09-02T16:00:00+00:00",
         "lead_hours": 10,
-        "stage_m": 539.02,
+        "stage_m": 532.79,
         "discharge_m3s": 900.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18415,7 +18415,7 @@
       {
         "forecast_time": "2026-09-02T17:00:00+00:00",
         "lead_hours": 11,
-        "stage_m": 539.04,
+        "stage_m": 532.81,
         "discharge_m3s": 905.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18423,7 +18423,7 @@
       {
         "forecast_time": "2026-09-02T18:00:00+00:00",
         "lead_hours": 12,
-        "stage_m": 539.05,
+        "stage_m": 532.82,
         "discharge_m3s": 909.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18431,7 +18431,7 @@
       {
         "forecast_time": "2026-09-02T19:00:00+00:00",
         "lead_hours": 13,
-        "stage_m": 539.06,
+        "stage_m": 532.83,
         "discharge_m3s": 911.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18439,7 +18439,7 @@
       {
         "forecast_time": "2026-09-02T20:00:00+00:00",
         "lead_hours": 14,
-        "stage_m": 539.06,
+        "stage_m": 532.83,
         "discharge_m3s": 912.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18447,7 +18447,7 @@
       {
         "forecast_time": "2026-09-02T21:00:00+00:00",
         "lead_hours": 15,
-        "stage_m": 539.06,
+        "stage_m": 532.83,
         "discharge_m3s": 912.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18455,7 +18455,7 @@
       {
         "forecast_time": "2026-09-02T22:00:00+00:00",
         "lead_hours": 16,
-        "stage_m": 539.06,
+        "stage_m": 532.83,
         "discharge_m3s": 912.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18463,7 +18463,7 @@
       {
         "forecast_time": "2026-09-02T23:00:00+00:00",
         "lead_hours": 17,
-        "stage_m": 539.06,
+        "stage_m": 532.83,
         "discharge_m3s": 911.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18471,7 +18471,7 @@
       {
         "forecast_time": "2026-09-03T00:00:00+00:00",
         "lead_hours": 18,
-        "stage_m": 539.05,
+        "stage_m": 532.82,
         "discharge_m3s": 909.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18479,7 +18479,7 @@
       {
         "forecast_time": "2026-09-03T01:00:00+00:00",
         "lead_hours": 19,
-        "stage_m": 539.04,
+        "stage_m": 532.81,
         "discharge_m3s": 907.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18487,7 +18487,7 @@
       {
         "forecast_time": "2026-09-03T02:00:00+00:00",
         "lead_hours": 20,
-        "stage_m": 539.04,
+        "stage_m": 532.81,
         "discharge_m3s": 905.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18495,7 +18495,7 @@
       {
         "forecast_time": "2026-09-03T03:00:00+00:00",
         "lead_hours": 21,
-        "stage_m": 539.03,
+        "stage_m": 532.8,
         "discharge_m3s": 903.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18503,7 +18503,7 @@
       {
         "forecast_time": "2026-09-03T04:00:00+00:00",
         "lead_hours": 22,
-        "stage_m": 539.03,
+        "stage_m": 532.8,
         "discharge_m3s": 902.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18511,7 +18511,7 @@
       {
         "forecast_time": "2026-09-03T05:00:00+00:00",
         "lead_hours": 23,
-        "stage_m": 539.02,
+        "stage_m": 532.79,
         "discharge_m3s": 901.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18519,7 +18519,7 @@
       {
         "forecast_time": "2026-09-03T06:00:00+00:00",
         "lead_hours": 24,
-        "stage_m": 539.03,
+        "stage_m": 532.8,
         "discharge_m3s": 903.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18527,7 +18527,7 @@
       {
         "forecast_time": "2026-09-03T07:00:00+00:00",
         "lead_hours": 25,
-        "stage_m": 539.04,
+        "stage_m": 532.81,
         "discharge_m3s": 907.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18535,7 +18535,7 @@
       {
         "forecast_time": "2026-09-03T08:00:00+00:00",
         "lead_hours": 26,
-        "stage_m": 539.06,
+        "stage_m": 532.83,
         "discharge_m3s": 912.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18543,7 +18543,7 @@
       {
         "forecast_time": "2026-09-03T09:00:00+00:00",
         "lead_hours": 27,
-        "stage_m": 539.07,
+        "stage_m": 532.84,
         "discharge_m3s": 917.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18551,7 +18551,7 @@
       {
         "forecast_time": "2026-09-03T10:00:00+00:00",
         "lead_hours": 28,
-        "stage_m": 539.1,
+        "stage_m": 532.87,
         "discharge_m3s": 926.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18559,7 +18559,7 @@
       {
         "forecast_time": "2026-09-03T11:00:00+00:00",
         "lead_hours": 29,
-        "stage_m": 539.11,
+        "stage_m": 532.88,
         "discharge_m3s": 934.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18567,7 +18567,7 @@
       {
         "forecast_time": "2026-09-03T12:00:00+00:00",
         "lead_hours": 30,
-        "stage_m": 539.14,
+        "stage_m": 532.91,
         "discharge_m3s": 944.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18575,7 +18575,7 @@
       {
         "forecast_time": "2026-09-03T13:00:00+00:00",
         "lead_hours": 31,
-        "stage_m": 539.16,
+        "stage_m": 532.93,
         "discharge_m3s": 952.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18583,7 +18583,7 @@
       {
         "forecast_time": "2026-09-03T14:00:00+00:00",
         "lead_hours": 32,
-        "stage_m": 539.18,
+        "stage_m": 532.95,
         "discharge_m3s": 958.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18591,7 +18591,7 @@
       {
         "forecast_time": "2026-09-03T15:00:00+00:00",
         "lead_hours": 33,
-        "stage_m": 539.19,
+        "stage_m": 532.96,
         "discharge_m3s": 962.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18599,7 +18599,7 @@
       {
         "forecast_time": "2026-09-03T16:00:00+00:00",
         "lead_hours": 34,
-        "stage_m": 539.19,
+        "stage_m": 532.96,
         "discharge_m3s": 965.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18607,7 +18607,7 @@
       {
         "forecast_time": "2026-09-03T17:00:00+00:00",
         "lead_hours": 35,
-        "stage_m": 539.2,
+        "stage_m": 532.97,
         "discharge_m3s": 966.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18615,7 +18615,7 @@
       {
         "forecast_time": "2026-09-03T18:00:00+00:00",
         "lead_hours": 36,
-        "stage_m": 539.19,
+        "stage_m": 532.96,
         "discharge_m3s": 965.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18623,7 +18623,7 @@
       {
         "forecast_time": "2026-09-03T19:00:00+00:00",
         "lead_hours": 37,
-        "stage_m": 539.19,
+        "stage_m": 532.96,
         "discharge_m3s": 962.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18631,7 +18631,7 @@
       {
         "forecast_time": "2026-09-03T20:00:00+00:00",
         "lead_hours": 38,
-        "stage_m": 539.18,
+        "stage_m": 532.95,
         "discharge_m3s": 959.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18639,7 +18639,7 @@
       {
         "forecast_time": "2026-09-03T21:00:00+00:00",
         "lead_hours": 39,
-        "stage_m": 539.17,
+        "stage_m": 532.94,
         "discharge_m3s": 955.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18647,7 +18647,7 @@
       {
         "forecast_time": "2026-09-03T22:00:00+00:00",
         "lead_hours": 40,
-        "stage_m": 539.16,
+        "stage_m": 532.93,
         "discharge_m3s": 951.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18655,7 +18655,7 @@
       {
         "forecast_time": "2026-09-03T23:00:00+00:00",
         "lead_hours": 41,
-        "stage_m": 539.15,
+        "stage_m": 532.92,
         "discharge_m3s": 947.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18663,7 +18663,7 @@
       {
         "forecast_time": "2026-09-04T00:00:00+00:00",
         "lead_hours": 42,
-        "stage_m": 539.14,
+        "stage_m": 532.91,
         "discharge_m3s": 942.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18671,7 +18671,7 @@
       {
         "forecast_time": "2026-09-04T01:00:00+00:00",
         "lead_hours": 43,
-        "stage_m": 539.13,
+        "stage_m": 532.9,
         "discharge_m3s": 938.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18679,7 +18679,7 @@
       {
         "forecast_time": "2026-09-04T02:00:00+00:00",
         "lead_hours": 44,
-        "stage_m": 539.12,
+        "stage_m": 532.89,
         "discharge_m3s": 934.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18687,7 +18687,7 @@
       {
         "forecast_time": "2026-09-04T03:00:00+00:00",
         "lead_hours": 45,
-        "stage_m": 539.1,
+        "stage_m": 532.87,
         "discharge_m3s": 930.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18695,7 +18695,7 @@
       {
         "forecast_time": "2026-09-04T04:00:00+00:00",
         "lead_hours": 46,
-        "stage_m": 539.09,
+        "stage_m": 532.86,
         "discharge_m3s": 925.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18703,7 +18703,7 @@
       {
         "forecast_time": "2026-09-04T05:00:00+00:00",
         "lead_hours": 47,
-        "stage_m": 539.08,
+        "stage_m": 532.85,
         "discharge_m3s": 921.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18711,7 +18711,7 @@
       {
         "forecast_time": "2026-09-04T06:00:00+00:00",
         "lead_hours": 48,
-        "stage_m": 539.07,
+        "stage_m": 532.84,
         "discharge_m3s": 918.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18719,7 +18719,7 @@
       {
         "forecast_time": "2026-09-04T07:00:00+00:00",
         "lead_hours": 49,
-        "stage_m": 539.07,
+        "stage_m": 532.84,
         "discharge_m3s": 917.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18727,7 +18727,7 @@
       {
         "forecast_time": "2026-09-04T08:00:00+00:00",
         "lead_hours": 50,
-        "stage_m": 539.08,
+        "stage_m": 532.85,
         "discharge_m3s": 920.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18735,7 +18735,7 @@
       {
         "forecast_time": "2026-09-04T09:00:00+00:00",
         "lead_hours": 51,
-        "stage_m": 539.1,
+        "stage_m": 532.87,
         "discharge_m3s": 928.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18743,7 +18743,7 @@
       {
         "forecast_time": "2026-09-04T10:00:00+00:00",
         "lead_hours": 52,
-        "stage_m": 539.12,
+        "stage_m": 532.89,
         "discharge_m3s": 936.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18751,7 +18751,7 @@
       {
         "forecast_time": "2026-09-04T11:00:00+00:00",
         "lead_hours": 53,
-        "stage_m": 539.15,
+        "stage_m": 532.92,
         "discharge_m3s": 948.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18759,7 +18759,7 @@
       {
         "forecast_time": "2026-09-04T12:00:00+00:00",
         "lead_hours": 54,
-        "stage_m": 539.18,
+        "stage_m": 532.95,
         "discharge_m3s": 961.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18767,7 +18767,7 @@
       {
         "forecast_time": "2026-09-04T13:00:00+00:00",
         "lead_hours": 55,
-        "stage_m": 539.21,
+        "stage_m": 532.98,
         "discharge_m3s": 971.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18775,7 +18775,7 @@
       {
         "forecast_time": "2026-09-04T14:00:00+00:00",
         "lead_hours": 56,
-        "stage_m": 539.23,
+        "stage_m": 533.0,
         "discharge_m3s": 980.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18783,7 +18783,7 @@
       {
         "forecast_time": "2026-09-04T15:00:00+00:00",
         "lead_hours": 57,
-        "stage_m": 539.25,
+        "stage_m": 533.02,
         "discharge_m3s": 987.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18791,7 +18791,7 @@
       {
         "forecast_time": "2026-09-04T16:00:00+00:00",
         "lead_hours": 58,
-        "stage_m": 539.26,
+        "stage_m": 533.03,
         "discharge_m3s": 992.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18799,7 +18799,7 @@
       {
         "forecast_time": "2026-09-04T17:00:00+00:00",
         "lead_hours": 59,
-        "stage_m": 539.27,
+        "stage_m": 533.04,
         "discharge_m3s": 996.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18807,7 +18807,7 @@
       {
         "forecast_time": "2026-09-04T18:00:00+00:00",
         "lead_hours": 60,
-        "stage_m": 539.28,
+        "stage_m": 533.05,
         "discharge_m3s": 996.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18815,7 +18815,7 @@
       {
         "forecast_time": "2026-09-04T19:00:00+00:00",
         "lead_hours": 61,
-        "stage_m": 539.27,
+        "stage_m": 533.04,
         "discharge_m3s": 995.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18823,7 +18823,7 @@
       {
         "forecast_time": "2026-09-04T20:00:00+00:00",
         "lead_hours": 62,
-        "stage_m": 539.26,
+        "stage_m": 533.03,
         "discharge_m3s": 992.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18831,7 +18831,7 @@
       {
         "forecast_time": "2026-09-04T21:00:00+00:00",
         "lead_hours": 63,
-        "stage_m": 539.25,
+        "stage_m": 533.02,
         "discharge_m3s": 988.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18839,7 +18839,7 @@
       {
         "forecast_time": "2026-09-04T22:00:00+00:00",
         "lead_hours": 64,
-        "stage_m": 539.24,
+        "stage_m": 533.01,
         "discharge_m3s": 985.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18847,7 +18847,7 @@
       {
         "forecast_time": "2026-09-04T23:00:00+00:00",
         "lead_hours": 65,
-        "stage_m": 539.23,
+        "stage_m": 533.0,
         "discharge_m3s": 981.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18855,7 +18855,7 @@
       {
         "forecast_time": "2026-09-05T00:00:00+00:00",
         "lead_hours": 66,
-        "stage_m": 539.23,
+        "stage_m": 533.0,
         "discharge_m3s": 978.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18863,7 +18863,7 @@
       {
         "forecast_time": "2026-09-05T01:00:00+00:00",
         "lead_hours": 67,
-        "stage_m": 539.22,
+        "stage_m": 532.99,
         "discharge_m3s": 974.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18871,7 +18871,7 @@
       {
         "forecast_time": "2026-09-05T02:00:00+00:00",
         "lead_hours": 68,
-        "stage_m": 539.21,
+        "stage_m": 532.98,
         "discharge_m3s": 971.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18879,7 +18879,7 @@
       {
         "forecast_time": "2026-09-05T03:00:00+00:00",
         "lead_hours": 69,
-        "stage_m": 539.2,
+        "stage_m": 532.97,
         "discharge_m3s": 967.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18887,7 +18887,7 @@
       {
         "forecast_time": "2026-09-05T04:00:00+00:00",
         "lead_hours": 70,
-        "stage_m": 539.19,
+        "stage_m": 532.96,
         "discharge_m3s": 963.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18895,7 +18895,7 @@
       {
         "forecast_time": "2026-09-05T05:00:00+00:00",
         "lead_hours": 71,
-        "stage_m": 539.18,
+        "stage_m": 532.95,
         "discharge_m3s": 958.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18903,7 +18903,7 @@
       {
         "forecast_time": "2026-09-05T06:00:00+00:00",
         "lead_hours": 72,
-        "stage_m": 539.17,
+        "stage_m": 532.94,
         "discharge_m3s": 956.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18911,7 +18911,7 @@
       {
         "forecast_time": "2026-09-05T07:00:00+00:00",
         "lead_hours": 73,
-        "stage_m": 539.17,
+        "stage_m": 532.94,
         "discharge_m3s": 957.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18919,7 +18919,7 @@
       {
         "forecast_time": "2026-09-05T08:00:00+00:00",
         "lead_hours": 74,
-        "stage_m": 539.19,
+        "stage_m": 532.96,
         "discharge_m3s": 964.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18927,7 +18927,7 @@
       {
         "forecast_time": "2026-09-05T09:00:00+00:00",
         "lead_hours": 75,
-        "stage_m": 539.22,
+        "stage_m": 532.99,
         "discharge_m3s": 977.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18935,7 +18935,7 @@
       {
         "forecast_time": "2026-09-05T10:00:00+00:00",
         "lead_hours": 76,
-        "stage_m": 539.26,
+        "stage_m": 533.03,
         "discharge_m3s": 991.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18943,7 +18943,7 @@
       {
         "forecast_time": "2026-09-05T11:00:00+00:00",
         "lead_hours": 77,
-        "stage_m": 539.29,
+        "stage_m": 533.06,
         "discharge_m3s": 1004.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18951,7 +18951,7 @@
       {
         "forecast_time": "2026-09-05T12:00:00+00:00",
         "lead_hours": 78,
-        "stage_m": 539.33,
+        "stage_m": 533.1,
         "discharge_m3s": 1018.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18959,7 +18959,7 @@
       {
         "forecast_time": "2026-09-05T13:00:00+00:00",
         "lead_hours": 79,
-        "stage_m": 539.37,
+        "stage_m": 533.14,
         "discharge_m3s": 1030.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18967,7 +18967,7 @@
       {
         "forecast_time": "2026-09-05T14:00:00+00:00",
         "lead_hours": 80,
-        "stage_m": 539.39,
+        "stage_m": 533.16,
         "discharge_m3s": 1039.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18975,7 +18975,7 @@
       {
         "forecast_time": "2026-09-05T15:00:00+00:00",
         "lead_hours": 81,
-        "stage_m": 539.41,
+        "stage_m": 533.18,
         "discharge_m3s": 1045.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18983,7 +18983,7 @@
       {
         "forecast_time": "2026-09-05T16:00:00+00:00",
         "lead_hours": 82,
-        "stage_m": 539.42,
+        "stage_m": 533.19,
         "discharge_m3s": 1048.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18991,7 +18991,7 @@
       {
         "forecast_time": "2026-09-05T17:00:00+00:00",
         "lead_hours": 83,
-        "stage_m": 539.42,
+        "stage_m": 533.19,
         "discharge_m3s": 1050.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -18999,7 +18999,7 @@
       {
         "forecast_time": "2026-09-05T18:00:00+00:00",
         "lead_hours": 84,
-        "stage_m": 539.42,
+        "stage_m": 533.19,
         "discharge_m3s": 1047.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -19007,7 +19007,7 @@
       {
         "forecast_time": "2026-09-05T19:00:00+00:00",
         "lead_hours": 85,
-        "stage_m": 539.4,
+        "stage_m": 533.17,
         "discharge_m3s": 1043.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -19015,7 +19015,7 @@
       {
         "forecast_time": "2026-09-05T20:00:00+00:00",
         "lead_hours": 86,
-        "stage_m": 539.39,
+        "stage_m": 533.16,
         "discharge_m3s": 1037.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -19023,7 +19023,7 @@
       {
         "forecast_time": "2026-09-05T21:00:00+00:00",
         "lead_hours": 87,
-        "stage_m": 539.37,
+        "stage_m": 533.14,
         "discharge_m3s": 1030.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -19031,7 +19031,7 @@
       {
         "forecast_time": "2026-09-05T22:00:00+00:00",
         "lead_hours": 88,
-        "stage_m": 539.35,
+        "stage_m": 533.12,
         "discharge_m3s": 1023.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -19039,7 +19039,7 @@
       {
         "forecast_time": "2026-09-05T23:00:00+00:00",
         "lead_hours": 89,
-        "stage_m": 539.33,
+        "stage_m": 533.1,
         "discharge_m3s": 1017.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
@@ -19162,32 +19162,32 @@
   },
   "logs": [
     {
-      "t": "16:36:14",
+      "t": "16:46:16",
       "lv": "INFO",
       "msg": "Forecast cycle CYC_20260902_06z initiated across 18 Panchganga stations"
     },
     {
-      "t": "16:36:38",
+      "t": "16:46:44",
       "lv": "INFO",
       "msg": "Open-Meteo 90-hr precipitation forecast downloaded successfully"
     },
     {
-      "t": "16:36:38",
+      "t": "16:46:44",
       "lv": "INFO",
       "msg": "Dynamic subbasin selector evaluated: S1\u2192Karvir, S2\u2192Sangarul, S6\u2192Gaganbawda"
     },
     {
-      "t": "16:36:38",
+      "t": "16:46:44",
       "lv": "INFO",
       "msg": "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/"
     },
     {
-      "t": "16:36:53",
+      "t": "16:46:47",
       "lv": "INFO",
-      "msg": "HEC-HMS 4.13 execution completed (CALIBRATED_RJKT): Peak Discharge 1050.1 m\u00b3/s at T+83h in 15.0s"
+      "msg": "HEC-HMS 4.13 execution completed (COMPLETED_BINARY): Peak Discharge 1050.1 m\u00b3/s at T+83h in 2.47s"
     },
     {
-      "t": "16:36:54",
+      "t": "16:46:48",
       "lv": "INFO",
       "msg": "ThingSpeak Shivaji Live Ground Truth: Distance=54.86 ft -> Water Level=532.63 m MSL"
     }

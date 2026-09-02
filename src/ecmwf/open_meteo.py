@@ -326,11 +326,13 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     live_stage = shivaji_telemetry.get("stage_m", 532.60)
     record_log("INFO", f"ThingSpeak Shivaji Live Ground Truth: Distance={shivaji_telemetry.get('raw_feet', 54.83):.2f} ft -> Water Level={live_stage:.2f} m MSL")
 
-    # Base hydraulic stage at hour 0 discharge
+    # Base hydraulic stages at hour 0 discharge
     q0_shivaji = hydrograph[0]["discharge_m3s"]
     base_stg_shivaji = convert_discharge_to_stage(q0_shivaji, "SHIVAJI_BRIDGE")
+    q0_rajaram = hydrograph[0]["discharge_m3s"]
+    base_stg_rajaram = convert_discharge_to_stage(q0_rajaram, "RAJARAM_WEIR")
 
-    # Bridge Stage Forecasts
+    # Bridge Stage Forecasts (Coupled Panchganga Reach: Shivaji Bridge -> Rajaram Weir 3.64km)
     shivaji_forecast = []
     rajaram_forecast = []
 
@@ -357,23 +359,26 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "is_above_danger": actual_stage_s >= 543.30,
         })
 
-        # Rajaram K.T. Weir stage
+        # Rajaram K.T. Weir stage anchored to the same live water surface elevation at T+0h
         q_rajaram = hydrograph[h]["discharge_m3s"]
-        stg_rajaram = convert_discharge_to_stage(q_rajaram, "RAJARAM_WEIR")
+        calc_stg_r = convert_discharge_to_stage(q_rajaram, "RAJARAM_WEIR")
+        stg_increment_r = max(0.0, calc_stg_r - base_stg_rajaram)
+        actual_stage_r = round(live_stage + stg_increment_r, 2)
+
         lvl_r = "NORMAL"
-        if stg_rajaram >= 545.33: lvl_r = "HFL_EXCEEDED"
-        elif stg_rajaram >= 544.00: lvl_r = "EXTREME"
-        elif stg_rajaram >= 543.30: lvl_r = "DANGER"
-        elif stg_rajaram >= 542.07: lvl_r = "WARNING"
-        elif stg_rajaram >= 541.50: lvl_r = "ALERT"
+        if actual_stage_r >= 545.33: lvl_r = "HFL_EXCEEDED"
+        elif actual_stage_r >= 544.00: lvl_r = "EXTREME"
+        elif actual_stage_r >= 543.30: lvl_r = "DANGER"
+        elif actual_stage_r >= 542.07: lvl_r = "WARNING"
+        elif actual_stage_r >= 541.50: lvl_r = "ALERT"
 
         rajaram_forecast.append({
             "forecast_time": (start_dt + timedelta(hours=h)).isoformat(),
             "lead_hours": h,
-            "stage_m": round(stg_rajaram, 2),
+            "stage_m": actual_stage_r,
             "discharge_m3s": round(q_rajaram, 1),
             "alert_level": lvl_r,
-            "is_above_danger": stg_rajaram >= 543.30,
+            "is_above_danger": actual_stage_r >= 543.30,
         })
 
     bridge_shivaji = {
