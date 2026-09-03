@@ -159,7 +159,7 @@ ON CONFLICT (site_id) DO UPDATE SET
 CREATE TABLE IF NOT EXISTS simulation_runs (
     run_id                      VARCHAR(100) PRIMARY KEY,
     cycle_date                  DATE NOT NULL,
-    cycle_time                  VARCHAR(16) NOT NULL, -- e.g. '00z', '06z', '12z', '18z'
+    cycle_time                  VARCHAR(32) NOT NULL, -- e.g. '00z', '06z', '12z', '18z'
     start_time                  TIMESTAMPTZ NOT NULL,
     end_time                    TIMESTAMPTZ,
     status                      VARCHAR(32) NOT NULL DEFAULT 'completed',
@@ -284,14 +284,18 @@ CREATE INDEX IF NOT EXISTS idx_bsf_lead ON bridge_stage_forecast (lead_hours);
 CREATE TABLE IF NOT EXISTS wrd_field_benchmarks (
     record_id           SERIAL PRIMARY KEY,
     stage_m             NUMERIC(6,2) NOT NULL,
-    stage_feet_inches   VARCHAR(16) NOT NULL,
+    stage_feet_inches   VARCHAR(32) NOT NULL,
     discharge_cusecs    NUMERIC(10,1) NOT NULL,
     discharge_m3s       NUMERIC(10,2) NOT NULL,
     source_agency       VARCHAR(100) DEFAULT 'Maharashtra Water Resources Dept (WRD)',
-    survey_year         VARCHAR(16) DEFAULT 'Monsoon Flood Gauging',
+    survey_year         VARCHAR(64) DEFAULT 'Monsoon Flood Gauging',
     is_danger_threshold BOOLEAN DEFAULT FALSE,
     created_at          TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration safety for pre-existing wrd_field_benchmarks tables:
+ALTER TABLE wrd_field_benchmarks ALTER COLUMN survey_year TYPE VARCHAR(64);
+ALTER TABLE wrd_field_benchmarks ALTER COLUMN stage_feet_inches TYPE VARCHAR(32);
 
 -- Seed the 19 Official WRD Empirical Field Gauge Observations
 INSERT INTO wrd_field_benchmarks (stage_m, stage_feet_inches, discharge_cusecs, discharge_m3s, is_danger_threshold)
