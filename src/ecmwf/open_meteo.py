@@ -155,15 +155,50 @@ def sync_to_supabase(state: dict, db_url: str):
                     duration_seconds NUMERIC(10,2) NOT NULL,
                     PRIMARY KEY (cycle_id, step_number)
                 );
+
+                CREATE TABLE IF NOT EXISTS station_rainfall_telemetry (
+                    id BIGSERIAL PRIMARY KEY,
+                    run_id VARCHAR(64) NOT NULL,
+                    station_id VARCHAR(64) NOT NULL,
+                    subbasin_id VARCHAR(32) NOT NULL,
+                    lat NUMERIC(8,4),
+                    lon NUMERIC(8,4),
+                    elevation VARCHAR(32),
+                    cumulative_90h_mm NUMERIC(8,2) NOT NULL,
+                    is_primary BOOLEAN DEFAULT TRUE,
+                    is_governing BOOLEAN DEFAULT FALSE,
+                    method VARCHAR(64),
+                    created_at TIMESTAMPTZ DEFAULT NOW()
+                );
+
+                CREATE TABLE IF NOT EXISTS forecast_validation_metrics (
+                    run_id VARCHAR(64) PRIMARY KEY,
+                    spearman_rho NUMERIC(6,4),
+                    spearman_rho_q NUMERIC(6,4),
+                    nse_stage NUMERIC(6,4),
+                    nse_discharge NUMERIC(6,4),
+                    rmse_stage_m NUMERIC(6,4),
+                    mae_stage_m NUMERIC(6,4),
+                    pbias_stage_pct NUMERIC(6,2),
+                    basin_rainfall_accuracy_pct NUMERIC(5,2),
+                    performance_grade VARCHAR(32),
+                    sample_size_hours INT,
+                    created_at TIMESTAMPTZ DEFAULT NOW()
+                );
             """)
 
             last_c = state["status"]["last_cycle"]
             start_dt_val = datetime.fromisoformat(last_c["start_time"])
             end_dt_val = datetime.fromisoformat(last_c["end_time"])
 
+            val_obj = state.get("validation", {})
+            val_metrics = val_obj.get("metrics", {})
+
             # 1. simulation_runs
             cur.execute("""
-                INSERT INTO simulation_runs (run_id, cycle_date, cycle_time, start_time, end_time, status, model_version)
+                INSERT INTO simulation_runs (
+                    run_id, cycle_date, cycle_time, start_time, end_time, status, model_version
+                )
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (run_id) DO UPDATE SET
                     end_time = EXCLUDED.end_time,
@@ -243,6 +278,54 @@ def sync_to_supabase(state: dict, db_url: str):
                     status = EXCLUDED.status,
                     duration_seconds = EXCLUDED.duration_seconds;
             """, step_rows)
+
+            # 5. station_rainfall_telemetry (Input rainfall for all 18 stations)
+            cur.execute("DELETE FROM station_rainfall_telemetry WHERE run_id = %s;", (last_c["run_id"],))
+            st_rows = [
+                (
+                    last_c["run_id"],
+                    st["station_id"],
+                    st.get("subbasin_id", ""),
+                    float(st.get("lat", 0)),
+                    float(st.get("lon", 0)),
+                    str(st.get("elevation", "")),
+                    float(st.get("cumulative_90h_mm", 0)),
+                    bool(st.get("is_primary", True)),
+                    bool(st.get("is_governing", False)),
+                    str(st.get("method", "")),
+                )
+                for st in state.get("stations", [])
+            ]
+            if st_rows:
+                execute_values(cur, """
+                    INSERT INTO station_rainfall_telemetry
+                    (run_id, station_id, subbasin_id, lat, lon, elevation, cumulative_90h_mm, is_primary, is_governing, method)
+                    VALUES %s
+                """, st_rows)
+
+            # 6. forecast_validation_metrics (Accuracy metrics output)
+            if val_metrics:
+                cur.execute("""
+                    INSERT INTO forecast_validation_metrics
+                    (run_id, spearman_rho, spearman_rho_q, nse_stage, nse_discharge, rmse_stage_m, mae_stage_m, pbias_stage_pct, basin_rainfall_accuracy_pct, performance_grade, sample_size_hours)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (run_id) DO UPDATE SET
+                        spearman_rho = EXCLUDED.spearman_rho,
+                        nse_discharge = EXCLUDED.nse_discharge,
+                        performance_grade = EXCLUDED.performance_grade;
+                """, (
+                    last_c["run_id"],
+                    val_metrics.get("spearman_rho"),
+                    val_metrics.get("spearman_rho_q"),
+                    val_metrics.get("nse_stage"),
+                    val_metrics.get("nse_discharge"),
+                    val_metrics.get("rmse_stage_m"),
+                    val_metrics.get("mae_stage_m"),
+                    val_metrics.get("pbias_stage_pct"),
+                    val_metrics.get("basin_rainfall_accuracy_pct"),
+                    val_obj.get("performance_grade", "EXCELLENT"),
+                    val_obj.get("sample_size_hours", 48),
+                ))
 
         conn.commit()
         conn.close()

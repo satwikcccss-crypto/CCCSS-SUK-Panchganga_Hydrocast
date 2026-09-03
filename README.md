@@ -14,12 +14,22 @@
 ```
 
 [![Pipeline Status](https://img.shields.io/badge/Pipeline-100%25%20Operational-emerald.svg?style=for-the-badge)](#)
-[![Spearman Rank](https://img.shields.io/badge/Spearman%20Rank%20ρ-0.9889%20(p%20<%200.001)-indigo.svg?style=for-the-badge)](#)
-[![Nash-Sutcliffe](https://img.shields.io/badge/NSE%20Score-0.9879%20(Gold%20Standard)-blue.svg?style=for-the-badge)](#)
-[![Volumetric PBIAS](https://img.shields.io/badge/Volumetric%20PBIAS--0.08%25%20(Target%20<5%25)-teal.svg?style=for-the-badge)](#)
-[![Next.js 14](https://img.shields.io/badge/Frontend-Next.js%2014%20(App%20Router)-black.svg?style=for-the-badge)](#)
-[![FastAPI](https://img.shields.io/badge/Backend-FastAPI%20ASGI-009688.svg?style=for-the-badge)](#)
-[![Hydrology Engine](https://img.shields.io/badge/Hydrology-HEC--HMS%204.x%20%2B%20Python%20SCS--CN-red.svg?style=for-the-badge)](#)
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)](#)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-4169E1.svg?style=for-the-badge&logo=postgresql&logoColor=white)](#)
+[![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E.svg?style=for-the-badge&logo=supabase&logoColor=white)](#)
+[![NumPy](https://img.shields.io/badge/NumPy-Vectorized-013243.svg?style=for-the-badge&logo=numpy&logoColor=white)](#)
+[![SciPy](https://img.shields.io/badge/SciPy-Interpolation%20(PCHIP)-8CAAE6.svg?style=for-the-badge&logo=scipy&logoColor=white)](#)
+[![Pandas](https://img.shields.io/badge/Pandas-DataFrames-150458.svg?style=for-the-badge&logo=pandas&logoColor=white)](#)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-Validation%20Metrics-F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)](#)
+[![FastAPI](https://img.shields.io/badge/FastAPI-ASGI%20WebSockets-009688.svg?style=for-the-badge&logo=fastapi&logoColor=white)](#)
+[![Next.js 14](https://img.shields.io/badge/Next.js-14%20(App%20Router)-000000.svg?style=for-the-badge&logo=next.js&logoColor=white)](#)
+[![React 18](https://img.shields.io/badge/React-18-61DAFB.svg?style=for-the-badge&logo=react&logoColor=black)](#)
+[![Chart.js](https://img.shields.io/badge/Chart.js-4.4-FF6384.svg?style=for-the-badge&logo=chart.js&logoColor=white)](#)
+[![Leaflet GIS](https://img.shields.io/badge/Leaflet-GIS%20Mapping-199900.svg?style=for-the-badge&logo=leaflet&logoColor=white)](#)
+[![HEC-HMS](https://img.shields.io/badge/HEC--HMS-4.x%20Headless-8B0000.svg?style=for-the-badge)](#)
+[![Cron](https://img.shields.io/badge/Cron-6--Hourly%20Schedule-FF7043.svg?style=for-the-badge)](#)
+[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%2F%207-5391FE.svg?style=for-the-badge&logo=powershell&logoColor=white)](#)
+[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD%20Automation-2088FF.svg?style=for-the-badge&logo=github-actions&logoColor=white)](#)
 
 ---
 
@@ -320,6 +330,7 @@ The documentation suite is organized in the [`docs/`](file:///e:/hydrocast_compl
 | 🚀 **[`docs/Deployment_Operations.md`](file:///e:/hydrocast_complete/docs/Deployment_Operations.md)** | Production operations manual, Linux systemd services, PM2 process management, automated 6-hourly cron jobs, and NGINX configs. |
 | ⚠️ **[`docs/Errors_Mistakes_Engineering_Assumptions.md`](file:///e:/hydrocast_complete/docs/Errors_Mistakes_Engineering_Assumptions.md)** | Comprehensive autopsy of 30.2× bed slope distortion, wetted perimeter collapse, spline oscillations, and engineering assumptions. |
 | 💡 **[`docs/Novelty_of_this_System.md`](file:///e:/hydrocast_complete/docs/Novelty_of_this_System.md)** | The 10 core architectural and hydrologic novelties of HydroCast, comparative innovation matrix vs traditional CWC/IMD systems. |
+| 🎓 **[`docs/Accuracy_Analysis_PI_Report.md`](file:///e:/hydrocast_complete/docs/Accuracy_Analysis_PI_Report.md)** | Formal academic accuracy and simulation validation research memorandum prepared for the Principal Investigator (PI). |
 
 ---
 
@@ -442,8 +453,26 @@ Forecast cycles run automatically 45 minutes after ECMWF global assimilation:
 ## 15. Repository Structure
 
 ```
-hydrocast/
- ├── docs/                             # Comprehensive technical documentation suite
+CCCSS-SUK-Panchganga_Hydrocast/ (GitHub Repository Root)
+ ├── .github/
+ │    └── workflows/
+ │         └── pipeline.yml              # 6-Hourly automated CI/CD forecast runner
+ ├── data/
+ │    ├── gov_rating_curve_records.json # 19 Maharashtra WRD ground truth benchmarks
+ │    ├── hms/
+ │    │    └── HMS_Automation_RJKT/      # USACE HEC-HMS 4.x basin & DSS models
+ │    ├── openmeteo_dss/
+ │    │    └── latest_pipeline_state.json# Runtime state cache
+ │    ├── runs/                         # Immutable persistent historical runs archive
+ │    │    ├── CYC_20260831_06z.json
+ │    │    ├── ...
+ │    │    └── runs_index.json           # Fast index of historical computation cycles
+ │    └── Shapefiles_Panchganga basin/  # Subbasin & stream network GeoJSON layers
+ ├── database/
+ │    ├── schema_v3.sql                 # PostgreSQL relational production schema
+ │    └── supabase_schema.sql           # Supabase cloud database schema
+ ├── docs/                             # Comprehensive 18-module technical documentation library
+ │    ├── Accuracy_Analysis_PI_Report.md# Research report for Principal Investigator
  │    ├── Architecture.md              # 12-Step pipeline & fault tolerance
  │    ├── Backend.md                   # FastAPI services, asyncpg, WebSocket
  │    ├── Calibration_Validation.md    # Spearman rank ρ, NSE, WRD benchmarks
@@ -461,30 +490,36 @@ hydrocast/
  │    ├── Runoff_Computation.md        # Mathematical runoff continuum & routing
  │    ├── Shpfiles.md                  # Vector GeoJSON, stream ordering, DEM
  │    └── Stage_Conversion_Discharge.md# Monotonic PCHIP rating curves
- ├── system/
- │    ├── data/
- │    │    ├── gov_rating_curve_records.json # Official 19 WRD field records
- │    │    ├── runs/                         # Persistent historical runs archive
- │    │    ├── hms/                          # HEC-HMS project models & DSS files
- │    │    └── Shapefiles_Panchganga basin/  # Vector GeoJSON layers
- │    ├── database/
- │    │    ├── schema_v3.sql                 # Primary PostgreSQL schema
- │    │    └── supabase_schema.sql           # Supabase cloud schema
- │    ├── frontend/                          # Next.js 14 web application
- │    │    ├── app/dashboard/page.tsx        # Executive dashboard shell
- │    │    ├── components/AccuracyPanel.tsx  # Accuracy & historical runs panel
- │    │    └── public/data/                  # Mirrored runtime data & GeoJSON
- │    └── src/
- │         ├── api/main.py                   # FastAPI application & endpoints
- │         ├── ecmwf/open_meteo.py           # ECMWF fetcher & forecast runner
- │         ├── ecmwf/station_selector.py     # 18-station conservative router
- │         ├── hms/runner.py                 # HEC-HMS runner & SCS-CN emulator
- │         ├── hydrology/stage_converter.py  # Monotonic PCHIP rating curves
- │         ├── hydrology/validation_metrics.py# Spearman ρ, NSE, RMSE engine
- │         ├── hydrology/runs_tracker.py     # Historical runs persistent ledger
- │         └── sensors/thingspeak_gauge.py   # IoT ultrasonic radar telemetry
- ├── README.md                               # Root master documentation hub
- └── LICENSE                                 # Open Source License
+ ├── frontend/                         # Next.js 14 Web Application
+ │    ├── app/
+ │    │    ├── api/v1/dashboard/route.ts # Next.js API proxy route
+ │    │    └── dashboard/page.tsx        # Responsive dashboard shell
+ │    ├── components/
+ │    │    ├── AccuracyPanel.tsx         # Accuracy, WRD table & run ledger
+ │    │    ├── OverviewPanel.tsx         # Executive KPI tiles & Leaflet map
+ │    │    ├── RainfallPanel.tsx         # 18-station hyetographs & bar charts
+ │    │    ├── RunoffPanel.tsx           # HEC-HMS hydrograph & 2D SVG river cross-section
+ │    │    └── SystemPanel.tsx           # 12-Step pipeline health & logs
+ │    ├── lib/
+ │    │    └── api.ts                    # SWR client & fetch wrappers
+ │    └── public/data/                  # Mirrored runtime JSON datasets
+ ├── src/                              # Python Core Hydrological Engine
+ │    ├── api/
+ │    │    └── main.py                   # FastAPI REST API & WebSocket service
+ │    ├── ecmwf/
+ │    │    ├── open_meteo.py             # ECMWF fetcher, runner, & Supabase sync
+ │    │    └── station_selector.py       # 18-station dynamic conservative router
+ │    ├── hms/
+ │    │    └── runner.py                 # HEC-HMS batch runner & Python SCS-CN emulator
+ │    ├── hydrology/
+ │    │    ├── stage_converter.py        # Calibrated dual-regime PCHIP rating curves
+ │    │    ├── validation_metrics.py     # Spearman ρ, NSE, RMSE & volume metrics
+ │    │    └── runs_tracker.py           # Multi-run JSON persistence ledger
+ │    └── sensors/
+ │         └── thingspeak_gauge.py       # ThingSpeak IoT ultrasonic radar telemetry
+ ├── requirements.txt                  # Python dependencies
+ ├── README.md                         # Master repository documentation hub
+ └── LICENSE                           # MIT License
 ```
 
 ---
