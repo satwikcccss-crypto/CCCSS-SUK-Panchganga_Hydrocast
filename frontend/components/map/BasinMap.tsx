@@ -21,38 +21,41 @@ import {
   Filter,
 } from "lucide-react";
 
-// Complete Registry of 18 Primary & Alternate Rainfall Stations (S1–S9)
+// Complete Registry of 20 Primary & Alternate Rainfall Stations (S1–S9)
 export const ALL_GAUGE_STATIONS = [
-  // S1
-  { id: "KARVIR", name: "Karvir", subbasin: "S1", lon: 74.2481772, lat: 16.706369, isPrimary: true, elevation: "550m", taluka: "Karvir" },
+  // S1 (Area: 86.213 km²)
+  { id: "KARVEER", name: "Karveer", subbasin: "S1", lon: 74.2481772, lat: 16.706369, isPrimary: true, elevation: "550m", taluka: "Karvir" },
+  { id: "KARVIR", name: "Karveer", subbasin: "S1", lon: 74.2481772, lat: 16.706369, isPrimary: true, elevation: "550m", taluka: "Karvir" },
 
-  // S2
+  // S2 (Area: 153.77 km²)
   { id: "SANGARUL", name: "Sangarul", subbasin: "S2", lon: 74.0931627, lat: 16.6841962, isPrimary: true, elevation: "572m", taluka: "Karvir" },
   { id: "BALINGA", name: "Balinga", subbasin: "S2", lon: 74.17031, lat: 16.6878443, isPrimary: false, elevation: "560m", taluka: "Karvir" },
   { id: "KALE", name: "Kale", subbasin: "S2", lon: 74.0564499, lat: 16.7228087, isPrimary: false, elevation: "580m", taluka: "Panhala" },
 
-  // S3
+  // S3 (Area: 261.32 km²)
   { id: "KOTOLI", name: "Kotoli", subbasin: "S3", lon: 74.0518705, lat: 16.7820174, isPrimary: true, elevation: "585m", taluka: "Panhala" },
   { id: "BAJAR_BHOGAON", name: "Bajar Bhogaon", subbasin: "S3", lon: 74.1107824, lat: 16.8086769, isPrimary: false, elevation: "590m", taluka: "Panhala" },
   { id: "PADAL", name: "Padal", subbasin: "S3", lon: 74.115187, lat: 16.7446006, isPrimary: false, elevation: "575m", taluka: "Panhala" },
 
-  // S4
-  { id: "BEED", name: "Beed", subbasin: "S4", lon: 74.1288964, lat: 16.647984, isPrimary: true, elevation: "565m", taluka: "Karvir" },
+  // S4 (Area: 262.00 km²)
+  { id: "KARANJPHEN", name: "Karanjphen", subbasin: "S4", lon: 73.9036487, lat: 16.7850973, isPrimary: true, elevation: "640m", taluka: "Panhala" },
 
-  // S5
-  { id: "SALWAN", name: "Salwan", subbasin: "S5", lon: 73.9735, lat: 16.6712, isPrimary: true, elevation: "595m", taluka: "Gaganbawda" },
+  // S5 (Area: 106.39 km²)
+  { id: "PADASALI", name: "Padasali", subbasin: "S5", lon: 73.843584, lat: 16.701934, isPrimary: true, elevation: "620m", taluka: "Gaganbawda" },
+  { id: "SALWAN", name: "Salwan", subbasin: "S5", lon: 73.9735, lat: 16.6712, isPrimary: false, elevation: "595m", taluka: "Gaganbawda" },
 
-  // S6
-  { id: "KARANJPHEN", name: "Karanjphen", subbasin: "S6", lon: 73.9036487, lat: 16.7850973, isPrimary: true, elevation: "640m", taluka: "Radhanagari" },
-  { id: "GAGANBAWDA", name: "Gaganbawda", subbasin: "S6", lon: 73.8346738, lat: 16.5469926, isPrimary: false, elevation: "680m", taluka: "Gaganbawda" },
+  // S6 (Area: 227.72 km²)
+  { id: "GAGANBAWDA", name: "Gaganbawda", subbasin: "S6", lon: 73.8346738, lat: 16.5469926, isPrimary: true, elevation: "680m", taluka: "Gaganbawda" },
 
-  // S7
-  { id: "RADHANAGARI", name: "Radhanagari", subbasin: "S7", lon: 73.9971822, lat: 16.41021, isPrimary: true, elevation: "615m", taluka: "Radhanagari" },
+  // S7 (Area: 195.39 km²)
+  { id: "GARIVADE", name: "Garivade", subbasin: "S7", lon: 73.918419, lat: 16.520366, isPrimary: true, elevation: "610m", taluka: "Radhanagari" },
 
-  // S8
+  // S8 (Area: 177.44 km²)
+  { id: "BEED", name: "Beed", subbasin: "S8", lon: 74.1288964, lat: 16.647984, isPrimary: true, elevation: "565m", taluka: "Karvir" },
   { id: "SHIROLI_DHUMALA", name: "Shiroli-Dhumala", subbasin: "S8", lon: 74.1062828, lat: 16.6166768, isPrimary: false, elevation: "560m", taluka: "Karvir" },
 
-  // S9
+  // S9 (Area: 366.97 km²)
+  { id: "RADHANAGARI", name: "Radhanagari", subbasin: "S9", lon: 73.9971822, lat: 16.41021, isPrimary: true, elevation: "615m", taluka: "Radhanagari" },
   { id: "HALADI", name: "Haladi", subbasin: "S9", lon: 74.156292, lat: 16.5932632, isPrimary: false, elevation: "555m", taluka: "Kagal" },
   { id: "RASHIWADE_BK", name: "Rashiwade Bk.", subbasin: "S9", lon: 74.1019728, lat: 16.5475641, isPrimary: false, elevation: "570m", taluka: "Radhanagari" },
   { id: "AAVALI_BK", name: "Aavali Bk.", subbasin: "S9", lon: 74.0549812, lat: 16.481009, isPrimary: false, elevation: "585m", taluka: "Radhanagari" },
@@ -193,15 +196,15 @@ export default function BasinMap({
 
       // Check if this station is active governing selection in HEC-HMS (subbasins S1-S9)
       const isGoverning = stMatch?.is_governing ?? (
-        g.id === "KARVIR" || // S1
-        g.id === "SANGARUL" || // S2
-        g.id === "BAJAR_BHOGAON" || // S3
-        g.id === "BEED" || // S4
-        g.id === "SALWAN" || // S5
-        g.id === "GAGANBAWDA" || // S6
-        g.id === "RADHANAGARI" || // S7
-        g.id === "SHIROLI_DHUMALA" || // S8
-        g.id === "KASABA_WALAWE" // S9
+        g.id === "KARVEER" || g.id === "KARVIR" || // S1
+        g.id === "SANGARUL" ||                     // S2
+        g.id === "KOTOLI" ||                       // S3
+        g.id === "KARANJPHEN" ||                   // S4
+        g.id === "PADASALI" ||                     // S5
+        g.id === "GAGANBAWDA" ||                   // S6
+        g.id === "GARIVADE" ||                     // S7
+        g.id === "BEED" ||                         // S8
+        g.id === "RADHANAGARI"                     // S9
       );
       const peakRate = stMatch?.peak_rate_mmh ?? (rainVal > 0 ? (rainVal / 18).toFixed(1) : "0.0");
 
