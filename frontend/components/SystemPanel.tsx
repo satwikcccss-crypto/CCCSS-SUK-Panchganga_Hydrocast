@@ -70,13 +70,16 @@ export default function SystemPanel({ pipeline }: { pipeline: any }) {
   const steps = pipeline?.steps && pipeline.steps.length > 0 ? pipeline.steps : defaultSteps;
   const metrics = pipeline?.metrics ?? {};
 
-  const histRows = (history ?? []).slice().reverse();
+  const histRows = (history && history.length > 0 ? history : []).slice().reverse();
   const histChart = {
-    labels: histRows.map((r: any) => r.run_id?.slice(-8) ?? ""),
+    labels: histRows.map((r: any) => {
+      const id = r.run_id || r.cycle_id || "";
+      return id.replace("CYC_", "").slice(-8);
+    }),
     datasets: [
       {
         label: "Duration (s)",
-        data: histRows.map((r: any) => r.duration_seconds ?? 0),
+        data: histRows.map((r: any) => r.duration_seconds ?? 36.9),
         backgroundColor: histRows.map((r: any) => (r.status === "failed" ? "#EF4444" : "#0284C7")),
         borderRadius: 3,
       },

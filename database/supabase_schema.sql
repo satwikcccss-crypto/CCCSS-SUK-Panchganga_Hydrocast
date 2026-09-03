@@ -62,6 +62,14 @@ CREATE TABLE IF NOT EXISTS gauge_stations (
 CREATE INDEX IF NOT EXISTS idx_gs_subbasin ON gauge_stations (subbasin_id);
 CREATE INDEX IF NOT EXISTS idx_gs_geom ON gauge_stations USING GIST (geom);
 
+-- Migration safety for pre-existing Supabase tables:
+ALTER TABLE gauge_stations ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT TRUE;
+ALTER TABLE gauge_stations ADD COLUMN IF NOT EXISTS elevation_m NUMERIC(6,1);
+ALTER TABLE gauge_stations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
+ALTER TABLE gauge_stations ADD COLUMN IF NOT EXISTS subbasin_id VARCHAR(32);
+ALTER TABLE gauge_stations ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION;
+ALTER TABLE gauge_stations ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
+
 -- Seed all 20 Primary and Alternate Panchganga Stations
 INSERT INTO gauge_stations (station_id, station_name, subbasin_id, latitude, longitude, elevation_m, is_primary)
 VALUES

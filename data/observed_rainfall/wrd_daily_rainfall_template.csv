@@ -1,0 +1,25 @@
+# Maharashtra Water Resources Department (WRD) / IMD Daily Ground Gauge Ingest Template
+# Drop observed rainfall CSV files into this directory (`system/data/observed_rainfall/`)
+# Column format: station_id,rainfall_mm
+# Values represent 24-hour / Cumulative gauge observation at 08:30 IST
+station_id,rainfall_mm
+KARVEER,6.8
+SANGARUL,6.0
+BALINGA,4.5
+KALE,5.8
+KOTOLI,8.4
+BAJAR_BHOGAON,6.9
+PADAL,9.1
+KARANJPHEN,36.0
+PADASALI,47.7
+SALWAN,16.0
+GAGANBAWDA,52.1
+GARIVADE,49.6
+BEED,5.1
+SHIROLI_DHUMALA,5.1
+RADHANAGARI,27.8
+HALADI,9.2
+RASHIWADE_BK,8.0
+AAVALI_BK,15.5
+KASABA_TARALE,16.2
+KASABA_WALAWE,27.0
