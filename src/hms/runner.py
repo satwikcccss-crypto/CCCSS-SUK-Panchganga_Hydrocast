@@ -183,7 +183,7 @@ def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, n
     if live_stage_m is not None:
         baseflow = convert_stage_to_discharge_manning(live_stage_m, "SHIVAJI_BRIDGE")
     else:
-        baseflow = float(os.getenv("MONSOON_BASEFLOW", "18.8"))
+        baseflow = float(os.getenv("MONSOON_BASEFLOW", "91.1"))
 
     # Calculate cumulative runoff
     cum_p = np.cumsum(p_basin)

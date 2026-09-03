@@ -351,6 +351,57 @@ async def cycle_history(limit: int = 48):
     return _jsonify(rows)
 
 
+# ── Historical Runs & Accuracy Validation Endpoints ───────────────────────────
+
+@app.get("/api/v1/runs")
+async def list_runs(limit: int = 50):
+    """List all tracked historical computation runs with KPIs & accuracy summary."""
+    try:
+        from src.hydrology.runs_tracker import list_computation_runs
+        return list_computation_runs(limit=limit)
+    except Exception as e:
+        log.warning("Failed to list runs: %s", e)
+        return []
+
+
+@app.get("/api/v1/runs/{run_id}")
+async def get_run_details(run_id: str):
+    """Retrieve full computation payload for a specific historical run."""
+    from src.hydrology.runs_tracker import get_computation_run
+    run = get_computation_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404, detail=f"Run '{run_id}' not found")
+    return run
+
+
+@app.get("/api/v1/accuracy")
+async def forecast_accuracy(run_id: Optional[str] = None):
+    """
+    Computes and returns Spearman rank correlation, Pearson R2, NSE, RMSE, MAE,
+    and 18-station rainfall volume accuracy for the requested or latest run.
+    """
+    from src.hydrology.runs_tracker import list_computation_runs, get_computation_run
+    from src.hydrology.validation_metrics import evaluate_forecast_accuracy
+
+    if run_id:
+        run = get_computation_run(run_id)
+    else:
+        runs = list_computation_runs(limit=1)
+        run = get_computation_run(runs[0]["cycle_id"]) if runs else None
+
+    if not run:
+        raise HTTPException(status_code=404, detail="No computation runs available for validation")
+
+    val = run.get("validation")
+    if not val or not val.get("metrics"):
+        val = evaluate_forecast_accuracy(run)
+    return {
+        "cycle_id": run.get("cycle_id"),
+        "run_date": run.get("summary", {}).get("forecast_date"),
+        "validation": val,
+    }
+
+
 # ── WebSocket live push ────────────────────────────────────────────────────────
 
 @app.websocket("/ws/live")

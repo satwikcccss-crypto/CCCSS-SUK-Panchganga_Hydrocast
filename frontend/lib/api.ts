@@ -3,8 +3,11 @@
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-export async function fetchDashboardData() {
-  const url = typeof window !== "undefined" ? "/api/v1/dashboard" : `${BASE}/api/v1/dashboard`;
+export async function fetchDashboardData(runId?: string) {
+  const query = runId ? `?run_id=${encodeURIComponent(runId)}` : "";
+  const url = typeof window !== "undefined" 
+    ? `/api/v1/dashboard${query}` 
+    : `${BASE}/api/v1/dashboard${query}`;
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error("API route response not ok");
   return await res.json();
@@ -20,6 +23,9 @@ export const api = {
   outletHydrograph: async () => (await fetchDashboardData()).hydrograph,
   pipeline: async () => (await fetchDashboardData()).pipeline,
   logs: async () => (await fetchDashboardData()).logs ?? [],
+  runsHistory: async () => (await fetchDashboardData()).runs_history ?? [],
+  runDetails: async (runId: string) => await fetchDashboardData(runId),
+  validation: async (runId?: string) => (await fetchDashboardData(runId)).validation ?? null,
   runoffSummary: async () => {
     const data = await fetchDashboardData();
     if (!data || !data.status?.last_cycle) return null;

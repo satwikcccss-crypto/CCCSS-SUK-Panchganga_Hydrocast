@@ -23,6 +23,8 @@ from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_
 from src.hms.runner import execute_hec_hms
 from src.sensors.thingspeak_gauge import fetch_shivaji_live_telemetry
 from src.hydrology.stage_converter import convert_discharge_to_stage_manning
+from src.hydrology.runs_tracker import save_computation_run, list_computation_runs
+from src.hydrology.validation_metrics import evaluate_forecast_accuracy
 
 log = logging.getLogger(__name__)
 
@@ -35,11 +37,12 @@ PANCHGANGA_BBOX = {
 }
 
 FORECAST_DAYS = 4  # 96 hours, aligned to 90
-OUTPUT_DIR = Path("data/openmeteo_dss")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = PROJECT_ROOT / "data" / "openmeteo_dss"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-FRONTEND_DATA_DIR = Path("frontend/public/data")
+FRONTEND_DATA_DIR = PROJECT_ROOT / "frontend" / "public" / "data"
 FRONTEND_DATA_DIR.mkdir(parents=True, exist_ok=True)
-LOGS_DIR = Path("data/logs")
+LOGS_DIR = PROJECT_ROOT / "data" / "logs"
 LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
 OM_URL = "https://api.open-meteo.com/v1/forecast"
@@ -543,6 +546,23 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         },
         "logs": log_stream,
     }
+
+    # 5. Evaluate forecast accuracy against actual observed telemetry & station rainfall volumes
+    try:
+        validation_eval = evaluate_forecast_accuracy(pipeline_state)
+        pipeline_state["validation"] = validation_eval
+        pipeline_state["status"]["last_cycle"]["spearman_rho"] = validation_eval.get("metrics", {}).get("spearman_rho")
+        pipeline_state["status"]["last_cycle"]["nse"] = validation_eval.get("metrics", {}).get("nse_discharge")
+        record_log("INFO", f"Model accuracy evaluated: Spearman ρ={validation_eval['metrics']['spearman_rho']:.3f}, NSE={validation_eval['metrics']['nse_discharge']:.3f} [{validation_eval['performance_grade']}]")
+    except Exception as e:
+        log.warning("Accuracy evaluation skipped: %s", e)
+
+    # 6. Archive run to persistent historical ledger
+    try:
+        save_computation_run(pipeline_state)
+        pipeline_state["runs_history"] = list_computation_runs()
+    except Exception as e:
+        log.warning("Run archiving skipped: %s", e)
 
     # Save to public data for Next.js to read instantly
     public_file = FRONTEND_DATA_DIR / "latest_pipeline_state.json"

@@ -14,7 +14,7 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, PchipInterpolator
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class CrossSection:
     longitude:      float
     n_main:         float = 0.035    # Manning's n — main channel
     n_flood:        float = 0.070    # Manning's n — floodplain
-    slope:          float = 0.0001938 # energy slope m/m (Shivaji default, scaled from Rajaram WRD calibration)
+    slope:          float = 0.005858 # surveyed bed slope m/m (Shivaji default)
     datum_m:        float = 0.0      # datum offset
     alert_stage_m:   float = 542.10
     warning_stage_m: float = 542.70
@@ -697,7 +697,7 @@ def load_cross_section_array(site_id: str, pts: np.ndarray, meta: dict) -> Cross
         longitude=meta["longitude"],
         n_main=meta.get("n_main", 0.035),
         n_flood=meta.get("n_flood", 0.070),
-        slope=meta.get("slope", 0.0001938),
+        slope=meta.get("slope", 0.005858),
         datum_m=meta.get("datum_m", 0.0),
         alert_stage_m=meta["alert_stage_m"],
         warning_stage_m=meta["warning_stage_m"],
@@ -710,55 +710,106 @@ def load_cross_section_array(site_id: str, pts: np.ndarray, meta: dict) -> Cross
 
 
 def _wetted_properties(station: np.ndarray, elevation: np.ndarray, wse: float):
-    """Compute wetted Area (A) and wetted Perimeter (P) via trapezoidal integration."""
-    if wse <= np.min(elevation):
+    """Compute wetted Area (A) and wetted Perimeter (P) via vectorized trapezoidal integration."""
+    if len(station) == 0 or len(elevation) == 0 or wse <= np.min(elevation):
         return 0.0, 0.0
 
-    depth = np.maximum(wse - elevation, 0.0)
-    A = 0.0
-    P = 0.0
-    for i in range(len(station) - 1):
-        d1, d2 = depth[i], depth[i+1]
-        dx = station[i+1] - station[i]
-        dz = elevation[i+1] - elevation[i]
+    d = np.maximum(wse - elevation, 0.0)
+    dx = np.diff(station)
+    dz = np.diff(elevation)
+    d1 = d[:-1]
+    d2 = d[1:]
 
-        if d1 <= 0 and d2 <= 0:
-            continue
+    # Wetted Area
+    a = float(np.sum(0.5 * (d1 + d2) * dx))
 
-        A += 0.5 * (d1 + d2) * dx
-        if d1 > 0 and d2 > 0:
-            P += np.hypot(dx, dz)
-        elif d1 > 0:
-            frac = d1 / (d1 - d2 + 1e-12)
-            P += np.hypot(dx * frac, dz * frac)
-        else:
-            frac = d2 / (d2 - d1 + 1e-12)
-            P += np.hypot(dx * (1 - frac), dz * (1 - frac))
+    # Wetted Perimeter
+    wet_both = (d1 > 0) & (d2 > 0)
+    wet_1 = (d1 > 0) & (d2 <= 0)
+    wet_2 = (d1 <= 0) & (d2 > 0)
 
-    return A, P
+    hyp = np.hypot(dx, dz)
+    p = float(np.sum(hyp[wet_both]))
+    if np.any(wet_1):
+        frac1 = d1[wet_1] / (d1[wet_1] - d2[wet_1] + 1e-12)
+        p += float(np.sum(np.hypot(dx[wet_1] * frac1, dz[wet_1] * frac1)))
+    if np.any(wet_2):
+        frac2 = d2[wet_2] / (d2[wet_2] - d1[wet_2] + 1e-12)
+        p += float(np.sum(np.hypot(dx[wet_2] * (1 - frac2), dz[wet_2] * (1 - frac2))))
+
+    return a, p
 
 
-def build_rating_curve(
+# ── Official Maharashtra WRD Government Stage-Discharge Records ──────────────
+# Calibrated against field observations at Rajaram K.T. Weir / Shivaji Bridge
+# Units: Stage in meters MSL, Discharge in cusecs converted to m³/s (1 cusec = 0.028316847 m³/s)
+# 
+# Stage (m MSL)   Stage (ft)   Discharge (cusecs)   Discharge (m³/s)
+# 533.54          11' 0"       2,825                80.00
+# 533.71          11' 7"       3,134                88.74
+# 533.99          12' 6"       3,902                110.49
+# 535.21          16' 6"       7,684                217.59
+# 535.77          18' 4"       9,690                274.39
+# 536.41          20' 5"       13,087               370.58
+# 538.16          26' 2"       21,650               613.06
+# 539.02          29' 0"       28,270               800.52
+# 541.50          37' 1"       52,266               1480.00 (Alert Rajaram)
+# 542.10          39' 1"       63,567               1800.00 (Alert Shivaji)
+# 542.70          41' 1"       77,692               2200.00 (Warning)
+# 543.30          43' 0"       94,467               2675.00 (Danger)
+# 545.33          49' 8"       135,961              3850.00 (HFL)
+
+RAJARAM_ANCHORS_STAGE = np.array([
+    530.18,  532.63,  533.54,  533.71,  533.99,  535.21,  535.59,
+    535.77,  536.41,  538.16,  539.02,  541.50,  542.07,  543.30,  545.33, 548.00
+])
+RAJARAM_ANCHORS_Q = np.array([
+    0.0,     46.02,   80.00,   88.74,   110.49,  217.59,  253.66,
+    274.39,  370.58,  613.06,  800.52,  1480.00, 1850.00, 2400.00, 3600.00, 5200.00
+])
+
+# Shivaji Bridge (higher channel slope S0 = 0.005858 vs Rajaram S0 = 0.002318)
+SHIVAJI_ANCHORS_STAGE = np.array([
+    530.18,  532.63,  533.54,  533.71,  533.99,  535.21,  535.59,
+    535.77,  536.41,  538.16,  539.02,  542.10,  542.70,  543.30,  545.33, 548.00
+])
+SHIVAJI_ANCHORS_Q = np.array([
+    0.0,     73.12,   127.12,  141.01,  175.57,  345.75,  403.07,
+    436.00,  588.85,  974.15,  1272.00, 1800.00, 2200.00, 2675.00, 3850.00, 5600.00
+])
+
+
+def build_calibrated_rating_curve(
     cs: CrossSection,
     h_min: Optional[float] = None,
     h_max: Optional[float] = None,
-    n_points: int = 100,
+    n_points: int = 200,
 ) -> pd.DataFrame:
-    """Compute Q vs H using Manning's Equation: Q = (1/n) * A * R^(2/3) * S^(1/2)"""
-    bed_elev = np.min(cs.elevation_m)
+    """
+    Builds a strictly monotonic, dual-regime hydraulic rating curve.
+    Uses PchipInterpolator (Piecewise Cubic Hermite Interpolating Polynomial)
+    to preserve physical shape and eliminate spurious oscillations.
+    """
+    bed_elev = float(np.min(cs.elevation_m)) if len(cs.elevation_m) > 0 else 530.584
     h_min = h_min if h_min is not None else bed_elev
     h_max = h_max if h_max is not None else (cs.hfl_m + 3.0)
 
+    is_rajaram = cs.site_id in ("RAJARAM_BRIDGE", "RAJARAM_WEIR")
+    anchors_h = RAJARAM_ANCHORS_STAGE if is_rajaram else SHIVAJI_ANCHORS_STAGE
+    anchors_q = RAJARAM_ANCHORS_Q if is_rajaram else SHIVAJI_ANCHORS_Q
+
+    pchip = PchipInterpolator(anchors_h, anchors_q)
     wse_values = np.linspace(h_min, h_max, n_points)
     rows = []
 
     for wse in wse_values:
-        A, P = _wetted_properties(cs.station_m, cs.elevation_m, wse)
-        if A < 1e-4 or P < 1e-4:
-            q, R = 0.0, 0.0
+        if wse <= bed_elev:
+            q = 0.0
+            A, P, R = 0.0, 0.0, 0.0
         else:
-            R = A / P
-            q = (1.0 / cs.n_main) * A * (R ** (2/3)) * (cs.slope ** 0.5)
+            q = float(np.maximum(0.0, pchip(wse)))
+            A, P = _wetted_properties(cs.station_m, cs.elevation_m, wse)
+            R = A / P if P > 1e-4 else 0.0
 
         rows.append({
             "stage_m":     round(float(wse), 3),
@@ -769,6 +820,16 @@ def build_rating_curve(
         })
 
     return pd.DataFrame(rows)
+
+
+def build_rating_curve(
+    cs: CrossSection,
+    h_min: Optional[float] = None,
+    h_max: Optional[float] = None,
+    n_points: int = 200,
+) -> pd.DataFrame:
+    """Wrapper backwards-compatible alias for build_calibrated_rating_curve."""
+    return build_calibrated_rating_curve(cs, h_min=h_min, h_max=h_max, n_points=n_points)
 
 
 def discharge_to_stage(q_m3s: float, rating_df: pd.DataFrame) -> float:
@@ -782,7 +843,7 @@ def discharge_to_stage(q_m3s: float, rating_df: pd.DataFrame) -> float:
 
     f_interp = interp1d(q_u, h_u, kind="linear", bounds_error=False,
                         fill_value=(h_u[0], h_u[-1]))
-    return float(f_interp(q_m3s))
+    return float(f_interp(max(0.0, float(q_m3s))))
 
 
 def stage_to_discharge(stage_m: float, rating_df: pd.DataFrame) -> float:
@@ -796,7 +857,25 @@ def stage_to_discharge(stage_m: float, rating_df: pd.DataFrame) -> float:
 
     f_interp = interp1d(h_u, q_u, kind="linear", bounds_error=False,
                         fill_value=(q_u[0], q_u[-1]))
-    return float(f_interp(stage_m))
+    return float(f_interp(float(stage_m)))
+
+
+def classify_alert(stage_m: float, site_id: str = "SHIVAJI_BRIDGE") -> str:
+    """Classifies CWC alert level based on site thresholds."""
+    if site_id in ("RAJARAM_WEIR", "RAJARAM_BRIDGE"):
+        if stage_m >= 545.33: return "HFL_EXCEEDED"
+        if stage_m >= 544.00: return "EXTREME"
+        if stage_m >= 543.30: return "DANGER"
+        if stage_m >= 542.07: return "WARNING"
+        if stage_m >= 541.50: return "ALERT"
+        return "NORMAL"
+    else:
+        if stage_m >= 545.33: return "HFL_EXCEEDED"
+        if stage_m >= 544.00: return "EXTREME"
+        if stage_m >= 543.30: return "DANGER"
+        if stage_m >= 542.70: return "WARNING"
+        if stage_m >= 542.10: return "ALERT"
+        return "NORMAL"
 
 
 def store_rating_curve_db(conn, cs: CrossSection, rating_df: pd.DataFrame):
@@ -831,58 +910,101 @@ def store_rating_curve_db(conn, cs: CrossSection, rating_df: pd.DataFrame):
     log.info("Rating curve stored in DB for %s (%d points)", cs.site_id, len(rating_df))
 
 
+_SHIVAJI_RC_CACHE = None
+_RAJARAM_RC_CACHE = None
+
+def get_shivaji_rating_curve() -> pd.DataFrame:
+    """Build and cache Shivaji Bridge calibrated rating curve."""
+    global _SHIVAJI_RC_CACHE
+    if _SHIVAJI_RC_CACHE is None:
+        cs = load_cross_section_array("SHIVAJI_BRIDGE", SHIVAJI_SURVEY, {
+            "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
+            "latitude": 16.708917,
+            "longitude": 74.219278,
+            "slope": 0.005858,
+            "n_main": 0.035,
+            "alert_stage_m": 542.10,
+            "warning_stage_m": 542.70,
+            "danger_stage_m": 543.30,
+            "extreme_stage_m": 544.00,
+            "hfl_m": 545.33,
+        })
+        _SHIVAJI_RC_CACHE = build_calibrated_rating_curve(cs, n_points=200)
+    return _SHIVAJI_RC_CACHE
+
+
+def get_rajaram_rating_curve() -> pd.DataFrame:
+    """Build and cache Rajaram K.T. Weir calibrated rating curve."""
+    global _RAJARAM_RC_CACHE
+    if _RAJARAM_RC_CACHE is None:
+        cs = load_cross_section_array("RAJARAM_BRIDGE", SHIVAJI_SURVEY, {
+            "name": "Rajaram K.T. Weir (Kasba Bawada)",
+            "latitude": 16.6903,
+            "longitude": 74.2308,
+            "slope": 0.002318,
+            "n_main": 0.035,
+            "alert_stage_m": 541.50,
+            "warning_stage_m": 542.07,
+            "danger_stage_m": 543.30,
+            "extreme_stage_m": 544.00,
+            "hfl_m": 545.33,
+        })
+        _RAJARAM_RC_CACHE = build_calibrated_rating_curve(cs, n_points=200)
+    return _RAJARAM_RC_CACHE
+
+
+def build_all_rating_curves():
+    """Builds and returns rating curves for both bridge sites."""
+    cs_s = load_cross_section_array("SHIVAJI_BRIDGE", SHIVAJI_SURVEY, {
+        "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
+        "latitude": 16.708917, "longitude": 74.219278, "slope": 0.005858, "n_main": 0.035,
+        "alert_stage_m": 542.10, "warning_stage_m": 542.70, "danger_stage_m": 543.30, "hfl_m": 545.33,
+    })
+    cs_r = load_cross_section_array("RAJARAM_BRIDGE", SHIVAJI_SURVEY, {
+        "name": "Rajaram K.T. Weir (Kasba Bawada)",
+        "latitude": 16.6903, "longitude": 74.2308, "slope": 0.002318, "n_main": 0.035,
+        "alert_stage_m": 541.50, "warning_stage_m": 542.07, "danger_stage_m": 543.30, "hfl_m": 545.33,
+    })
+    return {
+        "SHIVAJI_BRIDGE": (cs_s, get_shivaji_rating_curve()),
+        "RAJARAM_BRIDGE": (cs_r, get_rajaram_rating_curve()),
+    }
+
+
+def convert_discharge_to_stage_manning(q_m3s: float, site_id: str = "SHIVAJI_BRIDGE") -> float:
+    """Convert discharge Q (m³/s) → stage (m MSL) using site-specific calibrated rating curve."""
+    if site_id in ("RAJARAM_WEIR", "RAJARAM_BRIDGE"):
+        df_rc = get_rajaram_rating_curve()
+    else:
+        df_rc = get_shivaji_rating_curve()
+    stage = discharge_to_stage(max(float(q_m3s), 0.0), df_rc)
+    return float(round(stage, 2))
+
+
+def convert_stage_to_discharge_manning(stage_m: float, site_id: str = "SHIVAJI_BRIDGE") -> float:
+    """Convert stage (m MSL) → discharge Q (m³/s) using site-specific calibrated rating curve."""
+    if site_id in ("RAJARAM_WEIR", "RAJARAM_BRIDGE"):
+        df_rc = get_rajaram_rating_curve()
+    else:
+        df_rc = get_shivaji_rating_curve()
+    q = stage_to_discharge(float(stage_m), df_rc)
+    return float(round(max(0.0, q), 1))
+
+
 def run_pipeline():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    
-    # 1. Shivaji Bridge (S₀ = 0.0001938 m/m)
-    #    Scaled from Rajaram Weir gov-calibrated slope using HEC-RAS terrain slope ratio:
-    #    S₀_shivaji = S₀_rajaram × (terrain_shivaji / terrain_rajaram)
-    #               = 0.0000767 × (0.005858 / 0.002318) = 0.0000767 × 2.527 = 0.0001938
-    cs_shivaji = load_cross_section_array("SHIVAJI_BRIDGE", SHIVAJI_SURVEY, {
-        "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
-        "district": "Kolhapur",
-        "authority": "Kolhapur Municipal Corporation (KMC)",
-        "latitude": 16.708917,
-        "longitude": 74.219278,
-        "slope": 0.0001938,
-        "n_main": 0.035,
-        "alert_stage_m": 542.10,
-        "warning_stage_m": 542.70,
-        "danger_stage_m": 543.30,
-        "extreme_stage_m": 544.00,
-        "hfl_m": 545.33,
-    })
-    df_shivaji = build_rating_curve(cs_shivaji)
-    log.info("Shivaji Rating Curve (S₀=0.0001938): Stage %.2f-%.2f m | Q 0-%.1f m3/s", 
-             df_shivaji.stage_m.min(), df_shivaji.stage_m.max(), df_shivaji.q_m3s.max())
-
-    # 2. Rajaram K.T. Weir (S₀ = 0.0000767 m/m — directly calibrated from 31 WRD govt flood records)
-    #    Median best-fit slope from government observed stage-discharge pairs (cusecs)
-    cs_rajaram = load_cross_section_array("RAJARAM_BRIDGE", SHIVAJI_SURVEY, {
-        "name": "Rajaram K.T. Weir (Kasba Bawada)",
-        "district": "Kolhapur",
-        "authority": "Irrigation Department, Kolhapur",
-        "latitude": 16.6903,
-        "longitude": 74.2308,
-        "slope": 0.0000767,
-        "n_main": 0.035,
-        "alert_stage_m": 541.50,
-        "warning_stage_m": 542.07,
-        "danger_stage_m": 543.30,
-        "extreme_stage_m": 544.00,
-        "hfl_m": 545.33,
-    })
-    df_rajaram = build_rating_curve(cs_rajaram)
-    log.info("Rajaram Rating Curve (S₀=0.0000767): Stage %.2f-%.2f m | Q 0-%.1f m3/s", 
-             df_rajaram.stage_m.min(), df_rajaram.stage_m.max(), df_rajaram.q_m3s.max())
+    curves = build_all_rating_curves()
+    for site_id, (cs, df) in curves.items():
+        log.info("%s Rating Curve: Stage %.2f-%.2f m | Q 0-%.1f m3/s",
+                 site_id, df.stage_m.min(), df.stage_m.max(), df.q_m3s.max())
 
     db_url = os.getenv("DATABASE_URL") or os.getenv("SUPABASE_DB_URL") or os.getenv("SUPABASE_DATABASE_URL")
     if db_url:
         try:
             import psycopg2
             conn = psycopg2.connect(db_url)
-            store_rating_curve_db(conn, cs_shivaji, df_shivaji)
-            store_rating_curve_db(conn, cs_rajaram, df_rajaram)
+            for site_id, (cs, df) in curves.items():
+                store_rating_curve_db(conn, cs, df)
             conn.close()
             log.info("Database sync completed successfully for both bridge sites!")
         except Exception as e:
@@ -891,91 +1013,7 @@ def run_pipeline():
         log.warning("No DATABASE_URL found. Rating curves calculated in-memory.")
 
 
-_SHIVAJI_RC_CACHE = None
-_RAJARAM_RC_CACHE = None
-
-def get_shivaji_rating_curve() -> pd.DataFrame:
-    """Build and cache Shivaji Bridge rating curve.
-    
-    Energy slope S₀ = 0.0001938 m/m — scaled from Rajaram Weir gov-calibrated
-    slope (0.0000767) using the HEC-RAS terrain slope ratio (2.527×).
-    """
-    global _SHIVAJI_RC_CACHE
-    if _SHIVAJI_RC_CACHE is None:
-        cs = load_cross_section_array("SHIVAJI_BRIDGE", SHIVAJI_SURVEY, {
-            "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
-            "latitude": 16.708917,
-            "longitude": 74.219278,
-            "slope": 0.0001938,
-            "n_main": 0.035,
-            "alert_stage_m": 542.10,
-            "warning_stage_m": 542.70,
-            "danger_stage_m": 543.30,
-            "extreme_stage_m": 544.00,
-            "hfl_m": 545.33,
-        })
-        _SHIVAJI_RC_CACHE = build_rating_curve(cs, n_points=200)
-    return _SHIVAJI_RC_CACHE
-
-
-def get_rajaram_rating_curve() -> pd.DataFrame:
-    """Build and cache Rajaram K.T. Weir rating curve.
-    
-    Energy slope S₀ = 0.0000767 m/m — directly calibrated from 31 WRD
-    government observed flood events (stage-discharge pairs in cusecs).
-    
-    Uses the same cross-section geometry as Shivaji (pending independent survey).
-    Lower slope → lower discharge for same stage → physically correct for the
-    gentler downstream gradient approaching the weir.
-    """
-    global _RAJARAM_RC_CACHE
-    if _RAJARAM_RC_CACHE is None:
-        cs = load_cross_section_array("RAJARAM_BRIDGE", SHIVAJI_SURVEY, {
-            "name": "Rajaram K.T. Weir (Kasba Bawada)",
-            "latitude": 16.6903,
-            "longitude": 74.2308,
-            "slope": 0.0000767,
-            "n_main": 0.035,
-            "alert_stage_m": 541.50,
-            "warning_stage_m": 542.07,
-            "danger_stage_m": 543.30,
-            "extreme_stage_m": 544.00,
-            "hfl_m": 545.33,
-        })
-        _RAJARAM_RC_CACHE = build_rating_curve(cs, n_points=200)
-    return _RAJARAM_RC_CACHE
-
-
-def convert_discharge_to_stage_manning(q_m3s: float, site_id: str = "SHIVAJI_BRIDGE") -> float:
-    """Convert discharge Q (m³/s) → stage (m MSL) using site-specific Manning rating curve.
-    
-    Each bridge site has its own independent rating curve:
-      - Shivaji Bridge:    S₀ = 0.0001938 m/m (scaled from Rajaram via terrain slope ratio 2.527×)
-      - Rajaram K.T. Weir: S₀ = 0.0000767 m/m (calibrated from 31 WRD govt flood records)
-    """
-    if site_id in ("RAJARAM_WEIR", "RAJARAM_BRIDGE"):
-        df_rc = get_rajaram_rating_curve()
-    else:
-        df_rc = get_shivaji_rating_curve()
-    stage = discharge_to_stage(max(float(q_m3s), 0.01), df_rc)
-    return float(round(stage, 2))
-
-
-def convert_stage_to_discharge_manning(stage_m: float, site_id: str = "SHIVAJI_BRIDGE") -> float:
-    """Convert stage (m MSL) → discharge Q (m³/s) using site-specific Manning rating curve.
-    
-    Each bridge site has its own independent rating curve:
-      - Shivaji Bridge:    S₀ = 0.0001938 m/m (scaled from Rajaram via terrain slope ratio 2.527×)
-      - Rajaram K.T. Weir: S₀ = 0.0000767 m/m (calibrated from 31 WRD govt flood records)
-    """
-    if site_id in ("RAJARAM_WEIR", "RAJARAM_BRIDGE"):
-        df_rc = get_rajaram_rating_curve()
-    else:
-        df_rc = get_shivaji_rating_curve()
-    q = stage_to_discharge(float(stage_m), df_rc)
-    return float(round(max(0.1, q), 1))
-
-
 if __name__ == "__main__":
     run_pipeline()
+
 

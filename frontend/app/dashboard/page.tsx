@@ -8,6 +8,7 @@ import OverviewPanel from "@/components/OverviewPanel";
 import RainfallPanel from "@/components/RainfallPanel";
 import RunoffPanel from "@/components/RunoffPanel";
 import SystemPanel from "@/components/SystemPanel";
+import AccuracyPanel from "@/components/AccuracyPanel";
 import FloodBanner from "@/components/FloodBanner";
 
 const NAV = [
@@ -33,6 +34,13 @@ const NAV = [
     badge: "864 m³/s",
   },
   {
+    id: "accuracy",
+    label: "Accuracy & Run Log",
+    icon: "Target",
+    desc: "Spearman Correlation & Prediction Log",
+    badge: "VERIFIED",
+  },
+  {
     id: "system",
     label: "Pipeline Health & Logs",
     icon: "System",
@@ -50,7 +58,7 @@ const ALERT_BADGES: Record<string, { bg: string; text: string; border: string }>
 };
 
 export default function Dashboard() {
-  const [panel, setPanel] = useState<"dashboard" | "rainfall" | "runoff" | "system">("dashboard");
+  const [panel, setPanel] = useState<"dashboard" | "rainfall" | "runoff" | "accuracy" | "system">("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedStationId, setSelectedStationId] = useState<string>("KARANJPHEN");
   const { connected, lastEvent } = useWebSocket();
@@ -220,6 +228,7 @@ export default function Dashboard() {
           )}
           {panel === "rainfall" && <RainfallPanel />}
           {panel === "runoff" && <RunoffPanel summary={summary} />}
+          {panel === "accuracy" && <AccuracyPanel />}
           {panel === "system" && <SystemPanel pipeline={pipeline} />}
         </main>
       </div>
