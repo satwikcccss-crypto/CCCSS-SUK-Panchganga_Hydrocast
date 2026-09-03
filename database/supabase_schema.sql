@@ -130,6 +130,13 @@ CREATE TABLE IF NOT EXISTS bridge_sites (
     created_at          TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Migration safety for pre-existing bridge_sites tables:
+ALTER TABLE bridge_sites ADD COLUMN IF NOT EXISTS zero_datum_m NUMERIC(6,2) DEFAULT 530.18;
+ALTER TABLE bridge_sites ADD COLUMN IF NOT EXISTS sensor_datum_m NUMERIC(6,2) DEFAULT 549.35;
+ALTER TABLE bridge_sites ADD COLUMN IF NOT EXISTS bed_slope NUMERIC(8,6) DEFAULT 0.00025;
+ALTER TABLE bridge_sites ADD COLUMN IF NOT EXISTS manning_n_bed NUMERIC(4,3) DEFAULT 0.035;
+ALTER TABLE bridge_sites ADD COLUMN IF NOT EXISTS manning_n_floodplain NUMERIC(4,3) DEFAULT 0.070;
+
 -- Seed Shivaji Bridge & Rajaram Weir with official WRD flood levels
 INSERT INTO bridge_sites (site_id, site_name, latitude, longitude,
     alert_stage_m, warning_stage_m, danger_stage_m, hfl_m,
@@ -168,6 +175,17 @@ CREATE TABLE IF NOT EXISTS simulation_runs (
     nse_score                   NUMERIC(6,4),
     created_at                  TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration safety for pre-existing simulation_runs tables:
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS peak_discharge_m3s NUMERIC(10,2);
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS peak_stage_m NUMERIC(6,2);
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS lead_hours_to_peak SMALLINT;
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS total_volume_mcm NUMERIC(10,2);
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS total_rainfall_mm NUMERIC(8,2);
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS total_rainfall_volume_mcm NUMERIC(10,2);
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS alert_level VARCHAR(32) DEFAULT 'NORMAL';
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS spearman_rho NUMERIC(6,4);
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS nse_score NUMERIC(6,4);
 
 CREATE INDEX IF NOT EXISTS idx_sim_runs_date ON simulation_runs (cycle_date DESC, start_time DESC);
 
