@@ -27,39 +27,56 @@ class RainStation:
     elevation_m: float = 600.0
 
 
+# ── Subbasin Catchment Areas (Official GIS Delineation) ──────────────────────
+SUBBASIN_AREAS_KM2: Dict[str, float] = {
+    "S1": 86.213,   # Karveer Subbasin
+    "S2": 153.77,   # Sangarul Subbasin
+    "S3": 261.32,   # Kotoli Subbasin
+    "S4": 262.00,   # Karanjphen Subbasin
+    "S5": 106.39,   # Padasali Subbasin
+    "S6": 227.72,   # Gaganbawda Subbasin
+    "S7": 195.39,   # Garivade Subbasin
+    "S8": 177.44,   # Beed Subbasin
+    "S9": 366.97,   # Radhanagari Subbasin
+}
+TOTAL_GAUGED_AREA_KM2 = sum(SUBBASIN_AREAS_KM2.values())  # 1837.213 km²
+
+
 # ── Full Primary & Alternate Station Registry ─────────────────────────────────
 
 STATION_REGISTRY: List[RainStation] = [
-    # S1
-    RainStation("KARVIR", "Karvir", "S1", 74.2481772, 16.706369, is_primary=True, elevation_m=550.0),
+    # S1 (Area: 86.213 km²)
+    RainStation("KARVEER", "Karveer", "S1", 74.2481772, 16.706369, is_primary=True, elevation_m=550.0),
     
-    # S2
+    # S2 (Area: 153.77 km²)
     RainStation("SANGARUL", "Sangarul", "S2", 74.0931627, 16.6841962, is_primary=True, elevation_m=572.0),
     RainStation("BALINGA", "Balinga", "S2", 74.17031, 16.6878443, is_primary=False, elevation_m=560.0),
     RainStation("KALE", "Kale", "S2", 74.0564499, 16.7228087, is_primary=False, elevation_m=580.0),
     
-    # S3
+    # S3 (Area: 261.32 km²)
     RainStation("KOTOLI", "Kotoli", "S3", 74.0518705, 16.7820174, is_primary=True, elevation_m=585.0),
     RainStation("BAJAR_BHOGAON", "Bajar Bhogaon", "S3", 74.1107824, 16.8086769, is_primary=False, elevation_m=590.0),
     RainStation("PADAL", "Padal", "S3", 74.115187, 16.7446006, is_primary=False, elevation_m=575.0),
     
-    # S4
-    RainStation("BEED", "Beed", "S4", 74.1288964, 16.647984, is_primary=True, elevation_m=565.0),
+    # S4 (Area: 262.00 km²)
+    RainStation("KARANJPHEN", "Karanjphen", "S4", 73.9036487, 16.7850973, is_primary=True, elevation_m=640.0),
     
-    # S5
-    RainStation("SALWAN", "Salwan", "S5", 73.9735, 16.6712, is_primary=True, elevation_m=595.0),
+    # S5 (Area: 106.39 km²)
+    RainStation("PADASALI", "Padasali", "S5", 73.843584, 16.701934, is_primary=True, elevation_m=620.0),
+    RainStation("SALWAN", "Salwan", "S5", 73.9735, 16.6712, is_primary=False, elevation_m=595.0),
     
-    # S6
-    RainStation("KARANJPHEN", "Karanjphen", "S6", 73.9036487, 16.7850973, is_primary=True, elevation_m=640.0),
-    RainStation("GAGANBAWDA", "Gaganbawda", "S6", 73.8346738, 16.5469926, is_primary=False, elevation_m=680.0),
+    # S6 (Area: 227.72 km²)
+    RainStation("GAGANBAWDA", "Gaganbawda", "S6", 73.8346738, 16.5469926, is_primary=True, elevation_m=680.0),
     
-    # S7
-    RainStation("RADHANAGARI", "Radhanagari", "S7", 73.9971822, 16.41021, is_primary=True, elevation_m=615.0),
+    # S7 (Area: 195.39 km²)
+    RainStation("GARIVADE", "Garivade", "S7", 73.918419, 16.520366, is_primary=True, elevation_m=610.0),
     
-    # S8
+    # S8 (Area: 177.44 km²)
+    RainStation("BEED", "Beed", "S8", 74.1288964, 16.647984, is_primary=True, elevation_m=565.0),
     RainStation("SHIROLI_DHUMALA", "Shiroli-Dhumala", "S8", 74.1062828, 16.6166768, is_primary=False, elevation_m=560.0),
     
-    # S9
+    # S9 (Area: 366.97 km²)
+    RainStation("RADHANAGARI", "Radhanagari", "S9", 73.9971822, 16.41021, is_primary=True, elevation_m=615.0),
     RainStation("HALADI", "Haladi", "S9", 74.156292, 16.5932632, is_primary=False, elevation_m=555.0),
     RainStation("RASHIWADE_BK", "Rashiwade Bk.", "S9", 74.1019728, 16.5475641, is_primary=False, elevation_m=570.0),
     RainStation("AAVALI_BK", "Aavali Bk.", "S9", 74.0549812, 16.481009, is_primary=False, elevation_m=585.0),
@@ -132,15 +149,15 @@ def select_active_subbasin_gages(
             # Ungauged subbasin fallback: Find nearest high-rainfall station
             # Subbasin approximate centroids
             sub_centroids = {
-                "S1": (16.706, 74.248),
-                "S2": (16.684, 74.093),
-                "S3": (16.782, 74.051),
-                "S4": (16.648, 74.128),
-                "S5": (16.671, 73.973),
-                "S6": (16.785, 73.903),
-                "S7": (16.410, 73.997),
-                "S8": (16.616, 74.106),
-                "S9": (16.547, 74.101),
+                "S1": (16.706369, 74.2481772),  # Karveer
+                "S2": (16.6841962, 74.0931627), # Sangarul
+                "S3": (16.7820174, 74.0518705), # Kotoli
+                "S4": (16.7850973, 73.9036487), # Karanjphen
+                "S5": (16.701934,  73.843584),  # Padasali
+                "S6": (16.5469926, 73.8346738), # Gaganbawda
+                "S7": (16.520366,  73.918419),  # Garivade
+                "S8": (16.647984,  74.1288964), # Beed
+                "S9": (16.41021,   73.9971822), # Radhanagari
             }
             c_lat, c_lon = sub_centroids.get(sub_id, (16.65, 74.10))
 

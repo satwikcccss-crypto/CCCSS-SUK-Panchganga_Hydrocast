@@ -36,22 +36,33 @@ CREATE TABLE IF NOT EXISTS gauge_stations (
     updated_at          TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Seed all 18 Panchganga Rain Gauge Stations
+-- Seed all Panchganga Rain Gauge Stations (Authoritative Primary & Alternate Configuration)
 INSERT INTO gauge_stations (station_id, station_name, subbasin_id, latitude, longitude, elevation_m, is_primary)
 VALUES
-    ('KARVIR', 'Karvir', 'S1', 16.706369, 74.2481772, 550.0, TRUE),
+    -- S1 (Area: 86.213 km²)
+    ('KARVEER', 'Karveer', 'S1', 16.706369, 74.2481772, 550.0, TRUE),
+    -- S2 (Area: 153.77 km²)
     ('SANGARUL', 'Sangarul', 'S2', 16.6841962, 74.0931627, 572.0, TRUE),
     ('BALINGA', 'Balinga', 'S2', 16.6878443, 74.17031, 560.0, FALSE),
     ('KALE', 'Kale', 'S2', 16.7228087, 74.0564499, 580.0, FALSE),
+    -- S3 (Area: 261.32 km²)
     ('KOTOLI', 'Kotoli', 'S3', 16.7820174, 74.0518705, 585.0, TRUE),
     ('BAJAR_BHOGAON', 'Bajar Bhogaon', 'S3', 16.8086769, 74.1107824, 590.0, FALSE),
     ('PADAL', 'Padal', 'S3', 16.7446006, 74.115187, 575.0, FALSE),
-    ('BEED', 'Beed', 'S4', 16.647984, 74.1288964, 565.0, TRUE),
-    ('SALWAN', 'Salwan', 'S5', 16.6712, 73.9735, 595.0, TRUE),
-    ('KARANJPHEN', 'Karanjphen', 'S6', 16.7850973, 73.9036487, 640.0, TRUE),
-    ('GAGANBAWDA', 'Gaganbawda', 'S6', 16.5469926, 73.8346738, 680.0, FALSE),
-    ('RADHANAGARI', 'Radhanagari', 'S7', 16.41021, 73.9971822, 615.0, TRUE),
+    -- S4 (Area: 262.00 km²)
+    ('KARANJPHEN', 'Karanjphen', 'S4', 16.7850973, 73.9036487, 640.0, TRUE),
+    -- S5 (Area: 106.39 km²)
+    ('PADASALI', 'Padasali', 'S5', 16.701934, 73.843584, 620.0, TRUE),
+    ('SALWAN', 'Salwan', 'S5', 16.6712, 73.9735, 595.0, FALSE),
+    -- S6 (Area: 227.72 km²)
+    ('GAGANBAWDA', 'Gaganbawda', 'S6', 16.5469926, 73.8346738, 680.0, TRUE),
+    -- S7 (Area: 195.39 km²)
+    ('GARIVADE', 'Garivade', 'S7', 16.520366, 73.918419, 610.0, TRUE),
+    -- S8 (Area: 177.44 km²)
+    ('BEED', 'Beed', 'S8', 16.647984, 74.1288964, 565.0, TRUE),
     ('SHIROLI_DHUMALA', 'Shiroli-Dhumala', 'S8', 16.6166768, 74.1062828, 560.0, FALSE),
+    -- S9 (Area: 366.97 km²)
+    ('RADHANAGARI', 'Radhanagari', 'S9', 16.41021, 73.9971822, 615.0, TRUE),
     ('HALADI', 'Haladi', 'S9', 16.5932632, 74.156292, 555.0, FALSE),
     ('RASHIWADE_BK', 'Rashiwade Bk.', 'S9', 16.5475641, 74.1019728, 570.0, FALSE),
     ('AAVALI_BK', 'Aavali Bk.', 'S9', 16.481009, 74.0549812, 585.0, FALSE),
@@ -60,7 +71,9 @@ VALUES
 ON CONFLICT (station_id) DO UPDATE SET
     latitude = EXCLUDED.latitude,
     longitude = EXCLUDED.longitude,
-    elevation_m = EXCLUDED.elevation_m;
+    subbasin_id = EXCLUDED.subbasin_id,
+    elevation_m = EXCLUDED.elevation_m,
+    is_primary = EXCLUDED.is_primary;
 
 -- 4. Bridge Sites (River Flood Monitoring Stations)
 CREATE TABLE IF NOT EXISTS bridge_sites (

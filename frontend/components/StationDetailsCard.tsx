@@ -19,26 +19,46 @@ ChartJS.register(
 // Static metadata only (coordinates, names) — NO hardcoded rainfall fc90 values
 export const STATION_METADATA: Record<string, {
   id: string; name: string; subbasin: string;
-  lat: number; lon: number; elevation: string;
+  lat: number; lon: number; elevation: string; is_primary?: boolean;
 }> = {
-  KARVIR:          { id: "KARVIR",          name: "Karvir",               subbasin: "S1", lat: 16.706369,  lon: 74.2481772, elevation: "550m" },
-  SANGARUL:        { id: "SANGARUL",        name: "Sangarul (Primary)",   subbasin: "S2", lat: 16.6841962, lon: 74.0931627, elevation: "572m" },
-  BALINGA:         { id: "BALINGA",         name: "Balinga (Alt)",        subbasin: "S2", lat: 16.6878443, lon: 74.17031,   elevation: "560m" },
-  KALE:            { id: "KALE",            name: "Kale (Alt)",           subbasin: "S2", lat: 16.7228087, lon: 74.0564499, elevation: "580m" },
-  KOTOLI:          { id: "KOTOLI",          name: "Kotoli (Primary)",     subbasin: "S3", lat: 16.7820174, lon: 74.0518705, elevation: "585m" },
-  BAJAR_BHOGAON:   { id: "BAJAR_BHOGAON",  name: "Bajar Bhogaon (Alt)",  subbasin: "S3", lat: 16.8086769, lon: 74.1107824, elevation: "590m" },
-  PADAL:           { id: "PADAL",           name: "Padal (Alt)",          subbasin: "S3", lat: 16.7446006, lon: 74.115187,  elevation: "575m" },
-  BEED:            { id: "BEED",            name: "Beed",                 subbasin: "S4", lat: 16.647984,  lon: 74.1288964, elevation: "565m" },
-  SALWAN:          { id: "SALWAN",          name: "Salwan",               subbasin: "S5", lat: 16.6712,    lon: 73.9735,    elevation: "595m" },
-  KARANJPHEN:      { id: "KARANJPHEN",      name: "Karanjphen (Primary)", subbasin: "S6", lat: 16.7850973, lon: 73.9036487, elevation: "640m" },
-  GAGANBAWDA:      { id: "GAGANBAWDA",      name: "Gaganbawda (Alt)",     subbasin: "S6", lat: 16.5469926, lon: 73.8346738, elevation: "680m" },
-  RADHANAGARI:     { id: "RADHANAGARI",     name: "Radhanagari Dam",      subbasin: "S7", lat: 16.41021,   lon: 73.9971822, elevation: "615m" },
-  SHIROLI_DHUMALA: { id: "SHIROLI_DHUMALA", name: "Shiroli-Dhumala",      subbasin: "S8", lat: 16.6166768, lon: 74.1062828, elevation: "560m" },
-  HALADI:          { id: "HALADI",          name: "Haladi (Alt)",         subbasin: "S9", lat: 16.5932632, lon: 74.156292,  elevation: "555m" },
-  RASHIWADE_BK:    { id: "RASHIWADE_BK",    name: "Rashiwade Bk. (Alt)",  subbasin: "S9", lat: 16.5475641, lon: 74.1019728, elevation: "570m" },
-  AAVALI_BK:       { id: "AAVALI_BK",       name: "Aavali Bk. (Alt)",    subbasin: "S9", lat: 16.481009,  lon: 74.0549812, elevation: "585m" },
-  KASABA_TARALE:   { id: "KASABA_TARALE",   name: "Kasaba Tarale (Alt)",  subbasin: "S9", lat: 16.4478876, lon: 74.021589,  elevation: "595m" },
-  KASABA_WALAWE:   { id: "KASABA_WALAWE",   name: "Kasaba Walawe (Alt)",  subbasin: "S9", lat: 16.41021,   lon: 73.9971822, elevation: "615m" },
+  // S1 (Area: 86.213 km²)
+  KARVEER:         { id: "KARVEER",         name: "Karveer (Primary)",    subbasin: "S1", lat: 16.706369,  lon: 74.2481772, elevation: "550m", is_primary: true },
+  KARVIR:          { id: "KARVIR",          name: "Karveer (Primary)",    subbasin: "S1", lat: 16.706369,  lon: 74.2481772, elevation: "550m", is_primary: true },
+
+  // S2 (Area: 153.77 km²)
+  SANGARUL:        { id: "SANGARUL",        name: "Sangarul (Primary)",   subbasin: "S2", lat: 16.6841962, lon: 74.0931627, elevation: "572m", is_primary: true },
+  BALINGA:         { id: "BALINGA",         name: "Balinga (Alt)",        subbasin: "S2", lat: 16.6878443, lon: 74.17031,   elevation: "560m", is_primary: false },
+  KALE:            { id: "KALE",            name: "Kale (Alt)",           subbasin: "S2", lat: 16.7228087, lon: 74.0564499, elevation: "580m", is_primary: false },
+
+  // S3 (Area: 261.32 km²)
+  KOTOLI:          { id: "KOTOLI",          name: "Kotoli (Primary)",     subbasin: "S3", lat: 16.7820174, lon: 74.0518705, elevation: "585m", is_primary: true },
+  BAJAR_BHOGAON:   { id: "BAJAR_BHOGAON",  name: "Bajar Bhogaon (Alt)",  subbasin: "S3", lat: 16.8086769, lon: 74.1107824, elevation: "590m", is_primary: false },
+  PADAL:           { id: "PADAL",           name: "Padal (Alt)",          subbasin: "S3", lat: 16.7446006, lon: 74.115187,  elevation: "575m", is_primary: false },
+
+  // S4 (Area: 262.00 km²)
+  KARANJPHEN:      { id: "KARANJPHEN",      name: "Karanjphen (Primary)", subbasin: "S4", lat: 16.7850973, lon: 73.9036487, elevation: "640m", is_primary: true },
+
+  // S5 (Area: 106.39 km²)
+  PADASALI:        { id: "PADASALI",        name: "Padasali (Primary)",   subbasin: "S5", lat: 16.701934,  lon: 73.843584,  elevation: "620m", is_primary: true },
+  SALWAN:          { id: "SALWAN",          name: "Salwan (Alt)",         subbasin: "S5", lat: 16.6712,    lon: 73.9735,    elevation: "595m", is_primary: false },
+
+  // S6 (Area: 227.72 km²)
+  GAGANBAWDA:      { id: "GAGANBAWDA",      name: "Gaganbawda (Primary)", subbasin: "S6", lat: 16.5469926, lon: 73.8346738, elevation: "680m", is_primary: true },
+
+  // S7 (Area: 195.39 km²)
+  GARIVADE:        { id: "GARIVADE",        name: "Garivade (Primary)",   subbasin: "S7", lat: 16.520366,  lon: 73.918419,  elevation: "610m", is_primary: true },
+
+  // S8 (Area: 177.44 km²)
+  BEED:            { id: "BEED",            name: "Beed (Primary)",       subbasin: "S8", lat: 16.647984,  lon: 74.1288964, elevation: "565m", is_primary: true },
+  SHIROLI_DHUMALA: { id: "SHIROLI_DHUMALA", name: "Shiroli-Dhumala (Alt)",subbasin: "S8", lat: 16.6166768, lon: 74.1062828, elevation: "560m", is_primary: false },
+
+  // S9 (Area: 366.97 km²)
+  RADHANAGARI:     { id: "RADHANAGARI",     name: "Radhanagari (Primary)",subbasin: "S9", lat: 16.41021,   lon: 73.9971822, elevation: "615m", is_primary: true },
+  HALADI:          { id: "HALADI",          name: "Haladi (Alt)",         subbasin: "S9", lat: 16.5932632, lon: 74.156292,  elevation: "555m", is_primary: false },
+  RASHIWADE_BK:    { id: "RASHIWADE_BK",    name: "Rashiwade Bk. (Alt)",  subbasin: "S9", lat: 16.5475641, lon: 74.1019728, elevation: "570m", is_primary: false },
+  AAVALI_BK:       { id: "AAVALI_BK",       name: "Aavali Bk. (Alt)",    subbasin: "S9", lat: 16.481009,  lon: 74.0549812, elevation: "585m", is_primary: false },
+  KASABA_TARALE:   { id: "KASABA_TARALE",   name: "Kasaba Tarale (Alt)",  subbasin: "S9", lat: 16.4478876, lon: 74.021589,  elevation: "595m", is_primary: false },
+  KASABA_WALAWE:   { id: "KASABA_WALAWE",   name: "Kasaba Walawe (Alt)",  subbasin: "S9", lat: 16.41021,   lon: 73.9971822, elevation: "615m", is_primary: false },
 };
 
 export default function StationDetailsCard({

@@ -153,14 +153,19 @@ def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, n
         log.info("HEC-HMS 4.13 binary not present in environment (%s). Running calibrated Panchganga RJKT physical engine...", ver)
         runtime_seconds = 14.8
 
-    # Dynamic Hydrological Unit Hydrograph & SCS-CN Runoff Simulation
-    # Subbasin catchment areas (km2) and Curve Numbers
+    # Subbasin catchment areas (km2) - Official Panchganga Basin Delineation
     sub_areas = {
-        "S1": 180.0, "S2": 320.0, "S3": 310.0,
-        "S4": 210.0, "S5": 290.0, "S6": 350.0,
-        "S7": 380.0, "S8": 190.0, "S9": 340.0,
+        "S1": 86.213,   # Karveer Subbasin
+        "S2": 153.77,   # Sangarul Subbasin
+        "S3": 261.32,   # Kotoli Subbasin
+        "S4": 262.00,   # Karanjphen Subbasin
+        "S5": 106.39,   # Padasali Subbasin
+        "S6": 227.72,   # Gaganbawda Subbasin
+        "S7": 195.39,   # Garivade Subbasin
+        "S8": 177.44,   # Beed Subbasin
+        "S9": 366.97,   # Radhanagari Subbasin
     }
-    total_area_km2 = sum(sub_areas.values())  # ~2570 km2
+    total_area_km2 = sum(sub_areas.values())  # 1837.213 km²
 
     # Calculate catchment-averaged precipitation time series P(t)
     p_basin = np.zeros(90, dtype=np.float32)

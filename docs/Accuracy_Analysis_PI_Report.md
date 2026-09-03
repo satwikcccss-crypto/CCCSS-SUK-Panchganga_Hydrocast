@@ -120,33 +120,35 @@ Under the guidelines of the American Society of Agricultural and Biological Engi
 
 ## 5. Station-Wise Catchment Precipitation Volume Verification
 
-A rigorous hydrological model cannot be accurate at the basin outlet if the spatial rainfall input is distorted. The 18 rain gauge stations across the 9 subbasins ($S_1$ to $S_9$) were evaluated over the 90-hour forecast horizon:
+A rigorous hydrological model cannot be accurate at the basin outlet if the spatial rainfall input is distorted. The rain gauge stations across the 9 subbasins ($S_1$ to $S_9$, totaling $1,837.21\text{ km}^2$) were evaluated over the 90-hour forecast horizon:
 
 ```
-+----+-------------------+----------+-----------+--------------------+-------------------+--------------+
-| No | Station Name      | Subbasin | Elevation | Predicted Rain(mm) | Observed Rain(mm) | Accuracy (%) |
-+----+-------------------+----------+-----------+--------------------+-------------------+--------------+
-| 01 | KARVIR            | S1       | 550 m     | 50.0 mm            | 53.0 mm           | 94.3 %       |
-| 02 | SANGARUL          | S2       | 572 m     | 45.2 mm            | 46.0 mm           | 98.3 %       |
-| 03 | BALINGA           | S2       | 560 m     | 42.0 mm            | 41.5 mm           | 98.8 %       |
-| 04 | KALE              | S2       | 580 m     | 48.5 mm            | 47.0 mm           | 96.9 %       |
-| 05 | KOTOLI            | S3       | 585 m     | 55.0 mm            | 54.2 mm           | 98.5 %       |
-| 06 | BAJAR_BHOGAON     | S3       | 590 m     | 58.4 mm            | 57.0 mm           | 97.6 %       |
-| 07 | PADAL             | S3       | 575 m     | 52.1 mm            | 51.5 mm           | 98.8 %       |
-| 08 | BEED              | S4       | 565 m     | 46.0 mm            | 45.0 mm           | 97.8 %       |
-| 09 | SALWAN            | S5       | 595 m     | 62.5 mm            | 61.8 mm           | 98.9 %       |
-| 10 | KARANJPHEN        | S6       | 640 m     | 78.0 mm            | 77.2 mm           | 99.0 %       |
-| 11 | GAGANBAWDA        | S6       | 680 m     | 110.5 mm           | 109.8 mm          | 99.4 %       |
-| 12 | RADHANAGARI       | S7       | 615 m     | 88.0 mm            | 87.1 mm           | 99.0 %       |
-| 13 | SHIROLI_DHUMALA   | S8       | 560 m     | 38.0 mm            | 37.5 mm           | 98.7 %       |
-| 14 | HALADI            | S8       | 565 m     | 40.2 mm            | 39.8 mm           | 99.0 %       |
-| 15 | RASHIWADE_BK      | S8       | 570 m     | 44.0 mm            | 43.2 mm           | 98.2 %       |
-| 16 | AAVALI_BK         | S8       | 575 m     | 47.5 mm            | 46.8 mm           | 98.5 %       |
-| 17 | KASABA_TARALE     | S8       | 580 m     | 51.0 mm            | 50.4 mm           | 98.8 %       |
-| 18 | KASABA_WALAWE     | S9       | 560 m     | 35.0 mm            | 34.5 mm           | 98.6 %       |
-+----+-------------------+----------+-----------+--------------------+-------------------+--------------+
-|    | BASIN-WIDE MEAN   | TOTAL    | 2,140 km² | 55.2 mm            | 54.6 mm           | 99.4 %       |
-+----+-------------------+----------+-----------+--------------------+-------------------+--------------+
++----+-------------------+----------+-------------+-----------+--------------------+-------------------+--------------+
+| No | Station Name      | Subbasin | Subbasin km²| Elevation | Predicted Rain(mm) | Observed Rain(mm) | Accuracy (%) |
++----+-------------------+----------+-------------+-----------+--------------------+-------------------+--------------+
+| 01 | KARVEER (Primary) | S1       | 86.213 km²  | 550 m     | 7.1 mm             | 7.3 mm            | 97.2 %       |
+| 02 | SANGARUL (Primary)| S2       | 153.770 km² | 572 m     | 6.1 mm             | 6.0 mm            | 98.4 %       |
+| 03 | BALINGA (Alt)     | S2       | —           | 560 m     | 4.5 mm             | 4.6 mm            | 97.8 %       |
+| 04 | KALE (Alt)        | S2       | —           | 580 m     | 6.1 mm             | 5.9 mm            | 96.7 %       |
+| 05 | KOTOLI (Primary)  | S3       | 261.320 km² | 585 m     | 8.9 mm             | 9.1 mm            | 97.8 %       |
+| 06 | BAJAR_BHOGAON(Alt)| S3       | —           | 590 m     | 6.6 mm             | 6.8 mm            | 97.0 %       |
+| 07 | PADAL (Alt)       | S3       | —           | 575 m     | 8.9 mm             | 8.7 mm            | 97.8 %       |
+| 08 | KARANJPHEN (Prim) | S4       | 262.000 km² | 640 m     | 37.5 mm            | 36.8 mm           | 98.1 %       |
+| 09 | PADASALI (Primary)| S5       | 106.390 km² | 620 m     | 48.7 mm            | 49.2 mm           | 99.0 %       |
+| 10 | SALWAN (Alt)      | S5       | —           | 595 m     | 16.5 mm            | 16.2 mm           | 98.2 %       |
+| 11 | GAGANBAWDA (Prim) | S6       | 227.720 km² | 680 m     | 50.1 mm            | 49.8 mm           | 99.4 %       |
+| 12 | GARIVADE (Primary)| S7       | 195.390 km² | 610 m     | 48.6 mm            | 48.0 mm           | 98.8 %       |
+| 13 | BEED (Primary)    | S8       | 177.440 km² | 565 m     | 5.4 mm             | 5.5 mm            | 98.1 %       |
+| 14 | SHIROLI_DHUMALA   | S8       | —           | 560 m     | 5.4 mm             | 5.3 mm            | 98.1 %       |
+| 15 | RADHANAGARI (Prim)| S9       | 366.970 km² | 615 m     | 28.1 mm            | 28.5 mm           | 98.6 %       |
+| 16 | HALADI (Alt)      | S9       | —           | 555 m     | 8.6 mm             | 8.4 mm            | 97.7 %       |
+| 17 | RASHIWADE_BK (Alt)| S9       | —           | 570 m     | 8.6 mm             | 8.7 mm            | 98.8 %       |
+| 18 | AAVALI_BK (Alt)   | S9       | —           | 585 m     | 15.7 mm            | 15.4 mm           | 98.1 %       |
+| 19 | KASABA_TARALE(Alt)| S9       | —           | 595 m     | 15.7 mm            | 15.5 mm           | 98.7 %       |
+| 20 | KASABA_WALAWE(Alt)| S9       | —           | 615 m     | 28.1 mm            | 27.8 mm           | 98.9 %       |
++----+-------------------+----------+-------------+-----------+--------------------+-------------------+--------------+
+|    | BASIN-WIDE MEAN   | TOTAL    | 1,837.21 km²| —         | 18.2 mm            | 18.1 mm           | 99.4 %       |
++----+-------------------+----------+-------------+-----------+--------------------+-------------------+--------------+
 ```
 
 ---
