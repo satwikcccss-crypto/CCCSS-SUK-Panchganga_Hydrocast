@@ -281,7 +281,9 @@ CREATE INDEX IF NOT EXISTS idx_bsf_lead ON bridge_stage_forecast (lead_hours);
 -- ---------------------------------------------------------------------------
 -- 10. Official Maharashtra Government WRD Field Rating Curve Records
 -- ---------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS wrd_field_benchmarks (
+DROP TABLE IF EXISTS wrd_field_benchmarks CASCADE;
+
+CREATE TABLE wrd_field_benchmarks (
     record_id           SERIAL PRIMARY KEY,
     stage_m             NUMERIC(6,2) NOT NULL,
     stage_feet_inches   VARCHAR(32) NOT NULL,
@@ -292,10 +294,6 @@ CREATE TABLE IF NOT EXISTS wrd_field_benchmarks (
     is_danger_threshold BOOLEAN DEFAULT FALSE,
     created_at          TIMESTAMPTZ DEFAULT NOW()
 );
-
--- Migration safety for pre-existing wrd_field_benchmarks tables:
-ALTER TABLE wrd_field_benchmarks ALTER COLUMN survey_year TYPE VARCHAR(64);
-ALTER TABLE wrd_field_benchmarks ALTER COLUMN stage_feet_inches TYPE VARCHAR(32);
 
 -- Seed the 19 Official WRD Empirical Field Gauge Observations
 INSERT INTO wrd_field_benchmarks (stage_m, stage_feet_inches, discharge_cusecs, discharge_m3s, is_danger_threshold)
@@ -341,6 +339,9 @@ CREATE INDEX IF NOT EXISTS idx_psl_cycle ON pipeline_step_log (cycle_id);
 -- ---------------------------------------------------------------------------
 -- 12. Analytical Views for Instant Dashboard Queries
 -- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS v_model_accuracy_summary CASCADE;
+DROP VIEW IF EXISTS v_bridge_alert_summary CASCADE;
+DROP VIEW IF EXISTS v_historical_runs_ledger CASCADE;
 
 -- View 1: Complete Accuracy Metrics with Model Performance Grade
 CREATE OR REPLACE VIEW v_model_accuracy_summary AS
