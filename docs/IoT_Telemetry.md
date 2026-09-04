@@ -1,4 +1,4 @@
-﻿# IoT Ultrasonic Water Level Telemetry & Sensor Integration
+# IoT Ultrasonic Water Level Telemetry & Sensor Integration
 
 ```
 ========================================================================================
@@ -121,3 +121,28 @@ To prevent spurious acoustic echoes from surface waves, heavy spray, or river de
 
 1. **Median Filter:** A 3-sample moving median window filters out isolated ultrasonic sensor spike glitches.
 2. **Persistent Fallback:** If ThingSpeak drops offline or the cellular link fails during a storm, the system uses the last verified reading or defaults to the calibrated seasonal baseflow ($91.1\text{ m}^3/s$).
+
+---
+
+## 5. Real-Time Telemetry Validation Engine & 1-Hour Continuous Resampling
+
+Beyond single-point initialization, HydroCast operates an autonomous, continuous real-time verification engine in [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py):
+
+### 5.1 Ingestion & Hourly Mean Resampling
+1. **Bulk Ingestion:** Fetches up to 800 recent 5-minute telemetry feeds from ThingSpeak Channel `3424513`.
+2. **Harmonic Hourly Bins:** Groups measurements into hourly UTC intervals (`YYYY-MM-DDTHH:00:00Z`).
+3. **Statistical Aggregation:** For each hour with $k \ge 1$ samples:
+   - $\text{Observed Distance (ft)} = \frac{1}{k} \sum_{j=1}^k d_{\text{air}, j}$
+   - $\text{Observed Stage (m MSL)} = 549.35 - (\text{Observed Distance (ft)} \times 0.3048)$
+   - Tracks minimum, maximum, sample count, and standard deviation to monitor sensor health.
+
+### 5.2 1-Hour Automated Execution via GitHub Actions
+A dedicated CI/CD workflow ([`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml)) triggers **every 1 hour**:
+```yaml
+schedule:
+  - cron: "0 * * * *"  # Every 1 hour at minute 0
+```
+- Compares resampled hourly means against the active 90-hour forecast.
+- Updates continuous lifecycle verification progress ($T+0\text{h} \to T+89\text{h}$).
+- Updates `latest_pipeline_state.json`, `data/runs/`, and mirrors archives to `frontend/public/data/runs/` for production Vercel edge deployment.
+

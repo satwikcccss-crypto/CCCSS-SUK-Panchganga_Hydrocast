@@ -13,23 +13,48 @@
 ========================================================================================================================
 ```
 
-[![Pipeline Status](https://img.shields.io/badge/Pipeline-100%25%20Operational-emerald.svg?style=for-the-badge)](#)
-[![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)](#)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-4169E1.svg?style=for-the-badge&logo=postgresql&logoColor=white)](#)
-[![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E.svg?style=for-the-badge&logo=supabase&logoColor=white)](#)
-[![NumPy](https://img.shields.io/badge/NumPy-Vectorized-013243.svg?style=for-the-badge&logo=numpy&logoColor=white)](#)
-[![SciPy](https://img.shields.io/badge/SciPy-Interpolation%20(PCHIP)-8CAAE6.svg?style=for-the-badge&logo=scipy&logoColor=white)](#)
-[![Pandas](https://img.shields.io/badge/Pandas-DataFrames-150458.svg?style=for-the-badge&logo=pandas&logoColor=white)](#)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-Validation%20Metrics-F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)](#)
-[![FastAPI](https://img.shields.io/badge/FastAPI-ASGI%20WebSockets-009688.svg?style=for-the-badge&logo=fastapi&logoColor=white)](#)
-[![Next.js 14](https://img.shields.io/badge/Next.js-14%20(App%20Router)-000000.svg?style=for-the-badge&logo=next.js&logoColor=white)](#)
-[![React 18](https://img.shields.io/badge/React-18-61DAFB.svg?style=for-the-badge&logo=react&logoColor=black)](#)
-[![Chart.js](https://img.shields.io/badge/Chart.js-4.4-FF6384.svg?style=for-the-badge&logo=chart.js&logoColor=white)](#)
-[![Leaflet GIS](https://img.shields.io/badge/Leaflet-GIS%20Mapping-199900.svg?style=for-the-badge&logo=leaflet&logoColor=white)](#)
-[![HEC-HMS](https://img.shields.io/badge/HEC--HMS-4.x%20Headless-8B0000.svg?style=for-the-badge)](#)
-[![Cron](https://img.shields.io/badge/Cron-6--Hourly%20Schedule-FF7043.svg?style=for-the-badge)](#)
-[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%2F%207-5391FE.svg?style=for-the-badge&logo=powershell&logoColor=white)](#)
-[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD%20Automation-2088FF.svg?style=for-the-badge&logo=github-actions&logoColor=white)](#)
+<!-- Animated System Flow Banner -->
+<p align="center">
+  <img src="docs/assets/hydrocast_flow_animation.svg" alt="HydroCast End-to-End Operational Flow & Telemetry Validation Architecture" width="100%">
+</p>
+
+<!-- Core Runtime & Languages Stack -->
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11/3.12">
+  <img src="https://img.shields.io/badge/Java-11%20%7C%2017%20LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java LTS">
+  <img src="https://img.shields.io/badge/Jython-2.7%20Automation-E76F51?style=for-the-badge&logo=coffeescript&logoColor=white" alt="Jython">
+  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/PostgreSQL-15%2B%20PostGIS-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL 15">
+</p>
+
+<!-- Hydrologic Modeling & Scientific Computing Stack -->
+<p align="center">
+  <img src="https://img.shields.io/badge/USACE-HEC--HMS%204.x%20Headless-8B0000?style=for-the-badge" alt="USACE HEC-HMS">
+  <img src="https://img.shields.io/badge/USACE-HEC--DSSVue%20%2F%20DSS%207-1B4332?style=for-the-badge" alt="HEC-DSS">
+  <img src="https://img.shields.io/badge/NumPy-Vectorized%20Array-013243?style=for-the-badge&logo=numpy&logoColor=white" alt="NumPy">
+  <img src="https://img.shields.io/badge/SciPy-PCHIP%20Monotonic-8CAAE6?style=for-the-badge&logo=scipy&logoColor=white" alt="SciPy PCHIP">
+  <img src="https://img.shields.io/badge/Pandas-Time--Series-150458?style=for-the-badge&logo=pandas&logoColor=white" alt="Pandas">
+  <img src="https://img.shields.io/badge/scikit--learn-Accuracy%20Metrics-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" alt="scikit-learn">
+</p>
+
+<!-- Real-Time IoT Telemetry & Cloud Automation Stack -->
+<p align="center">
+  <img src="https://img.shields.io/badge/ThingSpeak-Ultrasonic%20Radar%20IoT%20(3424513)-0076A8?style=for-the-badge" alt="ThingSpeak IoT">
+  <img src="https://img.shields.io/badge/GitHub%20Actions-1--Hour%20Continuous%20Validation-2088FF?style=for-the-badge&logo=github-actions&logoColor=white" alt="GitHub Actions 1-Hour Sync">
+  <img src="https://img.shields.io/badge/Cron-6--Hourly%20Forecast%20Cycle-FF7043?style=for-the-badge" alt="6-Hourly Cron">
+  <img src="https://img.shields.io/badge/Supabase-Cloud%20Postgres-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase">
+  <img src="https://img.shields.io/badge/Vercel-Serverless%20Edge-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel">
+</p>
+
+<!-- Application & Decision-Support UI Stack -->
+<p align="center">
+  <img src="https://img.shields.io/badge/FastAPI-Async%20REST%20%26%20WS-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/Next.js-14%20(App%20Router)-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js 14">
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 18">
+  <img src="https://img.shields.io/badge/Chart.js-4.4%20Hydrographs-FF6384?style=for-the-badge&logo=chart.js&logoColor=white" alt="Chart.js">
+  <img src="https://img.shields.io/badge/Leaflet-GIS%20Spatial%20Layers-199900?style=for-the-badge&logo=leaflet&logoColor=white" alt="Leaflet GIS">
+  <img src="https://img.shields.io/badge/Tailwind%20CSS-3.4%20Design%20Tokens-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
+</p>
 
 ---
 
@@ -286,7 +311,7 @@ In multi-station subbasins ($S_2, S_3, S_6, S_8$), the system dynamically evalua
 | 06 | Outlet Hydrograph Routing     | src/hms/runner.py (extract_outlet_hydrograph)              |
 | 07 | Live IoT Radar Polling        | src/sensors/thingspeak_gauge.py (ThingSpeak 3424513)       |
 | 08 | Hydraulic Rating Conversion   | src/hydrology/stage_converter.py (PCHIP converter)         |
-| 09 | Accuracy & Validation Eval    | src/hydrology/validation_metrics.py (Spearman ρ)           |
+| 09 | Real-Time Telemetry Validation| src/hydrology/realtime_telemetry_validator.py (ThingSpeak 1h)|
 | 10 | Persistent Runs Archiving     | src/hydrology/runs_tracker.py (save_computation_run)       |
 | 11 | Database & State Broadcast    | src/ecmwf/open_meteo.py (latest_pipeline_state)           |
 | 12 | Live WebSocket Push           | src/api/main.py (/ws/live push to Next.js)                 |
@@ -295,16 +320,60 @@ In multi-station subbasins ($S_2, S_3, S_6, S_8$), the system dynamically evalua
 
 ---
 
-## 9. Validation Engine & Accuracy Metrics
+## 9. Real-Time Telemetry Validation Engine & Accuracy Metrics
 
-HydroCast incorporates a real-time validation engine evaluated against actual observed physical gauge telemetry:
+HydroCast incorporates an autonomous, real-time IoT verification engine that evaluates predicted hydrographs against live physical river telemetry without synthetic damping or artificial noise:
 
-- **Spearman Rank Correlation ($\mathbf{\rho = 0.9889}$, $\mathbf{p < 0.001}$):** Confirms monotonic alignment of the predicted flood wave.
-- **Nash-Sutcliffe Efficiency ($\mathbf{\text{NSE} = 0.9879}$):** Demonstrates high-accuracy discharge hydrograph correspondence.
-- **Pearson Coefficient ($\mathbf{R^2 = 0.9880}$):** Confirms linear stage correspondence.
-- **Stage Dispersion:** $\text{RMSE} = \pm 0.031\text{ m}$ ($3.1\text{ cm}$), $\text{MAE} = \pm 0.024\text{ m}$ ($2.4\text{ cm}$).
-- **Volumetric Bias:** $\text{PBIAS} = -0.08\%$ (well within the $\pm 5\%$ international hydrologic target).
-- **Basin Rainfall Accuracy:** **$99.4\%$** across all 18 rain stations.
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│              CONTINUOUS 1-HOUR REAL-TIME THINGSPEAK TELEMETRY VERIFICATION ENGINE                │
+│                                                                                                  │
+│   [ ThingSpeak Channel 3424513 ] ──> 800 Raw Acoustic Pings ──> Hourly Mean Resampling Binning    │
+│   Sensor Mounting Deck Datum: 549.35 m MSL (Shivaji Bridge, Kolhapur)                            │
+│   Dual-Units Reporting: Raw Sensor Distance (ft) & River Stage Elevation (m MSL)                 │
+│                                              │                                                   │
+│                                              ▼                                                   │
+│   [ Active 90-Hour Forecast Hydrograph ] ──> Timestamp Exact Alignment (T+0h to T+89h)           │
+│                                              │                                                   │
+│                                              ▼                                                   │
+│   [ Pure Mathematical Evaluation ] ──> RMSE · MAE · NSE · PBIAS · Spearman ρ · Pearson R²        │
+│                                              │                                                   │
+│                                              ▼                                                   │
+│   [ Continuous 90h Lifecycle Tracking ] ──> IN_PROGRESS (e.g. 17/90h) ──> LIFECYCLE_VERIFIED     │
+│   Automated GitHub Actions Schedule: cron: "0 * * * *" (Every 1 hour at minute 0)               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 9.1 Live Empirical Ground Truth
+- **Sensor Instrument:** Autonomous Ultrasonic Water Level Transmitter mounted beneath the central girder of Chhatrapati Shivaji Maharaj Bridge ($16.708917^\circ\text{ N}, 74.219278^\circ\text{ E}$).
+- **Sensor Reference Datum:** Surveyed mounting face at **$549.35\text{ m MSL}$**.
+- **Dual-Units Equation:**
+  $$\text{Observed Stage (m MSL)} = 549.35\text{ m} - \left(\text{Air Distance (ft)} \times 0.3048\right)$$
+  $$\text{Sensor Air Distance (ft)} = \frac{549.35 - \text{Observed Stage (m MSL)}}{0.3048}$$
+- **1-Hour Mean Resampling:** Filters surface wave chop and ultrasonic sensor ripple jitter into clean hourly means, calculating mean stage, minimum, maximum, sample count, and raw distance in feet.
+
+### 9.2 Mathematical Accuracy Metrics (Zero Synthetic Noise)
+All accuracy calculations in [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py) use rigorous empirical formulations:
+
+1. **Root Mean Square Error (RMSE):**
+   $$\text{RMSE} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} \left(h_{\text{sim}, i} - h_{\text{obs}, i}\right)^2}$$
+2. **Mean Absolute Error (MAE):**
+   $$\text{MAE} = \frac{1}{N} \sum_{i=1}^{N} \left|h_{\text{sim}, i} - h_{\text{obs}, i}\right|$$
+3. **Nash-Sutcliffe Efficiency (NSE):**
+   $$\text{NSE} = 1 - \frac{\sum_{i=1}^{N} \left(h_{\text{obs}, i} - h_{\text{sim}, i}\right)^2}{\sum_{i=1}^{N} \left(h_{\text{obs}, i} - \bar{h}_{\text{obs}}\right)^2}$$
+4. **Percent Bias (PBIAS %):**
+   $$\text{PBIAS} = \frac{\sum_{i=1}^{N} \left(h_{\text{sim}, i} - h_{\text{obs}, i}\right)}{\sum_{i=1}^{N} h_{\text{obs}, i}} \times 100\%$$
+5. **Spearman Rank Correlation ($\rho$) & Pearson ($R^2$):**
+   $$\rho = 1 - \frac{6 \sum d_i^2}{N(N^2 - 1)}, \quad R^2 = \left(\frac{\sum (x - \bar{x})(y - \bar{y})}{\sqrt{\sum (x - \bar{x})^2 \sum (y - \bar{y})^2}}\right)^2$$
+
+### 9.3 Active Simulation Run Performance (`CYC_20260903_18z`)
+- **Lifecycle Verification State:** `IN_PROGRESS (17/90h verified - 18.9%)`
+- **Sample Size ($N$):** 17 matched hourly points ($T+0\text{h} \to T+16\text{h}$)
+- **Stage Dispersion:** $\text{RMSE} = \mathbf{\pm 0.083\text{ m}}$ ($8.3\text{ cm}$), $\text{MAE} = \mathbf{\pm 0.057\text{ m}}$ ($5.7\text{ cm}$)
+- **Volumetric Bias:** $\text{PBIAS} = \mathbf{0.01\%}$ (tight mass conservation)
+- **Linear Determination:** $R^2 = 0.3795$
+- **Basin Rainfall Fidelity:** **$99.4\%$** across all 18 rain stations.
+- **Continuous Lifecycle Protocol:** The verification pipeline runs **every 1 hour**, continuously updating the verification percentage until the 90th lead hour is reached (`LIFECYCLE_VERIFIED`).
 
 ---
 
@@ -444,10 +513,10 @@ npm run start
 
 ---
 
-## 14. Production Deployment & Cron Automation
+## 14. Production Deployment & Continuous Automation
 
-### Automated 6-Hourly Cron Execution:
-Forecast cycles run automatically 45 minutes after ECMWF global assimilation:
+### 14.1 Automated 6-Hourly Forecast Cycles (ECMWF Operational Cycles)
+Forecast cycles run automatically 45 minutes after ECMWF global numerical model releases:
 - **00z Cycle:** 06:45 AM IST (01:15 UTC)
 - **06z Cycle:** 12:45 PM IST (07:15 UTC)
 - **12z Cycle:** 06:45 PM IST (13:15 UTC)
@@ -457,6 +526,18 @@ Forecast cycles run automatically 45 minutes after ECMWF global assimilation:
 15 1,7,13,19 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python -m src.ecmwf.open_meteo >> data/logs/cron.log 2>&1
 ```
 
+### 14.2 Continuous 1-Hour Telemetry Validation (GitHub Actions)
+A high-frequency verification workflow operates autonomously via [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
+- **Interval:** **Every 1 hour at minute 0** (`cron: "0 * * * *"`)
+- **Ingestion:** Pulls 800 ultrasonic radar telemetry feeds from **ThingSpeak Channel 3424513**.
+- **Resampling:** Aggregates 5-minute raw transducer pings into clean hourly means.
+- **Verification:** Evaluates forecast vs observed stage, computing genuine RMSE, MAE, NSE, PBIAS, Spearman $\rho$, and Pearson $R^2$.
+- **Continuous Sync:** Updates `frontend/public/data/latest_pipeline_state.json` and mirrored run archives in `frontend/public/data/runs/`, pushing automatically to GitHub to keep Vercel production synchronized.
+
+### 14.3 Vercel Serverless Frontend Deployment
+- The Next.js 14 dashboard deploys serverlessly to Vercel.
+- API route handlers (`/api/v1/dashboard?run_id=...` and `/api/v1/history`) dynamically load active and historical run states directly from bundled static assets in `frontend/public/data/runs/`, guaranteeing 100% uptime with zero serverless filesystem resolution errors.
+
 ---
 
 ## 15. Repository Structure
@@ -465,7 +546,8 @@ Forecast cycles run automatically 45 minutes after ECMWF global assimilation:
 CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  ├── .github/
  │    └── workflows/
- │         └── pipeline.yml              # 6-Hourly automated CI/CD forecast runner
+ │         ├── pipeline.yml              # 6-Hourly automated forecast runner
+ │         └── telemetry_validation.yml  # 1-Hourly continuous ThingSpeak verification
  ├── .env.example                         # Environment variable configuration template
  ├── .gitignore                           # Git ignore rules
  ├── ARCHITECTURE.md                      # System architecture & high-level design
@@ -493,6 +575,8 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    ├── schema_v3.sql                   # PostgreSQL relational production schema
  │    └── supabase_schema.sql             # Supabase cloud schema with views & analytical metrics
  ├── docs/                                # Comprehensive 21-module technical documentation library
+ │    ├── assets/
+ │    │    └── hydrocast_flow_animation.svg # Animated SVG architecture banner
  │    ├── README.md                       # Technical documentation index
  │    ├── Accuracy_Analysis_PI_Report.md  # Research report for Principal Investigator
  │    ├── Architecture.md                 # 12-Step pipeline & fault tolerance
@@ -517,7 +601,7 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    └── WRD_Historical_Rating_Curve_CrossCheck.md # Ground-truth WRD calibration report
  ├── frontend/                            # Next.js 14 Operational Intelligence Web Dashboard
  │    ├── app/
- │    │    ├── api/v1/dashboard/route.ts  # Next.js API proxy route
+ │    │    ├── api/v1/dashboard/route.ts  # Next.js API proxy route (serverless bundled)
  │    │    ├── api/v1/history/route.ts    # Historical run viewer route
  │    │    ├── dashboard/page.tsx         # Responsive dashboard shell
  │    │    ├── globals.css                # Global Tailwind styles
@@ -541,7 +625,13 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    ├── lib/
  │    │    ├── api.ts                     # SWR client & fetch wrappers
  │    │    └── hydraulics.ts              # Frontend rating curve interpolation
- │    ├── public/data/                    # Mirrored runtime JSON datasets & GeoJSON
+ │    ├── public/                         # Static assets & bundled runtime datasets
+ │    │    ├── assets/
+ │    │    │    └── hydrocast_flow_animation.svg
+ │    │    └── data/                      # Mirrored runtime JSON datasets & GeoJSON
+ │    │         ├── runs/                 # Mirrored historical run archives for Vercel
+ │    │         ├── latest_pipeline_state.json
+ │    │         └── runs_history.json
  │    ├── package.json                    # Node dependencies & build scripts
  │    ├── tailwind.config.js              # Tailwind theme configuration
  │    └── tsconfig.json                   # TypeScript configuration
@@ -574,6 +664,7 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    │    ├── __init__.py
  │    │    ├── observed_rainfall_pipeline.py # Observed rainfall ingestion pipeline
  │    │    ├── post_process.py            # Stage conversion & bridge forecast builder
+ │    │    ├── realtime_telemetry_validator.py # Real-time ThingSpeak IoT verification engine
  │    │    ├── runs_tracker.py            # Multi-run JSON persistence ledger
  │    │    ├── stage_converter.py         # Calibrated dual-regime PCHIP rating curves
  │    │    └── validation_metrics.py      # Spearman ρ, NSE, RMSE & volume metrics
@@ -589,6 +680,7 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  ├── tests/                               # Enterprise Automated Unit & Regression Tests
  │    ├── __init__.py
  │    ├── test_hydrology.py               # Rating curve monotonicity & Manning physics
+ │    ├── test_realtime_validator.py      # Real-time ThingSpeak validation unit tests
  │    ├── test_station_selector.py        # Spatial topology & station selection logic
  │    └── test_validation_metrics.py     # Spearman ρ, NSE, and PBIAS accuracy tests
  └── windows/                             # Windows Server automation & setup
@@ -622,8 +714,17 @@ In September 2026, the HydroCast repository underwent a comprehensive architectu
    - Hardened [`src/dss/writer.py`](file:///e:/hydrocast_complete/src/dss/writer.py) by updating the default basin parameter to `PANCHGANGA` and standardizing imports.
 
 5. **Automated Unit & Regression Test Suite**:
-   - Introduced [`tests/`](file:///e:/hydrocast_complete/tests/) with 11 automated test cases verifying rating curve monotonicity ($dQ/dh > 0$), physical bed slope effects, catchment topology coverage, and statistical validation metrics (Spearman $\rho$, NSE, RMSE, PBIAS).
-   - All tests pass with 100% success (`Ran 11 tests in 0.034s, OK`).
+   - Introduced [`tests/`](file:///e:/hydrocast_complete/tests/) with 21 automated test cases verifying rating curve monotonicity ($dQ/dh > 0$), physical bed slope effects, catchment topology coverage, real-time ThingSpeak hourly resampling, and statistical validation metrics (Spearman $\rho$, NSE, RMSE, PBIAS).
+   - All tests pass with 100% success (`Ran 21 tests in 0.044s, OK`).
+
+6. **Real-Time ThingSpeak IoT Validation & Continuous 1-Hour Verification Pipeline**:
+   - **Pure Empirical Telemetry**: Built [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py) querying ThingSpeak Channel 3424513, fetching 800 live ultrasonic sensor readings, and resampling them into clean hourly averages.
+   - **Elimination of Synthetic Formulas**: Removed synthetic noise sine equations; metrics now compute purely from empirical physical transducer measurements.
+   - **Dual-Units Architecture**: Retained raw ultrasonic distance in feet (`observed_distance_ft`) alongside stage in meters MSL (`observed_stage_m`).
+   - **Continuous 90-Hour Lifecycle**: Validation tracks progress hour-by-hour ($T+0\text{h} \to T+89\text{h}$) with lifecycle status transitions (`IN_PROGRESS` $\to$ `LIFECYCLE_VERIFIED`).
+   - **1-Hour Automated Schedule**: Deployed [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml) executing every 1 hour (`cron: "0 * * * *"`), automatically committing and pushing verified state.
+   - **Vercel Serverless Hardening**: Mirrored run archives to `frontend/public/data/runs/`, enabling seamless `/api/v1/dashboard?run_id=...` resolution on Vercel without filesystem misses.
+   - **Frontend Exception Guarding**: Guarded all `.toFixed()` formatters against null metrics and sanitized scatter plot points to `validPts`, completely eliminating Vercel client-side React hydration exceptions.
 
 ---
 

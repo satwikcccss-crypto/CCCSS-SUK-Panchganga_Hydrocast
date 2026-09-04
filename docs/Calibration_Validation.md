@@ -1,4 +1,4 @@
-﻿# Model Calibration, Validation Metrics & Accuracy Engine
+# Model Calibration, Validation Metrics & Accuracy Engine
 
 ```
 ========================================================================================
@@ -146,21 +146,72 @@ Across the Panchganga catchment, basin-wide volumetric rainfall accuracy current
 
 ---
 
-## 5. Automated Validation Execution in Pipeline
+## 5. Pure Real-Time ThingSpeak IoT Verification Engine
 
-The validation engine runs automatically on every 6-hour simulation cycle in [`open_meteo.py`](file:///e:/hydrocast_complete/src/ecmwf/open_meteo.py):
+In addition to baseline simulation validation, HydroCast features a continuous, real-time IoT verification engine implemented in [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py):
 
-```python
-from src.hydrology.validation_metrics import evaluate_forecast_accuracy
-
-# Evaluate current forecast against actual observed telemetry
-validation_results = evaluate_forecast_accuracy(pipeline_state)
-pipeline_state["validation"] = validation_results
-
-# Log performance metrics
-metrics = validation_results["metrics"]
-log.info("Forecast validation complete: Spearman ρ=%.4f, NSE=%.4f, Grade=%s",
-         metrics["spearman_rho"], metrics["nse_discharge"], validation_results["performance_grade"])
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│             REAL-TIME THINGSPEAK TELEMETRY VALIDATION ENGINE ARCHITECTURE              │
+│                                                                                        │
+│   [ ThingSpeak Channel 3424513 ] ──> 800 Real-Time Transducer Feeds (5-min intervals)  │
+│   Sensor Mounting Deck Datum: 549.35 m MSL (Shivaji Bridge, Kolhapur)                  │
+│                                              │                                         │
+│                                              ▼                                         │
+│   [ Hourly Mean Resampling ] ──> Noise & Wave Ripple Filtering (Mean, Min, Max, Count) │
+│   Dual Units Preserved: Raw Sensor Air Distance (ft) & River Stage Elevation (m MSL)   │
+│                                              │                                         │
+│                                              ▼                                         │
+│   [ Timestamp Matching ] ──> Exact UTC Alignment vs 90-Hour Forecast (T+0h to T+89h)   │
+│                                              │                                         │
+│                                              ▼                                         │
+│   [ Pure Empirical Evaluation ] ──> RMSE · MAE · NSE · PBIAS · Spearman ρ · Pearson R² │
+│   (Strict Textbook Formulations · Zero Synthetic Noise · Zero Artificial Damping)     │
+│                                              │                                         │
+│                                              ▼                                         │
+│   [ Continuous 90h Verification State ] ──> IN_PROGRESS (e.g. 17/90h) ──> VERIFIED     │
+│   Automated 1-Hour Schedule: .github/workflows/telemetry_validation.yml (0 * * * *)   │
+└────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-Results are permanently embedded in the historical runs ledger (`data/runs/{cycle_id}.json`) and rendered interactively on the Next.js **Accuracy & Run Log** dashboard.
+### 5.1 Dual-Units Conversion Mechanics
+The physical ultrasonic sensor mounted beneath Shivaji Bridge measures round-trip acoustic reflection distance through air down to the water surface:
+
+$$\text{Observed Stage (m MSL)} = 549.35\text{ m} - \left(\text{Air Distance (ft)} \times 0.3048\right)$$
+
+$$\text{Air Distance (ft)} = \frac{549.35 - \text{Observed Stage (m MSL)}}{0.3048}$$
+
+Both raw sensor feet (`observed_distance_ft`) and elevation (`observed_stage_m`) are preserved in all JSON state schemas, CSV exports, and dashboard tables.
+
+### 5.2 Elimination of Synthetic Formulas
+Historical prototypes included synthetic noise equations to simulate observed data during offline testing. In the production engine:
+- Synthetic equations (e.g., `0.035 * np.sin(i / 2.5)`) have been **completely eliminated**.
+- Only genuine physical ultrasonic measurements recorded by ThingSpeak Channel `3424513` are resampled and compared against the forecasted hydrograph.
+- Unobserved future lead hours ($T > T_{\text{current}}$) remain strictly designated as unverified pending sensor arrival.
+
+---
+
+## 6. Continuous 90-Hour Lifecycle Tracking & 1-Hour Automation
+
+### 6.1 Lifecycle Verification States
+As time progresses throughout an active 90-hour forecast cycle:
+1. **`INITIALIZED` ($0\text{h}$ verified):** Forecast generated, awaiting initial physical telemetry.
+2. **`IN_PROGRESS` ($1\dots 89\text{h}$ verified):** Real-time telemetry is continuously ingested every hour, updating sample size $N$ and progressive accuracy metrics.
+3. **`LIFECYCLE_VERIFIED` ($90\text{h}$ verified):** The full 90-hour hydrograph has been physically verified against ground truth, and final cumulative performance grades are locked.
+
+### 6.2 Automated 1-Hour CI/CD Execution
+The validation engine runs autonomously every hour via GitHub Actions in [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
+
+```yaml
+on:
+  schedule:
+    - cron: "0 * * * *"    # Every 1 hour at minute 0
+  workflow_dispatch:        # Manual on-demand trigger
+```
+
+Upon execution:
+1. Feeds from ThingSpeak Channel `3424513` are resampled into hourly means.
+2. Accuracy matrices (RMSE, MAE, NSE, PBIAS, Spearman $\rho$, Pearson $R^2$) are computed.
+3. `frontend/public/data/latest_pipeline_state.json` and mirrored run archives in `frontend/public/data/runs/` are updated.
+4. Git automatically commits and pushes state updates, keeping the live Vercel deployment continuously synchronized.
+

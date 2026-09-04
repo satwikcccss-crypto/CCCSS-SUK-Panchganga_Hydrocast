@@ -1,0 +1,336 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 370" width="100%" height="100%" style="background: linear-gradient(135deg, #070d18 0%, #0c1527 50%, #091122 100%); border-radius: 16px; border: 1px solid #1e293b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Background Grid Pattern -->
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1e293b" stroke-width="0.5" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Node Glow Filters -->
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="glow-blue" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="glow-emerald" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="glow-amber" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Linear Gradients -->
+    <linearGradient id="stream-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+
+    <linearGradient id="radar-beam" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.05"/>
+    </linearGradient>
+
+    <linearGradient id="card-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#131e33" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0b1322" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <style>
+      .flow-line {
+        stroke-dasharray: 8 6;
+        animation: dashFlow 20s linear infinite;
+      }
+      .flow-line-reverse {
+        stroke-dasharray: 6 6;
+        animation: dashFlowRev 15s linear infinite;
+      }
+      @keyframes dashFlow {
+        from { stroke-dashoffset: 400; }
+        to { stroke-dashoffset: 0; }
+      }
+      @keyframes dashFlowRev {
+        from { stroke-dashoffset: 0; }
+        to { stroke-dashoffset: 300; }
+      }
+      .pulse-sonar {
+        transform-origin: 822px 105px;
+        animation: sonarWave 2.8s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+      }
+      .pulse-sonar-delayed {
+        transform-origin: 822px 105px;
+        animation: sonarWave 2.8s cubic-bezier(0.2, 0.8, 0.4, 1) 1.4s infinite;
+      }
+      @keyframes sonarWave {
+        0% { r: 6px; opacity: 1; stroke-width: 2.5; }
+        100% { r: 38px; opacity: 0; stroke-width: 0.5; }
+      }
+      .loop-spin {
+        transform-origin: 500px 292px;
+        animation: spinClockwise 8s linear infinite;
+      }
+      @keyframes spinClockwise {
+        100% { transform: rotate(360deg); }
+      }
+      .beacon-dot {
+        animation: beaconGlow 2s ease-in-out infinite alternate;
+      }
+      @keyframes beaconGlow {
+        0% { opacity: 0.4; filter: drop-shadow(0 0 1px #10b981); }
+        100% { opacity: 1; filter: drop-shadow(0 0 8px #10b981); }
+      }
+      .water-ripple {
+        animation: waveShift 4s ease-in-out infinite alternate;
+      }
+      @keyframes waveShift {
+        0% { transform: translateY(0px); }
+        100% { transform: translateY(3px); }
+      }
+    </style>
+  </defs>
+
+  <!-- Background Texture -->
+  <rect width="1000" height="370" fill="url(#grid)"/>
+
+  <!-- Top Ambient Banner Glow -->
+  <circle cx="200" cy="40" r="140" fill="#0284c7" opacity="0.08" filter="blur(50px)"/>
+  <circle cx="500" cy="180" r="180" fill="#3b82f6" opacity="0.06" filter="blur(60px)"/>
+  <circle cx="800" cy="80" r="160" fill="#10b981" opacity="0.07" filter="blur(50px)"/>
+
+  <!-- Pipeline Interconnecting Flow Cables (Layer 0) -->
+  <g fill="none">
+    <!-- Step 1 -> Step 2 -->
+    <path d="M 160 115 L 210 115" stroke="#38bdf8" stroke-width="2.5" class="flow-line" opacity="0.85"/>
+    
+    <!-- Step 2 -> Step 3 -->
+    <path d="M 340 115 L 390 115" stroke="#3b82f6" stroke-width="2.5" class="flow-line" opacity="0.85"/>
+    
+    <!-- Step 3 -> Step 4 -->
+    <path d="M 520 115 L 570 115" stroke="#60a5fa" stroke-width="2.5" class="flow-line" opacity="0.85"/>
+    
+    <!-- Step 4 -> Step 5 -->
+    <path d="M 700 115 L 750 115" stroke="#10b981" stroke-width="2.5" class="flow-line" opacity="0.85"/>
+
+    <!-- Step 5 (Radar) -> Real-Time Validation Feedback Loop (Downwards) -->
+    <path d="M 822 165 C 822 235, 750 285, 660 292" stroke="#f59e0b" stroke-width="2.5" class="flow-line" opacity="0.9"/>
+
+    <!-- Step 4 (Forecast) -> Validation Feedback Loop (Downwards) -->
+    <path d="M 635 165 C 635 225, 570 265, 480 292" stroke="#38bdf8" stroke-width="2" class="flow-line" opacity="0.8"/>
+
+    <!-- Continuous 1-Hour Verification Loop Return to Dashboard / Store -->
+    <path d="M 340 292 C 230 292, 160 235, 160 165" stroke="#10b981" stroke-width="2" class="flow-line-reverse" opacity="0.75"/>
+  </g>
+
+  <!-- ==================== STAGE 1: METEOROLOGICAL FORCING ==================== -->
+  <g transform="translate(30, 65)">
+    <rect width="130" height="100" rx="12" fill="url(#card-grad)" stroke="#1e3a8a" stroke-width="1.5"/>
+    <rect x="0" y="0" width="130" height="4" rx="2" fill="#38bdf8"/>
+    
+    <!-- Weather Cloud Icon -->
+    <g transform="translate(14, 16)">
+      <path d="M 18 10 C 18 6.7 15.3 4 12 4 C 9.5 4 7.4 5.6 6.5 7.8 C 4.5 8.1 3 9.9 3 12 C 3 14.2 4.8 16 7 16 L 19 16 C 20.7 16 22 14.7 22 13 C 22 11.4 20.7 10.1 19.1 10 Z" fill="#38bdf8" opacity="0.9"/>
+      <!-- Animated Rain Drops -->
+      <line x1="8" y1="20" x2="6" y2="25" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round" class="water-ripple"/>
+      <line x1="13" y1="20" x2="11" y2="25" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round" class="water-ripple" style="animation-delay: 0.5s;"/>
+      <line x1="18" y1="20" x2="16" y2="25" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round" class="water-ripple" style="animation-delay: 0.9s;"/>
+    </g>
+
+    <text x="46" y="28" fill="#f8fafc" font-size="11" font-weight="700" letter-spacing="0.5">ECMWF IFS</text>
+    <text x="46" y="42" fill="#94a3b8" font-size="9" font-weight="500">0.25° NWP (9km)</text>
+
+    <line x1="12" y1="56" x2="118" y2="56" stroke="#1e293b" stroke-width="1"/>
+    
+    <text x="14" y="72" fill="#38bdf8" font-size="9" font-weight="600">90h Rainfall Array</text>
+    <text x="14" y="86" fill="#64748b" font-size="8">Hourly Step · 6h Sync</text>
+  </g>
+
+  <!-- ==================== STAGE 2: 18 RAIN GAUGE NETWORK ==================== -->
+  <g transform="translate(210, 65)">
+    <rect width="130" height="100" rx="12" fill="url(#card-grad)" stroke="#1e3a8a" stroke-width="1.5"/>
+    <rect x="0" y="0" width="130" height="4" rx="2" fill="#3b82f6"/>
+
+    <!-- Map Pin Radar Icon -->
+    <g transform="translate(14, 18)">
+      <path d="M 12 2 C 7.6 2 4 5.6 4 10 C 4 15.2 12 22 12 22 C 12 22 20 15.2 20 10 C 20 5.6 16.4 2 12 2 Z" fill="none" stroke="#60a5fa" stroke-width="1.8"/>
+      <circle cx="12" cy="9" r="3" fill="#60a5fa"/>
+    </g>
+
+    <text x="44" y="28" fill="#f8fafc" font-size="11" font-weight="700">18 STATIONS</text>
+    <text x="44" y="42" fill="#94a3b8" font-size="9" font-weight="500">Panchganga Basin</text>
+
+    <line x1="12" y1="56" x2="118" y2="56" stroke="#1e293b" stroke-width="1"/>
+
+    <text x="14" y="72" fill="#60a5fa" font-size="9" font-weight="600">Dynamic Router</text>
+    <text x="14" y="86" fill="#64748b" font-size="8">Max-Rain Selection</text>
+  </g>
+
+  <!-- ==================== STAGE 3: HEC-HMS & PYTHON SCS-CN ==================== -->
+  <g transform="translate(390, 65)">
+    <rect width="130" height="100" rx="12" fill="url(#card-grad)" stroke="#1d4ed8" stroke-width="1.5"/>
+    <rect x="0" y="0" width="130" height="4" rx="2" fill="#818cf8"/>
+
+    <!-- Hydrologic Compute Icon -->
+    <g transform="translate(14, 16)">
+      <rect x="2" y="3" width="18" height="18" rx="3" fill="none" stroke="#a5b4fc" stroke-width="1.8"/>
+      <path d="M 6 15 L 10 9 L 14 13 L 18 7" fill="none" stroke="#a5b4fc" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+
+    <text x="44" y="28" fill="#f8fafc" font-size="11" font-weight="700">HEC-HMS / CN</text>
+    <text x="44" y="42" fill="#94a3b8" font-size="9" font-weight="500">Java &amp; Python 3.12</text>
+
+    <line x1="12" y1="56" x2="118" y2="56" stroke="#1e293b" stroke-width="1"/>
+
+    <text x="14" y="72" fill="#a5b4fc" font-size="9" font-weight="600">Clark UH + Muskingum</text>
+    <text x="14" y="86" fill="#64748b" font-size="8">9 Catchment Subbasins</text>
+  </g>
+
+  <!-- ==================== STAGE 4: 90-HOUR HYDROGRAPH ==================== -->
+  <g transform="translate(570, 65)">
+    <rect width="130" height="100" rx="12" fill="url(#card-grad)" stroke="#047857" stroke-width="1.5"/>
+    <rect x="0" y="0" width="130" height="4" rx="2" fill="#10b981"/>
+
+    <!-- River Hydrograph Icon -->
+    <g transform="translate(14, 18)">
+      <path d="M 2 18 C 7 18 8 6 12 6 C 16 6 17 18 22 18" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="12" cy="6" r="2.5" fill="#34d399"/>
+    </g>
+
+    <text x="44" y="28" fill="#f8fafc" font-size="11" font-weight="700">90h HYDROGRAPH</text>
+    <text x="44" y="42" fill="#94a3b8" font-size="9" font-weight="500">Shivaji &amp; Rajaram</text>
+
+    <line x1="12" y1="56" x2="118" y2="56" stroke="#1e293b" stroke-width="1"/>
+
+    <text x="14" y="72" fill="#34d399" font-size="9" font-weight="600">PCHIP Rating Curve</text>
+    <text x="14" y="86" fill="#64748b" font-size="8">T+0h → T+89h Lead Time</text>
+  </g>
+
+  <!-- ==================== STAGE 5: THINGSPEAK IOT RADAR ==================== -->
+  <g transform="translate(750, 65)">
+    <rect width="145" height="100" rx="12" fill="url(#card-grad)" stroke="#b45309" stroke-width="1.5"/>
+    <rect x="0" y="0" width="145" height="4" rx="2" fill="#f59e0b"/>
+
+    <!-- Sonar Pulsing Circles -->
+    <circle cx="28" cy="27" r="6" fill="none" stroke="#f59e0b" class="pulse-sonar"/>
+    <circle cx="28" cy="27" r="6" fill="none" stroke="#f59e0b" class="pulse-sonar-delayed"/>
+
+    <!-- Sensor Icon -->
+    <g transform="translate(18, 16)">
+      <circle cx="10" cy="11" r="5" fill="#f59e0b"/>
+      <path d="M 10 16 L 10 22 M 6 22 L 14 22" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+
+    <text x="50" y="27" fill="#f8fafc" font-size="11" font-weight="700">THINGSPEAK IoT</text>
+    <text x="50" y="41" fill="#fbbf24" font-size="8.5" font-weight="600">Channel 3424513</text>
+
+    <line x1="12" y1="54" x2="133" y2="54" stroke="#1e293b" stroke-width="1"/>
+
+    <text x="14" y="70" fill="#f59e0b" font-size="9" font-weight="600">Live Ultrasonic Radar</text>
+    <text x="14" y="84" fill="#64748b" font-size="8">Datum: 549.35m | Feet &amp; m</text>
+  </g>
+
+  <!-- ==================== BOTTOM CONTINUOUS VALIDATION STRIP ==================== -->
+  <g transform="translate(210, 235)">
+    <rect width="580" height="110" rx="14" fill="url(#card-grad)" stroke="#059669" stroke-width="1.8" filter="url(#glow-emerald)" opacity="0.95"/>
+    <rect x="0" y="0" width="580" height="4" rx="2" fill="#10b981"/>
+
+    <!-- Central Verification Engine Title -->
+    <g transform="translate(20, 16)">
+      <!-- Animated Spinning Loop Ring -->
+      <g transform="translate(14, 14)">
+        <circle cx="0" cy="0" r="10" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="8 4" class="loop-spin"/>
+        <circle cx="0" cy="0" r="3.5" fill="#34d399"/>
+      </g>
+      
+      <text x="36" y="13" fill="#f8fafc" font-size="12" font-weight="700" letter-spacing="0.5">CONTINUOUS 1-HOUR REAL-TIME TELEMETRY VALIDATION ENGINE</text>
+      <text x="36" y="27" fill="#a7f3d0" font-size="9.5">Strict Mathematical Formulation (Zero Noise / Zero Damping) · GitHub Actions Automated Sync</text>
+    </g>
+
+    <line x1="16" y1="54" x2="564" y2="54" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Key Metrics Badges inside Validation Strip -->
+    <!-- Metric 1: RMSE -->
+    <g transform="translate(20, 64)">
+      <rect width="98" height="32" rx="6" fill="#0f2922" stroke="#10b981" stroke-width="0.8"/>
+      <text x="49" y="14" text-anchor="middle" fill="#6ee7b7" font-size="8" font-weight="600">STAGE RMSE</text>
+      <text x="49" y="26" text-anchor="middle" fill="#f8fafc" font-size="10" font-weight="700">± 0.083 m</text>
+    </g>
+
+    <!-- Metric 2: Nash-Sutcliffe NSE -->
+    <g transform="translate(130, 64)">
+      <rect width="98" height="32" rx="6" fill="#0f2922" stroke="#10b981" stroke-width="0.8"/>
+      <text x="49" y="14" text-anchor="middle" fill="#6ee7b7" font-size="8" font-weight="600">NASH-SUTCLIFFE</text>
+      <text x="49" y="26" text-anchor="middle" fill="#f8fafc" font-size="10" font-weight="700">NSE Stage</text>
+    </g>
+
+    <!-- Metric 3: Spearman Rho -->
+    <g transform="translate(240, 64)">
+      <rect width="98" height="32" rx="6" fill="#0f2922" stroke="#10b981" stroke-width="0.8"/>
+      <text x="49" y="14" text-anchor="middle" fill="#6ee7b7" font-size="8" font-weight="600">SPEARMAN RANK</text>
+      <text x="49" y="26" text-anchor="middle" fill="#f8fafc" font-size="10" font-weight="700">ρ &amp; Pearson R²</text>
+    </g>
+
+    <!-- Metric 4: PBIAS -->
+    <g transform="translate(350, 64)">
+      <rect width="98" height="32" rx="6" fill="#0f2922" stroke="#10b981" stroke-width="0.8"/>
+      <text x="49" y="14" text-anchor="middle" fill="#6ee7b7" font-size="8" font-weight="600">PERCENT BIAS</text>
+      <text x="49" y="26" text-anchor="middle" fill="#f8fafc" font-size="10" font-weight="700">&lt; 0.1 % PBIAS</text>
+    </g>
+
+    <!-- Metric 5: 90h Lifecycle -->
+    <g transform="translate(460, 64)">
+      <rect width="102" height="32" rx="6" fill="#1e1b4b" stroke="#818cf8" stroke-width="0.8"/>
+      <text x="51" y="14" text-anchor="middle" fill="#c7d2fe" font-size="8" font-weight="600">90h LIFECYCLE</text>
+      <text x="51" y="26" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="700">T+0h → T+89h</text>
+    </g>
+  </g>
+
+  <!-- Left Bottom Callout: Next.js 14 Web App -->
+  <g transform="translate(20, 235)">
+    <rect width="175" height="110" rx="14" fill="url(#card-grad)" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="175" height="4" rx="2" fill="#38bdf8"/>
+
+    <g transform="translate(14, 16)">
+      <rect x="0" y="0" width="22" height="16" rx="2" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+      <line x1="5" y1="20" x2="17" y2="20" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="11" y1="16" x2="11" y2="20" stroke="#38bdf8" stroke-width="1.5"/>
+      
+      <text x="30" y="12" fill="#f8fafc" font-size="11" font-weight="700">NEXT.JS 14 APP</text>
+      <text x="30" y="24" fill="#94a3b8" font-size="8.5">Vercel &amp; Fast API Hub</text>
+    </g>
+
+    <line x1="12" y1="52" x2="163" y2="52" stroke="#1e293b" stroke-width="1"/>
+
+    <text x="14" y="68" fill="#38bdf8" font-size="8.5" font-weight="600">Target Accuracy Panel</text>
+    <text x="14" y="82" fill="#cbd5e1" font-size="8">· Dual Units (Feet &amp; Meters MSL)</text>
+    <text x="14" y="96" fill="#cbd5e1" font-size="8">· Real-Time Error Deltas &amp; CSV</text>
+  </g>
+
+  <!-- Right Bottom Callout: Government WRD Ground Truth -->
+  <g transform="translate(805, 235)">
+    <rect width="175" height="110" rx="14" fill="url(#card-grad)" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="175" height="4" rx="2" fill="#f59e0b"/>
+
+    <g transform="translate(14, 16)">
+      <path d="M 2 14 L 11 3 L 20 14 Z M 5 14 L 5 18 L 17 18 L 17 14" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="28" y="12" fill="#f8fafc" font-size="11" font-weight="700">WRD BENCHMARK</text>
+      <text x="28" y="24" fill="#f59e0b" font-size="8.5">शासन नोंद (19 Records)</text>
+    </g>
+
+    <line x1="12" y1="52" x2="163" y2="52" stroke="#1e293b" stroke-width="1"/>
+
+    <text x="14" y="68" fill="#f59e0b" font-size="8.5" font-weight="600">Maharashtra Irrigation</text>
+    <text x="14" y="82" fill="#cbd5e1" font-size="8">· 0'0" Datum to 49'8" HFL</text>
+    <text x="14" y="96" fill="#cbd5e1" font-size="8">· Calibrated S₀ = 0.005858</text>
+  </g>
+
+  <!-- Live Pulse Beacon Top Right -->
+  <g transform="translate(940, 22)">
+    <circle cx="0" cy="0" r="4.5" fill="#10b981" class="beacon-dot"/>
+    <circle cx="0" cy="0" r="8" fill="none" stroke="#10b981" stroke-width="1" opacity="0.6"/>
+    <text x="-10" y="3" text-anchor="end" fill="#10b981" font-size="9" font-weight="700" letter-spacing="0.5">LIVE ENGINE ONLINE</text>
+  </g>
+</svg>

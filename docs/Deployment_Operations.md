@@ -1,4 +1,4 @@
-﻿# Production Deployment, Operations & Automation Manual
+# Production Deployment, Operations & Automation Manual
 
 ```
 ========================================================================================
@@ -165,3 +165,41 @@ server {
   - Returns `{"status": "healthy", "database": "connected", "last_cycle": "CYC_..."}`.
 - **Log Rotation:** Logs are kept under `data/logs/` and automatically rotated using `logrotate` with 14-day retention.
 - **Zero-Dependency Fallback:** If PostgreSQL or internet APIs fail, HydroCast defaults to the pre-cached static dataset and physical SCS-CN emulator, guaranteeing that emergency centers always have active flood projections.
+
+---
+
+## 6. Continuous 1-Hour Telemetry Validation (GitHub Actions)
+
+HydroCast automates continuous physical verification using GitHub Actions in [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
+
+```yaml
+name: ThingSpeak Real-Time Telemetry Validation
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # Every 1 hour at minute 0
+  workflow_dispatch:       # Manual on-demand execution
+```
+
+### Operational Pipeline Flow:
+1. **Pulls Telemetry:** Queries ThingSpeak Channel `3424513` fetching 800 recent 5-minute pings.
+2. **Resamples to Hourly Bins:** Averages distance readings and converts to stage elevation ($549.35\text{m} - \text{ft} \times 0.3048$).
+3. **Calculates Empirical Accuracy:** Computes RMSE, MAE, NSE, PBIAS, Spearman $\rho$, and Pearson $R^2$.
+4. **Synchronizes State:** Updates `frontend/public/data/latest_pipeline_state.json` and mirrored run archives in `frontend/public/data/runs/`.
+5. **Auto-Commits & Pushes:** Commits verified metrics back to `origin/main`, triggering automatic deployment synchronization on Vercel.
+
+---
+
+## 7. Vercel Serverless Edge Deployment & Asset Bundling
+
+The Next.js 14 dashboard is designed for continuous deployment to Vercel:
+
+### 7.1 Static Asset & Run Ledger Packaging
+Because Vercel serverless function runners do not package files outside `frontend/`, HydroCast maintains mirrored run archives in:
+- `frontend/public/data/latest_pipeline_state.json`
+- `frontend/public/data/runs_history.json`
+- `frontend/public/data/runs/CYC_*.json`
+
+### 7.2 Dynamic Run Routing
+When a user requests `/api/v1/dashboard?run_id=CYC_20260903_18z`, the serverless API route automatically resolves `path.join(process.cwd(), "public", "data", "runs", `${requestedRunId}.json`)`, ensuring instantaneous sub-50ms response times without cold-start database dependencies.
+

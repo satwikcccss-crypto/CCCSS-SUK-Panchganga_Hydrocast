@@ -1,5 +1,9 @@
 # HydroCast Technical Documentation Library
 
+<p align="center">
+  <img src="assets/hydrocast_flow_animation.svg" alt="HydroCast Operational Continuum" width="100%">
+</p>
+
 Welcome to the comprehensive technical documentation for **HydroCast: Real-Time Operational Flood Forecasting & Basin Intelligence** for the Panchganga River Catchment (Kolhapur District, Maharashtra, India).
 
 ## Technical Modules

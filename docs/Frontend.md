@@ -1,4 +1,4 @@
-﻿# HydroCast Frontend Architecture & Design System
+# HydroCast Frontend Architecture & Design System
 
 ```
 ========================================================================================
@@ -86,20 +86,31 @@ All charts are engineered with strict hydrologic conventions, high-DPI canvas re
 ### 3.2 Inverted Meteorological Hyetographs (`RainfallPanel`)
 - Rainfall bars are plotted with an inverted vertical axis ($0\text{ mm}$ at the top, increasing downward) adhering to standard international civil engineering hydrologic conventions.
 
-### 3.3 Spearman Correlation Scatter Plot (`AccuracyPanel`)
-- Displays $N=90$ forecast points against observed gauge telemetry.
-- Plots the theoretical $1:1$ ideal agreement line ($Y = X$) in dashed slate.
-- Live badge computes Spearman rank coefficient ($\rho$) and Pearson $R^2$.
+### 3.3 Spearman Correlation Scatter Plot & Target Accuracy Panel (`AccuracyPanel.tsx`)
+- **Filtered Coordinate Array (`validPts`):** Coordinates are sanitized to ensure both $x$ and $y$ are finite numbers, preventing `NaN` from disrupting Chart.js canvas layout.
+- **Plots the theoretical $1:1$ ideal agreement line ($Y = X$) in dashed slate.**
+- **Live Empirical Badges:** Displays actual Spearman rank coefficient ($\rho$) and Pearson $R^2$ with safe null-fallback (`—`).
+- **Interactive Tooltip Readouts:** Displays Observed stage ($m$ and raw $ft$), Predicted stage ($m$), and error delta $\Delta H$ ($m$).
+- **Elapsed-Only Observed Hydrograph Curve:** In the 90-hour comparison hydrograph, observed telemetry is plotted only for elapsed lead hours ($T+0\text{h} \dots T+16\text{h}$), leaving unreached lead hours open until real-time telemetry arrives.
+- **Dual-Unit Hourly Prediction Log Table:**
+  - Lead time ($+0\text{h} \to +89\text{h}$)
+  - Raw ultrasonic sensor distance in feet (e.g. `52.95 ft`)
+  - Shivaji predicted stage ($m$ MSL) and discharge ($m^3/s$)
+  - Rajaram K.T. Weir stage ($m$ MSL)
+  - Observed water level ($m$ MSL)
+  - Error delta in dual units (e.g. `+0.030m (+0.10ft)`)
+  - 1-click CSV Export including raw feet observations.
+- **Continuous 90h Lifecycle Progress Card:** Visual progress bar and badge tracking verified hours (e.g., `17/90h (18.9%) · IN_PROGRESS`).
 
 ```
      Predicted Stage (m MSL)
   545 +                                     /  <-- 1:1 Ideal Line (Y = X)
       |                                  * /
-  543 +                              *  * /    * = Forecast Points
+  543 +                              *  * /    * = Validated Forecast Points
       |                            *  *  /     Points cluster tightly along
   540 +                       *  *  *  /       the line demonstrating
       |                     *  *  *   /        high predictive fidelity
-  535 +                *  *  *       /         (Spearman ρ = 0.989)
+  535 +                *  *  *       /
       |              *  *           /
   532 +---------*--*---------------/
       +---------+---------+---------+---------+
@@ -134,7 +145,7 @@ The cross-section viewer renders a direct 2D geometric elevation slice of the Pa
 
 ---
 
-## 5. State Synchronization & SWR Configuration
+## 5. State Synchronization, SWR & Vercel Serverless Architecture
 
 Data fetching is wrapped through the client abstraction [`lib/api.ts`](file:///e:/hydrocast_complete/frontend/lib/api.ts):
 
@@ -150,6 +161,15 @@ export async function fetchDashboardData(runId?: string) {
 }
 ```
 
-- **Polling Frequency:** 30 seconds for live gauge status, 60 seconds for runoff summaries.
-- **Historical Run Inspections:** When an operator clicks **"Inspect Run"** in the historical ledger, SWR immediately retrieves `/api/v1/dashboard?run_id=CYC_...` without reloading the page, seamlessly replacing the active dashboard telemetry.
-- **Offline Resilience:** If the backend FastAPI server or PostgreSQL database is unavailable, the Next.js API route automatically falls back to static JSON archives stored in `public/data/latest_pipeline_state.json`.
+### 5.1 Vercel Serverless Edge Bundling
+On Vercel, serverless function workers execute isolated from external project folders (`../data/runs/` is not packaged). To guarantee 100% production reliability:
+- All historical computation runs (`CYC_*.json`) and `runs_index.json` are mirrored into [`frontend/public/data/runs/`](file:///e:/hydrocast_complete/frontend/public/data/runs/).
+- When `/api/v1/dashboard?run_id=...` is called, the serverless handler resolves `path.join(process.cwd(), "public", "data", "runs", `${requestedRunId}.json`)`, instantly serving the archived run without 404s or empty metrics.
+
+### 5.2 Hydration Exception Hardening
+All metric formatters in [`AccuracyPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/AccuracyPanel.tsx) and [`SystemPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/SystemPanel.tsx) are safely guarded:
+```tsx
+ρ = {spearmanRho != null ? spearmanRho.toFixed(3) : "—"} · R² = {pearsonR2 != null ? pearsonR2.toFixed(3) : "—"}
+```
+This prevents `TypeError: Cannot read properties of null (reading 'toFixed')` during initial hydration or when inspecting runs with incomplete lead hours.
+
