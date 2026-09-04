@@ -419,7 +419,11 @@ def sync_validation_to_state(
         except Exception as e:
             log.error("Failed to update latest_pipeline_state.json: %s", e)
 
-    # 2. Update specific run file in data/runs/
+    # 2. Update specific run file in data/runs/ and frontend/public/data/runs/
+    frontend_runs_dir = root / "frontend" / "public" / "data" / "runs"
+    frontend_runs_dir.mkdir(parents=True, exist_ok=True)
+    frontend_run_path = frontend_runs_dir / f"{cycle_id}.json"
+
     if run_path.exists():
         try:
             with open(run_path, "r", encoding="utf-8") as f:
@@ -427,9 +431,33 @@ def sync_validation_to_state(
             run_data["validation"] = validation_result
             with open(run_path, "w", encoding="utf-8") as f:
                 json.dump(run_data, f, indent=2)
-            log.info("✓ Updated %s with real ThingSpeak validation metrics", run_path.name)
+            with open(frontend_run_path, "w", encoding="utf-8") as f:
+                json.dump(run_data, f, indent=2)
+            log.info("✓ Updated %s in data/runs/ and frontend/public/data/runs/", run_path.name)
         except Exception as e:
             log.error("Failed to update %s: %s", run_path.name, e)
+    elif latest_path.exists():
+        try:
+            with open(frontend_run_path, "w", encoding="utf-8") as f:
+                json.dump(state, f, indent=2)
+        except Exception as e:
+            pass
+
+    # 2b. Sync updated metrics into runs index & history
+    try:
+        from src.hydrology.runs_tracker import load_runs_index, save_runs_index
+        index = load_runs_index()
+        m = validation_result.get("metrics", {})
+        for entry in index:
+            if entry.get("cycle_id") == cycle_id:
+                entry["spearman_rho"] = m.get("spearman_rho")
+                entry["nse"] = m.get("nse_stage")
+                entry["rmse"] = m.get("rmse_stage_m")
+                entry["lifecycle_status"] = validation_result.get("lifecycle_status")
+                entry["verified_hours"] = validation_result.get("verified_hours")
+        save_runs_index(index)
+    except Exception as e:
+        log.warning("Could not sync runs index: %s", e)
 
     # 3. Sync to Supabase PostgreSQL if configured
     try:

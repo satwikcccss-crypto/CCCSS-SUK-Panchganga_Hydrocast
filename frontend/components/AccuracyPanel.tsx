@@ -264,10 +264,11 @@ export default function AccuracyPanel() {
         }));
     }
 
-    if (pts.length === 0) return { datasets: [] };
+    const validPts = pts.filter((p: any) => p && typeof p.x === "number" && !isNaN(p.x) && typeof p.y === "number" && !isNaN(p.y));
+    if (validPts.length === 0) return { datasets: [] };
 
-    const xs = pts.map((p: any) => p.x);
-    const ys = pts.map((p: any) => p.y);
+    const xs = validPts.map((p: any) => p.x);
+    const ys = validPts.map((p: any) => p.y);
     const minVal = Math.floor(Math.min(...xs, ...ys) - 0.2);
     const maxVal = Math.ceil(Math.max(...xs, ...ys) + 0.2);
 
@@ -288,7 +289,7 @@ export default function AccuracyPanel() {
         },
         {
           label: `Forecast Points (Spearman ρ = ${spearmanRho != null ? spearmanRho.toFixed(3) : "—"})`,
-          data: pts,
+          data: validPts,
           backgroundColor: "#3B82F6",
           borderColor: "#1D4ED8",
           borderWidth: 1,
@@ -431,9 +432,9 @@ export default function AccuracyPanel() {
         [
           r.lead_hours,
           `"${r.timestamp}"`,
-          r.stage_m.toFixed(2),
-          r.discharge_m3s.toFixed(1),
-          r.rajaram_stage_m.toFixed(2),
+          r.stage_m != null ? r.stage_m.toFixed(2) : "",
+          r.discharge_m3s != null ? r.discharge_m3s.toFixed(1) : "",
+          r.rajaram_stage_m != null ? r.rajaram_stage_m.toFixed(2) : "",
           r.observed_distance_ft != null ? r.observed_distance_ft.toFixed(2) : "",
           r.observed_stage_m != null ? r.observed_stage_m.toFixed(2) : "",
           r.observed_discharge_m3s != null ? r.observed_discharge_m3s.toFixed(1) : "",
@@ -669,7 +670,7 @@ export default function AccuracyPanel() {
                   </span>
                 </div>
                 <span className="text-xs font-mono font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-200">
-                  ρ = {spearmanRho.toFixed(3)} · R² = {pearsonR2.toFixed(3)}
+                  ρ = {spearmanRho != null ? spearmanRho.toFixed(3) : "—"} · R² = {pearsonR2 != null ? pearsonR2.toFixed(3) : "—"}
                 </span>
               </div>
 
@@ -798,13 +799,13 @@ export default function AccuracyPanel() {
                         {r.timestamp.replace("T", " ").slice(0, 16)}
                       </td>
                       <td className="px-3 py-2 font-mono font-bold text-blue-700">
-                        {r.stage_m.toFixed(2)}m
+                        {r.stage_m != null ? `${r.stage_m.toFixed(2)}m` : "—"}
                       </td>
                       <td className="px-3 py-2 font-mono text-gray-800">
-                        {r.discharge_m3s.toFixed(1)}
+                        {r.discharge_m3s != null ? r.discharge_m3s.toFixed(1) : "—"}
                       </td>
                       <td className="px-3 py-2 font-mono text-sky-800">
-                        {r.rajaram_stage_m.toFixed(2)}m
+                        {r.rajaram_stage_m != null ? `${r.rajaram_stage_m.toFixed(2)}m` : "—"}
                       </td>
                       <td className="px-3 py-2 font-mono font-semibold text-amber-700">
                         {r.observed_distance_ft != null ? `${r.observed_distance_ft.toFixed(2)} ft` : "—"}

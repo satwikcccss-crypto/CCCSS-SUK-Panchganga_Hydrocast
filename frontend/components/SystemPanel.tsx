@@ -202,7 +202,7 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
         </div>
         <div className={CARD}>
           <div className="text-xs font-bold text-slate-600 uppercase tracking-wider">Execution Duration</div>
-          <div className="mt-2 text-xl font-extrabold font-mono-code text-sky-700">{duration.toFixed(1)}s</div>
+          <div className="mt-2 text-xl font-extrabold font-mono-code text-sky-700">{duration != null ? `${Number(duration).toFixed(1)}s` : "—"}</div>
           <div className="mt-1 text-xs text-emerald-700 font-bold">100% within 60s SLA</div>
         </div>
         <div className={CARD}>

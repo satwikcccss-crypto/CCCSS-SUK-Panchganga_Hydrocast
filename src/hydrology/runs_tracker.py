@@ -23,6 +23,8 @@ RUNS_DIR.mkdir(parents=True, exist_ok=True)
 RUNS_INDEX_FILE = RUNS_DIR / "runs_index.json"
 FRONTEND_HISTORY_FILE = PROJECT_ROOT / "frontend" / "public" / "data" / "runs_history.json"
 FRONTEND_HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+FRONTEND_RUNS_DIR = PROJECT_ROOT / "frontend" / "public" / "data" / "runs"
+FRONTEND_RUNS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def load_runs_index() -> List[Dict[str, Any]]:
@@ -63,6 +65,13 @@ def save_computation_run(run_state: Dict[str, Any]) -> str:
     run_file = RUNS_DIR / f"{cycle_id}.json"
     with open(run_file, "w", encoding="utf-8") as f:
         json.dump(run_state, f, indent=2)
+
+    try:
+        frontend_run_file = FRONTEND_RUNS_DIR / f"{cycle_id}.json"
+        with open(frontend_run_file, "w", encoding="utf-8") as f:
+            json.dump(run_state, f, indent=2)
+    except Exception as e:
+        log.warning("Failed to mirror run %s to frontend: %s", cycle_id, e)
 
     summary = run_state.get("summary", {})
     last_cycle = run_state.get("status", {}).get("last_cycle", {})
