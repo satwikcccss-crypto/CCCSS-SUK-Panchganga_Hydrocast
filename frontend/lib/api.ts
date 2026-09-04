@@ -24,6 +24,11 @@ export const api = {
   pipeline: async () => (await fetchDashboardData()).pipeline,
   logs: async () => (await fetchDashboardData()).logs ?? [],
   runsHistory: async () => (await fetchDashboardData()).runs_history ?? [],
+  pipelineHistory: async (limit = 48) => {
+    const data = await fetchDashboardData();
+    const hist = data.runs_history ?? [];
+    return hist.slice(0, limit);
+  },
   runDetails: async (runId: string) => await fetchDashboardData(runId),
   validation: async (runId?: string) => (await fetchDashboardData(runId)).validation ?? null,
   runoffSummary: async () => {
@@ -159,19 +164,6 @@ export const api = {
   bridgeStage: async (siteId: string) => {
     const data = await fetchDashboardData();
     return siteId.toUpperCase().includes("SHIVAJI") ? data.bridgeShivaji : data.bridgeRajaram;
-  },
-  pipelineHistory: async (limit: number = 48) => {
-    try {
-      const url = typeof window !== "undefined" ? "/api/v1/history" : `${BASE}/api/v1/history`;
-      const res = await fetch(url, { cache: "no-store" });
-      if (res.ok) return await res.json();
-    } catch {}
-
-    const data = await fetchDashboardData().catch(() => null);
-    if (data?.status?.last_cycle) {
-      return [data.status.last_cycle];
-    }
-    return [];
   },
   ratingCurves: async () => ({
     SHIVAJI_BRIDGE: [],

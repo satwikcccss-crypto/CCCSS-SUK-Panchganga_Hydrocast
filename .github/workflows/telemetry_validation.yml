@@ -1,0 +1,56 @@
+name: ThingSpeak Real-Time Telemetry Validation
+
+# Continuous 90-Hour Hydrograph Verification Pipeline
+# Runs every 3 hours to ingest live ThingSpeak ultrasonic radar readings (Shivaji Bridge),
+# resamples them into hourly means, matches against the active 90-hour forecast,
+# and computes genuine mathematical accuracy metrics (RMSE, MAE, NSE, PBIAS, Spearman rho).
+
+on:
+  schedule:
+    - cron: "0 */3 * * *"   # Every 3 hours
+  workflow_dispatch:        # Manual on-demand execution
+
+env:
+  PYTHON_VERSION: "3.11"
+  THINGSPEAK_CHANNEL_ID: "3424513"
+  THINGSPEAK_API_KEY: "TSUKPZEUN1BXODUF"
+
+jobs:
+  validate_telemetry:
+    name: "ThingSpeak Live Telemetry vs 90-hr Hydrograph Validation"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Real-Time ThingSpeak Validation Engine
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DATABASE_URL }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          THINGSPEAK_CHANNEL_ID: ${{ env.THINGSPEAK_CHANNEL_ID }}
+          THINGSPEAK_API_KEY: ${{ env.THINGSPEAK_API_KEY }}
+        run: |
+          python -m src.hydrology.realtime_telemetry_validator
+
+      - name: Commit & Push Verified Telemetry State to GitHub
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add frontend/public/data/latest_pipeline_state.json data/runs/
+          git diff --staged --quiet || (git commit -m "chore(telemetry): update real-time ThingSpeak validation metrics [skip ci]" && git push)

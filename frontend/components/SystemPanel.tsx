@@ -47,34 +47,22 @@ function Countdown({ nextCycle }: { nextCycle?: string }) {
   );
 }
 
-export default function SystemPanel({ pipeline }: { pipeline: any }) {
+export default function SystemPanel({ pipeline }: { pipeline?: any }) {
+  const { data: fetchedPipeline } = useSWR("pipeline", api.pipeline, { refreshInterval: 20000 });
   const { data: history } = useSWR("history", () => api.pipelineHistory(48), { refreshInterval: 60000 });
   const { data: status } = useSWR("status", api.status, { refreshInterval: 20000 });
   const { data: logsData } = useSWR("logs", api.logs, { refreshInterval: 10000 });
+  const { data: validationData } = useSWR("validation", () => api.validation(), { refreshInterval: 30000 });
 
-  const defaultSteps = [
-    { step_number: 1, step_name: "Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)", duration_seconds: 4.2, status: "success" },
-    { step_number: 2, step_name: "Dynamic Subbasin Station Selection & Volume Evaluation (S1–S9)", duration_seconds: 1.1, status: "success" },
-    { step_number: 3, step_name: "Spatial Great-Circle Fallback for Ungauged Catchments", duration_seconds: 0.6, status: "success" },
-    { step_number: 4, step_name: "HEC-DSS Time-Series Export (/PANCHGANGA/*/PRECIP-INC/1HOUR/)", duration_seconds: 2.3, status: "success" },
-    { step_number: 5, step_name: "HEC-HMS Automation Execution (HMS_Automation_RJKT Project)", duration_seconds: 14.8, status: "success" },
-    { step_number: 6, step_name: "Direct Runoff Simulation & SCS-CN Loss Method", duration_seconds: 3.4, status: "success" },
-    { step_number: 7, step_name: "Muskingum River Flowpath Routing & Reach Transformation", duration_seconds: 4.2, status: "success" },
-    { step_number: 8, step_name: "Shivaji Bridge MSL Stage-Discharge Rating Conversion", duration_seconds: 1.5, status: "success" },
-    { step_number: 9, step_name: "Rajaram K.T. Weir Hydraulic Stage-Discharge Conversion", duration_seconds: 1.4, status: "success" },
-    { step_number: 10, step_name: "River Flood Threshold & Early Warning Evaluation", duration_seconds: 0.8, status: "success" },
-    { step_number: 11, step_name: "PostgreSQL / Supabase Telemetry Sync", duration_seconds: 2.1, status: "success" },
-    { step_number: 12, step_name: "Real-Time WebSocket & Dashboard State Broadcast", duration_seconds: 0.5, status: "success" },
-  ];
-
-  const steps = pipeline?.steps && pipeline.steps.length > 0 ? pipeline.steps : defaultSteps;
-  const metrics = pipeline?.metrics ?? {};
+  const activePipeline = pipeline ?? fetchedPipeline;
+  const steps = activePipeline?.steps && activePipeline.steps.length > 0 ? activePipeline.steps : [];
+  const metrics = activePipeline?.metrics ?? {};
 
   const histRows = (history && history.length > 0 ? history : []).slice().reverse();
   const histChart = {
     labels: histRows.map((r: any) => {
-      const id = r.run_id || r.cycle_id || "";
-      return id.replace("CYC_", "").slice(-8);
+      const id = r.cycle_id || r.run_id || "";
+      return id.replace("CYC_", "");
     }),
     datasets: [
       {
@@ -114,18 +102,67 @@ export default function SystemPanel({ pipeline }: { pipeline: any }) {
     },
   };
 
+  const comps = activePipeline?.components ?? {};
+  const isDbConnected = comps.database ? !comps.database.toLowerCase().includes("fail") : true;
+  const isHmsComputed = comps.hec_hms ? comps.hec_hms.toLowerCase().includes("calibrated") || comps.hec_hms.toLowerCase().includes("computed") : true;
+  const isMeteoOnline = comps.open_meteo ? comps.open_meteo.toLowerCase().includes("online") : true;
+  const isRatingOnline = comps.stage_rating ? comps.stage_rating.toLowerCase().includes("online") : true;
+  const isThingSpeakOnline = Boolean(validationData?.sensor_source || status?.last_cycle?.lifecycle_status);
+
   const dataSources = [
-    { name: "Open-Meteo 90-hr Forecast API", type: "ECMWF IFS / High-Res", status: "online", lag: "~0m", qc: 100 },
-    { name: "Primary Gages (7 Stations)", type: "Karvir, Sangarul, Kotoli, etc.", status: "online", lag: "1m", qc: 100 },
-    { name: "Alternate Gages (11 Stations)", type: "Gaganbawda, Kale, Padal, Haladi, etc.", status: "online", lag: "1m", qc: 100 },
-    { name: "Shivaji Bridge River Stage", type: "Hydraulic Telemetry", status: "online", lag: "2m", qc: 100 },
-    { name: "Rajaram K.T. Weir River Stage", type: "Hydraulic Telemetry", status: "online", lag: "2m", qc: 100 },
-    { name: "HEC-HMS Automation (RJKT)", type: "Calibrated Basin Model", status: "online", lag: "~0m", qc: 100 },
-    { name: "Panchganga GIS Shapefiles", type: "Subbasins & Flowpaths GeoJSON", status: "online", lag: "Static WGS84", qc: 100 },
+    {
+      name: "Open-Meteo 90-hr Precipitation API",
+      type: "ECMWF High-Res Grid (18 Stations)",
+      status: isMeteoOnline ? "online" : "degraded",
+      lag: "~0m",
+      qc: 100,
+    },
+    {
+      name: "ThingSpeak Shivaji Bridge Telemetry",
+      type: "Ultrasonic River Level (Channel 3424513)",
+      status: isThingSpeakOnline ? "online" : "degraded",
+      lag: "5m IoT",
+      qc: 100,
+    },
+    {
+      name: "HEC-HMS Automation RJKT Core",
+      type: "SCS-CN Loss + Muskingum Reach Routing",
+      status: isHmsComputed ? "online" : "running",
+      lag: "~0m",
+      qc: 100,
+    },
+    {
+      name: "Hydraulic Stage-Discharge Rating Engine",
+      type: "Shivaji Bridge & Rajaram K.T. Weir",
+      status: isRatingOnline ? "online" : "degraded",
+      lag: "Live Rating",
+      qc: 100,
+    },
+    {
+      name: "PostgreSQL / Supabase State Store",
+      type: "Runs History & Continuous Validation",
+      status: isDbConnected ? "online" : "offline",
+      lag: "<1s",
+      qc: 100,
+    },
+    {
+      name: "Primary Catchment Gauges",
+      type: "7 Primary Subbasins (Karvir, Sangarul, etc.)",
+      status: "online",
+      lag: "1m",
+      qc: 100,
+    },
+    {
+      name: "Alternate Catchment Gauges",
+      type: "11 Alternate Gages (Gaganbawda, Kale, etc.)",
+      status: "online",
+      lag: "1m",
+      qc: 100,
+    },
   ];
 
-  const cycleId = status?.last_cycle?.run_id ?? "CYCLE-20260901-1200";
-  const duration = status?.last_cycle?.duration_seconds ?? 36.9;
+  const cycleId = status?.last_cycle?.run_id ?? activePipeline?.cycle ?? "CYC_20260903_18z";
+  const duration = status?.last_cycle?.duration_seconds ?? activePipeline?.metrics?.total_duration_seconds ?? 36.9;
   const lastStart = status?.last_cycle?.start_time;
   const nextCycleStr = lastStart
     ? new Date(new Date(lastStart).getTime() + 6 * 3600 * 1000).toISOString()
@@ -190,10 +227,10 @@ export default function SystemPanel({ pipeline }: { pipeline: any }) {
         <div className={`lg:col-span-7 ${CARD}`}>
           <div className={CARD_HEADER}>
             <span className="flex items-center gap-1.5 font-semibold text-gray-800">
-              <span>⚙</span> 12-Step Execution Pipeline (Latest Cycle)
+              <span>⚙</span> Execution Pipeline Stages ({cycleId})
             </span>
             <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-              12/12 STEPS COMPLETED
+              {steps.filter((s: any) => s.status === "success").length}/{steps.length} STEPS COMPLETED
             </span>
           </div>
           <div className="flex flex-col gap-2 mt-3">
@@ -299,33 +336,32 @@ export default function SystemPanel({ pipeline }: { pipeline: any }) {
           <span className="text-[11px] font-mono-code text-slate-500">Live Simulation Log Stream</span>
         </div>
         <div className="font-mono-code text-[11px] max-h-56 overflow-y-auto bg-slate-900 text-slate-200 p-4 rounded-lg border border-slate-800 space-y-1.5">
-          {(logsData && logsData.length > 0 ? logsData : [
-            { t: "12:00:01", lv: "INFO", msg: `Forecast cycle ${cycleId} initiated across 18 Panchganga stations` },
-            { t: "12:00:05", lv: "INFO", msg: "Open-Meteo 90-hr precipitation forecast downloaded successfully" },
-            { t: "12:00:07", lv: "INFO", msg: "Dynamic subbasin selector evaluated: S1→Karvir, S2→Sangarul, S6→Gaganbawda" },
-            { t: "12:00:11", lv: "INFO", msg: "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/" },
-            { t: "12:00:15", lv: "INFO", msg: "HMS_Automation_RJKT hydrologic compute running: SCS-CN loss & Muskingum routing" },
-            { t: "12:00:29", lv: "INFO", msg: "HEC-HMS compute finished: Peak Discharge 859.1 m³/s at T+22h" },
-            { t: "12:00:31", lv: "INFO", msg: "Hydraulic rating applied: Shivaji Bridge Peak 538.60m MSL" },
-            { t: "12:00:32", lv: "WARN", msg: "River Alert: Shivaji Bridge projected to reach WARNING stage (538.60m) at T+18h" },
-            { t: "12:00:34", lv: "INFO", msg: "Dashboard pipeline state dumped to public/data/latest_pipeline_state.json" },
-            { t: "12:00:36", lv: "INFO", msg: `Forecast cycle ${cycleId} completed in 36.9s. Dashboard live broadcast pushed` },
-          ]).map((log: any, idx: number) => {
-            const isWarn = log.lv === "WARN";
-            return (
-              <div key={idx} className="flex items-start gap-2 py-0.5 border-b border-slate-800/60">
-                <span className="text-slate-500 select-none">{log.t}</span>
-                <span
-                  className={`font-bold select-none ${
-                    isWarn ? "text-amber-400" : "text-sky-400"
-                  }`}
-                >
-                  [{log.lv}]
-                </span>
-                <span className={isWarn ? "text-amber-200" : "text-slate-300"}>{log.msg}</span>
-              </div>
-            );
-          })}
+          {logsData && logsData.length > 0 ? (
+            logsData.map((log: any, idx: number) => {
+              const isWarn = log.lv === "WARN" || log.level === "WARNING";
+              const isErr = log.lv === "ERROR" || log.level === "ERROR";
+              const timeStr = log.t || log.timestamp || log.time || "";
+              const levelStr = log.lv || log.level || "INFO";
+              const msgStr = log.msg || log.message || "";
+              return (
+                <div key={idx} className="flex items-start gap-2 py-0.5 border-b border-slate-800/60">
+                  <span className="text-slate-500 select-none">{timeStr}</span>
+                  <span
+                    className={`font-bold select-none ${
+                      isErr ? "text-rose-400" : isWarn ? "text-amber-400" : "text-sky-400"
+                    }`}
+                  >
+                    [{levelStr}]
+                  </span>
+                  <span className={isErr ? "text-rose-200" : isWarn ? "text-amber-200" : "text-slate-300"}>{msgStr}</span>
+                </div>
+              );
+            })
+          ) : (
+            <div className="text-slate-400 py-4 text-center italic text-xs">
+              Live simulation log stream will populate upon pipeline execution.
+            </div>
+          )}
         </div>
       </div>
     </div>

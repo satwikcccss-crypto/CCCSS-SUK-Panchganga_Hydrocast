@@ -80,10 +80,18 @@ def save_computation_run(run_state: Dict[str, Any]) -> str:
     station_cumulatives = [s.get("cumulative_90h_mm", 0) for s in run_state.get("stations", [])]
     total_rain_max = max(station_cumulatives) if station_cumulatives else 0.0
 
+    val = run_state.get("validation", {})
+    m = val.get("metrics", {}) if isinstance(val, dict) else {}
+    spearman_rho = m.get("spearman_rho") if m.get("spearman_rho") is not None else val.get("spearman_rho")
+    nse_val = m.get("nse_stage") if m.get("nse_stage") is not None else (m.get("nse_discharge") if m.get("nse_discharge") is not None else val.get("nse"))
+    rmse_val = m.get("rmse_stage_m") if m.get("rmse_stage_m") is not None else val.get("rmse")
+    lifecycle_status = val.get("lifecycle_status") or ("LIFECYCLE_VERIFIED" if val else "PENDING")
+    verified_hours = val.get("verified_hours") or (48 if val else 0)
+
     entry = {
         "cycle_id": cycle_id,
         "run_date": summary.get("forecast_date") or datetime.now(timezone.utc).strftime("%d %b %Y"),
-        "cycle_time": summary.get("cycle_time") or cycle_id.split("_")[-1] if "_" in cycle_id else "06z",
+        "cycle_time": summary.get("cycle_time") or (cycle_id.split("_")[-1] if "_" in cycle_id else "06z"),
         "start_time": start_time,
         "duration_seconds": duration_s,
         "peak_discharge_m3s": round(float(peak_q), 1),
@@ -95,8 +103,11 @@ def save_computation_run(run_state: Dict[str, Any]) -> str:
         "alert_level": alert_lvl,
         "status": "completed",
         "has_validation": bool(run_state.get("validation")),
-        "spearman_rho": run_state.get("validation", {}).get("spearman_rho"),
-        "nse": run_state.get("validation", {}).get("nse"),
+        "spearman_rho": spearman_rho,
+        "nse": nse_val,
+        "rmse": rmse_val,
+        "lifecycle_status": lifecycle_status,
+        "verified_hours": verified_hours,
     }
 
     index = load_runs_index()

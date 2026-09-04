@@ -88,20 +88,26 @@ export default function AccuracyPanel() {
   const hydrograph: any[] = runData?.hydrograph ?? [];
   const stationAccuracies: any[] = validation?.station_volume_accuracy ?? [];
 
-  // Summary Metrics
-  const spearmanRho = metrics?.spearman_rho ?? 0.988;
-  const spearmanRhoQ = metrics?.spearman_rho_q ?? 0.985;
-  const pearsonR2 = metrics?.pearson_r2 ?? 0.982;
-  const nse = metrics?.nse_discharge ?? 0.991;
-  const rmseStage = metrics?.rmse_stage_m ?? 0.034;
-  const maeStage = metrics?.mae_stage_m ?? 0.026;
-  const pbias = metrics?.pbias_stage_pct ?? -0.12;
-  const rainAccuracy = metrics?.basin_rainfall_accuracy_pct ?? 95.8;
-  const grade = validation?.performance_grade ?? "EXCELLENT";
+  // Genuine Summary Metrics — Zero hardcoded mock numbers
+  const spearmanRho = metrics?.spearman_rho ?? null;
+  const spearmanRhoQ = metrics?.spearman_rho_q ?? null;
+  const pearsonR2 = metrics?.pearson_r2 ?? null;
+  const nse = (metrics?.nse_stage != null ? metrics.nse_stage : metrics?.nse_discharge) ?? null;
+  const rmseStage = metrics?.rmse_stage_m ?? null;
+  const maeStage = metrics?.mae_stage_m ?? null;
+  const pbias = metrics?.pbias_stage_pct ?? null;
+  const rainAccuracy = metrics?.basin_rainfall_accuracy_pct ?? null;
+  const grade = validation?.metrics?.performance_grade || validation?.performance_grade || "IN_PROGRESS";
+  const verifiedHours = validation?.verified_hours ?? actualObserved.filter((o: any) => o.has_observation).length;
+  const totalForecastHours = validation?.total_forecast_hours ?? (actualObserved.length > 0 ? actualObserved.length : 90);
+  const lifecycleStatus = validation?.lifecycle_status ?? (verifiedHours >= totalForecastHours ? "LIFECYCLE_VERIFIED" : "IN_PROGRESS");
+  const completionPct = validation?.completion_pct ?? (totalForecastHours > 0 ? Number(((verifiedHours / totalForecastHours) * 100).toFixed(1)) : 0);
+  const sensorSource = validation?.sensor_source ?? "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)";
+  const sensorDatumMsl = validation?.sensor_datum_msl ?? 549.35;
 
   // ── 1. Predicted vs Actual Stage & Discharge Hydrograph Data ───────────────
   const comparisonChartData = useMemo(() => {
-    const hours = Math.max(actualObserved.length, shivajiForecast.length, 48);
+    const hours = Math.max(actualObserved.length, shivajiForecast.length, 90);
     const labels: string[] = [];
     const predStages: (number | null)[] = [];
     const actStages: (number | null)[] = [];
@@ -115,8 +121,9 @@ export default function AccuracyPanel() {
       predDischarges.push(fc ? fc.discharge_m3s : null);
 
       const obs = actualObserved.find((o: any) => o.lead_hours === h);
-      actStages.push(obs ? obs.observed_stage_m : null);
-      actDischarges.push(obs ? obs.observed_discharge_m3s : null);
+      const hasObs = obs && (obs.has_observation || obs.observed_stage_m != null);
+      actStages.push(hasObs ? obs.observed_stage_m : null);
+      actDischarges.push(hasObs && obs.observed_discharge_m3s != null ? obs.observed_discharge_m3s : null);
     }
 
     return {
@@ -137,10 +144,10 @@ export default function AccuracyPanel() {
         },
         {
           type: "line" as const,
-          label: "Actual Observed Gauge Stage (m MSL)",
+          label: "Actual ThingSpeak Observed Stage (m MSL)",
           data: actStages,
           borderColor: "#10B981", // Emerald Green
-          borderDash: [5, 4],
+          borderDash: [4, 4],
           backgroundColor: "transparent",
           borderWidth: 2.0,
           fill: false,
@@ -179,12 +186,18 @@ export default function AccuracyPanel() {
       tooltip: {
         callbacks: {
           afterBody: (items: any[]) => {
+            const hIdx = items[0]?.dataIndex;
+            const obs = actualObserved.find((o: any) => o.lead_hours === hIdx);
             const pred = items.find((i) => i.datasetIndex === 0)?.raw;
             const act = items.find((i) => i.datasetIndex === 1)?.raw;
             if (pred != null && act != null) {
               const deltaVal = pred - act;
-              const diff = deltaVal.toFixed(3);
-              return `\nResidual Error Δ: ${deltaVal > 0 ? "+" : ""}${diff} m`;
+              const diffM = deltaVal.toFixed(3);
+              const deltaFt = (deltaVal / 0.3048).toFixed(2);
+              const ftLine = obs?.observed_distance_ft != null ? `\nUltrasonic Distance: ${obs.observed_distance_ft.toFixed(2)} ft` : "";
+              return `\nResidual Error Δ: ${deltaVal > 0 ? "+" : ""}${diffM} m (${deltaVal > 0 ? "+" : ""}${deltaFt} ft)${ftLine}`;
+            } else if (pred != null) {
+              return `\nObserved: Pending sensor arrival (T+${hIdx}h)`;
             }
             return "";
           },
@@ -234,10 +247,22 @@ export default function AccuracyPanel() {
 
   // ── 2. Spearman Correlation Scatter Plot Data ─────────────────────────────
   const scatterData = useMemo(() => {
-    const pts = (validation?.scatter_points ?? []).map((p: any) => ({
-      x: p.actual_stage,
-      y: p.predicted_stage,
-    }));
+    let pts: { x: number; y: number; ft?: number }[] = [];
+    if (validation?.scatter_points && validation.scatter_points.length > 0) {
+      pts = validation.scatter_points.map((p: any) => ({
+        x: p.actual_stage,
+        y: p.predicted_stage,
+        ft: p.actual_distance_ft,
+      }));
+    } else if (actualObserved && actualObserved.length > 0) {
+      pts = actualObserved
+        .filter((o: any) => o.has_observation && o.observed_stage_m != null && (o.predicted_stage_m != null || o.stage_m != null))
+        .map((o: any) => ({
+          x: o.observed_stage_m,
+          y: o.predicted_stage_m ?? o.stage_m,
+          ft: o.observed_distance_ft,
+        }));
+    }
 
     if (pts.length === 0) return { datasets: [] };
 
@@ -262,7 +287,7 @@ export default function AccuracyPanel() {
           fill: false,
         },
         {
-          label: `Forecast Points (Spearman ρ = ${spearmanRho.toFixed(3)})`,
+          label: `Forecast Points (Spearman ρ = ${spearmanRho != null ? spearmanRho.toFixed(3) : "—"})`,
           data: pts,
           backgroundColor: "#3B82F6",
           borderColor: "#1D4ED8",
@@ -272,7 +297,7 @@ export default function AccuracyPanel() {
         },
       ],
     };
-  }, [validation, spearmanRho]);
+  }, [validation, actualObserved, spearmanRho]);
 
   const scatterOptions: any = {
     responsive: true,
@@ -284,10 +309,13 @@ export default function AccuracyPanel() {
       },
       tooltip: {
         callbacks: {
-          label: (item: any) =>
-            `Actual: ${item.raw.x.toFixed(2)}m | Predicted: ${item.raw.y.toFixed(2)}m (Δ: ${(
-              item.raw.y - item.raw.x
-            ).toFixed(3)}m)`,
+          label: (item: any) => {
+            const pt = item.raw;
+            const ftStr = pt.ft != null ? ` (${pt.ft.toFixed(2)} ft)` : "";
+            return `Observed: ${pt.x.toFixed(2)}m${ftStr} | Predicted: ${pt.y.toFixed(2)}m (Δ: ${(
+              pt.y - pt.x
+            ).toFixed(3)}m)`;
+          },
         },
       },
     },
@@ -336,7 +364,7 @@ export default function AccuracyPanel() {
   // ── 4. Hourly Forecast Prediction Log Rows ────────────────────────────────
   const hourlyRows = useMemo(() => {
     const rows = [];
-    const nHours = Math.max(shivajiForecast.length, hydrograph.length, 90);
+    const nHours = Math.max(shivajiForecast.length, hydrograph.length, actualObserved.length, 90);
 
     for (let h = 0; h < nHours; h++) {
       const sFc = shivajiForecast[h] ?? {};
@@ -347,19 +375,25 @@ export default function AccuracyPanel() {
       const predS = sFc.stage_m ?? (hg.stage_m ?? 532.63);
       const predQ = sFc.discharge_m3s ?? (hg.discharge_m3s ?? 91.1);
       const actS = obs.observed_stage_m ?? null;
+      const actFt = obs.observed_distance_ft ?? null;
       const actQ = obs.observed_discharge_m3s ?? null;
-      const diff = actS != null ? predS - actS : null;
+      const diffM = obs.error_delta_m != null ? obs.error_delta_m : (actS != null ? predS - actS : null);
+      const diffFt = obs.error_delta_ft != null ? obs.error_delta_ft : (diffM != null ? diffM / 0.3048 : null);
+      const hasObs = Boolean(obs.has_observation || actS != null);
 
       const row = {
         lead_hours: h,
-        timestamp: sFc.forecast_time || hg.timestamp || `T+${h}h`,
+        timestamp: sFc.forecast_time || hg.timestamp || obs.timestamp || `T+${h}h`,
         stage_m: predS,
         discharge_m3s: predQ,
         rajaram_stage_m: rFc.stage_m ?? 532.63,
         alert_level: sFc.alert_level || "NORMAL",
+        has_observation: hasObs,
         observed_stage_m: actS,
+        observed_distance_ft: actFt,
         observed_discharge_m3s: actQ,
-        error_delta_m: diff,
+        error_delta_m: diffM,
+        error_delta_ft: diffFt,
       };
 
       if (
@@ -379,26 +413,34 @@ export default function AccuracyPanel() {
   const exportCsv = () => {
     const headers = [
       "Lead_Hour",
-      "Timestamp",
+      "Timestamp_UTC",
       "Shivaji_Pred_Stage_mMSL",
       "Shivaji_Pred_Discharge_m3s",
       "Rajaram_Pred_Stage_mMSL",
+      "Observed_Sensor_Distance_ft",
       "Observed_Stage_mMSL",
+      "Observed_Discharge_m3s",
       "Error_Delta_m",
+      "Error_Delta_ft",
       "Alert_Level",
+      "Lifecycle_Status",
     ];
     const csvContent = [
       headers.join(","),
       ...hourlyRows.map((r) =>
         [
           r.lead_hours,
-          r.timestamp,
-          r.stage_m,
-          r.discharge_m3s,
-          r.rajaram_stage_m,
-          r.observed_stage_m ?? "",
+          `"${r.timestamp}"`,
+          r.stage_m.toFixed(2),
+          r.discharge_m3s.toFixed(1),
+          r.rajaram_stage_m.toFixed(2),
+          r.observed_distance_ft != null ? r.observed_distance_ft.toFixed(2) : "",
+          r.observed_stage_m != null ? r.observed_stage_m.toFixed(2) : "",
+          r.observed_discharge_m3s != null ? r.observed_discharge_m3s.toFixed(1) : "",
           r.error_delta_m != null ? r.error_delta_m.toFixed(3) : "",
+          r.error_delta_ft != null ? r.error_delta_ft.toFixed(2) : "",
           r.alert_level,
+          r.has_observation ? "VERIFIED" : "PENDING",
         ].join(",")
       ),
     ].join("\n");
@@ -424,11 +466,11 @@ export default function AccuracyPanel() {
               Model Forecast Accuracy &amp; Historical Runs Validation
             </h1>
             <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
-              Spearman Rank ρ + CWC Water Level Ground Truth
+              ThingSpeak Ultrasonic IoT: {verifiedHours}/{totalForecastHours}h verified ({completionPct}%)
             </span>
           </div>
           <p className="text-xs text-gray-500 mt-1 font-medium">
-            Verifying predicted water levels and discharge vs actual ultrasonic IoT radar sensor hits across historical computation cycles.
+            Continuous validation against live ThingSpeak Channel 3424513 ultrasonic sensor telemetry (Datum: {sensorDatumMsl}m MSL).
           </p>
         </div>
 
@@ -467,10 +509,14 @@ export default function AccuracyPanel() {
             Spearman Rank (ρ)
           </div>
           <div className="mt-2 text-2xl font-extrabold text-indigo-600 font-mono">
-            {spearmanRho.toFixed(3)}
+            {spearmanRho != null ? spearmanRho.toFixed(3) : "—"}
           </div>
           <div className="mt-1 text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
-            <span>✓</span> p &lt; 0.001 (Monotonic)
+            {spearmanRho != null ? (
+              <span>✓ Sample: {verifiedHours}h</span>
+            ) : (
+              <span className="text-gray-400">Awaiting data</span>
+            )}
           </div>
         </div>
 
@@ -480,10 +526,10 @@ export default function AccuracyPanel() {
             Nash-Sutcliffe (NSE)
           </div>
           <div className="mt-2 text-2xl font-extrabold text-blue-600 font-mono">
-            {nse.toFixed(3)}
+            {nse != null ? nse.toFixed(3) : "—"}
           </div>
           <div className="mt-1 text-[11px] text-blue-700 font-medium">
-            Gold Standard (Q Fit)
+            {nse != null ? (nse >= 0.75 ? "Gold Standard Fit" : "Stage Fit") : "Pending Data"}
           </div>
         </div>
 
@@ -493,7 +539,7 @@ export default function AccuracyPanel() {
             Linear Fit (R²)
           </div>
           <div className="mt-2 text-2xl font-extrabold text-sky-700 font-mono">
-            {pearsonR2.toFixed(3)}
+            {pearsonR2 != null ? pearsonR2.toFixed(3) : "—"}
           </div>
           <div className="mt-1 text-[11px] text-gray-500 font-medium">
             Stage Correlation
@@ -506,10 +552,10 @@ export default function AccuracyPanel() {
             Stage RMSE
           </div>
           <div className="mt-2 text-2xl font-extrabold text-amber-600 font-mono">
-            ±{rmseStage.toFixed(2)}m
+            {rmseStage != null ? `±${rmseStage.toFixed(3)}m` : "—"}
           </div>
           <div className="mt-1 text-[11px] text-gray-500 font-medium">
-            MAE: ±{maeStage.toFixed(2)}m
+            {maeStage != null ? `MAE: ±${maeStage.toFixed(3)}m` : "Residual Error"}
           </div>
         </div>
 
@@ -519,23 +565,23 @@ export default function AccuracyPanel() {
             Volume Bias (PBIAS)
           </div>
           <div className="mt-2 text-2xl font-extrabold text-emerald-600 font-mono">
-            {pbias > 0 ? `+${pbias.toFixed(1)}%` : `${pbias.toFixed(1)}%`}
+            {pbias != null ? `${pbias > 0 ? "+" : ""}${pbias.toFixed(1)}%` : "—"}
           </div>
           <div className="mt-1 text-[11px] text-emerald-700 font-medium">
-            Within ±5% target
+            {pbias != null ? "Relative Stage Bias" : "Pending Data"}
           </div>
         </div>
 
-        {/* Card 6: 18-Station Rainfall Accuracy */}
+        {/* Card 6: 90-Hour Lifecycle Validation Progress */}
         <div className={CARD}>
           <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-            Station Rain Accuracy
+            90h Lifecycle Progress
           </div>
           <div className="mt-2 text-2xl font-extrabold text-purple-600 font-mono">
-            {rainAccuracy.toFixed(1)}%
+            {verifiedHours}/{totalForecastHours}h
           </div>
-          <div className="mt-1 text-[11px] text-purple-700 font-semibold">
-            {stationAccuracies.length} Panchganga Gages
+          <div className="mt-1 text-[11px] text-purple-700 font-semibold truncate">
+            {completionPct}% · {lifecycleStatus === "LIFECYCLE_VERIFIED" ? "Verified" : "In Progress"}
           </div>
         </div>
       </div>
@@ -722,10 +768,11 @@ export default function AccuracyPanel() {
                   <th className="px-3 py-2.5">Shivaji Stage (m MSL)</th>
                   <th className="px-3 py-2.5">Shivaji Flow (m³/s)</th>
                   <th className="px-3 py-2.5">Rajaram Stage (m MSL)</th>
-                  <th className="px-3 py-2.5">Actual Observed (m)</th>
-                  <th className="px-3 py-2.5">Error Δ (m)</th>
+                  <th className="px-3 py-2.5">Sensor Reading (ft)</th>
+                  <th className="px-3 py-2.5">Observed Stage (m MSL)</th>
+                  <th className="px-3 py-2.5">Error Δ (m / ft)</th>
                   <th className="px-3 py-2.5">Alert Level</th>
-                  <th className="px-3 py-2.5">Validation Accuracy</th>
+                  <th className="px-3 py-2.5">Lifecycle Verification</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-gray-700">
@@ -759,13 +806,21 @@ export default function AccuracyPanel() {
                       <td className="px-3 py-2 font-mono text-sky-800">
                         {r.rajaram_stage_m.toFixed(2)}m
                       </td>
+                      <td className="px-3 py-2 font-mono font-semibold text-amber-700">
+                        {r.observed_distance_ft != null ? `${r.observed_distance_ft.toFixed(2)} ft` : "—"}
+                      </td>
                       <td className="px-3 py-2 font-mono font-semibold text-emerald-700">
-                        {hasObs ? `${r.observed_stage_m.toFixed(2)}m` : "—"}
+                        {hasObs && r.observed_stage_m != null ? `${r.observed_stage_m.toFixed(2)}m` : "—"}
                       </td>
                       <td className="px-3 py-2 font-mono">
                         {delta != null ? (
                           <span className={`px-1.5 py-0.5 rounded text-[11px] font-bold ${deltaColor}`}>
                             {delta > 0 ? `+${delta.toFixed(3)}` : delta.toFixed(3)}m
+                            {r.error_delta_ft != null && (
+                              <span className="opacity-80 text-[10px] ml-1">
+                                ({r.error_delta_ft > 0 ? `+${r.error_delta_ft.toFixed(2)}` : r.error_delta_ft.toFixed(2)}ft)
+                              </span>
+                            )}
                           </span>
                         ) : (
                           <span className="text-gray-400">—</span>
@@ -788,9 +843,11 @@ export default function AccuracyPanel() {
                       </td>
                       <td className="px-3 py-2 text-[11px] font-medium text-gray-600">
                         {hasObs ? (
-                          deltaAbs! <= 0.05 ? "🎯 Optimal (< 5cm)" : deltaAbs! <= 0.15 ? "✓ Nominal (< 15cm)" : "⚠️ Deviation"
+                          <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                            <span>✓</span> Verified (ThingSpeak)
+                          </span>
                         ) : (
-                          "Pending arrival"
+                          <span className="text-slate-400">○ Pending arrival</span>
                         )}
                       </td>
                     </tr>
@@ -972,9 +1029,10 @@ export default function AccuracyPanel() {
                   <th className="px-3 py-2.5">Peak Discharge</th>
                   <th className="px-3 py-2.5">Time to Peak</th>
                   <th className="px-3 py-2.5">Shivaji Peak Stage</th>
-                  <th className="px-3 py-2.5">90h Outflow Volume</th>
-                  <th className="px-3 py-2.5">Max Rainfall</th>
+                  <th className="px-3 py-2.5">Lifecycle Verified</th>
                   <th className="px-3 py-2.5">Spearman ρ</th>
+                  <th className="px-3 py-2.5">NSE</th>
+                  <th className="px-3 py-2.5">RMSE (m)</th>
                   <th className="px-3 py-2.5">Status</th>
                   <th className="px-3 py-2.5 text-right">Action</th>
                 </tr>
@@ -982,6 +1040,7 @@ export default function AccuracyPanel() {
               <tbody className="divide-y divide-gray-100 text-gray-700">
                 {runsHistory.map((r: any) => {
                   const isCurrent = (r.cycle_id === activeCycleId);
+                  const isVerified = r.lifecycle_status === "LIFECYCLE_VERIFIED" || (r.verified_hours != null && r.verified_hours >= 48);
                   return (
                     <tr
                       key={r.cycle_id}
@@ -1004,17 +1063,26 @@ export default function AccuracyPanel() {
                         {r.shivaji_peak_stage_m ?? "—"}m
                       </td>
                       <td className="px-3 py-2.5 font-mono">
-                        {r.total_volume_mcm} MCM
+                        <span className="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700">
+                          {r.verified_hours != null ? `${r.verified_hours}/90h` : "—"}
+                        </span>
                       </td>
-                      <td className="px-3 py-2.5 font-mono">
-                        {r.total_rainfall_mm} mm
+                      <td className="px-3 py-2.5 font-mono text-indigo-700 font-bold">
+                        {r.spearman_rho != null ? r.spearman_rho.toFixed(3) : "—"}
                       </td>
-                      <td className="px-3 py-2.5 font-mono text-emerald-700 font-bold">
-                        {r.spearman_rho != null ? r.spearman_rho.toFixed(3) : "0.990"}
+                      <td className="px-3 py-2.5 font-mono text-blue-700 font-bold">
+                        {r.nse != null ? r.nse.toFixed(3) : "—"}
+                      </td>
+                      <td className="px-3 py-2.5 font-mono text-amber-700 font-bold">
+                        {r.rmse != null ? `±${r.rmse.toFixed(3)}m` : "—"}
                       </td>
                       <td className="px-3 py-2.5">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          {r.status || "COMPLETED"}
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          isVerified
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-sky-50 text-sky-700 border border-sky-200"
+                        }`}>
+                          {r.lifecycle_status || r.status || "COMPLETED"}
                         </span>
                       </td>
                       <td className="px-3 py-2.5 text-right">
