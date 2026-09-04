@@ -1,0 +1,424 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="100%" height="100%" style="background: #030712; font-family: 'JetBrains Mono', 'Segoe UI', -apple-system, monospace;">
+  <defs>
+    <!-- Blueprint / SCADA Grid -->
+    <pattern id="grid-dots" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#111827"/>
+      <circle cx="20" cy="20" r="1" fill="#111827"/>
+    </pattern>
+
+    <!-- Geological Bedrock Patterns -->
+    <pattern id="basalt-crag" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="#090d16"/>
+      <!-- Basalt Joint Fractures -->
+      <path d="M 0 10 L 20 15 L 40 5 M 20 15 L 20 40 M 0 35 L 20 30 L 40 38" stroke="#1f293d" stroke-width="1.2" fill="none"/>
+      <circle cx="10" cy="25" r="1.5" fill="#162032"/>
+      <circle cx="32" cy="20" r="1.2" fill="#162032"/>
+    </pattern>
+
+    <pattern id="cobble-silt" width="24" height="24" patternUnits="userSpaceOnUse">
+      <rect width="24" height="24" fill="#0f172a"/>
+      <ellipse cx="6" cy="6" rx="3" ry="2" fill="#1e293b"/>
+      <ellipse cx="18" cy="14" rx="4" ry="2.5" fill="#334155"/>
+      <ellipse cx="10" cy="20" rx="2" ry="1.5" fill="#1e293b"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="concrete-shading" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="30%" stop-color="#64748b"/>
+      <stop offset="70%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+
+    <linearGradient id="water-depth-flow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.95"/>
+      <stop offset="35%" stop-color="#0369a1" stop-opacity="0.90"/>
+      <stop offset="75%" stop-color="#075985" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#082f49" stop-opacity="1.0"/>
+    </linearGradient>
+
+    <linearGradient id="radar-beam" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.9"/>
+      <stop offset="30%" stop-color="#fbbf24" stop-opacity="0.4"/>
+      <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#d97706" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <linearGradient id="gauge-rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <!-- Glowing Echo Filter -->
+    <filter id="glow-wave" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Graphic Animations -->
+    <style>
+      @keyframes acousticPulse {
+        0% { transform: translateY(0) scaleX(0.15); opacity: 1; }
+        60% { opacity: 0.8; }
+        100% { transform: translateY(295px) scaleX(1.35); opacity: 0; }
+      }
+      @keyframes waterFlowGlint {
+        0% { transform: translateX(0); }
+        50% { transform: translateX(12px); }
+        100% { transform: translateX(0); }
+      }
+      @keyframes velocityPulse {
+        0% { transform: translateX(0); opacity: 0.4; }
+        50% { transform: translateX(10px); opacity: 0.9; }
+        100% { transform: translateX(0); opacity: 0.4; }
+      }
+      @keyframes signalBeacon {
+        0%, 100% { r: 3px; fill: #10b981; filter: drop-shadow(0 0 4px #10b981); }
+        50% { r: 5px; fill: #34d399; filter: drop-shadow(0 0 10px #34d399); }
+      }
+      .radar-pulse-1 { animation: acousticPulse 2.2s cubic-bezier(0.2, 0.7, 0.4, 1) infinite; }
+      .radar-pulse-2 { animation: acousticPulse 2.2s cubic-bezier(0.2, 0.7, 0.4, 1) 0.75s infinite; }
+      .radar-pulse-3 { animation: acousticPulse 2.2s cubic-bezier(0.2, 0.7, 0.4, 1) 1.5s infinite; }
+      .water-glint { animation: waterFlowGlint 3.5s ease-in-out infinite; }
+      .velocity-arrow { animation: velocityPulse 2.5s ease-in-out infinite; }
+      .beacon-led { animation: signalBeacon 1.2s infinite; }
+    </style>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1200" height="640" fill="#030712"/>
+  <rect width="1200" height="640" fill="url(#grid-dots)"/>
+
+  <!-- ==================== TOP GRAPHICAL INSTRUMENT CLUSTER (3 ANALOG DIAL GAUGES) ==================== -->
+  <g transform="translate(730, 24)">
+    
+    <!-- DIAL 1: WATER STAGE ELEVATION (530m to 546m) -->
+    <g transform="translate(0, 0)">
+      <!-- Bezel & Rim -->
+      <circle cx="65" cy="65" r="58" fill="url(#gauge-rim)" stroke="#334155" stroke-width="2"/>
+      <circle cx="65" cy="65" r="50" fill="#090d16" stroke="#1e293b" stroke-width="1.5"/>
+      
+      <!-- Colored Gauge Warning Arcs -->
+      <!-- Safe Arc (530 to 542m) -->
+      <path d="M 30 90 A 42 42 0 0 1 65 23" fill="none" stroke="#10b981" stroke-width="4.5" stroke-linecap="round"/>
+      <!-- Alert Arc (542 to 542.7m) -->
+      <path d="M 65 23 A 42 42 0 0 1 78 25" fill="none" stroke="#eab308" stroke-width="4.5"/>
+      <!-- Warning Arc (542.7 to 543.3m) -->
+      <path d="M 78 25 A 42 42 0 0 1 89 29" fill="none" stroke="#f97316" stroke-width="4.5"/>
+      <!-- Danger Arc (543.3 to 546m) -->
+      <path d="M 89 29 A 42 42 0 0 1 100 90" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round"/>
+
+      <!-- Dial Needle (Pointing to 533.20m, angle ~ -50 deg) -->
+      <g transform="rotate(-48 65 65)">
+        <polygon points="63,65 67,65 65,28" fill="#38bdf8"/>
+        <circle cx="65" cy="65" r="4.5" fill="#f8fafc"/>
+      </g>
+
+      <!-- Digital Readout Display -->
+      <text x="65" y="78" fill="#38bdf8" font-size="11" font-weight="900" text-anchor="middle">533.20 m</text>
+      <text x="65" y="91" fill="#94a3b8" font-size="7.5" font-weight="700" text-anchor="middle">RIVER STAGE</text>
+      <circle cx="65" cy="100" r="2.5" fill="#10b981"/>
+    </g>
+
+    <!-- DIAL 2: AIR GAP DISTANCE (0 to 65 ft) -->
+    <g transform="translate(145, 0)">
+      <circle cx="65" cy="65" r="58" fill="url(#gauge-rim)" stroke="#334155" stroke-width="2"/>
+      <circle cx="65" cy="65" r="50" fill="#090d16" stroke="#1e293b" stroke-width="1.5"/>
+
+      <!-- Scale Arc -->
+      <path d="M 30 90 A 42 42 0 1 1 100 90" fill="none" stroke="#f59e0b" stroke-width="4" stroke-dasharray="3 3"/>
+
+      <!-- Needle (Pointing to 52.95 ft, angle ~ 62 deg) -->
+      <g transform="rotate(62 65 65)">
+        <polygon points="63,65 67,65 65,28" fill="#f59e0b"/>
+        <circle cx="65" cy="65" r="4.5" fill="#f8fafc"/>
+      </g>
+
+      <text x="65" y="78" fill="#fbbf24" font-size="11" font-weight="900" text-anchor="middle">52.95 ft</text>
+      <text x="65" y="91" fill="#94a3b8" font-size="7.5" font-weight="700" text-anchor="middle">AIR GAP d_air</text>
+      <text x="65" y="101" fill="#64748b" font-size="6.5" text-anchor="middle">16.14 m</text>
+    </g>
+
+    <!-- DIAL 3: PCHIP DISCHARGE FLOW RATE (0 to 3,000 m³/s) -->
+    <g transform="translate(290, 0)">
+      <circle cx="65" cy="65" r="58" fill="url(#gauge-rim)" stroke="#334155" stroke-width="2"/>
+      <circle cx="65" cy="65" r="50" fill="#090d16" stroke="#1e293b" stroke-width="1.5"/>
+
+      <!-- Flow Rate Arc -->
+      <path d="M 30 90 A 42 42 0 0 1 65 23" fill="none" stroke="#34d399" stroke-width="4.5"/>
+      <path d="M 65 23 A 42 42 0 0 1 100 90" fill="none" stroke="#ef4444" stroke-width="4.5"/>
+
+      <!-- Needle (80 m³/s is low baseflow, angle ~ -75 deg) -->
+      <g transform="rotate(-75 65 65)">
+        <polygon points="63,65 67,65 65,28" fill="#34d399"/>
+        <circle cx="65" cy="65" r="4.5" fill="#f8fafc"/>
+      </g>
+
+      <text x="65" y="78" fill="#34d399" font-size="11" font-weight="900" text-anchor="middle">80.0 m³/s</text>
+      <text x="65" y="91" fill="#94a3b8" font-size="7.5" font-weight="700" text-anchor="middle">DISCHARGE (Q)</text>
+      <text x="65" y="101" fill="#6ee7b7" font-size="6.5" text-anchor="middle">2,825 cfs</text>
+    </g>
+  </g>
+
+  <!-- Left Header Branding -->
+  <g transform="translate(36, 28)">
+    <rect width="180" height="26" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+    <circle cx="14" cy="13" r="4.5" class="beacon-led"/>
+    <text x="25" y="17" fill="#38bdf8" font-size="10" font-weight="800" letter-spacing="1">RADAR ALTIMETRY</text>
+    <text x="170" y="17" fill="#64748b" font-size="8" text-anchor="end">LIVE SCADA</text>
+
+    <!-- Bridge Site Label -->
+    <text x="0" y="44" fill="#f8fafc" font-size="13" font-weight="900">CHHATRAPATI SHIVAJI MAHARAJ BRIDGE</text>
+    <text x="0" y="58" fill="#94a3b8" font-size="9">RIVER PANCHGANGA · CHAINAGE 42+150 · 16.7089°N, 74.2193°E</text>
+  </g>
+
+  <!-- ==================== MAIN PHYSICAL CAD PROFILE (X: 50 to 1150, Y: 140 to 600) ==================== -->
+  <g transform="translate(60, 140)">
+
+    <!-- 1. GEOLOGICAL ROCK LAYERS (Riverbed Foundation) -->
+    <!-- Massive Basalt Bedrock Layer (Deep Foundation) -->
+    <path d="M 0 260 L 120 310 L 220 390 L 320 450 L 680 450 L 780 390 L 880 310 L 1040 260 L 1040 490 L 0 490 Z" 
+          fill="url(#basalt-crag)" stroke="#1e293b" stroke-width="1.5"/>
+    
+    <!-- Alluvial Pebble & Silt Strata (Overbank Overlay) -->
+    <path d="M 0 260 L 120 310 L 220 390 L 320 450 L 680 450 L 780 390 L 880 310 L 1040 260 L 1040 460 L 0 460 Z" 
+          fill="url(#cobble-silt)" opacity="0.65"/>
+
+    <!-- Ground Profile Line -->
+    <path d="M 0 260 L 120 310 L 220 390 L 320 450 L 680 450 L 780 390 L 880 310 L 1040 260" 
+          fill="none" stroke="#475569" stroke-width="3"/>
+
+    <!-- Graphical Boulder Rip-Rap Along Banks -->
+    <g fill="#1e293b" stroke="#334155" stroke-width="1.2">
+      <!-- Left Bank Boulders -->
+      <circle cx="130" cy="320" r="10"/>
+      <circle cx="150" cy="334" r="12"/>
+      <circle cx="170" cy="350" r="9"/>
+      <circle cx="190" cy="368" r="13"/>
+      <circle cx="215" cy="386" r="11"/>
+      <circle cx="240" cy="405" r="14"/>
+      <circle cx="270" cy="425" r="12"/>
+      <circle cx="300" cy="442" r="10"/>
+
+      <!-- Right Bank Boulders -->
+      <circle cx="700" cy="442" r="10"/>
+      <circle cx="730" cy="425" r="12"/>
+      <circle cx="760" cy="405" r="14"/>
+      <circle cx="785" cy="386" r="11"/>
+      <circle cx="810" cy="368" r="13"/>
+      <circle cx="830" cy="350" r="9"/>
+      <circle cx="850" cy="334" r="12"/>
+      <circle cx="870" cy="320" r="10"/>
+    </g>
+
+    <!-- 2. WATER COLUMN BODY (Stage = 533.20 m, y = 370) -->
+    <path d="M 235 370 L 320 450 L 680 450 L 765 370 Z" 
+          fill="url(#water-depth-flow)" stroke="#0284c7" stroke-width="2"/>
+
+    <!-- Graphic Surface Caustic Waves -->
+    <g class="water-glint">
+      <line x1="230" y1="370" x2="770" y2="370" stroke="#7dd3fc" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M 250 376 Q 280 372 310 376 T 370 376 T 430 376 T 490 376 T 550 376 T 610 376 T 670 376 T 730 376" 
+            fill="none" stroke="#bae6fd" stroke-width="1.2" opacity="0.75"/>
+      <path d="M 270 384 Q 300 380 330 384 T 390 384 T 450 384 T 510 384 T 570 384 T 630 384 T 690 384" 
+            fill="none" stroke="#38bdf8" stroke-width="1" opacity="0.5"/>
+    </g>
+
+    <!-- HYDRODYNAMIC FLOW VELOCITY VECTOR PROFILE (Graphic Arrows) -->
+    <!-- Logarithmic Velocity Profile: Higher velocity near surface, slowing toward bed -->
+    <g transform="translate(360, 375)" stroke="#38bdf8" fill="#38bdf8" class="velocity-arrow">
+      <!-- Top Vector (Max velocity ~ 1.4 m/s) -->
+      <line x1="0" y1="8" x2="45" y2="8" stroke-width="2"/>
+      <polygon points="45,5 53,8 45,11"/>
+      
+      <!-- Mid-depth Vector (~ 1.1 m/s) -->
+      <line x1="0" y1="28" x2="35" y2="28" stroke-width="1.8"/>
+      <polygon points="35,25 42,28 35,31"/>
+      
+      <!-- Near-bed Vector (~ 0.6 m/s) -->
+      <line x1="0" y1="50" x2="20" y2="50" stroke-width="1.5"/>
+      <polygon points="20,47 26,50 20,53"/>
+
+      <!-- Velocity Profile Curve -->
+      <path d="M 45 8 C 40 20, 32 35, 20 50 L 0 65" fill="none" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <text x="60" y="24" fill="#7dd3fc" font-size="8.5" font-weight="700">v(y) FLOW PROFILE</text>
+    </g>
+
+    <!-- Wetted Hydraulic Area Visual Shield -->
+    <g transform="translate(500, 415)">
+      <rect x="-65" y="-12" width="130" height="24" rx="4" fill="#082f49" stroke="#38bdf8" stroke-width="1" opacity="0.9"/>
+      <text x="0" y="4" fill="#7dd3fc" font-size="9" font-weight="800" text-anchor="middle">A = 224.5 m² (Q = 80 m³/s)</text>
+    </g>
+
+    <!-- 3. CWC FLOOD ALERT HORIZONTAL LINES -->
+    <!-- HFL 2019 (545.33m, y=100) -->
+    <line x1="40" y1="100" x2="1000" y2="100" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.85"/>
+    <circle cx="1000" cy="100" r="4" fill="#c084fc"/>
+    <text x="990" y="94" fill="#c084fc" font-size="8.5" font-weight="800" text-anchor="end">HISTORIC HFL 2019: 545.33 m (1789.14 ft)</text>
+
+    <!-- DANGER LEVEL (543.30m, y=145) -->
+    <line x1="40" y1="145" x2="1000" y2="145" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="6 3"/>
+    <circle cx="1000" cy="145" r="4" fill="#ef4444"/>
+    <text x="990" y="139" fill="#ef4444" font-size="8.5" font-weight="800" text-anchor="end">DANGER LEVEL: 543.30 m (1782.48 ft)</text>
+
+    <!-- WARNING LEVEL (542.70m, y=165) -->
+    <line x1="40" y1="165" x2="1000" y2="165" stroke="#f97316" stroke-width="1.4" stroke-dasharray="5 3"/>
+    <text x="990" y="160" fill="#f97316" font-size="8.5" font-weight="800" text-anchor="end">WARNING LEVEL: 542.70 m (1780.51 ft)</text>
+
+    <!-- ALERT LEVEL (542.10m, y=185) -->
+    <line x1="40" y1="185" x2="1000" y2="185" stroke="#eab308" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <text x="990" y="180" fill="#eab308" font-size="8.5" font-weight="800" text-anchor="end">ALERT LEVEL: 542.10 m (1778.54 ft)</text>
+
+    <!-- 4. REALISTIC BRIDGE PIERS & ROADWAY -->
+    <!-- Left Pier (x = 180) -->
+    <g transform="translate(180, 20)">
+      <rect x="-20" y="0" width="40" height="340" rx="3" fill="url(#concrete-shading)" stroke="#475569" stroke-width="1.5"/>
+      <!-- Hydrodynamic Pier Cutwater (Triangular nose facing current) -->
+      <polygon points="-20,120 0,165 20,120" fill="#334155" opacity="0.6"/>
+      <!-- Bearing Plate -->
+      <rect x="-26" y="-8" width="52" height="8" rx="2" fill="#1e293b" stroke="#64748b" stroke-width="1"/>
+      <!-- High-water Flood Staining Markings on Pier -->
+      <line x1="-20" y1="80" x2="20" y2="80" stroke="#1e293b" stroke-width="4" opacity="0.8"/>
+      <line x1="-20" y1="125" x2="20" y2="125" stroke="#334155" stroke-width="3" opacity="0.7"/>
+    </g>
+
+    <!-- Right Pier (x = 820) with Physical Staff Gauge -->
+    <g transform="translate(820, 20)">
+      <rect x="-20" y="0" width="40" height="340" rx="3" fill="url(#concrete-shading)" stroke="#475569" stroke-width="1.5"/>
+      <polygon points="-20,120 0,165 20,120" fill="#334155" opacity="0.6"/>
+      <rect x="-26" y="-8" width="52" height="8" rx="2" fill="#1e293b" stroke="#64748b" stroke-width="1"/>
+
+      <!-- Authentic E-Pattern WRD Staff Gauge Mounted on Pier Flank -->
+      <g transform="translate(-32, 60)">
+        <rect x="0" y="0" width="10" height="290" fill="#fef08a" stroke="#713f12" stroke-width="1"/>
+        <!-- Centimeter/Decimeter Markings -->
+        <g fill="#000000">
+          <rect x="0" y="20" width="6" height="20"/>
+          <rect x="0" y="60" width="6" height="20"/>
+          <rect x="0" y="100" width="6" height="20"/>
+          <rect x="0" y="140" width="6" height="20"/>
+          <rect x="0" y="180" width="6" height="20"/>
+          <rect x="0" y="220" width="6" height="20"/>
+          <rect x="0" y="260" width="6" height="20"/>
+        </g>
+        <!-- Metric Gauge Numbers -->
+        <text x="-3" y="25" fill="#fef08a" font-size="7" font-weight="800" text-anchor="end">545</text>
+        <text x="-3" y="105" fill="#fef08a" font-size="7" font-weight="800" text-anchor="end">543</text>
+        <text x="-3" y="185" fill="#fef08a" font-size="7" font-weight="800" text-anchor="end">540</text>
+        <text x="-3" y="265" fill="#fef08a" font-size="7" font-weight="800" text-anchor="end">535</text>
+      </g>
+    </g>
+
+    <!-- Superstructure: Reinforced Concrete Girder & Trusses -->
+    <!-- Bridge Girder Box Beam (Deck Soffit at y=20 -> Elevation 549.35m MSL) -->
+    <rect x="10" y="0" width="1020" height="20" rx="2" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+    <!-- Structural Truss Bracing Graphic Patterns -->
+    <g stroke="#1e293b" stroke-width="1.5">
+      <line x1="50" y1="0" x2="100" y2="20"/><line x1="100" y1="20" x2="150" y2="0"/>
+      <line x1="230" y1="0" x2="280" y2="20"/><line x1="280" y1="20" x2="330" y2="0"/>
+      <line x1="330" y1="0" x2="380" y2="20"/><line x1="380" y1="20" x2="430" y2="0"/>
+      <line x1="570" y1="0" x2="620" y2="20"/><line x1="620" y1="20" x2="670" y2="0"/>
+      <line x1="670" y1="0" x2="720" y2="20"/><line x1="720" y1="20" x2="770" y2="0"/>
+      <line x1="870" y1="0" x2="920" y2="20"/><line x1="920" y1="20" x2="970" y2="0"/>
+    </g>
+
+    <!-- Roadway Asphalt Deck Surface -->
+    <rect x="5" y="-12" width="1030" height="12" fill="#18181b"/>
+    <line x1="10" y1="-6" x2="1030" y2="-6" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="16 12" opacity="0.8"/>
+
+    <!-- Steel Guardrails & Lamp Post -->
+    <rect x="5" y="-24" width="1030" height="12" fill="none" stroke="#64748b" stroke-width="1"/>
+    <line x1="5" y1="-18" x2="1035" y2="-18" stroke="#94a3b8" stroke-width="1.5"/>
+
+    <!-- 5. ULTRASONIC & RADAR IOT SENSOR ASSEMBLY (At Center Span x = 500) -->
+    <!-- Parapet Mast & Solar PV Telemetry Rig -->
+    <g transform="translate(500, -65)">
+      <!-- Stainless Steel Rigging Pole -->
+      <line x1="0" y1="0" x2="0" y2="85" stroke="#cbd5e1" stroke-width="3"/>
+      
+      <!-- Angled Monocrystalline Solar Panel -->
+      <polygon points="10,-5 45,-14 42,12 8,18" fill="#0f172a" stroke="#0284c7" stroke-width="1.5"/>
+      <line x1="26" y1="-10" x2="24" y2="15" stroke="#38bdf8" stroke-width="1"/>
+
+      <!-- IP68 Enclosure (ESP32 Controller + Cellular Modem) -->
+      <rect x="-30" y="10" width="26" height="34" rx="3" fill="#1e293b" stroke="#cbd5e1" stroke-width="1.2"/>
+      <circle cx="-17" cy="20" r="3" class="beacon-led"/>
+      <text x="-17" y="36" fill="#10b981" font-size="5" font-weight="900" text-anchor="middle">ESP32</text>
+
+      <!-- 4G Whip Antenna with RF Emission Waves -->
+      <line x1="-17" y1="10" x2="-17" y2="-16" stroke="#f1f5f9" stroke-width="2"/>
+      <circle cx="-17" cy="-16" r="2.5" fill="#ef4444"/>
+      <path d="M -23 -16 A 6 6 0 0 1 -11 -16" fill="none" stroke="#38bdf8" stroke-width="1"/>
+      <path d="M -28 -16 A 11 11 0 0 1 -6 -16" fill="none" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="2 2"/>
+    </g>
+
+    <!-- Transducer Mount Under Soffit (y = 20) -->
+    <g transform="translate(500, 20)">
+      <!-- Heavy Bracket Clamped to Girder -->
+      <rect x="-18" y="0" width="36" height="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+      
+      <!-- Sensor Housing & Horn Antenna Transceiver -->
+      <rect x="-12" y="8" width="24" height="20" rx="2" fill="#475569" stroke="#f59e0b" stroke-width="1.2"/>
+      <polygon points="-10,28 10,28 6,38 -6,38" fill="#f59e0b" stroke="#b45309" stroke-width="1"/>
+      <ellipse cx="0" cy="38" rx="6" ry="2" fill="#fbbf24"/>
+
+      <!-- GRAPHICAL RADAR WAVE BEAM PROPAGATION CONE -->
+      <!-- Downward Conical Beam (to Water Surface y = 370 - 20 = 350) -->
+      <polygon points="0,38 -165,350 165,350" fill="url(#radar-beam)"/>
+
+      <!-- Animated Outgoing Pulse Waves (Concentric Arcs Expanding Downward) -->
+      <g stroke="#f59e0b" fill="none" stroke-linecap="round">
+        <path d="M -20 50 Q 0 60 20 50" stroke-width="2.5" class="radar-pulse-1"/>
+        <path d="M -45 95 Q 0 115 45 95" stroke-width="2.2" class="radar-pulse-2"/>
+        <path d="M -80 160 Q 0 190 80 160" stroke-width="1.8" class="radar-pulse-3"/>
+      </g>
+
+      <!-- Graphical Reflection Echo Waves Bouncing Back Up from Water Surface -->
+      <g stroke="#38bdf8" fill="none" stroke-linecap="round" stroke-dasharray="4 3" filter="url(#glow-wave)">
+        <path d="M -110 320 Q 0 290 110 320" stroke-width="2"/>
+        <path d="M -60 250 Q 0 230 60 250" stroke-width="1.8"/>
+        <path d="M -25 180 Q 0 170 25 180" stroke-width="1.5"/>
+      </g>
+
+      <!-- Beam Reflection Footprint on Water Surface -->
+      <ellipse cx="0" cy="350" rx="165" ry="10" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 3"/>
+    </g>
+
+    <!-- 6. HIGH-CONTRAST GRAPHIC DIMENSION LEADER CALLOUTS -->
+    <!-- AIR GAP DIMENSION: d_air = 52.95 ft (16.14 m) -->
+    <g transform="translate(610, 20)">
+      <!-- Dimension Line with End Ticks -->
+      <line x1="0" y1="0" x2="0" y2="350" stroke="#f59e0b" stroke-width="2"/>
+      <line x1="-15" y1="0" x2="15" y2="0" stroke="#f59e0b" stroke-width="2"/>
+      <line x1="-15" y1="350" x2="15" y2="350" stroke="#f59e0b" stroke-width="2"/>
+      
+      <!-- Graphical Badge on Arrow -->
+      <rect x="15" y="145" width="165" height="52" rx="6" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="25" y="166" fill="#fbbf24" font-size="9" font-weight="900">RADAR AIR GAP (d_air)</text>
+      <text x="25" y="186" fill="#ffffff" font-size="16" font-weight="900">52.95 ft</text>
+      <text x="105" y="186" fill="#94a3b8" font-size="10">(16.14 m)</text>
+    </g>
+
+    <!-- WATER STAGE DEPTH DIMENSION: y = 3.02 m (9' 11") -->
+    <g transform="translate(390, 370)">
+      <line x1="0" y1="0" x2="0" y2="80" stroke="#38bdf8" stroke-width="2"/>
+      <line x1="-10" y1="0" x2="10" y2="0" stroke="#38bdf8" stroke-width="2"/>
+      <line x1="-10" y1="80" x2="10" y2="80" stroke="#38bdf8" stroke-width="2"/>
+      
+      <rect x="-145" y="24" width="135" height="34" rx="4" fill="#082f49" stroke="#38bdf8" stroke-width="1.2"/>
+      <text x="-77" y="39" fill="#7dd3fc" font-size="8.5" font-weight="800" text-anchor="middle">WATER DEPTH y</text>
+      <text x="-77" y="52" fill="#ffffff" font-size="11" font-weight="900" text-anchor="middle">3.02 m · 9' 11"</text>
+    </g>
+
+    <!-- GAUGE ZERO BED INVERT CALLOUT -->
+    <g transform="translate(500, 465)">
+      <line x1="-180" y1="0" x2="180" y2="0" stroke="#10b981" stroke-width="2" stroke-dasharray="6 3"/>
+      <rect x="-135" y="8" width="270" height="24" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="0" y="24" fill="#a7f3d0" font-size="9.5" font-weight="900" text-anchor="middle">GAUGE ZERO (G.Z. 0' 0" = 530.18 m MSL / 1739.43 ft)</text>
+    </g>
+  </g>
+</svg>

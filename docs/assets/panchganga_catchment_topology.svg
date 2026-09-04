@@ -1,0 +1,441 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="100%" height="100%" style="background: #050811; font-family: 'JetBrains Mono', 'Segoe UI', -apple-system, monospace;">
+  <defs>
+    <!-- GIS Coordinate Grid -->
+    <pattern id="gis-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#0f172a" stroke-width="0.7"/>
+      <circle cx="0" cy="0" r="1" fill="#1e293b"/>
+    </pattern>
+
+    <!-- Hypsometric Elevation Gradients (Western Ghats to Plain) -->
+    <linearGradient id="elevation-relief" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#064e3b" stop-opacity="0.7"/> <!-- Western Ghats ~1000m -->
+      <stop offset="35%" stop-color="#047857" stop-opacity="0.4"/> <!-- Foothills ~700m -->
+      <stop offset="70%" stop-color="#1e293b" stop-opacity="0.8"/> <!-- Mid Valley ~580m -->
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/> <!-- Alluvial Plain ~530m -->
+    </linearGradient>
+
+    <!-- Reservoir Water Gradient -->
+    <radialGradient id="reservoir-water" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="60%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#075985"/>
+    </radialGradient>
+
+    <!-- Doppler Radar Precipitation Sweep -->
+    <radialGradient id="doppler-radar" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.25"/>
+      <stop offset="40%" stop-color="#eab308" stop-opacity="0.20"/>
+      <stop offset="70%" stop-color="#ef4444" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#030712" stop-opacity="0.0"/>
+    </radialGradient>
+
+    <!-- River Water Shading -->
+    <linearGradient id="tributary-stream" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <linearGradient id="main-panchganga" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+
+    <!-- Radar Sweep Animation -->
+    <style>
+      @keyframes radarSweep {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes pingStation {
+        0% { r: 3px; opacity: 1; stroke-width: 1.5px; }
+        100% { r: 16px; opacity: 0; stroke-width: 0.2px; }
+      }
+      @keyframes waterFlowDash {
+        to { stroke-dashoffset: -40; }
+      }
+      .radar-arm {
+        transform-origin: 650px 320px;
+        animation: radarSweep 10s linear infinite;
+      }
+      .station-pulse-active {
+        animation: pingStation 2.4s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+      }
+      .river-flow {
+        stroke-dasharray: 8 4;
+        animation: waterFlowDash 2s linear infinite;
+      }
+    </style>
+  </defs>
+
+  <!-- ==================== GIS CANVAS BACKGROUND ==================== -->
+  <rect width="1200" height="680" fill="#040711"/>
+  <rect width="1200" height="680" fill="url(#gis-grid)"/>
+
+  <!-- Border Frame -->
+  <rect x="16" y="16" width="1168" height="648" rx="4" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+  <rect x="20" y="20" width="1160" height="640" rx="2" fill="none" stroke="#334155" stroke-width="0.8"/>
+
+  <!-- Top Title Bar -->
+  <g transform="translate(32, 32)">
+    <rect width="1136" height="42" rx="4" fill="#0b0f19" stroke="#1e293b" stroke-width="1.2"/>
+    <rect x="12" y="10" width="75" height="22" rx="3" fill="#065f46" stroke="#10b981" stroke-width="1"/>
+    <text x="49" y="24" fill="#a7f3d0" font-size="9" font-weight="800" text-anchor="middle" letter-spacing="1">GIS-HYDRO</text>
+
+    <text x="98" y="25" fill="#f8fafc" font-size="12" font-weight="700" letter-spacing="1">PANCHGANGA RIVER BASIN // TOPOGRAPHICAL HYDROMETRIC NETWORK</text>
+    <text x="730" y="25" fill="#94a3b8" font-size="9.5">CATCHMENT AREA: 2,570 km² · 9 SUBBASINS · 5 TRIBUTARIES · 18 TELEMETRY GAUGE STATIONS</text>
+    <text x="1120" y="25" fill="#64748b" font-size="9.5" text-anchor="end">WGS84 UTM 43N</text>
+  </g>
+
+  <!-- ==================== MAP LAYER: TOPOGRAPHY & SUBBASIN DELINEATION ==================== -->
+  <g transform="translate(40, 90)">
+    
+    <!-- Catchment Basin Outer Perimeter (Natural Watershed Boundary) -->
+    <path d="M 120 180 
+             C 140 100, 260 60, 420 55 
+             C 560 50, 720 70, 840 110 
+             C 960 150, 1020 220, 1040 310 
+             C 1060 400, 980 480, 880 510 
+             C 760 540, 580 535, 430 525 
+             C 280 515, 160 490, 110 420 
+             C 70 350, 80 240, 120 180 Z" 
+          fill="url(#elevation-relief)" stroke="#334155" stroke-width="1.8"/>
+
+    <!-- Western Ghats Mountain Ridges (Hypsometric Contour Strips on West) -->
+    <path d="M 120 180 C 135 220, 130 280, 110 340 C 95 380, 105 410, 110 420" 
+          fill="none" stroke="#10b981" stroke-width="6" opacity="0.25" stroke-linecap="round"/>
+    <path d="M 140 170 C 160 230, 150 300, 135 360 C 125 390, 135 430, 140 440" 
+          fill="none" stroke="#059669" stroke-width="4" opacity="0.3" stroke-linecap="round"/>
+    <path d="M 170 150 C 190 220, 180 320, 165 380 C 150 420, 160 450, 175 460" 
+          fill="none" stroke="#047857" stroke-width="3" opacity="0.3" stroke-linecap="round"/>
+    
+    <!-- Topographic Elevation Ridge Labels -->
+    <text x="80" y="270" fill="#34d399" font-size="8.5" font-weight="700" transform="rotate(-75 80 270)">SAHYADRI ESCARPMENT (EL 950m - 1050m MSL)</text>
+    <text x="960" y="360" fill="#64748b" font-size="8" font-weight="600">DECCAN FLOODPLAIN (EL 525m - 540m)</text>
+
+    <!-- Subbasin Internal Boundaries (S1 to S9) -->
+    <!-- S1: Kasari North -->
+    <path d="M 280 60 C 310 120, 360 170, 480 230" fill="none" stroke="#475569" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="310" y="120" fill="#94a3b8" font-size="8" font-weight="700">S1: UPPER KASARI (425 km²)</text>
+
+    <!-- S2: Kumbhi -->
+    <path d="M 140 240 C 240 250, 340 255, 480 260" fill="none" stroke="#475569" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="220" y="225" fill="#94a3b8" font-size="8" font-weight="700">S2: KUMBHI BASIN (380 km²)</text>
+
+    <!-- S3: Dhamani -->
+    <path d="M 130 330 C 220 330, 320 310, 420 300" fill="none" stroke="#475569" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="200" y="320" fill="#94a3b8" font-size="8" font-weight="700">S3: DHAMANI (240 km²)</text>
+
+    <!-- S4: Tulshi -->
+    <path d="M 150 410 C 240 395, 360 360, 480 320" fill="none" stroke="#475569" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="240" y="390" fill="#94a3b8" font-size="8" font-weight="700">S4: TULSHI (210 km²)</text>
+
+    <!-- S5: Bhogawati / Radhanagari -->
+    <path d="M 220 480 C 320 450, 420 380, 520 325" fill="none" stroke="#475569" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="310" y="470" fill="#94a3b8" font-size="8" font-weight="700">S5: BHOGAWATI / RADHANAGARI (510 km²)</text>
+
+    <!-- S6, S7, S8, S9 (Central & Lower Reaches) -->
+    <path d="M 640 90 C 640 180, 620 250, 590 300" fill="none" stroke="#475569" stroke-width="1" stroke-dasharray="4 4"/>
+    <path d="M 760 110 C 760 210, 740 270, 710 320" fill="none" stroke="#475569" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="560" y="160" fill="#94a3b8" font-size="8" font-weight="700">S6: CENTRAL VALLEY</text>
+    <text x="700" y="180" fill="#94a3b8" font-size="8" font-weight="700">S7: ICHALKARANJI REACH</text>
+    <text x="860" y="240" fill="#94a3b8" font-size="8" font-weight="700">S8: LOWER SHIROL</text>
+    <text x="910" y="380" fill="#94a3b8" font-size="8" font-weight="700">S9: CONFLUENCE TERMINUS</text>
+
+    <!-- ==================== HYDROLOGICAL RIVER NETWORK ==================== -->
+    
+    <!-- 1. KASARI RIVER (North Tributary) -->
+    <path d="M 180 90 
+             C 240 110, 310 140, 370 170 
+             C 430 200, 470 240, 520 280" 
+          fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 180 90 C 240 110, 310 140, 370 170 C 430 200, 470 240, 520 280" 
+          fill="none" stroke="#bae6fd" stroke-width="1" class="river-flow"/>
+    <text x="320" y="150" fill="#7dd3fc" font-size="8.5" font-weight="700">KASARI RIVER</text>
+
+    <!-- 2. KUMBHI RIVER (West Central Tributary) -->
+    <path d="M 150 250 
+             C 230 255, 320 260, 410 270 
+             C 460 275, 490 280, 520 285" 
+          fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="270" y="250" fill="#7dd3fc" font-size="8.5" font-weight="700">KUMBHI RIVER</text>
+
+    <!-- 3. DHAMANI RIVER (Southwest Tributary, joins Kumbhi) -->
+    <path d="M 160 340 
+             C 240 330, 330 305, 410 270" 
+          fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+    <text x="240" y="335" fill="#7dd3fc" font-size="8" font-weight="700">DHAMANI RIVER</text>
+
+    <!-- 4. TULSHI RIVER (South Central Tributary) -->
+    <path d="M 210 410 
+             C 290 380, 380 340, 450 310 
+             C 480 298, 505 290, 520 285" 
+          fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>
+    <text x="320" y="375" fill="#7dd3fc" font-size="8.5" font-weight="700">TULSHI RIVER</text>
+
+    <!-- 5. BHOGAWATI RIVER (Major South Tributary from Radhanagari) -->
+    <path d="M 260 480 
+             C 330 440, 390 390, 450 340 
+             C 480 315, 505 295, 520 285" 
+          fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 260 480 C 330 440, 390 390, 450 340 C 480 315, 505 295, 520 285" 
+          fill="none" stroke="#ffffff" stroke-width="1.2" class="river-flow"/>
+    <text x="370" y="425" fill="#7dd3fc" font-size="8.5" font-weight="800">BHOGAWATI RIVER</text>
+
+    <!-- ==================== PRAYAG CHIKHALI CONFLUENCE (TRIVENI SANGAM) ==================== -->
+    <g transform="translate(520, 285)">
+      <!-- Confluence Halo Ring -->
+      <circle cx="0" cy="0" r="14" fill="#0284c7" fill-opacity="0.3" stroke="#38bdf8" stroke-width="1.5"/>
+      <circle cx="0" cy="0" r="6" fill="#38bdf8"/>
+      
+      <!-- Callout Badge -->
+      <rect x="8" y="-36" width="180" height="32" rx="3" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <text x="16" y="-22" fill="#38bdf8" font-size="8.5" font-weight="800">PRAYAG CHIKHALI CONFLUENCE</text>
+      <text x="16" y="-10" fill="#94a3b8" font-size="7.5">ALL 5 TRIBUTARIES UNITE HERE</text>
+    </g>
+
+    <!-- ==================== MAIN PANCHGANGA RIVER ==================== -->
+    <!-- Widens significantly from Prayag Chikhali through Kolhapur to Shirol -->
+    <path d="M 520 285 
+             C 570 270, 610 275, 650 280 
+             C 710 290, 760 330, 820 340 
+             C 880 350, 940 370, 1020 380" 
+          fill="none" stroke="url(#main-panchganga)" stroke-width="5.5" stroke-linecap="round"/>
+    <!-- Center animated current flow line -->
+    <path d="M 520 285 C 570 270, 610 275, 650 280 C 710 290, 760 330, 820 340 C 880 350, 940 370, 1020 380" 
+          fill="none" stroke="#ffffff" stroke-width="1.5" class="river-flow"/>
+
+    <text x="680" y="270" fill="#60a5fa" font-size="10" font-weight="800" letter-spacing="1">RIVER PANCHGANGA (MAIN STEM)</text>
+
+    <!-- TARGET VALIDATION OUTLET: SHIVAJI BRIDGE KOLHAPUR -->
+    <g transform="translate(650, 280)">
+      <circle cx="0" cy="0" r="16" fill="#78350f" fill-opacity="0.4" stroke="#f59e0b" stroke-width="1.5"/>
+      <circle cx="0" cy="0" r="7" fill="#f59e0b"/>
+      
+      <!-- Callout -->
+      <rect x="-10" y="24" width="200" height="42" rx="3" fill="#0b1120" stroke="#f59e0b" stroke-width="1.2"/>
+      <rect x="-10" y="24" width="200" height="14" fill="#78350f"/>
+      <text x="90" y="34.5" fill="#fef3c7" font-size="8" font-weight="800" text-anchor="middle">PRIMARY VERIFICATION GAUGE</text>
+      <text x="90" y="49" fill="#f59e0b" font-size="9" font-weight="800" text-anchor="middle">CHHATRAPATI SHIVAJI BRIDGE</text>
+      <text x="90" y="60" fill="#94a3b8" font-size="7.5" text-anchor="middle">CHAINAGE 42+150 · CWC ID: 028-MDHYD</text>
+    </g>
+
+    <!-- TERMINAL CONFLUENCE AT KRISHNA RIVER (SHIROL / NARSOBAWADI) -->
+    <g transform="translate(1020, 380)">
+      <circle cx="0" cy="0" r="8" fill="#10b981"/>
+      <!-- North-South Krishna River Path -->
+      <path d="M 0 -70 L 0 70" stroke="#34d399" stroke-width="4"/>
+      <text x="-15" y="-12" fill="#34d399" font-size="8.5" font-weight="800" text-anchor="end">CONFLUENCE WITH KRISHNA RIVER</text>
+      <text x="-15" y="0" fill="#94a3b8" font-size="7.5" text-anchor="end">NARSOBAWADI / SHIROL</text>
+    </g>
+
+    <!-- ==================== 4 MAJOR RESERVOIR WATER BODIES ==================== -->
+    <!-- 1. Radhanagari Dam & Reservoir (Largest) -->
+    <g transform="translate(240, 485)">
+      <ellipse cx="0" cy="0" rx="26" ry="14" fill="url(#reservoir-water)" stroke="#38bdf8" stroke-width="1.2"/>
+      <line x1="16" y1="-14" x2="20" y2="14" stroke="#ffffff" stroke-width="3"/>
+      <text x="-32" y="2" fill="#f8fafc" font-size="8" font-weight="700" text-anchor="end">RADHANAGARI DAM</text>
+      <text x="-32" y="12" fill="#38bdf8" font-size="7" text-anchor="end">236.8 MCM (8.36 TMC)</text>
+    </g>
+
+    <!-- 2. Tulshi Dam -->
+    <g transform="translate(195, 415)">
+      <ellipse cx="0" cy="0" rx="18" ry="10" fill="url(#reservoir-water)" stroke="#38bdf8" stroke-width="1"/>
+      <line x1="10" y1="-10" x2="14" y2="10" stroke="#ffffff" stroke-width="2.5"/>
+      <text x="-24" y="2" fill="#f8fafc" font-size="7.5" font-weight="700" text-anchor="end">TULSHI DAM</text>
+      <text x="-24" y="11" fill="#38bdf8" font-size="6.5" text-anchor="end">98.3 MCM</text>
+    </g>
+
+    <!-- 3. Kumbhi Dam -->
+    <g transform="translate(140, 255)">
+      <ellipse cx="0" cy="0" rx="16" ry="9" fill="url(#reservoir-water)" stroke="#38bdf8" stroke-width="1"/>
+      <line x1="10" y1="-9" x2="12" y2="9" stroke="#ffffff" stroke-width="2.5"/>
+      <text x="-20" y="2" fill="#f8fafc" font-size="7.5" font-weight="700" text-anchor="end">KUMBHI DAM</text>
+      <text x="-20" y="11" fill="#38bdf8" font-size="6.5" text-anchor="end">76.5 MCM</text>
+    </g>
+
+    <!-- 4. Kasari Dam -->
+    <g transform="translate(170, 95)">
+      <ellipse cx="0" cy="0" rx="18" ry="9" fill="url(#reservoir-water)" stroke="#38bdf8" stroke-width="1"/>
+      <line x1="10" y1="-9" x2="14" y2="9" stroke="#ffffff" stroke-width="2.5"/>
+      <text x="-22" y="2" fill="#f8fafc" font-size="7.5" font-weight="700" text-anchor="end">KASARI DAM</text>
+      <text x="-22" y="11" fill="#38bdf8" font-size="6.5" text-anchor="end">80.2 MCM</text>
+    </g>
+
+    <!-- ==================== 18 RAIN GAUGE TELEMETRY STATIONS ==================== -->
+    <!-- Helper macro stations: plotted with realistic weather station icons & elevations -->
+    <!-- 1. Gaganbawda (High Rainfall Western Ghats Crest) -->
+    <g transform="translate(130, 290)">
+      <circle cx="0" cy="0" r="12" fill="none" stroke="#ef4444" stroke-width="1.2" class="station-pulse-active"/>
+      <circle cx="0" cy="0" r="4.5" fill="#ef4444"/>
+      <rect x="8" y="-12" width="115" height="24" rx="2" fill="#0f172a" stroke="#ef4444" stroke-width="0.8"/>
+      <text x="14" y="-2" fill="#f8fafc" font-size="7.5" font-weight="700">GAGANBAWDA (EL 600m)</text>
+      <text x="14" y="8" fill="#f87171" font-size="6.5" font-weight="700">MAX-RAIN TRIGGER: 142mm</text>
+    </g>
+
+    <!-- 2. Radhanagari Station -->
+    <g transform="translate(260, 450)">
+      <circle cx="0" cy="0" r="3.5" fill="#38bdf8"/>
+      <text x="8" y="3" fill="#cbd5e1" font-size="7">Radhanagari (EL 550m)</text>
+    </g>
+
+    <!-- 3. Shahuwadi Station -->
+    <g transform="translate(210, 65)">
+      <circle cx="0" cy="0" r="3.5" fill="#38bdf8"/>
+      <text x="8" y="3" fill="#cbd5e1" font-size="7">Shahuwadi (EL 620m)</text>
+    </g>
+
+    <!-- 4. Panhala Station (Hill Station Ridge) -->
+    <g transform="translate(430, 180)">
+      <circle cx="0" cy="0" r="4" fill="#fbbf24"/>
+      <text x="8" y="3" fill="#fbbf24" font-size="7.5" font-weight="700">Panhala (EL 754m)</text>
+    </g>
+
+    <!-- 5. Malkapur Station -->
+    <g transform="translate(290, 110)">
+      <circle cx="0" cy="0" r="3" fill="#94a3b8"/>
+      <text x="6" y="2" fill="#94a3b8" font-size="6.5">Malkapur (EL 580m)</text>
+    </g>
+
+    <!-- 6. Karveer Station -->
+    <g transform="translate(560, 330)">
+      <circle cx="0" cy="0" r="3.5" fill="#38bdf8"/>
+      <text x="8" y="3" fill="#cbd5e1" font-size="7">Karveer (EL 545m)</text>
+    </g>
+
+    <!-- 7. Kolhapur City Station -->
+    <g transform="translate(620, 240)">
+      <circle cx="0" cy="0" r="4" fill="#38bdf8"/>
+      <text x="8" y="3" fill="#f8fafc" font-size="7.5" font-weight="700">Kolhapur IMD (EL 542m)</text>
+    </g>
+
+    <!-- 8. Hatkanangale Station -->
+    <g transform="translate(760, 240)">
+      <circle cx="0" cy="0" r="3.5" fill="#38bdf8"/>
+      <text x="8" y="3" fill="#cbd5e1" font-size="7">Hatkanangale (EL 538m)</text>
+    </g>
+
+    <!-- 9. Ichalkaranji Station -->
+    <g transform="translate(830, 310)">
+      <circle cx="0" cy="0" r="3.5" fill="#38bdf8"/>
+      <text x="8" y="3" fill="#cbd5e1" font-size="7">Ichalkaranji (EL 532m)</text>
+    </g>
+
+    <!-- 10. Shirol Station -->
+    <g transform="translate(940, 340)">
+      <circle cx="0" cy="0" r="3.5" fill="#38bdf8"/>
+      <text x="8" y="3" fill="#cbd5e1" font-size="7">Shirol (EL 524m)</text>
+    </g>
+
+    <!-- 11. Kuditre Station -->
+    <g transform="translate(480, 270)">
+      <circle cx="0" cy="0" r="3" fill="#94a3b8"/>
+      <text x="6" y="2" fill="#94a3b8" font-size="6.5">Kuditre (Sugar Mill)</text>
+    </g>
+
+    <!-- 12. Dhamod Station -->
+    <g transform="translate(230, 380)">
+      <circle cx="0" cy="0" r="3" fill="#94a3b8"/>
+      <text x="6" y="2" fill="#94a3b8" font-size="6.5">Dhamod</text>
+    </g>
+
+    <!-- 13. Dhangarwadi Station -->
+    <g transform="translate(150, 130)">
+      <circle cx="0" cy="0" r="3" fill="#94a3b8"/>
+      <text x="6" y="2" fill="#94a3b8" font-size="6.5">Dhangarwadi</text>
+    </g>
+
+    <!-- 14. Shenavade Station -->
+    <g transform="translate(180, 230)">
+      <circle cx="0" cy="0" r="3" fill="#94a3b8"/>
+      <text x="6" y="2" fill="#94a3b8" font-size="6.5">Shenavade</text>
+    </g>
+
+    <!-- 15. Parite Station -->
+    <g transform="translate(390, 420)">
+      <circle cx="0" cy="0" r="3" fill="#94a3b8"/>
+      <text x="6" y="2" fill="#94a3b8" font-size="6.5">Parite</text>
+    </g>
+
+    <!-- 16. Boriwade Station -->
+    <g transform="translate(360, 240)">
+      <circle cx="0" cy="0" r="3" fill="#94a3b8"/>
+      <text x="6" y="2" fill="#94a3b8" font-size="6.5">Boriwade</text>
+    </g>
+
+    <!-- 17. Kasaba Bawada Station -->
+    <g transform="translate(600, 220)">
+      <circle cx="0" cy="0" r="3" fill="#94a3b8"/>
+      <text x="6" y="2" fill="#94a3b8" font-size="6.5">Kasaba Bawada</text>
+    </g>
+
+    <!-- 18. Shiroli Station -->
+    <g transform="translate(680, 230)">
+      <circle cx="0" cy="0" r="3" fill="#94a3b8"/>
+      <text x="6" y="2" fill="#94a3b8" font-size="6.5">Shiroli MIDC</text>
+    </g>
+  </g>
+
+  <!-- ==================== GIS MAP OVERLAYS & CONTROLS ==================== -->
+  <!-- 1. Compass Rose (North Arrow) in Upper Left -->
+  <g transform="translate(70, 120)">
+    <circle cx="0" cy="0" r="22" fill="#0b0f19" stroke="#334155" stroke-width="1.2"/>
+    <!-- North Arrow Points -->
+    <polygon points="0,-18 5,0 0,-4" fill="#ef4444"/>
+    <polygon points="0,-18 -5,0 0,-4" fill="#b91c1c"/>
+    <polygon points="0,18 5,0 0,4" fill="#94a3b8"/>
+    <polygon points="0,18 -5,0 0,4" fill="#64748b"/>
+    <text x="0" y="-22" fill="#ef4444" font-size="9" font-weight="900" text-anchor="middle">N</text>
+    <text x="0" y="28" fill="#64748b" font-size="7" font-weight="700" text-anchor="middle">S</text>
+    <text x="26" y="3" fill="#64748b" font-size="7" font-weight="700">E</text>
+    <text x="-26" y="3" fill="#64748b" font-size="7" font-weight="700" text-anchor="end">W</text>
+  </g>
+
+  <!-- 2. Metric Engineering Scale Bar in Lower Left -->
+  <g transform="translate(70, 560)">
+    <rect x="-10" y="-14" width="200" height="34" rx="3" fill="#0b0f19" stroke="#1e293b" stroke-width="0.8"/>
+    <!-- Scale blocks (0 to 25 km) -->
+    <rect x="0" y="0" width="35" height="5" fill="#f8fafc"/>
+    <rect x="35" y="0" width="35" height="5" fill="#0284c7"/>
+    <rect x="70" y="0" width="70" height="5" fill="#f8fafc"/>
+    <rect x="140" y="0" width="35" height="5" fill="#0284c7"/>
+    <text x="0" y="13" fill="#94a3b8" font-size="7.5">0</text>
+    <text x="35" y="13" fill="#94a3b8" font-size="7.5">5</text>
+    <text x="70" y="13" fill="#94a3b8" font-size="7.5">10</text>
+    <text x="140" y="13" fill="#94a3b8" font-size="7.5">20</text>
+    <text x="175" y="13" fill="#94a3b8" font-size="7.5">25 km</text>
+    <text x="85" y="-3" fill="#cbd5e1" font-size="8" font-weight="700" text-anchor="middle">MAP SCALE 1:250,000</text>
+  </g>
+
+  <!-- 3. Dynamic Conservative Max-Rain Router Inset HUD -->
+  <g transform="translate(860, 450)">
+    <rect width="280" height="130" rx="4" fill="#090d16" stroke="#1e293b" stroke-width="1.2"/>
+    <rect width="280" height="24" rx="4 4 0 0" fill="#0f172a" stroke="#1e293b" stroke-width="0.8"/>
+    <circle cx="14" cy="12" r="3.5" fill="#ef4444" class="station-pulse-active"/>
+    <text x="24" y="16" fill="#f8fafc" font-size="9" font-weight="800">CONSERVATIVE HYETOGRAPH ROUTER</text>
+
+    <text x="12" y="42" fill="#94a3b8" font-size="8">MAX-RAIN TRIGGER: <tspan fill="#ef4444" font-weight="800">GAGANBAWDA (142 mm)</tspan></text>
+    <text x="12" y="58" fill="#94a3b8" font-size="8">ROUTING LOGIC: <tspan fill="#38bdf8">Worst-Case Flood Infiltration</tspan></text>
+    <text x="12" y="74" fill="#94a3b8" font-size="8">SCS CURVE NUMBERS: <tspan fill="#10b981">CN 75 - 88 (Soil Group C/D)</tspan></text>
+    <text x="12" y="90" fill="#94a3b8" font-size="8">TIME OF CONCENTRATION (Tc): <tspan fill="#f59e0b">14.5 - 28.2 Hours</tspan></text>
+    <text x="12" y="106" fill="#64748b" font-size="7.5">Prevents under-prediction during localized cloudbursts</text>
+  </g>
+
+  <!-- ==================== CAD TITLE BLOCK (BOTTOM-RIGHT) ==================== -->
+  <g transform="translate(32, 598)">
+    <rect width="1136" height="42" rx="4" fill="#080d1a" stroke="#1f2937" stroke-width="1.2"/>
+    
+    <text x="14" y="18" fill="#f8fafc" font-size="9.5" font-weight="800">PANCHGANGA HYDROCAST // WATERSHED DELINEATION &amp; TRIBUTARY MORPHOLOGY</text>
+    <text x="14" y="32" fill="#64748b" font-size="8">SURVEY OF INDIA BASIN FOLIO · CWC DIGITAL ELEVATION MODEL (SRTM 30M RESOLUTION) · WRD MAHARASHTRA</text>
+
+    <line x1="680" y1="6" x2="680" y2="36" stroke="#1f2937" stroke-width="1"/>
+
+    <text x="700" y="18" fill="#38bdf8" font-size="8.5" font-weight="700">HEC-HMS MODEL COUPLING:</text>
+    <text x="700" y="31" fill="#94a3b8" font-size="8">S1-S9 Subbasins · Muskingum-Cunge Reach Routing · SCS Unit Hydrograph</text>
+
+    <line x1="970" y1="6" x2="970" y2="36" stroke="#1f2937" stroke-width="1"/>
+
+    <text x="985" y="18" fill="#64748b" font-size="8">DWG: <tspan fill="#f8fafc" font-weight="700">GIS-PCG-2026</tspan></text>
+    <text x="985" y="31" fill="#64748b" font-size="8">PROJECTION: <tspan fill="#f8fafc">UTM ZONE 43N</tspan></text>
+  </g>
+</svg>

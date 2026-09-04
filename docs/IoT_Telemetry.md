@@ -28,6 +28,10 @@
                              River Bed Invert Level
 ```
 
+<p align="center">
+  <img src="./assets/ultrasonic_radar_cross_section.svg" alt="Hydraulic Cross-Section & IoT Ultrasonic Radar Altimetry" width="100%" />
+</p>
+
 ---
 
 ## 1. Hardware Architecture & Mounting Geometry

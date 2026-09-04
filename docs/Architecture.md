@@ -25,6 +25,10 @@
   Archiving (data/runs/)            & latest_pipeline_state.json     Next.js 14 Dashboard Render
 ```
 
+<p align="center">
+  <img src="./assets/enterprise_architecture_schematic.svg" alt="HydroCast Cyber-Physical Enterprise Architecture Schematic" width="100%" />
+</p>
+
 ---
 
 ## 1. Architectural Principles
