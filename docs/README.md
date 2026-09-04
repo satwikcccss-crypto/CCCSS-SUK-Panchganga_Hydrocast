@@ -6,6 +6,20 @@
 
 Welcome to the comprehensive technical documentation for **HydroCast: Real-Time Operational Flood Forecasting & Basin Intelligence** for the Panchganga River Catchment (Kolhapur District, Maharashtra, India).
 
+## Technology & Engineering Stack
+
+| Area | Tool |
+| :--- | :--- |
+| **OS** | ![Linux](https://img.shields.io/badge/OS-Linux-FCC624?style=flat&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/OS-macOS-000000?style=flat&logo=apple&logoColor=white) ![Windows](https://img.shields.io/badge/OS-Windows-0078D6?style=flat&logo=windows&logoColor=white) |
+| **Languages** | ![Bash](https://img.shields.io/badge/Code-Bash-4EAA25?style=flat&logo=gnubash&logoColor=white) ![Python](https://img.shields.io/badge/Code-Python_3.11-3776AB?style=flat&logo=python&logoColor=white) ![Java](https://img.shields.io/badge/Code-Java_LTS-ED8B00?style=flat&logo=openjdk&logoColor=white) ![Node.js](https://img.shields.io/badge/Code-Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) ![JavaScript](https://img.shields.io/badge/Code-JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black) ![TypeScript](https://img.shields.io/badge/Code-TypeScript-3178C6?style=flat&logo=typescript&logoColor=white) ![SQL](https://img.shields.io/badge/Code-SQL-CC292B?style=flat&logo=postgresql&logoColor=white) |
+| **Frameworks** | ![Next.js](https://img.shields.io/badge/Code-Next.js_14-000000?style=flat&logo=nextdotjs&logoColor=white) ![React](https://img.shields.io/badge/Code-React_18-61DAFB?style=flat&logo=react&logoColor=black) ![FastAPI](https://img.shields.io/badge/Code-FastAPI-009688?style=flat&logo=fastapi&logoColor=white) ![Tailwind](https://img.shields.io/badge/Code-Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white) ![Leaflet](https://img.shields.io/badge/Code-Leaflet-199900?style=flat&logo=leaflet&logoColor=white) |
+| **Hydrology & GIS** | ![HEC-HMS](https://img.shields.io/badge/Engine-HEC--HMS_4.12-1D4ED8?style=flat&logo=apache&logoColor=white) ![Jython](https://img.shields.io/badge/Script-Jython_2.7-D97706?style=flat&logo=python&logoColor=white) ![GeoPandas](https://img.shields.io/badge/GIS-GeoPandas-139C5A?style=flat&logo=geopandas&logoColor=white) ![GDAL](https://img.shields.io/badge/GIS-GDAL-499848?style=flat&logo=osgeo&logoColor=white) ![SciPy](https://img.shields.io/badge/Math-SciPy_PCHIP-8CAAE6?style=flat&logo=scipy&logoColor=black) ![NumPy](https://img.shields.io/badge/Math-NumPy-013243?style=flat&logo=numpy&logoColor=white) |
+| **Databases** | ![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL_15-4169E1?style=flat&logo=postgresql&logoColor=white) ![Supabase](https://img.shields.io/badge/DB-Supabase-3ECF8E?style=flat&logo=supabase&logoColor=black) ![SQLite](https://img.shields.io/badge/DB-SQLite-003B57?style=flat&logo=sqlite&logoColor=white) ![PostGIS](https://img.shields.io/badge/DB-PostGIS-336791?style=flat&logo=postgresql&logoColor=white) |
+| **IoT & Telemetry** | ![ThingSpeak](https://img.shields.io/badge/IoT-ThingSpeak-005B94?style=flat&logo=mathworks&logoColor=white) ![Sensor](https://img.shields.io/badge/Hardware-Radar%20Altimeter-F59E0B?style=flat&logo=target&logoColor=white) ![ESP32](https://img.shields.io/badge/Hardware-ESP32-E7352C?style=flat&logo=espressif&logoColor=white) ![Open-Meteo](https://img.shields.io/badge/NWP-Open--Meteo-F97316?style=flat&logo=accuweather&logoColor=white) |
+| **Infrastructure** | ![Docker](https://img.shields.io/badge/Containers-Docker-2496ED?style=flat&logo=docker&logoColor=white) ![Kubernetes](https://img.shields.io/badge/Containers-Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/CICD-GitHub_Actions-2088FF?style=flat&logo=githubactions&logoColor=white) ![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?style=flat&logo=vercel&logoColor=white) ![Datadog](https://img.shields.io/badge/Monitoring-Datadog-632CA6?style=flat&logo=datadog&logoColor=white) |
+
+---
+
 ## Technical Modules
 
 | Module | Document | Description |

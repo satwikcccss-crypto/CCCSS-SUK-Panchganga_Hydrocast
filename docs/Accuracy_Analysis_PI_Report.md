@@ -53,10 +53,6 @@ Through a comprehensive hydraulic re-calibration anchored to **19 official Gover
                      - Percent Bias (PBIAS) & RMSE/MAE
 ```
 
-<p align="center">
-  <img src="./assets/hydrograph_verification_matrix.svg" alt="90-Hour Hydrograph Digital Twin Oscilloscope & Accuracy Matrix" width="100%" />
-</p>
-
 ### 2.1 The Two Ground Truth Observation Sources
 1. **Continuous Real-Time IoT Telemetry (ThingSpeak Channel ID: `3424513`):**
    - Transducer: Solar-powered ultrasonic level sensor installed beneath the central girder of Chhatrapati Shivaji Maharaj Bridge ($16.708917^\circ\text{ N}, 74.219278^\circ\text{ E}$).

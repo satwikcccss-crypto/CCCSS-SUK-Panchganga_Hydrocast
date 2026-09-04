@@ -18,43 +18,15 @@
   <img src="docs/assets/hydrocast_flow_animation.svg" alt="HydroCast End-to-End Operational Flow & Telemetry Validation Architecture" width="100%">
 </p>
 
-<!-- Core Runtime & Languages Stack -->
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11/3.12">
-  <img src="https://img.shields.io/badge/Java-11%20%7C%2017%20LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java LTS">
-  <img src="https://img.shields.io/badge/Jython-2.7%20Automation-E76F51?style=for-the-badge&logo=coffeescript&logoColor=white" alt="Jython">
-  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/PostgreSQL-15%2B%20PostGIS-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL 15">
-</p>
-
-<!-- Hydrologic Modeling & Scientific Computing Stack -->
-<p align="center">
-  <img src="https://img.shields.io/badge/USACE-HEC--HMS%204.x%20Headless-8B0000?style=for-the-badge" alt="USACE HEC-HMS">
-  <img src="https://img.shields.io/badge/USACE-HEC--DSSVue%20%2F%20DSS%207-1B4332?style=for-the-badge" alt="HEC-DSS">
-  <img src="https://img.shields.io/badge/NumPy-Vectorized%20Array-013243?style=for-the-badge&logo=numpy&logoColor=white" alt="NumPy">
-  <img src="https://img.shields.io/badge/SciPy-PCHIP%20Monotonic-8CAAE6?style=for-the-badge&logo=scipy&logoColor=white" alt="SciPy PCHIP">
-  <img src="https://img.shields.io/badge/Pandas-Time--Series-150458?style=for-the-badge&logo=pandas&logoColor=white" alt="Pandas">
-  <img src="https://img.shields.io/badge/scikit--learn-Accuracy%20Metrics-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" alt="scikit-learn">
-</p>
-
-<!-- Real-Time IoT Telemetry & Cloud Automation Stack -->
-<p align="center">
-  <img src="https://img.shields.io/badge/ThingSpeak-Ultrasonic%20Radar%20IoT%20(3424513)-0076A8?style=for-the-badge" alt="ThingSpeak IoT">
-  <img src="https://img.shields.io/badge/GitHub%20Actions-1--Hour%20Continuous%20Validation-2088FF?style=for-the-badge&logo=github-actions&logoColor=white" alt="GitHub Actions 1-Hour Sync">
-  <img src="https://img.shields.io/badge/Cron-6--Hourly%20Forecast%20Cycle-FF7043?style=for-the-badge" alt="6-Hourly Cron">
-  <img src="https://img.shields.io/badge/Supabase-Cloud%20Postgres-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase">
-  <img src="https://img.shields.io/badge/Vercel-Serverless%20Edge-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel">
-</p>
-
-<!-- Application & Decision-Support UI Stack -->
-<p align="center">
-  <img src="https://img.shields.io/badge/FastAPI-Async%20REST%20%26%20WS-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
-  <img src="https://img.shields.io/badge/Next.js-14%20(App%20Router)-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js 14">
-  <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 18">
-  <img src="https://img.shields.io/badge/Chart.js-4.4%20Hydrographs-FF6384?style=for-the-badge&logo=chart.js&logoColor=white" alt="Chart.js">
-  <img src="https://img.shields.io/badge/Leaflet-GIS%20Spatial%20Layers-199900?style=for-the-badge&logo=leaflet&logoColor=white" alt="Leaflet GIS">
-  <img src="https://img.shields.io/badge/Tailwind%20CSS-3.4%20Design%20Tokens-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
-</p>
+| Area | Tool |
+| :--- | :--- |
+| **OS** | ![Linux](https://img.shields.io/badge/OS-Linux-FCC624?style=flat&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/OS-macOS-000000?style=flat&logo=apple&logoColor=white) ![Windows](https://img.shields.io/badge/OS-Windows-0078D6?style=flat&logo=windows&logoColor=white) |
+| **Languages** | ![Bash](https://img.shields.io/badge/Code-Bash-4EAA25?style=flat&logo=gnubash&logoColor=white) ![Python](https://img.shields.io/badge/Code-Python_3.11-3776AB?style=flat&logo=python&logoColor=white) ![Java](https://img.shields.io/badge/Code-Java_LTS-ED8B00?style=flat&logo=openjdk&logoColor=white) ![Node.js](https://img.shields.io/badge/Code-Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) ![JavaScript](https://img.shields.io/badge/Code-JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black) ![TypeScript](https://img.shields.io/badge/Code-TypeScript-3178C6?style=flat&logo=typescript&logoColor=white) ![SQL](https://img.shields.io/badge/Code-SQL-CC292B?style=flat&logo=postgresql&logoColor=white) |
+| **Frameworks** | ![Next.js](https://img.shields.io/badge/Code-Next.js_14-000000?style=flat&logo=nextdotjs&logoColor=white) ![React](https://img.shields.io/badge/Code-React_18-61DAFB?style=flat&logo=react&logoColor=black) ![FastAPI](https://img.shields.io/badge/Code-FastAPI-009688?style=flat&logo=fastapi&logoColor=white) ![Tailwind](https://img.shields.io/badge/Code-Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white) ![Leaflet](https://img.shields.io/badge/Code-Leaflet-199900?style=flat&logo=leaflet&logoColor=white) |
+| **Hydrology & GIS** | ![HEC-HMS](https://img.shields.io/badge/Engine-HEC--HMS_4.12-1D4ED8?style=flat&logo=apache&logoColor=white) ![Jython](https://img.shields.io/badge/Script-Jython_2.7-D97706?style=flat&logo=python&logoColor=white) ![GeoPandas](https://img.shields.io/badge/GIS-GeoPandas-139C5A?style=flat&logo=geopandas&logoColor=white) ![GDAL](https://img.shields.io/badge/GIS-GDAL-499848?style=flat&logo=osgeo&logoColor=white) ![SciPy](https://img.shields.io/badge/Math-SciPy_PCHIP-8CAAE6?style=flat&logo=scipy&logoColor=black) ![NumPy](https://img.shields.io/badge/Math-NumPy-013243?style=flat&logo=numpy&logoColor=white) |
+| **Databases** | ![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL_15-4169E1?style=flat&logo=postgresql&logoColor=white) ![Supabase](https://img.shields.io/badge/DB-Supabase-3ECF8E?style=flat&logo=supabase&logoColor=black) ![SQLite](https://img.shields.io/badge/DB-SQLite-003B57?style=flat&logo=sqlite&logoColor=white) ![PostGIS](https://img.shields.io/badge/DB-PostGIS-336791?style=flat&logo=postgresql&logoColor=white) |
+| **IoT & Telemetry** | ![ThingSpeak](https://img.shields.io/badge/IoT-ThingSpeak-005B94?style=flat&logo=mathworks&logoColor=white) ![Sensor](https://img.shields.io/badge/Hardware-Radar%20Altimeter-F59E0B?style=flat&logo=target&logoColor=white) ![ESP32](https://img.shields.io/badge/Hardware-ESP32-E7352C?style=flat&logo=espressif&logoColor=white) ![Open-Meteo](https://img.shields.io/badge/NWP-Open--Meteo-F97316?style=flat&logo=accuweather&logoColor=white) |
+| **Infrastructure** | ![Docker](https://img.shields.io/badge/Containers-Docker-2496ED?style=flat&logo=docker&logoColor=white) ![Kubernetes](https://img.shields.io/badge/Containers-Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/CICD-GitHub_Actions-2088FF?style=flat&logo=githubactions&logoColor=white) ![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?style=flat&logo=vercel&logoColor=white) ![Datadog](https://img.shields.io/badge/Monitoring-Datadog-632CA6?style=flat&logo=datadog&logoColor=white) |
 
 ---
 

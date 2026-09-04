@@ -1,8 +1,22 @@
 # Database Architecture & Migration Guide
 
+<p align="center">
+  <img src="../docs/assets/hydrocast_flow_animation.svg" alt="HydroCast Operational Continuum" width="100%">
+</p>
+
 ## Relational Schema Specifications
 
 HydroCast relies on PostgreSQL (local production or Supabase managed cloud) for operational time-series storage, audit logs, and analytical accuracy tracking.
+
+## Database & Infrastructure Stack
+
+| Area | Tool |
+| :--- | :--- |
+| **Databases** | ![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL_15-4169E1?style=flat&logo=postgresql&logoColor=white) ![Supabase](https://img.shields.io/badge/DB-Supabase-3ECF8E?style=flat&logo=supabase&logoColor=black) ![SQLite](https://img.shields.io/badge/DB-SQLite-003B57?style=flat&logo=sqlite&logoColor=white) ![PostGIS](https://img.shields.io/badge/DB-PostGIS-336791?style=flat&logo=postgresql&logoColor=white) |
+| **Languages & Query** | ![SQL](https://img.shields.io/badge/Code-SQL_PL%2FpgSQL-CC292B?style=flat&logo=postgresql&logoColor=white) ![Python](https://img.shields.io/badge/Code-Python_asyncpg-3776AB?style=flat&logo=python&logoColor=white) ![Bash](https://img.shields.io/badge/Code-Bash-4EAA25?style=flat&logo=gnubash&logoColor=white) |
+| **Infrastructure & Pooler** | ![Supavisor](https://img.shields.io/badge/Infra-Supavisor_Pooler-3ECF8E?style=flat&logo=supabase&logoColor=black) ![GitHub Actions](https://img.shields.io/badge/CICD-GitHub_Actions-2088FF?style=flat&logo=githubactions&logoColor=white) ![Docker](https://img.shields.io/badge/Containers-Docker-2496ED?style=flat&logo=docker&logoColor=white) |
+
+---
 
 ### Schema Inventory
 

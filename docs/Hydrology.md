@@ -1,4 +1,4 @@
-# Panchganga Catchment Hydrology & Watershed Delineation
+﻿# Panchganga Catchment Hydrology & Watershed Delineation
 
 ```
 ========================================================================================
@@ -35,10 +35,6 @@
                                   Confluence with Krishna River
                                           (Shirol / Narsobawadi)
 ```
-
-<p align="center">
-  <img src="./assets/panchganga_catchment_topology.svg" alt="Panchganga River Basin Topographical Hydrometric Network" width="100%" />
-</p>
 
 ---
 

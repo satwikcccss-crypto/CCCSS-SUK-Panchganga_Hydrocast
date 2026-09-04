@@ -1,4 +1,4 @@
-# Open-Channel Hydraulics & River Stage Mechanics
+﻿# Open-Channel Hydraulics & River Stage Mechanics
 
 ```
 ========================================================================================
@@ -19,10 +19,6 @@
       +---------+---------------------------------------+-------+
       0        40       80      120     160     200     240    280  Station (meters)
 ```
-
-<p align="center">
-  <img src="./assets/ultrasonic_radar_cross_section.svg" alt="Hydraulic Cross-Section & IoT Ultrasonic Radar Altimetry" width="100%" />
-</p>
 
 ---
 

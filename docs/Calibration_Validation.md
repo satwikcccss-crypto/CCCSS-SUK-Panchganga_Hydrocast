@@ -22,10 +22,6 @@ Non-linear monotonic   Flow wave alignment             RMSE (m) & MAE (m)     Pr
 rank correlation       NSE Target > 0.85               PBIAS Target < 5%      Volume Accuracy %
 ```
 
-<p align="center">
-  <img src="./assets/hydrograph_verification_matrix.svg" alt="90-Hour Hydrograph Digital Twin Oscilloscope & Accuracy Matrix" width="100%" />
-</p>
-
 ---
 
 ## 1. Overview & Validation Philosophy
