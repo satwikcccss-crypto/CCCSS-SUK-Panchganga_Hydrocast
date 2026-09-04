@@ -4,22 +4,22 @@
     "cycle_id": "CYC_20260904_12z",
     "forecast_date": "04 Sep 2026",
     "cycle_time": "12z",
-    "peak_discharge_m3s": 227.0,
-    "baseflow_m3s": 99.6,
-    "lead_hours_to_peak": 32,
-    "peak_time": "2026-09-05T20:00:00+00:00",
-    "total_volume_mcm": 57.8,
+    "peak_discharge_m3s": 212.5,
+    "baseflow_m3s": 97.7,
+    "lead_hours_to_peak": 75,
+    "peak_time": "2026-09-07T15:00:00+00:00",
+    "total_volume_mcm": 49.6,
     "bridges": {
       "shivaji": {
         "site_name": "Chhatrapati Shivaji Maharaj Bridge",
-        "current_stage_m": 533.13,
-        "peak_stage_m": 534.38,
+        "current_stage_m": 533.1,
+        "peak_stage_m": 534.27,
         "alert_level": "NORMAL"
       },
       "rajaram": {
         "site_name": "Rajaram K.T. Weir",
-        "current_stage_m": 533.86,
-        "peak_stage_m": 535.31,
+        "current_stage_m": 533.83,
+        "peak_stage_m": 535.15,
         "alert_level": "NORMAL"
       }
     }
@@ -933,247 +933,247 @@
       {
         "hour": 0,
         "timestamp": "2026-09-04T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-04T13:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.0
       },
       {
         "hour": 2,
         "timestamp": "2026-09-04T14:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.0
       },
       {
         "hour": 3,
         "timestamp": "2026-09-04T15:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.0
       },
       {
         "hour": 4,
         "timestamp": "2026-09-04T16:00:00+00:00",
-        "mm_hr": 0.03
+        "mm_hr": 0.0
       },
       {
         "hour": 5,
         "timestamp": "2026-09-04T17:00:00+00:00",
-        "mm_hr": 0.05
+        "mm_hr": 0.0
       },
       {
         "hour": 6,
         "timestamp": "2026-09-04T18:00:00+00:00",
-        "mm_hr": 0.07
+        "mm_hr": 0.0
       },
       {
         "hour": 7,
         "timestamp": "2026-09-04T19:00:00+00:00",
-        "mm_hr": 0.11
+        "mm_hr": 0.0
       },
       {
         "hour": 8,
         "timestamp": "2026-09-04T20:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.0
       },
       {
         "hour": 9,
         "timestamp": "2026-09-04T21:00:00+00:00",
-        "mm_hr": 0.21
+        "mm_hr": 0.0
       },
       {
         "hour": 10,
         "timestamp": "2026-09-04T22:00:00+00:00",
-        "mm_hr": 0.29
+        "mm_hr": 0.0
       },
       {
         "hour": 11,
         "timestamp": "2026-09-04T23:00:00+00:00",
-        "mm_hr": 0.38
+        "mm_hr": 0.0
       },
       {
         "hour": 12,
         "timestamp": "2026-09-05T00:00:00+00:00",
-        "mm_hr": 0.48
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-09-05T01:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-09-05T02:00:00+00:00",
-        "mm_hr": 0.72
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-09-05T03:00:00+00:00",
-        "mm_hr": 0.84
+        "mm_hr": 0.3
       },
       {
         "hour": 16,
         "timestamp": "2026-09-05T04:00:00+00:00",
-        "mm_hr": 0.95
+        "mm_hr": 0.3
       },
       {
         "hour": 17,
         "timestamp": "2026-09-05T05:00:00+00:00",
-        "mm_hr": 1.06
+        "mm_hr": 0.3
       },
       {
         "hour": 18,
         "timestamp": "2026-09-05T06:00:00+00:00",
-        "mm_hr": 1.13
+        "mm_hr": 0.3
       },
       {
         "hour": 19,
         "timestamp": "2026-09-05T07:00:00+00:00",
-        "mm_hr": 1.18
+        "mm_hr": 0.4
       },
       {
         "hour": 20,
         "timestamp": "2026-09-05T08:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 0.4
       },
       {
         "hour": 21,
         "timestamp": "2026-09-05T09:00:00+00:00",
-        "mm_hr": 1.18
+        "mm_hr": 0.2
       },
       {
         "hour": 22,
         "timestamp": "2026-09-05T10:00:00+00:00",
-        "mm_hr": 1.13
+        "mm_hr": 0.1
       },
       {
         "hour": 23,
         "timestamp": "2026-09-05T11:00:00+00:00",
-        "mm_hr": 1.06
+        "mm_hr": 0.0
       },
       {
         "hour": 24,
         "timestamp": "2026-09-05T12:00:00+00:00",
-        "mm_hr": 0.95
+        "mm_hr": 0.0
       },
       {
         "hour": 25,
         "timestamp": "2026-09-05T13:00:00+00:00",
-        "mm_hr": 0.84
+        "mm_hr": 0.0
       },
       {
         "hour": 26,
         "timestamp": "2026-09-05T14:00:00+00:00",
-        "mm_hr": 0.72
+        "mm_hr": 0.0
       },
       {
         "hour": 27,
         "timestamp": "2026-09-05T15:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 28,
         "timestamp": "2026-09-05T16:00:00+00:00",
-        "mm_hr": 0.48
+        "mm_hr": 0.0
       },
       {
         "hour": 29,
         "timestamp": "2026-09-05T17:00:00+00:00",
-        "mm_hr": 0.38
+        "mm_hr": 0.0
       },
       {
         "hour": 30,
         "timestamp": "2026-09-05T18:00:00+00:00",
-        "mm_hr": 0.29
+        "mm_hr": 0.0
       },
       {
         "hour": 31,
         "timestamp": "2026-09-05T19:00:00+00:00",
-        "mm_hr": 0.21
+        "mm_hr": 0.0
       },
       {
         "hour": 32,
         "timestamp": "2026-09-05T20:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.0
       },
       {
         "hour": 33,
         "timestamp": "2026-09-05T21:00:00+00:00",
-        "mm_hr": 0.11
+        "mm_hr": 0.0
       },
       {
         "hour": 34,
         "timestamp": "2026-09-05T22:00:00+00:00",
-        "mm_hr": 0.07
+        "mm_hr": 0.0
       },
       {
         "hour": 35,
         "timestamp": "2026-09-05T23:00:00+00:00",
-        "mm_hr": 0.05
+        "mm_hr": 0.0
       },
       {
         "hour": 36,
         "timestamp": "2026-09-06T00:00:00+00:00",
-        "mm_hr": 0.03
+        "mm_hr": 0.0
       },
       {
         "hour": 37,
         "timestamp": "2026-09-06T01:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-09-06T02:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.1
       },
       {
         "hour": 39,
         "timestamp": "2026-09-06T03:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.2
       },
       {
         "hour": 40,
         "timestamp": "2026-09-06T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 41,
         "timestamp": "2026-09-06T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 42,
         "timestamp": "2026-09-06T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 43,
         "timestamp": "2026-09-06T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 44,
         "timestamp": "2026-09-06T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 45,
         "timestamp": "2026-09-06T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 46,
         "timestamp": "2026-09-06T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 47,
         "timestamp": "2026-09-06T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 48,
         "timestamp": "2026-09-06T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 49,
@@ -1253,42 +1253,42 @@
       {
         "hour": 64,
         "timestamp": "2026-09-07T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
         "timestamp": "2026-09-07T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 66,
         "timestamp": "2026-09-07T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 67,
         "timestamp": "2026-09-07T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 68,
         "timestamp": "2026-09-07T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 69,
         "timestamp": "2026-09-07T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 70,
         "timestamp": "2026-09-07T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 71,
         "timestamp": "2026-09-07T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 72,
@@ -2289,177 +2289,177 @@
       {
         "hour": 0,
         "timestamp": "2026-09-04T12:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.01
       },
       {
         "hour": 1,
         "timestamp": "2026-09-04T13:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.01
       },
       {
         "hour": 2,
         "timestamp": "2026-09-04T14:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.02
       },
       {
         "hour": 3,
         "timestamp": "2026-09-04T15:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.04
       },
       {
         "hour": 4,
         "timestamp": "2026-09-04T16:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.06
       },
       {
         "hour": 5,
         "timestamp": "2026-09-04T17:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.1
       },
       {
         "hour": 6,
         "timestamp": "2026-09-04T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.15
       },
       {
         "hour": 7,
         "timestamp": "2026-09-04T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.22
       },
       {
         "hour": 8,
         "timestamp": "2026-09-04T20:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.32
       },
       {
         "hour": 9,
         "timestamp": "2026-09-04T21:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.44
       },
       {
         "hour": 10,
         "timestamp": "2026-09-04T22:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.6
       },
       {
         "hour": 11,
         "timestamp": "2026-09-04T23:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.79
       },
       {
         "hour": 12,
         "timestamp": "2026-09-05T00:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 1.0
       },
       {
         "hour": 13,
         "timestamp": "2026-09-05T01:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 1.24
       },
       {
         "hour": 14,
         "timestamp": "2026-09-05T02:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 1.49
       },
       {
         "hour": 15,
         "timestamp": "2026-09-05T03:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 1.75
       },
       {
         "hour": 16,
         "timestamp": "2026-09-05T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.99
       },
       {
         "hour": 17,
         "timestamp": "2026-09-05T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 2.2
       },
       {
         "hour": 18,
         "timestamp": "2026-09-05T06:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 2.36
       },
       {
         "hour": 19,
         "timestamp": "2026-09-05T07:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 2.46
       },
       {
         "hour": 20,
         "timestamp": "2026-09-05T08:00:00+00:00",
-        "mm_hr": 1.1
+        "mm_hr": 2.5
       },
       {
         "hour": 21,
         "timestamp": "2026-09-05T09:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 2.46
       },
       {
         "hour": 22,
         "timestamp": "2026-09-05T10:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 2.36
       },
       {
         "hour": 23,
         "timestamp": "2026-09-05T11:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 2.2
       },
       {
         "hour": 24,
         "timestamp": "2026-09-05T12:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 1.99
       },
       {
         "hour": 25,
         "timestamp": "2026-09-05T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 1.75
       },
       {
         "hour": 26,
         "timestamp": "2026-09-05T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 1.49
       },
       {
         "hour": 27,
         "timestamp": "2026-09-05T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.24
       },
       {
         "hour": 28,
         "timestamp": "2026-09-05T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 1.0
       },
       {
         "hour": 29,
         "timestamp": "2026-09-05T17:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.79
       },
       {
         "hour": 30,
         "timestamp": "2026-09-05T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.6
       },
       {
         "hour": 31,
         "timestamp": "2026-09-05T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.44
       },
       {
         "hour": 32,
         "timestamp": "2026-09-05T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.32
       },
       {
         "hour": 33,
         "timestamp": "2026-09-05T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.22
       },
       {
         "hour": 34,
         "timestamp": "2026-09-05T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.15
       },
       {
         "hour": 35,
@@ -2469,242 +2469,242 @@
       {
         "hour": 36,
         "timestamp": "2026-09-06T00:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.06
       },
       {
         "hour": 37,
         "timestamp": "2026-09-06T01:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.04
       },
       {
         "hour": 38,
         "timestamp": "2026-09-06T02:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.02
       },
       {
         "hour": 39,
         "timestamp": "2026-09-06T03:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.01
       },
       {
         "hour": 40,
         "timestamp": "2026-09-06T04:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.01
       },
       {
         "hour": 41,
         "timestamp": "2026-09-06T05:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 42,
         "timestamp": "2026-09-06T06:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 43,
         "timestamp": "2026-09-06T07:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 44,
         "timestamp": "2026-09-06T08:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 45,
         "timestamp": "2026-09-06T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 46,
         "timestamp": "2026-09-06T10:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.0
       },
       {
         "hour": 47,
         "timestamp": "2026-09-06T11:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 48,
         "timestamp": "2026-09-06T12:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 0.0
       },
       {
         "hour": 49,
         "timestamp": "2026-09-06T13:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.0
       },
       {
         "hour": 50,
         "timestamp": "2026-09-06T14:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 51,
         "timestamp": "2026-09-06T15:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 52,
         "timestamp": "2026-09-06T16:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 53,
         "timestamp": "2026-09-06T17:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 54,
         "timestamp": "2026-09-06T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 55,
         "timestamp": "2026-09-06T19:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 56,
         "timestamp": "2026-09-06T20:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 57,
         "timestamp": "2026-09-06T21:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 58,
         "timestamp": "2026-09-06T22:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
         "timestamp": "2026-09-06T23:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 60,
         "timestamp": "2026-09-07T00:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.0
       },
       {
         "hour": 61,
         "timestamp": "2026-09-07T01:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 62,
         "timestamp": "2026-09-07T02:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-09-07T03:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-09-07T04:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
         "timestamp": "2026-09-07T05:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
         "timestamp": "2026-09-07T06:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.0
       },
       {
         "hour": 67,
         "timestamp": "2026-09-07T07:00:00+00:00",
-        "mm_hr": 1.4
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
         "timestamp": "2026-09-07T08:00:00+00:00",
-        "mm_hr": 1.1
+        "mm_hr": 0.0
       },
       {
         "hour": 69,
         "timestamp": "2026-09-07T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 70,
         "timestamp": "2026-09-07T10:00:00+00:00",
-        "mm_hr": 1.5
+        "mm_hr": 0.0
       },
       {
         "hour": 71,
         "timestamp": "2026-09-07T11:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.0
       },
       {
         "hour": 72,
         "timestamp": "2026-09-07T12:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.0
       },
       {
         "hour": 73,
         "timestamp": "2026-09-07T13:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 74,
         "timestamp": "2026-09-07T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 75,
         "timestamp": "2026-09-07T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 76,
         "timestamp": "2026-09-07T16:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 77,
         "timestamp": "2026-09-07T17:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 78,
         "timestamp": "2026-09-07T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 79,
         "timestamp": "2026-09-07T19:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 80,
         "timestamp": "2026-09-07T20:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 81,
         "timestamp": "2026-09-07T21:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 82,
         "timestamp": "2026-09-07T22:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 83,
         "timestamp": "2026-09-07T23:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 84,
@@ -3645,27 +3645,27 @@
       {
         "hour": 0,
         "timestamp": "2026-09-04T12:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.6
       },
       {
         "hour": 1,
         "timestamp": "2026-09-04T13:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
         "timestamp": "2026-09-04T14:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.1
       },
       {
         "hour": 3,
         "timestamp": "2026-09-04T15:00:00+00:00",
-        "mm_hr": 0.04
+        "mm_hr": 0.2
       },
       {
         "hour": 4,
         "timestamp": "2026-09-04T16:00:00+00:00",
-        "mm_hr": 0.06
+        "mm_hr": 0.1
       },
       {
         "hour": 5,
@@ -3675,147 +3675,147 @@
       {
         "hour": 6,
         "timestamp": "2026-09-04T18:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.1
       },
       {
         "hour": 7,
         "timestamp": "2026-09-04T19:00:00+00:00",
-        "mm_hr": 0.22
+        "mm_hr": 0.1
       },
       {
         "hour": 8,
         "timestamp": "2026-09-04T20:00:00+00:00",
-        "mm_hr": 0.32
+        "mm_hr": 0.1
       },
       {
         "hour": 9,
         "timestamp": "2026-09-04T21:00:00+00:00",
-        "mm_hr": 0.44
+        "mm_hr": 0.0
       },
       {
         "hour": 10,
         "timestamp": "2026-09-04T22:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 11,
         "timestamp": "2026-09-04T23:00:00+00:00",
-        "mm_hr": 0.79
+        "mm_hr": 0.0
       },
       {
         "hour": 12,
         "timestamp": "2026-09-05T00:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.1
       },
       {
         "hour": 13,
         "timestamp": "2026-09-05T01:00:00+00:00",
-        "mm_hr": 1.24
+        "mm_hr": 0.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-05T02:00:00+00:00",
-        "mm_hr": 1.49
+        "mm_hr": 0.4
       },
       {
         "hour": 15,
         "timestamp": "2026-09-05T03:00:00+00:00",
-        "mm_hr": 1.75
+        "mm_hr": 0.2
       },
       {
         "hour": 16,
         "timestamp": "2026-09-05T04:00:00+00:00",
-        "mm_hr": 1.99
+        "mm_hr": 0.1
       },
       {
         "hour": 17,
         "timestamp": "2026-09-05T05:00:00+00:00",
-        "mm_hr": 2.2
+        "mm_hr": 0.1
       },
       {
         "hour": 18,
         "timestamp": "2026-09-05T06:00:00+00:00",
-        "mm_hr": 2.36
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
         "timestamp": "2026-09-05T07:00:00+00:00",
-        "mm_hr": 2.46
+        "mm_hr": 0.3
       },
       {
         "hour": 20,
         "timestamp": "2026-09-05T08:00:00+00:00",
-        "mm_hr": 2.5
+        "mm_hr": 0.6
       },
       {
         "hour": 21,
         "timestamp": "2026-09-05T09:00:00+00:00",
-        "mm_hr": 2.46
+        "mm_hr": 0.5
       },
       {
         "hour": 22,
         "timestamp": "2026-09-05T10:00:00+00:00",
-        "mm_hr": 2.36
+        "mm_hr": 0.3
       },
       {
         "hour": 23,
         "timestamp": "2026-09-05T11:00:00+00:00",
-        "mm_hr": 2.2
+        "mm_hr": 0.4
       },
       {
         "hour": 24,
         "timestamp": "2026-09-05T12:00:00+00:00",
-        "mm_hr": 1.99
+        "mm_hr": 0.2
       },
       {
         "hour": 25,
         "timestamp": "2026-09-05T13:00:00+00:00",
-        "mm_hr": 1.75
+        "mm_hr": 0.2
       },
       {
         "hour": 26,
         "timestamp": "2026-09-05T14:00:00+00:00",
-        "mm_hr": 1.49
+        "mm_hr": 0.1
       },
       {
         "hour": 27,
         "timestamp": "2026-09-05T15:00:00+00:00",
-        "mm_hr": 1.24
+        "mm_hr": 0.1
       },
       {
         "hour": 28,
         "timestamp": "2026-09-05T16:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.1
       },
       {
         "hour": 29,
         "timestamp": "2026-09-05T17:00:00+00:00",
-        "mm_hr": 0.79
+        "mm_hr": 0.1
       },
       {
         "hour": 30,
         "timestamp": "2026-09-05T18:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.1
       },
       {
         "hour": 31,
         "timestamp": "2026-09-05T19:00:00+00:00",
-        "mm_hr": 0.44
+        "mm_hr": 0.1
       },
       {
         "hour": 32,
         "timestamp": "2026-09-05T20:00:00+00:00",
-        "mm_hr": 0.32
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
         "timestamp": "2026-09-05T21:00:00+00:00",
-        "mm_hr": 0.22
+        "mm_hr": 0.1
       },
       {
         "hour": 34,
         "timestamp": "2026-09-05T22:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.1
       },
       {
         "hour": 35,
@@ -3825,242 +3825,242 @@
       {
         "hour": 36,
         "timestamp": "2026-09-06T00:00:00+00:00",
-        "mm_hr": 0.06
+        "mm_hr": 0.1
       },
       {
         "hour": 37,
         "timestamp": "2026-09-06T01:00:00+00:00",
-        "mm_hr": 0.04
+        "mm_hr": 0.2
       },
       {
         "hour": 38,
         "timestamp": "2026-09-06T02:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.2
       },
       {
         "hour": 39,
         "timestamp": "2026-09-06T03:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.2
       },
       {
         "hour": 40,
         "timestamp": "2026-09-06T04:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.3
       },
       {
         "hour": 41,
         "timestamp": "2026-09-06T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.6
       },
       {
         "hour": 42,
         "timestamp": "2026-09-06T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 43,
         "timestamp": "2026-09-06T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.5
       },
       {
         "hour": 44,
         "timestamp": "2026-09-06T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.3
       },
       {
         "hour": 45,
         "timestamp": "2026-09-06T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.8
       },
       {
         "hour": 46,
         "timestamp": "2026-09-06T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 47,
         "timestamp": "2026-09-06T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.6
       },
       {
         "hour": 48,
         "timestamp": "2026-09-06T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 49,
         "timestamp": "2026-09-06T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 50,
         "timestamp": "2026-09-06T14:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 51,
         "timestamp": "2026-09-06T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 52,
         "timestamp": "2026-09-06T16:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 53,
         "timestamp": "2026-09-06T17:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 54,
         "timestamp": "2026-09-06T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 55,
         "timestamp": "2026-09-06T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 56,
         "timestamp": "2026-09-06T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 57,
         "timestamp": "2026-09-06T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 58,
         "timestamp": "2026-09-06T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 59,
         "timestamp": "2026-09-06T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 60,
         "timestamp": "2026-09-07T00:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 61,
         "timestamp": "2026-09-07T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 62,
         "timestamp": "2026-09-07T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 63,
         "timestamp": "2026-09-07T03:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 64,
         "timestamp": "2026-09-07T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 65,
         "timestamp": "2026-09-07T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.5
       },
       {
         "hour": 66,
         "timestamp": "2026-09-07T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.9
       },
       {
         "hour": 67,
         "timestamp": "2026-09-07T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.7
       },
       {
         "hour": 68,
         "timestamp": "2026-09-07T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.6
       },
       {
         "hour": 69,
         "timestamp": "2026-09-07T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 70,
         "timestamp": "2026-09-07T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.7
       },
       {
         "hour": 71,
         "timestamp": "2026-09-07T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.5
       },
       {
         "hour": 72,
         "timestamp": "2026-09-07T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 73,
         "timestamp": "2026-09-07T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 74,
         "timestamp": "2026-09-07T14:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 75,
         "timestamp": "2026-09-07T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 76,
         "timestamp": "2026-09-07T16:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 77,
         "timestamp": "2026-09-07T17:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 78,
         "timestamp": "2026-09-07T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 79,
         "timestamp": "2026-09-07T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 80,
         "timestamp": "2026-09-07T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 81,
         "timestamp": "2026-09-07T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 82,
         "timestamp": "2026-09-07T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 83,
         "timestamp": "2026-09-07T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 84,
@@ -4156,8 +4156,8 @@
       "elevation": "585m",
       "cumulative_90h_mm": 6.5,
       "is_primary": true,
-      "is_governing": false,
-      "method": "OBSERVED_POINT",
+      "is_governing": true,
+      "method": "GOVERNING (MAX_VOL)",
       "active_telemetry": true
     },
     {
@@ -4180,10 +4180,10 @@
       "lat": 16.7446006,
       "lon": 74.115187,
       "elevation": "575m",
-      "cumulative_90h_mm": 17.79,
+      "cumulative_90h_mm": 6.5,
       "is_primary": false,
-      "is_governing": true,
-      "method": "GOVERNING (MAX_VOL)",
+      "is_governing": false,
+      "method": "OBSERVED_POINT",
       "active_telemetry": true
     },
     {
@@ -4219,7 +4219,7 @@
       "lat": 16.6712,
       "lon": 73.9735,
       "elevation": "595m",
-      "cumulative_90h_mm": 12.0,
+      "cumulative_90h_mm": 17.79,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4232,7 +4232,7 @@
       "lat": 16.5469926,
       "lon": 73.8346738,
       "elevation": "680m",
-      "cumulative_90h_mm": 35.3,
+      "cumulative_90h_mm": 37.06,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4286,8 +4286,8 @@
       "elevation": "615m",
       "cumulative_90h_mm": 22.0,
       "is_primary": true,
-      "is_governing": false,
-      "method": "OBSERVED_POINT",
+      "is_governing": true,
+      "method": "GOVERNING (MAX_VOL)",
       "active_telemetry": true
     },
     {
@@ -4297,10 +4297,10 @@
       "lat": 16.5932632,
       "lon": 74.156292,
       "elevation": "555m",
-      "cumulative_90h_mm": 37.06,
+      "cumulative_90h_mm": 6.1,
       "is_primary": false,
-      "is_governing": true,
-      "method": "GOVERNING (MAX_VOL)",
+      "is_governing": false,
+      "method": "OBSERVED_POINT",
       "active_telemetry": true
     },
     {
@@ -4384,14 +4384,14 @@
       "active_telemetry": true
     },
     {
-      "station_id": "PADAL",
-      "station_name": "Padal",
+      "station_id": "KOTOLI",
+      "station_name": "Kotoli",
       "subbasin_id": "S3",
-      "lat": 16.7446006,
-      "lon": 74.115187,
-      "elevation": "575m",
-      "cumulative_90h_mm": 17.79,
-      "is_primary": false,
+      "lat": 16.7820174,
+      "lon": 74.0518705,
+      "elevation": "585m",
+      "cumulative_90h_mm": 6.5,
+      "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
       "active_telemetry": true
@@ -4429,7 +4429,7 @@
       "lat": 16.5469926,
       "lon": 73.8346738,
       "elevation": "680m",
-      "cumulative_90h_mm": 35.3,
+      "cumulative_90h_mm": 37.06,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4462,14 +4462,14 @@
       "active_telemetry": true
     },
     {
-      "station_id": "HALADI",
-      "station_name": "Haladi",
+      "station_id": "RADHANAGARI",
+      "station_name": "Radhanagari",
       "subbasin_id": "S9",
-      "lat": 16.5932632,
-      "lon": 74.156292,
-      "elevation": "555m",
-      "cumulative_90h_mm": 37.06,
-      "is_primary": false,
+      "lat": 16.41021,
+      "lon": 73.9971822,
+      "elevation": "615m",
+      "cumulative_90h_mm": 22.0,
+      "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
       "active_telemetry": true
@@ -7192,247 +7192,247 @@
       {
         "hour": 0,
         "timestamp": "2026-09-04T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-04T13:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.0
       },
       {
         "hour": 2,
         "timestamp": "2026-09-04T14:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.0
       },
       {
         "hour": 3,
         "timestamp": "2026-09-04T15:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.0
       },
       {
         "hour": 4,
         "timestamp": "2026-09-04T16:00:00+00:00",
-        "mm_hr": 0.03
+        "mm_hr": 0.0
       },
       {
         "hour": 5,
         "timestamp": "2026-09-04T17:00:00+00:00",
-        "mm_hr": 0.05
+        "mm_hr": 0.0
       },
       {
         "hour": 6,
         "timestamp": "2026-09-04T18:00:00+00:00",
-        "mm_hr": 0.07
+        "mm_hr": 0.0
       },
       {
         "hour": 7,
         "timestamp": "2026-09-04T19:00:00+00:00",
-        "mm_hr": 0.11
+        "mm_hr": 0.0
       },
       {
         "hour": 8,
         "timestamp": "2026-09-04T20:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.0
       },
       {
         "hour": 9,
         "timestamp": "2026-09-04T21:00:00+00:00",
-        "mm_hr": 0.21
+        "mm_hr": 0.0
       },
       {
         "hour": 10,
         "timestamp": "2026-09-04T22:00:00+00:00",
-        "mm_hr": 0.29
+        "mm_hr": 0.0
       },
       {
         "hour": 11,
         "timestamp": "2026-09-04T23:00:00+00:00",
-        "mm_hr": 0.38
+        "mm_hr": 0.0
       },
       {
         "hour": 12,
         "timestamp": "2026-09-05T00:00:00+00:00",
-        "mm_hr": 0.48
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-09-05T01:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-09-05T02:00:00+00:00",
-        "mm_hr": 0.72
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-09-05T03:00:00+00:00",
-        "mm_hr": 0.84
+        "mm_hr": 0.3
       },
       {
         "hour": 16,
         "timestamp": "2026-09-05T04:00:00+00:00",
-        "mm_hr": 0.95
+        "mm_hr": 0.3
       },
       {
         "hour": 17,
         "timestamp": "2026-09-05T05:00:00+00:00",
-        "mm_hr": 1.06
+        "mm_hr": 0.3
       },
       {
         "hour": 18,
         "timestamp": "2026-09-05T06:00:00+00:00",
-        "mm_hr": 1.13
+        "mm_hr": 0.3
       },
       {
         "hour": 19,
         "timestamp": "2026-09-05T07:00:00+00:00",
-        "mm_hr": 1.18
+        "mm_hr": 0.4
       },
       {
         "hour": 20,
         "timestamp": "2026-09-05T08:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 0.4
       },
       {
         "hour": 21,
         "timestamp": "2026-09-05T09:00:00+00:00",
-        "mm_hr": 1.18
+        "mm_hr": 0.2
       },
       {
         "hour": 22,
         "timestamp": "2026-09-05T10:00:00+00:00",
-        "mm_hr": 1.13
+        "mm_hr": 0.1
       },
       {
         "hour": 23,
         "timestamp": "2026-09-05T11:00:00+00:00",
-        "mm_hr": 1.06
+        "mm_hr": 0.0
       },
       {
         "hour": 24,
         "timestamp": "2026-09-05T12:00:00+00:00",
-        "mm_hr": 0.95
+        "mm_hr": 0.0
       },
       {
         "hour": 25,
         "timestamp": "2026-09-05T13:00:00+00:00",
-        "mm_hr": 0.84
+        "mm_hr": 0.0
       },
       {
         "hour": 26,
         "timestamp": "2026-09-05T14:00:00+00:00",
-        "mm_hr": 0.72
+        "mm_hr": 0.0
       },
       {
         "hour": 27,
         "timestamp": "2026-09-05T15:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 28,
         "timestamp": "2026-09-05T16:00:00+00:00",
-        "mm_hr": 0.48
+        "mm_hr": 0.0
       },
       {
         "hour": 29,
         "timestamp": "2026-09-05T17:00:00+00:00",
-        "mm_hr": 0.38
+        "mm_hr": 0.0
       },
       {
         "hour": 30,
         "timestamp": "2026-09-05T18:00:00+00:00",
-        "mm_hr": 0.29
+        "mm_hr": 0.0
       },
       {
         "hour": 31,
         "timestamp": "2026-09-05T19:00:00+00:00",
-        "mm_hr": 0.21
+        "mm_hr": 0.0
       },
       {
         "hour": 32,
         "timestamp": "2026-09-05T20:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.0
       },
       {
         "hour": 33,
         "timestamp": "2026-09-05T21:00:00+00:00",
-        "mm_hr": 0.11
+        "mm_hr": 0.0
       },
       {
         "hour": 34,
         "timestamp": "2026-09-05T22:00:00+00:00",
-        "mm_hr": 0.07
+        "mm_hr": 0.0
       },
       {
         "hour": 35,
         "timestamp": "2026-09-05T23:00:00+00:00",
-        "mm_hr": 0.05
+        "mm_hr": 0.0
       },
       {
         "hour": 36,
         "timestamp": "2026-09-06T00:00:00+00:00",
-        "mm_hr": 0.03
+        "mm_hr": 0.0
       },
       {
         "hour": 37,
         "timestamp": "2026-09-06T01:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-09-06T02:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.1
       },
       {
         "hour": 39,
         "timestamp": "2026-09-06T03:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.2
       },
       {
         "hour": 40,
         "timestamp": "2026-09-06T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 41,
         "timestamp": "2026-09-06T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 42,
         "timestamp": "2026-09-06T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 43,
         "timestamp": "2026-09-06T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 44,
         "timestamp": "2026-09-06T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 45,
         "timestamp": "2026-09-06T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 46,
         "timestamp": "2026-09-06T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 47,
         "timestamp": "2026-09-06T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 48,
         "timestamp": "2026-09-06T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 49,
@@ -7512,42 +7512,42 @@
       {
         "hour": 64,
         "timestamp": "2026-09-07T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
         "timestamp": "2026-09-07T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 66,
         "timestamp": "2026-09-07T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 67,
         "timestamp": "2026-09-07T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 68,
         "timestamp": "2026-09-07T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 69,
         "timestamp": "2026-09-07T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 70,
         "timestamp": "2026-09-07T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 71,
         "timestamp": "2026-09-07T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 72,
@@ -8548,307 +8548,307 @@
       {
         "hour": 0,
         "timestamp": "2026-09-04T12:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 1,
         "timestamp": "2026-09-04T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.01
       },
       {
         "hour": 2,
         "timestamp": "2026-09-04T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.01
       },
       {
         "hour": 3,
         "timestamp": "2026-09-04T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.02
       },
       {
         "hour": 4,
         "timestamp": "2026-09-04T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.03
       },
       {
         "hour": 5,
         "timestamp": "2026-09-04T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.05
       },
       {
         "hour": 6,
         "timestamp": "2026-09-04T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.07
       },
       {
         "hour": 7,
         "timestamp": "2026-09-04T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.11
       },
       {
         "hour": 8,
         "timestamp": "2026-09-04T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.15
       },
       {
         "hour": 9,
         "timestamp": "2026-09-04T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.21
       },
       {
         "hour": 10,
         "timestamp": "2026-09-04T22:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.29
       },
       {
         "hour": 11,
         "timestamp": "2026-09-04T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.38
       },
       {
         "hour": 12,
         "timestamp": "2026-09-05T00:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.48
       },
       {
         "hour": 13,
         "timestamp": "2026-09-05T01:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.6
       },
       {
         "hour": 14,
         "timestamp": "2026-09-05T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.72
       },
       {
         "hour": 15,
         "timestamp": "2026-09-05T03:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.84
       },
       {
         "hour": 16,
         "timestamp": "2026-09-05T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.95
       },
       {
         "hour": 17,
         "timestamp": "2026-09-05T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.06
       },
       {
         "hour": 18,
         "timestamp": "2026-09-05T06:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 1.13
       },
       {
         "hour": 19,
         "timestamp": "2026-09-05T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 1.18
       },
       {
         "hour": 20,
         "timestamp": "2026-09-05T08:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 1.2
       },
       {
         "hour": 21,
         "timestamp": "2026-09-05T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 1.18
       },
       {
         "hour": 22,
         "timestamp": "2026-09-05T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 1.13
       },
       {
         "hour": 23,
         "timestamp": "2026-09-05T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 1.06
       },
       {
         "hour": 24,
         "timestamp": "2026-09-05T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.95
       },
       {
         "hour": 25,
         "timestamp": "2026-09-05T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.84
       },
       {
         "hour": 26,
         "timestamp": "2026-09-05T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.72
       },
       {
         "hour": 27,
         "timestamp": "2026-09-05T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.6
       },
       {
         "hour": 28,
         "timestamp": "2026-09-05T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.48
       },
       {
         "hour": 29,
         "timestamp": "2026-09-05T17:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.38
       },
       {
         "hour": 30,
         "timestamp": "2026-09-05T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.29
       },
       {
         "hour": 31,
         "timestamp": "2026-09-05T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.21
       },
       {
         "hour": 32,
         "timestamp": "2026-09-05T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.15
       },
       {
         "hour": 33,
         "timestamp": "2026-09-05T21:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.11
       },
       {
         "hour": 34,
         "timestamp": "2026-09-05T22:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.07
       },
       {
         "hour": 35,
         "timestamp": "2026-09-05T23:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.05
       },
       {
         "hour": 36,
         "timestamp": "2026-09-06T00:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.03
       },
       {
         "hour": 37,
         "timestamp": "2026-09-06T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.02
       },
       {
         "hour": 38,
         "timestamp": "2026-09-06T02:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.01
       },
       {
         "hour": 39,
         "timestamp": "2026-09-06T03:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.01
       },
       {
         "hour": 40,
         "timestamp": "2026-09-06T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 41,
         "timestamp": "2026-09-06T05:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 42,
         "timestamp": "2026-09-06T06:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 43,
         "timestamp": "2026-09-06T07:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.0
       },
       {
         "hour": 44,
         "timestamp": "2026-09-06T08:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 45,
         "timestamp": "2026-09-06T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 46,
         "timestamp": "2026-09-06T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 47,
         "timestamp": "2026-09-06T11:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 48,
         "timestamp": "2026-09-06T12:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 49,
         "timestamp": "2026-09-06T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 50,
         "timestamp": "2026-09-06T14:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 51,
         "timestamp": "2026-09-06T15:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 52,
         "timestamp": "2026-09-06T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 53,
         "timestamp": "2026-09-06T17:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 54,
         "timestamp": "2026-09-06T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 55,
         "timestamp": "2026-09-06T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 56,
         "timestamp": "2026-09-06T20:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 57,
         "timestamp": "2026-09-06T21:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 58,
         "timestamp": "2026-09-06T22:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
         "timestamp": "2026-09-06T23:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 60,
         "timestamp": "2026-09-07T00:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 61,
@@ -8858,7 +8858,7 @@
       {
         "hour": 62,
         "timestamp": "2026-09-07T02:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
@@ -8868,52 +8868,52 @@
       {
         "hour": 64,
         "timestamp": "2026-09-07T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
         "timestamp": "2026-09-07T05:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
         "timestamp": "2026-09-07T06:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 67,
         "timestamp": "2026-09-07T07:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
         "timestamp": "2026-09-07T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 69,
         "timestamp": "2026-09-07T09:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.0
       },
       {
         "hour": 70,
         "timestamp": "2026-09-07T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 71,
         "timestamp": "2026-09-07T11:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 72,
         "timestamp": "2026-09-07T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 73,
         "timestamp": "2026-09-07T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 74,
@@ -8923,47 +8923,47 @@
       {
         "hour": 75,
         "timestamp": "2026-09-07T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 76,
         "timestamp": "2026-09-07T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 77,
         "timestamp": "2026-09-07T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 78,
         "timestamp": "2026-09-07T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 79,
         "timestamp": "2026-09-07T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 80,
         "timestamp": "2026-09-07T20:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 81,
         "timestamp": "2026-09-07T21:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 82,
         "timestamp": "2026-09-07T22:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 83,
         "timestamp": "2026-09-07T23:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 84,
@@ -9000,177 +9000,177 @@
       {
         "hour": 0,
         "timestamp": "2026-09-04T12:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.01
       },
       {
         "hour": 1,
         "timestamp": "2026-09-04T13:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.01
       },
       {
         "hour": 2,
         "timestamp": "2026-09-04T14:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.02
       },
       {
         "hour": 3,
         "timestamp": "2026-09-04T15:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.04
       },
       {
         "hour": 4,
         "timestamp": "2026-09-04T16:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.06
       },
       {
         "hour": 5,
         "timestamp": "2026-09-04T17:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.1
       },
       {
         "hour": 6,
         "timestamp": "2026-09-04T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.15
       },
       {
         "hour": 7,
         "timestamp": "2026-09-04T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.22
       },
       {
         "hour": 8,
         "timestamp": "2026-09-04T20:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.32
       },
       {
         "hour": 9,
         "timestamp": "2026-09-04T21:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.44
       },
       {
         "hour": 10,
         "timestamp": "2026-09-04T22:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.6
       },
       {
         "hour": 11,
         "timestamp": "2026-09-04T23:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.79
       },
       {
         "hour": 12,
         "timestamp": "2026-09-05T00:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 1.0
       },
       {
         "hour": 13,
         "timestamp": "2026-09-05T01:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 1.24
       },
       {
         "hour": 14,
         "timestamp": "2026-09-05T02:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 1.49
       },
       {
         "hour": 15,
         "timestamp": "2026-09-05T03:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 1.75
       },
       {
         "hour": 16,
         "timestamp": "2026-09-05T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.99
       },
       {
         "hour": 17,
         "timestamp": "2026-09-05T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 2.2
       },
       {
         "hour": 18,
         "timestamp": "2026-09-05T06:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 2.36
       },
       {
         "hour": 19,
         "timestamp": "2026-09-05T07:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 2.46
       },
       {
         "hour": 20,
         "timestamp": "2026-09-05T08:00:00+00:00",
-        "mm_hr": 1.1
+        "mm_hr": 2.5
       },
       {
         "hour": 21,
         "timestamp": "2026-09-05T09:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 2.46
       },
       {
         "hour": 22,
         "timestamp": "2026-09-05T10:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 2.36
       },
       {
         "hour": 23,
         "timestamp": "2026-09-05T11:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 2.2
       },
       {
         "hour": 24,
         "timestamp": "2026-09-05T12:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 1.99
       },
       {
         "hour": 25,
         "timestamp": "2026-09-05T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 1.75
       },
       {
         "hour": 26,
         "timestamp": "2026-09-05T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 1.49
       },
       {
         "hour": 27,
         "timestamp": "2026-09-05T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.24
       },
       {
         "hour": 28,
         "timestamp": "2026-09-05T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 1.0
       },
       {
         "hour": 29,
         "timestamp": "2026-09-05T17:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.79
       },
       {
         "hour": 30,
         "timestamp": "2026-09-05T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.6
       },
       {
         "hour": 31,
         "timestamp": "2026-09-05T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.44
       },
       {
         "hour": 32,
         "timestamp": "2026-09-05T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.32
       },
       {
         "hour": 33,
         "timestamp": "2026-09-05T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.22
       },
       {
         "hour": 34,
         "timestamp": "2026-09-05T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.15
       },
       {
         "hour": 35,
@@ -9180,242 +9180,242 @@
       {
         "hour": 36,
         "timestamp": "2026-09-06T00:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.06
       },
       {
         "hour": 37,
         "timestamp": "2026-09-06T01:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.04
       },
       {
         "hour": 38,
         "timestamp": "2026-09-06T02:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.02
       },
       {
         "hour": 39,
         "timestamp": "2026-09-06T03:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.01
       },
       {
         "hour": 40,
         "timestamp": "2026-09-06T04:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.01
       },
       {
         "hour": 41,
         "timestamp": "2026-09-06T05:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 42,
         "timestamp": "2026-09-06T06:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 43,
         "timestamp": "2026-09-06T07:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 44,
         "timestamp": "2026-09-06T08:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 45,
         "timestamp": "2026-09-06T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 46,
         "timestamp": "2026-09-06T10:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.0
       },
       {
         "hour": 47,
         "timestamp": "2026-09-06T11:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 48,
         "timestamp": "2026-09-06T12:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 0.0
       },
       {
         "hour": 49,
         "timestamp": "2026-09-06T13:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.0
       },
       {
         "hour": 50,
         "timestamp": "2026-09-06T14:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 51,
         "timestamp": "2026-09-06T15:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 52,
         "timestamp": "2026-09-06T16:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 53,
         "timestamp": "2026-09-06T17:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 54,
         "timestamp": "2026-09-06T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 55,
         "timestamp": "2026-09-06T19:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 56,
         "timestamp": "2026-09-06T20:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 57,
         "timestamp": "2026-09-06T21:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 58,
         "timestamp": "2026-09-06T22:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
         "timestamp": "2026-09-06T23:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 60,
         "timestamp": "2026-09-07T00:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.0
       },
       {
         "hour": 61,
         "timestamp": "2026-09-07T01:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 62,
         "timestamp": "2026-09-07T02:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-09-07T03:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-09-07T04:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
         "timestamp": "2026-09-07T05:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
         "timestamp": "2026-09-07T06:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.0
       },
       {
         "hour": 67,
         "timestamp": "2026-09-07T07:00:00+00:00",
-        "mm_hr": 1.4
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
         "timestamp": "2026-09-07T08:00:00+00:00",
-        "mm_hr": 1.1
+        "mm_hr": 0.0
       },
       {
         "hour": 69,
         "timestamp": "2026-09-07T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 70,
         "timestamp": "2026-09-07T10:00:00+00:00",
-        "mm_hr": 1.5
+        "mm_hr": 0.0
       },
       {
         "hour": 71,
         "timestamp": "2026-09-07T11:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.0
       },
       {
         "hour": 72,
         "timestamp": "2026-09-07T12:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.0
       },
       {
         "hour": 73,
         "timestamp": "2026-09-07T13:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 74,
         "timestamp": "2026-09-07T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 75,
         "timestamp": "2026-09-07T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 76,
         "timestamp": "2026-09-07T16:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 77,
         "timestamp": "2026-09-07T17:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 78,
         "timestamp": "2026-09-07T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 79,
         "timestamp": "2026-09-07T19:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 80,
         "timestamp": "2026-09-07T20:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 81,
         "timestamp": "2026-09-07T21:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 82,
         "timestamp": "2026-09-07T22:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 83,
         "timestamp": "2026-09-07T23:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 84,
@@ -11260,242 +11260,242 @@
       {
         "hour": 0,
         "timestamp": "2026-09-04T12:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.0
       },
       {
         "hour": 1,
         "timestamp": "2026-09-04T13:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.0
       },
       {
         "hour": 2,
         "timestamp": "2026-09-04T14:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.0
       },
       {
         "hour": 3,
         "timestamp": "2026-09-04T15:00:00+00:00",
-        "mm_hr": 0.04
+        "mm_hr": 0.0
       },
       {
         "hour": 4,
         "timestamp": "2026-09-04T16:00:00+00:00",
-        "mm_hr": 0.06
+        "mm_hr": 0.0
       },
       {
         "hour": 5,
         "timestamp": "2026-09-04T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 6,
         "timestamp": "2026-09-04T18:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.0
       },
       {
         "hour": 7,
         "timestamp": "2026-09-04T19:00:00+00:00",
-        "mm_hr": 0.22
+        "mm_hr": 0.0
       },
       {
         "hour": 8,
         "timestamp": "2026-09-04T20:00:00+00:00",
-        "mm_hr": 0.32
+        "mm_hr": 0.0
       },
       {
         "hour": 9,
         "timestamp": "2026-09-04T21:00:00+00:00",
-        "mm_hr": 0.44
+        "mm_hr": 0.0
       },
       {
         "hour": 10,
         "timestamp": "2026-09-04T22:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 11,
         "timestamp": "2026-09-04T23:00:00+00:00",
-        "mm_hr": 0.79
+        "mm_hr": 0.0
       },
       {
         "hour": 12,
         "timestamp": "2026-09-05T00:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-09-05T01:00:00+00:00",
-        "mm_hr": 1.24
+        "mm_hr": 0.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-05T02:00:00+00:00",
-        "mm_hr": 1.49
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-09-05T03:00:00+00:00",
-        "mm_hr": 1.75
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
         "timestamp": "2026-09-05T04:00:00+00:00",
-        "mm_hr": 1.99
+        "mm_hr": 0.1
       },
       {
         "hour": 17,
         "timestamp": "2026-09-05T05:00:00+00:00",
-        "mm_hr": 2.2
+        "mm_hr": 0.1
       },
       {
         "hour": 18,
         "timestamp": "2026-09-05T06:00:00+00:00",
-        "mm_hr": 2.36
+        "mm_hr": 0.1
       },
       {
         "hour": 19,
         "timestamp": "2026-09-05T07:00:00+00:00",
-        "mm_hr": 2.46
+        "mm_hr": 0.1
       },
       {
         "hour": 20,
         "timestamp": "2026-09-05T08:00:00+00:00",
-        "mm_hr": 2.5
+        "mm_hr": 0.2
       },
       {
         "hour": 21,
         "timestamp": "2026-09-05T09:00:00+00:00",
-        "mm_hr": 2.46
+        "mm_hr": 0.4
       },
       {
         "hour": 22,
         "timestamp": "2026-09-05T10:00:00+00:00",
-        "mm_hr": 2.36
+        "mm_hr": 0.1
       },
       {
         "hour": 23,
         "timestamp": "2026-09-05T11:00:00+00:00",
-        "mm_hr": 2.2
+        "mm_hr": 0.0
       },
       {
         "hour": 24,
         "timestamp": "2026-09-05T12:00:00+00:00",
-        "mm_hr": 1.99
+        "mm_hr": 0.0
       },
       {
         "hour": 25,
         "timestamp": "2026-09-05T13:00:00+00:00",
-        "mm_hr": 1.75
+        "mm_hr": 0.0
       },
       {
         "hour": 26,
         "timestamp": "2026-09-05T14:00:00+00:00",
-        "mm_hr": 1.49
+        "mm_hr": 0.0
       },
       {
         "hour": 27,
         "timestamp": "2026-09-05T15:00:00+00:00",
-        "mm_hr": 1.24
+        "mm_hr": 0.0
       },
       {
         "hour": 28,
         "timestamp": "2026-09-05T16:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.0
       },
       {
         "hour": 29,
         "timestamp": "2026-09-05T17:00:00+00:00",
-        "mm_hr": 0.79
+        "mm_hr": 0.0
       },
       {
         "hour": 30,
         "timestamp": "2026-09-05T18:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 31,
         "timestamp": "2026-09-05T19:00:00+00:00",
-        "mm_hr": 0.44
+        "mm_hr": 0.0
       },
       {
         "hour": 32,
         "timestamp": "2026-09-05T20:00:00+00:00",
-        "mm_hr": 0.32
+        "mm_hr": 0.0
       },
       {
         "hour": 33,
         "timestamp": "2026-09-05T21:00:00+00:00",
-        "mm_hr": 0.22
+        "mm_hr": 0.0
       },
       {
         "hour": 34,
         "timestamp": "2026-09-05T22:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.0
       },
       {
         "hour": 35,
         "timestamp": "2026-09-05T23:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 36,
         "timestamp": "2026-09-06T00:00:00+00:00",
-        "mm_hr": 0.06
+        "mm_hr": 0.0
       },
       {
         "hour": 37,
         "timestamp": "2026-09-06T01:00:00+00:00",
-        "mm_hr": 0.04
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-09-06T02:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
         "timestamp": "2026-09-06T03:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.1
       },
       {
         "hour": 40,
         "timestamp": "2026-09-06T04:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.2
       },
       {
         "hour": 41,
         "timestamp": "2026-09-06T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 42,
         "timestamp": "2026-09-06T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.6
       },
       {
         "hour": 43,
         "timestamp": "2026-09-06T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 44,
         "timestamp": "2026-09-06T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.1
       },
       {
         "hour": 45,
         "timestamp": "2026-09-06T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 46,
         "timestamp": "2026-09-06T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 47,
         "timestamp": "2026-09-06T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 48,
@@ -11515,7 +11515,7 @@
       {
         "hour": 51,
         "timestamp": "2026-09-06T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 52,
@@ -11535,7 +11535,7 @@
       {
         "hour": 55,
         "timestamp": "2026-09-06T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 56,
@@ -11575,47 +11575,47 @@
       {
         "hour": 63,
         "timestamp": "2026-09-07T03:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-09-07T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
         "timestamp": "2026-09-07T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 66,
         "timestamp": "2026-09-07T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 67,
         "timestamp": "2026-09-07T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 68,
         "timestamp": "2026-09-07T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 69,
         "timestamp": "2026-09-07T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 70,
         "timestamp": "2026-09-07T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.5
       },
       {
         "hour": 71,
         "timestamp": "2026-09-07T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 72,
@@ -14424,247 +14424,247 @@
       {
         "hour": 0,
         "timestamp": "2026-09-04T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-04T13:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.0
       },
       {
         "hour": 2,
         "timestamp": "2026-09-04T14:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.0
       },
       {
         "hour": 3,
         "timestamp": "2026-09-04T15:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.0
       },
       {
         "hour": 4,
         "timestamp": "2026-09-04T16:00:00+00:00",
-        "mm_hr": 0.03
+        "mm_hr": 0.0
       },
       {
         "hour": 5,
         "timestamp": "2026-09-04T17:00:00+00:00",
-        "mm_hr": 0.05
+        "mm_hr": 0.0
       },
       {
         "hour": 6,
         "timestamp": "2026-09-04T18:00:00+00:00",
-        "mm_hr": 0.07
+        "mm_hr": 0.0
       },
       {
         "hour": 7,
         "timestamp": "2026-09-04T19:00:00+00:00",
-        "mm_hr": 0.11
+        "mm_hr": 0.0
       },
       {
         "hour": 8,
         "timestamp": "2026-09-04T20:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.0
       },
       {
         "hour": 9,
         "timestamp": "2026-09-04T21:00:00+00:00",
-        "mm_hr": 0.21
+        "mm_hr": 0.0
       },
       {
         "hour": 10,
         "timestamp": "2026-09-04T22:00:00+00:00",
-        "mm_hr": 0.29
+        "mm_hr": 0.0
       },
       {
         "hour": 11,
         "timestamp": "2026-09-04T23:00:00+00:00",
-        "mm_hr": 0.38
+        "mm_hr": 0.0
       },
       {
         "hour": 12,
         "timestamp": "2026-09-05T00:00:00+00:00",
-        "mm_hr": 0.48
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-09-05T01:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-09-05T02:00:00+00:00",
-        "mm_hr": 0.72
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-09-05T03:00:00+00:00",
-        "mm_hr": 0.84
+        "mm_hr": 0.3
       },
       {
         "hour": 16,
         "timestamp": "2026-09-05T04:00:00+00:00",
-        "mm_hr": 0.95
+        "mm_hr": 0.3
       },
       {
         "hour": 17,
         "timestamp": "2026-09-05T05:00:00+00:00",
-        "mm_hr": 1.06
+        "mm_hr": 0.3
       },
       {
         "hour": 18,
         "timestamp": "2026-09-05T06:00:00+00:00",
-        "mm_hr": 1.13
+        "mm_hr": 0.3
       },
       {
         "hour": 19,
         "timestamp": "2026-09-05T07:00:00+00:00",
-        "mm_hr": 1.18
+        "mm_hr": 0.4
       },
       {
         "hour": 20,
         "timestamp": "2026-09-05T08:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 0.4
       },
       {
         "hour": 21,
         "timestamp": "2026-09-05T09:00:00+00:00",
-        "mm_hr": 1.18
+        "mm_hr": 0.2
       },
       {
         "hour": 22,
         "timestamp": "2026-09-05T10:00:00+00:00",
-        "mm_hr": 1.13
+        "mm_hr": 0.1
       },
       {
         "hour": 23,
         "timestamp": "2026-09-05T11:00:00+00:00",
-        "mm_hr": 1.06
+        "mm_hr": 0.0
       },
       {
         "hour": 24,
         "timestamp": "2026-09-05T12:00:00+00:00",
-        "mm_hr": 0.95
+        "mm_hr": 0.0
       },
       {
         "hour": 25,
         "timestamp": "2026-09-05T13:00:00+00:00",
-        "mm_hr": 0.84
+        "mm_hr": 0.0
       },
       {
         "hour": 26,
         "timestamp": "2026-09-05T14:00:00+00:00",
-        "mm_hr": 0.72
+        "mm_hr": 0.0
       },
       {
         "hour": 27,
         "timestamp": "2026-09-05T15:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 28,
         "timestamp": "2026-09-05T16:00:00+00:00",
-        "mm_hr": 0.48
+        "mm_hr": 0.0
       },
       {
         "hour": 29,
         "timestamp": "2026-09-05T17:00:00+00:00",
-        "mm_hr": 0.38
+        "mm_hr": 0.0
       },
       {
         "hour": 30,
         "timestamp": "2026-09-05T18:00:00+00:00",
-        "mm_hr": 0.29
+        "mm_hr": 0.0
       },
       {
         "hour": 31,
         "timestamp": "2026-09-05T19:00:00+00:00",
-        "mm_hr": 0.21
+        "mm_hr": 0.0
       },
       {
         "hour": 32,
         "timestamp": "2026-09-05T20:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.0
       },
       {
         "hour": 33,
         "timestamp": "2026-09-05T21:00:00+00:00",
-        "mm_hr": 0.11
+        "mm_hr": 0.0
       },
       {
         "hour": 34,
         "timestamp": "2026-09-05T22:00:00+00:00",
-        "mm_hr": 0.07
+        "mm_hr": 0.0
       },
       {
         "hour": 35,
         "timestamp": "2026-09-05T23:00:00+00:00",
-        "mm_hr": 0.05
+        "mm_hr": 0.0
       },
       {
         "hour": 36,
         "timestamp": "2026-09-06T00:00:00+00:00",
-        "mm_hr": 0.03
+        "mm_hr": 0.0
       },
       {
         "hour": 37,
         "timestamp": "2026-09-06T01:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-09-06T02:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.1
       },
       {
         "hour": 39,
         "timestamp": "2026-09-06T03:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.2
       },
       {
         "hour": 40,
         "timestamp": "2026-09-06T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 41,
         "timestamp": "2026-09-06T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 42,
         "timestamp": "2026-09-06T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 43,
         "timestamp": "2026-09-06T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 44,
         "timestamp": "2026-09-06T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 45,
         "timestamp": "2026-09-06T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 46,
         "timestamp": "2026-09-06T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 47,
         "timestamp": "2026-09-06T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 48,
         "timestamp": "2026-09-06T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 49,
@@ -14744,42 +14744,42 @@
       {
         "hour": 64,
         "timestamp": "2026-09-07T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
         "timestamp": "2026-09-07T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 66,
         "timestamp": "2026-09-07T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 67,
         "timestamp": "2026-09-07T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 68,
         "timestamp": "2026-09-07T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 69,
         "timestamp": "2026-09-07T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 70,
         "timestamp": "2026-09-07T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 71,
         "timestamp": "2026-09-07T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 72,
@@ -15780,177 +15780,177 @@
       {
         "hour": 0,
         "timestamp": "2026-09-04T12:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.01
       },
       {
         "hour": 1,
         "timestamp": "2026-09-04T13:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.01
       },
       {
         "hour": 2,
         "timestamp": "2026-09-04T14:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.02
       },
       {
         "hour": 3,
         "timestamp": "2026-09-04T15:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.04
       },
       {
         "hour": 4,
         "timestamp": "2026-09-04T16:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.06
       },
       {
         "hour": 5,
         "timestamp": "2026-09-04T17:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.1
       },
       {
         "hour": 6,
         "timestamp": "2026-09-04T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.15
       },
       {
         "hour": 7,
         "timestamp": "2026-09-04T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.22
       },
       {
         "hour": 8,
         "timestamp": "2026-09-04T20:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.32
       },
       {
         "hour": 9,
         "timestamp": "2026-09-04T21:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.44
       },
       {
         "hour": 10,
         "timestamp": "2026-09-04T22:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.6
       },
       {
         "hour": 11,
         "timestamp": "2026-09-04T23:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.79
       },
       {
         "hour": 12,
         "timestamp": "2026-09-05T00:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 1.0
       },
       {
         "hour": 13,
         "timestamp": "2026-09-05T01:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 1.24
       },
       {
         "hour": 14,
         "timestamp": "2026-09-05T02:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 1.49
       },
       {
         "hour": 15,
         "timestamp": "2026-09-05T03:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 1.75
       },
       {
         "hour": 16,
         "timestamp": "2026-09-05T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.99
       },
       {
         "hour": 17,
         "timestamp": "2026-09-05T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 2.2
       },
       {
         "hour": 18,
         "timestamp": "2026-09-05T06:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 2.36
       },
       {
         "hour": 19,
         "timestamp": "2026-09-05T07:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 2.46
       },
       {
         "hour": 20,
         "timestamp": "2026-09-05T08:00:00+00:00",
-        "mm_hr": 1.1
+        "mm_hr": 2.5
       },
       {
         "hour": 21,
         "timestamp": "2026-09-05T09:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 2.46
       },
       {
         "hour": 22,
         "timestamp": "2026-09-05T10:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 2.36
       },
       {
         "hour": 23,
         "timestamp": "2026-09-05T11:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 2.2
       },
       {
         "hour": 24,
         "timestamp": "2026-09-05T12:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 1.99
       },
       {
         "hour": 25,
         "timestamp": "2026-09-05T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 1.75
       },
       {
         "hour": 26,
         "timestamp": "2026-09-05T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 1.49
       },
       {
         "hour": 27,
         "timestamp": "2026-09-05T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.24
       },
       {
         "hour": 28,
         "timestamp": "2026-09-05T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 1.0
       },
       {
         "hour": 29,
         "timestamp": "2026-09-05T17:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.79
       },
       {
         "hour": 30,
         "timestamp": "2026-09-05T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.6
       },
       {
         "hour": 31,
         "timestamp": "2026-09-05T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.44
       },
       {
         "hour": 32,
         "timestamp": "2026-09-05T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.32
       },
       {
         "hour": 33,
         "timestamp": "2026-09-05T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.22
       },
       {
         "hour": 34,
         "timestamp": "2026-09-05T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.15
       },
       {
         "hour": 35,
@@ -15960,242 +15960,242 @@
       {
         "hour": 36,
         "timestamp": "2026-09-06T00:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.06
       },
       {
         "hour": 37,
         "timestamp": "2026-09-06T01:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.04
       },
       {
         "hour": 38,
         "timestamp": "2026-09-06T02:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.02
       },
       {
         "hour": 39,
         "timestamp": "2026-09-06T03:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.01
       },
       {
         "hour": 40,
         "timestamp": "2026-09-06T04:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.01
       },
       {
         "hour": 41,
         "timestamp": "2026-09-06T05:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 42,
         "timestamp": "2026-09-06T06:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 43,
         "timestamp": "2026-09-06T07:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 44,
         "timestamp": "2026-09-06T08:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 45,
         "timestamp": "2026-09-06T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 46,
         "timestamp": "2026-09-06T10:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.0
       },
       {
         "hour": 47,
         "timestamp": "2026-09-06T11:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 48,
         "timestamp": "2026-09-06T12:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 0.0
       },
       {
         "hour": 49,
         "timestamp": "2026-09-06T13:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.0
       },
       {
         "hour": 50,
         "timestamp": "2026-09-06T14:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 51,
         "timestamp": "2026-09-06T15:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 52,
         "timestamp": "2026-09-06T16:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 53,
         "timestamp": "2026-09-06T17:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 54,
         "timestamp": "2026-09-06T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 55,
         "timestamp": "2026-09-06T19:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 56,
         "timestamp": "2026-09-06T20:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 57,
         "timestamp": "2026-09-06T21:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 58,
         "timestamp": "2026-09-06T22:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
         "timestamp": "2026-09-06T23:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 60,
         "timestamp": "2026-09-07T00:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.0
       },
       {
         "hour": 61,
         "timestamp": "2026-09-07T01:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 62,
         "timestamp": "2026-09-07T02:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-09-07T03:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-09-07T04:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
         "timestamp": "2026-09-07T05:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
         "timestamp": "2026-09-07T06:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.0
       },
       {
         "hour": 67,
         "timestamp": "2026-09-07T07:00:00+00:00",
-        "mm_hr": 1.4
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
         "timestamp": "2026-09-07T08:00:00+00:00",
-        "mm_hr": 1.1
+        "mm_hr": 0.0
       },
       {
         "hour": 69,
         "timestamp": "2026-09-07T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 70,
         "timestamp": "2026-09-07T10:00:00+00:00",
-        "mm_hr": 1.5
+        "mm_hr": 0.0
       },
       {
         "hour": 71,
         "timestamp": "2026-09-07T11:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.0
       },
       {
         "hour": 72,
         "timestamp": "2026-09-07T12:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.0
       },
       {
         "hour": 73,
         "timestamp": "2026-09-07T13:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 74,
         "timestamp": "2026-09-07T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 75,
         "timestamp": "2026-09-07T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 76,
         "timestamp": "2026-09-07T16:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 77,
         "timestamp": "2026-09-07T17:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 78,
         "timestamp": "2026-09-07T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 79,
         "timestamp": "2026-09-07T19:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 80,
         "timestamp": "2026-09-07T20:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 81,
         "timestamp": "2026-09-07T21:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 82,
         "timestamp": "2026-09-07T22:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 83,
         "timestamp": "2026-09-07T23:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 84,
@@ -17136,27 +17136,27 @@
       {
         "hour": 0,
         "timestamp": "2026-09-04T12:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.6
       },
       {
         "hour": 1,
         "timestamp": "2026-09-04T13:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
         "timestamp": "2026-09-04T14:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.1
       },
       {
         "hour": 3,
         "timestamp": "2026-09-04T15:00:00+00:00",
-        "mm_hr": 0.04
+        "mm_hr": 0.2
       },
       {
         "hour": 4,
         "timestamp": "2026-09-04T16:00:00+00:00",
-        "mm_hr": 0.06
+        "mm_hr": 0.1
       },
       {
         "hour": 5,
@@ -17166,147 +17166,147 @@
       {
         "hour": 6,
         "timestamp": "2026-09-04T18:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.1
       },
       {
         "hour": 7,
         "timestamp": "2026-09-04T19:00:00+00:00",
-        "mm_hr": 0.22
+        "mm_hr": 0.1
       },
       {
         "hour": 8,
         "timestamp": "2026-09-04T20:00:00+00:00",
-        "mm_hr": 0.32
+        "mm_hr": 0.1
       },
       {
         "hour": 9,
         "timestamp": "2026-09-04T21:00:00+00:00",
-        "mm_hr": 0.44
+        "mm_hr": 0.0
       },
       {
         "hour": 10,
         "timestamp": "2026-09-04T22:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 11,
         "timestamp": "2026-09-04T23:00:00+00:00",
-        "mm_hr": 0.79
+        "mm_hr": 0.0
       },
       {
         "hour": 12,
         "timestamp": "2026-09-05T00:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.1
       },
       {
         "hour": 13,
         "timestamp": "2026-09-05T01:00:00+00:00",
-        "mm_hr": 1.24
+        "mm_hr": 0.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-05T02:00:00+00:00",
-        "mm_hr": 1.49
+        "mm_hr": 0.4
       },
       {
         "hour": 15,
         "timestamp": "2026-09-05T03:00:00+00:00",
-        "mm_hr": 1.75
+        "mm_hr": 0.2
       },
       {
         "hour": 16,
         "timestamp": "2026-09-05T04:00:00+00:00",
-        "mm_hr": 1.99
+        "mm_hr": 0.1
       },
       {
         "hour": 17,
         "timestamp": "2026-09-05T05:00:00+00:00",
-        "mm_hr": 2.2
+        "mm_hr": 0.1
       },
       {
         "hour": 18,
         "timestamp": "2026-09-05T06:00:00+00:00",
-        "mm_hr": 2.36
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
         "timestamp": "2026-09-05T07:00:00+00:00",
-        "mm_hr": 2.46
+        "mm_hr": 0.3
       },
       {
         "hour": 20,
         "timestamp": "2026-09-05T08:00:00+00:00",
-        "mm_hr": 2.5
+        "mm_hr": 0.6
       },
       {
         "hour": 21,
         "timestamp": "2026-09-05T09:00:00+00:00",
-        "mm_hr": 2.46
+        "mm_hr": 0.5
       },
       {
         "hour": 22,
         "timestamp": "2026-09-05T10:00:00+00:00",
-        "mm_hr": 2.36
+        "mm_hr": 0.3
       },
       {
         "hour": 23,
         "timestamp": "2026-09-05T11:00:00+00:00",
-        "mm_hr": 2.2
+        "mm_hr": 0.4
       },
       {
         "hour": 24,
         "timestamp": "2026-09-05T12:00:00+00:00",
-        "mm_hr": 1.99
+        "mm_hr": 0.2
       },
       {
         "hour": 25,
         "timestamp": "2026-09-05T13:00:00+00:00",
-        "mm_hr": 1.75
+        "mm_hr": 0.2
       },
       {
         "hour": 26,
         "timestamp": "2026-09-05T14:00:00+00:00",
-        "mm_hr": 1.49
+        "mm_hr": 0.1
       },
       {
         "hour": 27,
         "timestamp": "2026-09-05T15:00:00+00:00",
-        "mm_hr": 1.24
+        "mm_hr": 0.1
       },
       {
         "hour": 28,
         "timestamp": "2026-09-05T16:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.1
       },
       {
         "hour": 29,
         "timestamp": "2026-09-05T17:00:00+00:00",
-        "mm_hr": 0.79
+        "mm_hr": 0.1
       },
       {
         "hour": 30,
         "timestamp": "2026-09-05T18:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.1
       },
       {
         "hour": 31,
         "timestamp": "2026-09-05T19:00:00+00:00",
-        "mm_hr": 0.44
+        "mm_hr": 0.1
       },
       {
         "hour": 32,
         "timestamp": "2026-09-05T20:00:00+00:00",
-        "mm_hr": 0.32
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
         "timestamp": "2026-09-05T21:00:00+00:00",
-        "mm_hr": 0.22
+        "mm_hr": 0.1
       },
       {
         "hour": 34,
         "timestamp": "2026-09-05T22:00:00+00:00",
-        "mm_hr": 0.15
+        "mm_hr": 0.1
       },
       {
         "hour": 35,
@@ -17316,242 +17316,242 @@
       {
         "hour": 36,
         "timestamp": "2026-09-06T00:00:00+00:00",
-        "mm_hr": 0.06
+        "mm_hr": 0.1
       },
       {
         "hour": 37,
         "timestamp": "2026-09-06T01:00:00+00:00",
-        "mm_hr": 0.04
+        "mm_hr": 0.2
       },
       {
         "hour": 38,
         "timestamp": "2026-09-06T02:00:00+00:00",
-        "mm_hr": 0.02
+        "mm_hr": 0.2
       },
       {
         "hour": 39,
         "timestamp": "2026-09-06T03:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.2
       },
       {
         "hour": 40,
         "timestamp": "2026-09-06T04:00:00+00:00",
-        "mm_hr": 0.01
+        "mm_hr": 0.3
       },
       {
         "hour": 41,
         "timestamp": "2026-09-06T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.6
       },
       {
         "hour": 42,
         "timestamp": "2026-09-06T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 43,
         "timestamp": "2026-09-06T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.5
       },
       {
         "hour": 44,
         "timestamp": "2026-09-06T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.3
       },
       {
         "hour": 45,
         "timestamp": "2026-09-06T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.8
       },
       {
         "hour": 46,
         "timestamp": "2026-09-06T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 47,
         "timestamp": "2026-09-06T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.6
       },
       {
         "hour": 48,
         "timestamp": "2026-09-06T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 49,
         "timestamp": "2026-09-06T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 50,
         "timestamp": "2026-09-06T14:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 51,
         "timestamp": "2026-09-06T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 52,
         "timestamp": "2026-09-06T16:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 53,
         "timestamp": "2026-09-06T17:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 54,
         "timestamp": "2026-09-06T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 55,
         "timestamp": "2026-09-06T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 56,
         "timestamp": "2026-09-06T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 57,
         "timestamp": "2026-09-06T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 58,
         "timestamp": "2026-09-06T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 59,
         "timestamp": "2026-09-06T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 60,
         "timestamp": "2026-09-07T00:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 61,
         "timestamp": "2026-09-07T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 62,
         "timestamp": "2026-09-07T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 63,
         "timestamp": "2026-09-07T03:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 64,
         "timestamp": "2026-09-07T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 65,
         "timestamp": "2026-09-07T05:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.5
       },
       {
         "hour": 66,
         "timestamp": "2026-09-07T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.9
       },
       {
         "hour": 67,
         "timestamp": "2026-09-07T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.7
       },
       {
         "hour": 68,
         "timestamp": "2026-09-07T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.6
       },
       {
         "hour": 69,
         "timestamp": "2026-09-07T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 70,
         "timestamp": "2026-09-07T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.7
       },
       {
         "hour": 71,
         "timestamp": "2026-09-07T11:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.5
       },
       {
         "hour": 72,
         "timestamp": "2026-09-07T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 73,
         "timestamp": "2026-09-07T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 74,
         "timestamp": "2026-09-07T14:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 75,
         "timestamp": "2026-09-07T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 76,
         "timestamp": "2026-09-07T16:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 77,
         "timestamp": "2026-09-07T17:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 78,
         "timestamp": "2026-09-07T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 79,
         "timestamp": "2026-09-07T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 80,
         "timestamp": "2026-09-07T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 81,
         "timestamp": "2026-09-07T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 82,
         "timestamp": "2026-09-07T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 83,
         "timestamp": "2026-09-07T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 84,
@@ -17590,900 +17590,900 @@
       "hour": 0,
       "timestamp": "2026-09-04T12:00:00+00:00",
       "lead_hours": 0,
-      "discharge_m3s": 99.6,
+      "discharge_m3s": 97.7,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 1,
       "timestamp": "2026-09-04T13:00:00+00:00",
       "lead_hours": 1,
-      "discharge_m3s": 99.6,
+      "discharge_m3s": 97.7,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 2,
       "timestamp": "2026-09-04T14:00:00+00:00",
       "lead_hours": 2,
-      "discharge_m3s": 99.6,
+      "discharge_m3s": 97.7,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 3,
       "timestamp": "2026-09-04T15:00:00+00:00",
       "lead_hours": 3,
-      "discharge_m3s": 99.6,
+      "discharge_m3s": 97.7,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 4,
       "timestamp": "2026-09-04T16:00:00+00:00",
       "lead_hours": 4,
-      "discharge_m3s": 99.6,
+      "discharge_m3s": 97.7,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 5,
       "timestamp": "2026-09-04T17:00:00+00:00",
       "lead_hours": 5,
-      "discharge_m3s": 99.6,
+      "discharge_m3s": 97.7,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 6,
       "timestamp": "2026-09-04T18:00:00+00:00",
       "lead_hours": 6,
-      "discharge_m3s": 99.6,
+      "discharge_m3s": 97.7,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 7,
       "timestamp": "2026-09-04T19:00:00+00:00",
       "lead_hours": 7,
-      "discharge_m3s": 99.6,
+      "discharge_m3s": 97.7,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 8,
       "timestamp": "2026-09-04T20:00:00+00:00",
       "lead_hours": 8,
-      "discharge_m3s": 99.6,
+      "discharge_m3s": 97.7,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 9,
       "timestamp": "2026-09-04T21:00:00+00:00",
       "lead_hours": 9,
-      "discharge_m3s": 99.6,
+      "discharge_m3s": 97.7,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 10,
       "timestamp": "2026-09-04T22:00:00+00:00",
       "lead_hours": 10,
-      "discharge_m3s": 99.6,
+      "discharge_m3s": 97.7,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 11,
       "timestamp": "2026-09-04T23:00:00+00:00",
       "lead_hours": 11,
-      "discharge_m3s": 99.7,
-      "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "discharge_m3s": 97.7,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 12,
       "timestamp": "2026-09-05T00:00:00+00:00",
       "lead_hours": 12,
-      "discharge_m3s": 99.8,
-      "surface_runoff_m3s": 0.2,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.13,
+      "discharge_m3s": 97.7,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 13,
       "timestamp": "2026-09-05T01:00:00+00:00",
       "lead_hours": 13,
-      "discharge_m3s": 100.2,
-      "surface_runoff_m3s": 0.6,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.14,
+      "discharge_m3s": 97.7,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 14,
       "timestamp": "2026-09-05T02:00:00+00:00",
       "lead_hours": 14,
-      "discharge_m3s": 100.9,
-      "surface_runoff_m3s": 1.3,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.15,
+      "discharge_m3s": 97.8,
+      "surface_runoff_m3s": 0.1,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.1,
       "is_peak": false
     },
     {
       "hour": 15,
       "timestamp": "2026-09-05T03:00:00+00:00",
       "lead_hours": 15,
-      "discharge_m3s": 102.3,
-      "surface_runoff_m3s": 2.7,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.17,
+      "discharge_m3s": 98.1,
+      "surface_runoff_m3s": 0.4,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.11,
       "is_peak": false
     },
     {
       "hour": 16,
       "timestamp": "2026-09-05T04:00:00+00:00",
       "lead_hours": 16,
-      "discharge_m3s": 104.4,
-      "surface_runoff_m3s": 4.8,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.21,
+      "discharge_m3s": 98.7,
+      "surface_runoff_m3s": 1.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.12,
       "is_peak": false
     },
     {
       "hour": 17,
       "timestamp": "2026-09-05T05:00:00+00:00",
       "lead_hours": 17,
-      "discharge_m3s": 107.2,
-      "surface_runoff_m3s": 7.6,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.25,
+      "discharge_m3s": 99.5,
+      "surface_runoff_m3s": 1.8,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.13,
       "is_peak": false
     },
     {
       "hour": 18,
       "timestamp": "2026-09-05T06:00:00+00:00",
       "lead_hours": 18,
-      "discharge_m3s": 111.0,
-      "surface_runoff_m3s": 11.4,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.31,
+      "discharge_m3s": 100.7,
+      "surface_runoff_m3s": 3.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.15,
       "is_peak": false
     },
     {
       "hour": 19,
       "timestamp": "2026-09-05T07:00:00+00:00",
       "lead_hours": 19,
-      "discharge_m3s": 116.2,
-      "surface_runoff_m3s": 16.6,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.38,
+      "discharge_m3s": 102.5,
+      "surface_runoff_m3s": 4.8,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.18,
       "is_peak": false
     },
     {
       "hour": 20,
       "timestamp": "2026-09-05T08:00:00+00:00",
       "lead_hours": 20,
-      "discharge_m3s": 123.4,
-      "surface_runoff_m3s": 23.8,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.49,
+      "discharge_m3s": 105.2,
+      "surface_runoff_m3s": 7.5,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.22,
       "is_peak": false
     },
     {
       "hour": 21,
       "timestamp": "2026-09-05T09:00:00+00:00",
       "lead_hours": 21,
-      "discharge_m3s": 133.2,
-      "surface_runoff_m3s": 33.6,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.62,
+      "discharge_m3s": 109.4,
+      "surface_runoff_m3s": 11.7,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.28,
       "is_peak": false
     },
     {
       "hour": 22,
       "timestamp": "2026-09-05T10:00:00+00:00",
       "lead_hours": 22,
-      "discharge_m3s": 144.4,
-      "surface_runoff_m3s": 44.8,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.74,
+      "discharge_m3s": 114.4,
+      "surface_runoff_m3s": 16.7,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.36,
       "is_peak": false
     },
     {
       "hour": 23,
       "timestamp": "2026-09-05T11:00:00+00:00",
       "lead_hours": 23,
-      "discharge_m3s": 156.7,
-      "surface_runoff_m3s": 57.1,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.85,
+      "discharge_m3s": 119.9,
+      "surface_runoff_m3s": 22.2,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.44,
       "is_peak": false
     },
     {
       "hour": 24,
       "timestamp": "2026-09-05T12:00:00+00:00",
       "lead_hours": 24,
-      "discharge_m3s": 170.0,
-      "surface_runoff_m3s": 70.4,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.95,
+      "discharge_m3s": 125.9,
+      "surface_runoff_m3s": 28.2,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.52,
       "is_peak": false
     },
     {
       "hour": 25,
       "timestamp": "2026-09-05T13:00:00+00:00",
       "lead_hours": 25,
-      "discharge_m3s": 183.3,
-      "surface_runoff_m3s": 83.7,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.05,
+      "discharge_m3s": 131.6,
+      "surface_runoff_m3s": 33.9,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.6,
       "is_peak": false
     },
     {
       "hour": 26,
       "timestamp": "2026-09-05T14:00:00+00:00",
       "lead_hours": 26,
-      "discharge_m3s": 195.5,
-      "surface_runoff_m3s": 95.9,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.14,
+      "discharge_m3s": 136.8,
+      "surface_runoff_m3s": 39.1,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.66,
       "is_peak": false
     },
     {
       "hour": 27,
       "timestamp": "2026-09-05T15:00:00+00:00",
       "lead_hours": 27,
-      "discharge_m3s": 205.9,
-      "surface_runoff_m3s": 106.3,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.22,
+      "discharge_m3s": 141.2,
+      "surface_runoff_m3s": 43.5,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.71,
       "is_peak": false
     },
     {
       "hour": 28,
       "timestamp": "2026-09-05T16:00:00+00:00",
       "lead_hours": 28,
-      "discharge_m3s": 214.2,
-      "surface_runoff_m3s": 114.6,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.28,
+      "discharge_m3s": 144.8,
+      "surface_runoff_m3s": 47.1,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.74,
       "is_peak": false
     },
     {
       "hour": 29,
       "timestamp": "2026-09-05T17:00:00+00:00",
       "lead_hours": 29,
-      "discharge_m3s": 220.5,
-      "surface_runoff_m3s": 120.9,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.33,
+      "discharge_m3s": 147.4,
+      "surface_runoff_m3s": 49.7,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.77,
       "is_peak": false
     },
     {
       "hour": 30,
       "timestamp": "2026-09-05T18:00:00+00:00",
       "lead_hours": 30,
-      "discharge_m3s": 224.6,
-      "surface_runoff_m3s": 125.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.36,
+      "discharge_m3s": 149.2,
+      "surface_runoff_m3s": 51.5,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.78,
       "is_peak": false
     },
     {
       "hour": 31,
       "timestamp": "2026-09-05T19:00:00+00:00",
       "lead_hours": 31,
-      "discharge_m3s": 226.8,
-      "surface_runoff_m3s": 127.2,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.37,
+      "discharge_m3s": 150.2,
+      "surface_runoff_m3s": 52.5,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.79,
       "is_peak": false
     },
     {
       "hour": 32,
       "timestamp": "2026-09-05T20:00:00+00:00",
       "lead_hours": 32,
-      "discharge_m3s": 227.0,
-      "surface_runoff_m3s": 127.4,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.38,
-      "is_peak": true
+      "discharge_m3s": 150.5,
+      "surface_runoff_m3s": 52.8,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.8,
+      "is_peak": false
     },
     {
       "hour": 33,
       "timestamp": "2026-09-05T21:00:00+00:00",
       "lead_hours": 33,
-      "discharge_m3s": 225.8,
-      "surface_runoff_m3s": 126.2,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.37,
+      "discharge_m3s": 150.2,
+      "surface_runoff_m3s": 52.5,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.79,
       "is_peak": false
     },
     {
       "hour": 34,
       "timestamp": "2026-09-05T22:00:00+00:00",
       "lead_hours": 34,
-      "discharge_m3s": 223.2,
-      "surface_runoff_m3s": 123.6,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.35,
+      "discharge_m3s": 149.4,
+      "surface_runoff_m3s": 51.7,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.79,
       "is_peak": false
     },
     {
       "hour": 35,
       "timestamp": "2026-09-05T23:00:00+00:00",
       "lead_hours": 35,
-      "discharge_m3s": 219.6,
-      "surface_runoff_m3s": 120.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.32,
+      "discharge_m3s": 148.3,
+      "surface_runoff_m3s": 50.6,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.78,
       "is_peak": false
     },
     {
       "hour": 36,
       "timestamp": "2026-09-06T00:00:00+00:00",
       "lead_hours": 36,
-      "discharge_m3s": 215.3,
-      "surface_runoff_m3s": 115.7,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.29,
+      "discharge_m3s": 146.9,
+      "surface_runoff_m3s": 49.2,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.76,
       "is_peak": false
     },
     {
       "hour": 37,
       "timestamp": "2026-09-06T01:00:00+00:00",
       "lead_hours": 37,
-      "discharge_m3s": 210.5,
-      "surface_runoff_m3s": 110.9,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.25,
+      "discharge_m3s": 145.3,
+      "surface_runoff_m3s": 47.6,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.75,
       "is_peak": false
     },
     {
       "hour": 38,
       "timestamp": "2026-09-06T02:00:00+00:00",
       "lead_hours": 38,
-      "discharge_m3s": 205.8,
-      "surface_runoff_m3s": 106.2,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.22,
+      "discharge_m3s": 143.9,
+      "surface_runoff_m3s": 46.2,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.74,
       "is_peak": false
     },
     {
       "hour": 39,
       "timestamp": "2026-09-06T03:00:00+00:00",
       "lead_hours": 39,
-      "discharge_m3s": 201.4,
-      "surface_runoff_m3s": 101.8,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.19,
+      "discharge_m3s": 143.0,
+      "surface_runoff_m3s": 45.3,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.73,
       "is_peak": false
     },
     {
       "hour": 40,
       "timestamp": "2026-09-06T04:00:00+00:00",
       "lead_hours": 40,
-      "discharge_m3s": 197.7,
-      "surface_runoff_m3s": 98.1,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.16,
+      "discharge_m3s": 142.6,
+      "surface_runoff_m3s": 44.9,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.72,
       "is_peak": false
     },
     {
       "hour": 41,
       "timestamp": "2026-09-06T05:00:00+00:00",
       "lead_hours": 41,
-      "discharge_m3s": 195.1,
-      "surface_runoff_m3s": 95.5,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.14,
+      "discharge_m3s": 143.0,
+      "surface_runoff_m3s": 45.3,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.73,
       "is_peak": false
     },
     {
       "hour": 42,
       "timestamp": "2026-09-06T06:00:00+00:00",
       "lead_hours": 42,
-      "discharge_m3s": 193.9,
-      "surface_runoff_m3s": 94.3,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.13,
+      "discharge_m3s": 144.8,
+      "surface_runoff_m3s": 47.1,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.74,
       "is_peak": false
     },
     {
       "hour": 43,
       "timestamp": "2026-09-06T07:00:00+00:00",
       "lead_hours": 43,
-      "discharge_m3s": 193.5,
-      "surface_runoff_m3s": 93.9,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.13,
+      "discharge_m3s": 147.4,
+      "surface_runoff_m3s": 49.7,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.77,
       "is_peak": false
     },
     {
       "hour": 44,
       "timestamp": "2026-09-06T08:00:00+00:00",
       "lead_hours": 44,
-      "discharge_m3s": 194.2,
-      "surface_runoff_m3s": 94.6,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.13,
+      "discharge_m3s": 150.7,
+      "surface_runoff_m3s": 53.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.8,
       "is_peak": false
     },
     {
       "hour": 45,
       "timestamp": "2026-09-06T09:00:00+00:00",
       "lead_hours": 45,
-      "discharge_m3s": 196.4,
-      "surface_runoff_m3s": 96.8,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.15,
+      "discharge_m3s": 156.2,
+      "surface_runoff_m3s": 58.5,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.84,
       "is_peak": false
     },
     {
       "hour": 46,
       "timestamp": "2026-09-06T10:00:00+00:00",
       "lead_hours": 46,
-      "discharge_m3s": 198.3,
-      "surface_runoff_m3s": 98.7,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.16,
+      "discharge_m3s": 162.0,
+      "surface_runoff_m3s": 64.3,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.89,
       "is_peak": false
     },
     {
       "hour": 47,
       "timestamp": "2026-09-06T11:00:00+00:00",
       "lead_hours": 47,
-      "discharge_m3s": 200.6,
-      "surface_runoff_m3s": 101.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.18,
+      "discharge_m3s": 167.6,
+      "surface_runoff_m3s": 69.9,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.93,
       "is_peak": false
     },
     {
       "hour": 48,
       "timestamp": "2026-09-06T12:00:00+00:00",
       "lead_hours": 48,
-      "discharge_m3s": 203.6,
-      "surface_runoff_m3s": 104.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.2,
+      "discharge_m3s": 173.3,
+      "surface_runoff_m3s": 75.6,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.97,
       "is_peak": false
     },
     {
       "hour": 49,
       "timestamp": "2026-09-06T13:00:00+00:00",
       "lead_hours": 49,
-      "discharge_m3s": 206.9,
-      "surface_runoff_m3s": 107.3,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.23,
+      "discharge_m3s": 178.4,
+      "surface_runoff_m3s": 80.7,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.01,
       "is_peak": false
     },
     {
       "hour": 50,
       "timestamp": "2026-09-06T14:00:00+00:00",
       "lead_hours": 50,
-      "discharge_m3s": 209.8,
-      "surface_runoff_m3s": 110.2,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.25,
+      "discharge_m3s": 182.0,
+      "surface_runoff_m3s": 84.3,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.04,
       "is_peak": false
     },
     {
       "hour": 51,
       "timestamp": "2026-09-06T15:00:00+00:00",
       "lead_hours": 51,
-      "discharge_m3s": 211.9,
-      "surface_runoff_m3s": 112.3,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.26,
+      "discharge_m3s": 185.0,
+      "surface_runoff_m3s": 87.3,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.06,
       "is_peak": false
     },
     {
       "hour": 52,
       "timestamp": "2026-09-06T16:00:00+00:00",
       "lead_hours": 52,
-      "discharge_m3s": 213.6,
-      "surface_runoff_m3s": 114.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.28,
+      "discharge_m3s": 187.2,
+      "surface_runoff_m3s": 89.5,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.08,
       "is_peak": false
     },
     {
       "hour": 53,
       "timestamp": "2026-09-06T17:00:00+00:00",
       "lead_hours": 53,
-      "discharge_m3s": 214.0,
-      "surface_runoff_m3s": 114.4,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.28,
+      "discharge_m3s": 188.4,
+      "surface_runoff_m3s": 90.7,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.09,
       "is_peak": false
     },
     {
       "hour": 54,
       "timestamp": "2026-09-06T18:00:00+00:00",
       "lead_hours": 54,
-      "discharge_m3s": 213.3,
-      "surface_runoff_m3s": 113.7,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.27,
+      "discharge_m3s": 188.7,
+      "surface_runoff_m3s": 91.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.09,
       "is_peak": false
     },
     {
       "hour": 55,
       "timestamp": "2026-09-06T19:00:00+00:00",
       "lead_hours": 55,
-      "discharge_m3s": 211.7,
-      "surface_runoff_m3s": 112.1,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.26,
+      "discharge_m3s": 188.2,
+      "surface_runoff_m3s": 90.5,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.09,
       "is_peak": false
     },
     {
       "hour": 56,
       "timestamp": "2026-09-06T20:00:00+00:00",
       "lead_hours": 56,
-      "discharge_m3s": 209.4,
-      "surface_runoff_m3s": 109.8,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.25,
+      "discharge_m3s": 187.3,
+      "surface_runoff_m3s": 89.6,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.08,
       "is_peak": false
     },
     {
       "hour": 57,
       "timestamp": "2026-09-06T21:00:00+00:00",
       "lead_hours": 57,
-      "discharge_m3s": 206.6,
-      "surface_runoff_m3s": 107.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.23,
+      "discharge_m3s": 185.8,
+      "surface_runoff_m3s": 88.1,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.07,
       "is_peak": false
     },
     {
       "hour": 58,
       "timestamp": "2026-09-06T22:00:00+00:00",
       "lead_hours": 58,
-      "discharge_m3s": 203.3,
-      "surface_runoff_m3s": 103.7,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.2,
+      "discharge_m3s": 183.8,
+      "surface_runoff_m3s": 86.1,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.05,
       "is_peak": false
     },
     {
       "hour": 59,
       "timestamp": "2026-09-06T23:00:00+00:00",
       "lead_hours": 59,
-      "discharge_m3s": 199.7,
-      "surface_runoff_m3s": 100.1,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.17,
+      "discharge_m3s": 181.3,
+      "surface_runoff_m3s": 83.6,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.03,
       "is_peak": false
     },
     {
       "hour": 60,
       "timestamp": "2026-09-07T00:00:00+00:00",
       "lead_hours": 60,
-      "discharge_m3s": 196.1,
-      "surface_runoff_m3s": 96.5,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.15,
+      "discharge_m3s": 178.5,
+      "surface_runoff_m3s": 80.8,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.01,
       "is_peak": false
     },
     {
       "hour": 61,
       "timestamp": "2026-09-07T01:00:00+00:00",
       "lead_hours": 61,
-      "discharge_m3s": 192.9,
-      "surface_runoff_m3s": 93.3,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.12,
+      "discharge_m3s": 175.7,
+      "surface_runoff_m3s": 78.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.99,
       "is_peak": false
     },
     {
       "hour": 62,
       "timestamp": "2026-09-07T02:00:00+00:00",
       "lead_hours": 62,
-      "discharge_m3s": 189.7,
-      "surface_runoff_m3s": 90.1,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.1,
+      "discharge_m3s": 173.0,
+      "surface_runoff_m3s": 75.3,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.97,
       "is_peak": false
     },
     {
       "hour": 63,
       "timestamp": "2026-09-07T03:00:00+00:00",
       "lead_hours": 63,
-      "discharge_m3s": 186.4,
-      "surface_runoff_m3s": 86.8,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.07,
+      "discharge_m3s": 170.1,
+      "surface_runoff_m3s": 72.4,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.95,
       "is_peak": false
     },
     {
       "hour": 64,
       "timestamp": "2026-09-07T04:00:00+00:00",
       "lead_hours": 64,
-      "discharge_m3s": 184.0,
-      "surface_runoff_m3s": 84.4,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.05,
+      "discharge_m3s": 167.7,
+      "surface_runoff_m3s": 70.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.93,
       "is_peak": false
     },
     {
       "hour": 65,
       "timestamp": "2026-09-07T05:00:00+00:00",
       "lead_hours": 65,
-      "discharge_m3s": 183.0,
-      "surface_runoff_m3s": 83.4,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.05,
+      "discharge_m3s": 166.7,
+      "surface_runoff_m3s": 69.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.92,
       "is_peak": false
     },
     {
       "hour": 66,
       "timestamp": "2026-09-07T06:00:00+00:00",
       "lead_hours": 66,
-      "discharge_m3s": 183.5,
-      "surface_runoff_m3s": 83.9,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.05,
+      "discharge_m3s": 167.3,
+      "surface_runoff_m3s": 69.6,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.93,
       "is_peak": false
     },
     {
       "hour": 67,
       "timestamp": "2026-09-07T07:00:00+00:00",
       "lead_hours": 67,
-      "discharge_m3s": 186.1,
-      "surface_runoff_m3s": 86.5,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.07,
+      "discharge_m3s": 170.7,
+      "surface_runoff_m3s": 73.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.95,
       "is_peak": false
     },
     {
       "hour": 68,
       "timestamp": "2026-09-07T08:00:00+00:00",
       "lead_hours": 68,
-      "discharge_m3s": 191.4,
-      "surface_runoff_m3s": 91.8,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.11,
+      "discharge_m3s": 176.3,
+      "surface_runoff_m3s": 78.6,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.0,
       "is_peak": false
     },
     {
       "hour": 69,
       "timestamp": "2026-09-07T09:00:00+00:00",
       "lead_hours": 69,
-      "discharge_m3s": 197.9,
-      "surface_runoff_m3s": 98.3,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.16,
+      "discharge_m3s": 183.2,
+      "surface_runoff_m3s": 85.5,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.05,
       "is_peak": false
     },
     {
       "hour": 70,
       "timestamp": "2026-09-07T10:00:00+00:00",
       "lead_hours": 70,
-      "discharge_m3s": 204.3,
-      "surface_runoff_m3s": 104.7,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.21,
+      "discharge_m3s": 190.3,
+      "surface_runoff_m3s": 92.6,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.1,
       "is_peak": false
     },
     {
       "hour": 71,
       "timestamp": "2026-09-07T11:00:00+00:00",
       "lead_hours": 71,
-      "discharge_m3s": 212.2,
-      "surface_runoff_m3s": 112.6,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.27,
+      "discharge_m3s": 198.3,
+      "surface_runoff_m3s": 100.6,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.16,
       "is_peak": false
     },
     {
       "hour": 72,
       "timestamp": "2026-09-07T12:00:00+00:00",
       "lead_hours": 72,
-      "discharge_m3s": 219.0,
-      "surface_runoff_m3s": 119.4,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.32,
+      "discharge_m3s": 205.0,
+      "surface_runoff_m3s": 107.3,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.21,
       "is_peak": false
     },
     {
       "hour": 73,
       "timestamp": "2026-09-07T13:00:00+00:00",
       "lead_hours": 73,
-      "discharge_m3s": 223.5,
-      "surface_runoff_m3s": 123.9,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.35,
+      "discharge_m3s": 209.4,
+      "surface_runoff_m3s": 111.7,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.25,
       "is_peak": false
     },
     {
       "hour": 74,
       "timestamp": "2026-09-07T14:00:00+00:00",
       "lead_hours": 74,
-      "discharge_m3s": 226.3,
-      "surface_runoff_m3s": 126.7,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.37,
+      "discharge_m3s": 211.7,
+      "surface_runoff_m3s": 114.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.26,
       "is_peak": false
     },
     {
       "hour": 75,
       "timestamp": "2026-09-07T15:00:00+00:00",
       "lead_hours": 75,
-      "discharge_m3s": 226.9,
-      "surface_runoff_m3s": 127.3,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.37,
-      "is_peak": false
+      "discharge_m3s": 212.5,
+      "surface_runoff_m3s": 114.8,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.27,
+      "is_peak": true
     },
     {
       "hour": 76,
       "timestamp": "2026-09-07T16:00:00+00:00",
       "lead_hours": 76,
-      "discharge_m3s": 225.8,
-      "surface_runoff_m3s": 126.2,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.37,
+      "discharge_m3s": 211.7,
+      "surface_runoff_m3s": 114.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.26,
       "is_peak": false
     },
     {
       "hour": 77,
       "timestamp": "2026-09-07T17:00:00+00:00",
       "lead_hours": 77,
-      "discharge_m3s": 223.4,
-      "surface_runoff_m3s": 123.8,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.35,
+      "discharge_m3s": 209.7,
+      "surface_runoff_m3s": 112.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.25,
       "is_peak": false
     },
     {
       "hour": 78,
       "timestamp": "2026-09-07T18:00:00+00:00",
       "lead_hours": 78,
-      "discharge_m3s": 220.3,
-      "surface_runoff_m3s": 120.7,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.33,
+      "discharge_m3s": 207.1,
+      "surface_runoff_m3s": 109.4,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.23,
       "is_peak": false
     },
     {
       "hour": 79,
       "timestamp": "2026-09-07T19:00:00+00:00",
       "lead_hours": 79,
-      "discharge_m3s": 216.6,
-      "surface_runoff_m3s": 117.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.3,
+      "discharge_m3s": 203.9,
+      "surface_runoff_m3s": 106.2,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.2,
       "is_peak": false
     },
     {
       "hour": 80,
       "timestamp": "2026-09-07T20:00:00+00:00",
       "lead_hours": 80,
-      "discharge_m3s": 212.5,
-      "surface_runoff_m3s": 112.9,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.27,
+      "discharge_m3s": 200.6,
+      "surface_runoff_m3s": 102.9,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.18,
       "is_peak": false
     },
     {
       "hour": 81,
       "timestamp": "2026-09-07T21:00:00+00:00",
       "lead_hours": 81,
-      "discharge_m3s": 208.6,
-      "surface_runoff_m3s": 109.0,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.24,
+      "discharge_m3s": 197.3,
+      "surface_runoff_m3s": 99.6,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.16,
       "is_peak": false
     },
     {
       "hour": 82,
       "timestamp": "2026-09-07T22:00:00+00:00",
       "lead_hours": 82,
-      "discharge_m3s": 204.7,
-      "surface_runoff_m3s": 105.1,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.21,
+      "discharge_m3s": 194.0,
+      "surface_runoff_m3s": 96.3,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.13,
       "is_peak": false
     },
     {
       "hour": 83,
       "timestamp": "2026-09-07T23:00:00+00:00",
       "lead_hours": 83,
-      "discharge_m3s": 200.7,
-      "surface_runoff_m3s": 101.1,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.18,
+      "discharge_m3s": 190.7,
+      "surface_runoff_m3s": 93.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.11,
       "is_peak": false
     },
     {
       "hour": 84,
       "timestamp": "2026-09-08T00:00:00+00:00",
       "lead_hours": 84,
-      "discharge_m3s": 196.8,
-      "surface_runoff_m3s": 97.2,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.15,
+      "discharge_m3s": 187.4,
+      "surface_runoff_m3s": 89.7,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.08,
       "is_peak": false
     },
     {
       "hour": 85,
       "timestamp": "2026-09-08T01:00:00+00:00",
       "lead_hours": 85,
-      "discharge_m3s": 192.1,
-      "surface_runoff_m3s": 92.5,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.12,
+      "discharge_m3s": 183.3,
+      "surface_runoff_m3s": 85.6,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.05,
       "is_peak": false
     },
     {
       "hour": 86,
       "timestamp": "2026-09-08T02:00:00+00:00",
       "lead_hours": 86,
-      "discharge_m3s": 187.0,
-      "surface_runoff_m3s": 87.4,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.08,
+      "discharge_m3s": 178.7,
+      "surface_runoff_m3s": 81.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 534.01,
       "is_peak": false
     },
     {
       "hour": 87,
       "timestamp": "2026-09-08T03:00:00+00:00",
       "lead_hours": 87,
-      "discharge_m3s": 181.5,
-      "surface_runoff_m3s": 81.9,
-      "baseflow_m3s": 99.6,
-      "stage_m": 534.04,
+      "discharge_m3s": 173.7,
+      "surface_runoff_m3s": 76.0,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.98,
       "is_peak": false
     },
     {
       "hour": 88,
       "timestamp": "2026-09-08T04:00:00+00:00",
       "lead_hours": 88,
-      "discharge_m3s": 175.9,
-      "surface_runoff_m3s": 76.3,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.99,
+      "discharge_m3s": 168.6,
+      "surface_runoff_m3s": 70.9,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.94,
       "is_peak": false
     },
     {
       "hour": 89,
       "timestamp": "2026-09-08T05:00:00+00:00",
       "lead_hours": 89,
-      "discharge_m3s": 170.3,
-      "surface_runoff_m3s": 70.7,
-      "baseflow_m3s": 99.6,
-      "stage_m": 533.95,
+      "discharge_m3s": 163.5,
+      "surface_runoff_m3s": 65.8,
+      "baseflow_m3s": 97.7,
+      "stage_m": 533.9,
       "is_peak": false
     }
   ],
@@ -18509,720 +18509,720 @@
       {
         "forecast_time": "2026-09-04T12:00:00+00:00",
         "lead_hours": 0,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T13:00:00+00:00",
         "lead_hours": 1,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T14:00:00+00:00",
         "lead_hours": 2,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T15:00:00+00:00",
         "lead_hours": 3,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T16:00:00+00:00",
         "lead_hours": 4,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T17:00:00+00:00",
         "lead_hours": 5,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T18:00:00+00:00",
         "lead_hours": 6,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T19:00:00+00:00",
         "lead_hours": 7,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T20:00:00+00:00",
         "lead_hours": 8,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T21:00:00+00:00",
         "lead_hours": 9,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T22:00:00+00:00",
         "lead_hours": 10,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T23:00:00+00:00",
         "lead_hours": 11,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.7,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T00:00:00+00:00",
         "lead_hours": 12,
-        "stage_m": 533.13,
-        "discharge_m3s": 99.8,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T01:00:00+00:00",
         "lead_hours": 13,
-        "stage_m": 533.14,
-        "discharge_m3s": 100.2,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T02:00:00+00:00",
         "lead_hours": 14,
-        "stage_m": 533.15,
-        "discharge_m3s": 100.9,
+        "stage_m": 533.1,
+        "discharge_m3s": 97.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T03:00:00+00:00",
         "lead_hours": 15,
-        "stage_m": 533.17,
-        "discharge_m3s": 102.3,
+        "stage_m": 533.11,
+        "discharge_m3s": 98.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T04:00:00+00:00",
         "lead_hours": 16,
-        "stage_m": 533.21,
-        "discharge_m3s": 104.4,
+        "stage_m": 533.12,
+        "discharge_m3s": 98.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T05:00:00+00:00",
         "lead_hours": 17,
-        "stage_m": 533.25,
-        "discharge_m3s": 107.2,
+        "stage_m": 533.13,
+        "discharge_m3s": 99.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T06:00:00+00:00",
         "lead_hours": 18,
-        "stage_m": 533.31,
-        "discharge_m3s": 111.0,
+        "stage_m": 533.15,
+        "discharge_m3s": 100.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T07:00:00+00:00",
         "lead_hours": 19,
-        "stage_m": 533.38,
-        "discharge_m3s": 116.2,
+        "stage_m": 533.18,
+        "discharge_m3s": 102.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T08:00:00+00:00",
         "lead_hours": 20,
-        "stage_m": 533.49,
-        "discharge_m3s": 123.4,
+        "stage_m": 533.22,
+        "discharge_m3s": 105.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T09:00:00+00:00",
         "lead_hours": 21,
-        "stage_m": 533.62,
-        "discharge_m3s": 133.2,
+        "stage_m": 533.28,
+        "discharge_m3s": 109.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T10:00:00+00:00",
         "lead_hours": 22,
-        "stage_m": 533.74,
-        "discharge_m3s": 144.4,
+        "stage_m": 533.36,
+        "discharge_m3s": 114.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T11:00:00+00:00",
         "lead_hours": 23,
-        "stage_m": 533.85,
-        "discharge_m3s": 156.7,
+        "stage_m": 533.44,
+        "discharge_m3s": 119.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T12:00:00+00:00",
         "lead_hours": 24,
-        "stage_m": 533.95,
-        "discharge_m3s": 170.0,
+        "stage_m": 533.52,
+        "discharge_m3s": 125.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T13:00:00+00:00",
         "lead_hours": 25,
-        "stage_m": 534.05,
-        "discharge_m3s": 183.3,
+        "stage_m": 533.6,
+        "discharge_m3s": 131.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T14:00:00+00:00",
         "lead_hours": 26,
-        "stage_m": 534.14,
-        "discharge_m3s": 195.5,
+        "stage_m": 533.66,
+        "discharge_m3s": 136.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T15:00:00+00:00",
         "lead_hours": 27,
-        "stage_m": 534.22,
-        "discharge_m3s": 205.9,
+        "stage_m": 533.71,
+        "discharge_m3s": 141.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T16:00:00+00:00",
         "lead_hours": 28,
-        "stage_m": 534.28,
-        "discharge_m3s": 214.2,
+        "stage_m": 533.74,
+        "discharge_m3s": 144.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T17:00:00+00:00",
         "lead_hours": 29,
-        "stage_m": 534.33,
-        "discharge_m3s": 220.5,
+        "stage_m": 533.77,
+        "discharge_m3s": 147.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T18:00:00+00:00",
         "lead_hours": 30,
-        "stage_m": 534.36,
-        "discharge_m3s": 224.6,
+        "stage_m": 533.78,
+        "discharge_m3s": 149.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T19:00:00+00:00",
         "lead_hours": 31,
-        "stage_m": 534.37,
-        "discharge_m3s": 226.8,
+        "stage_m": 533.79,
+        "discharge_m3s": 150.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T20:00:00+00:00",
         "lead_hours": 32,
-        "stage_m": 534.38,
-        "discharge_m3s": 227.0,
+        "stage_m": 533.8,
+        "discharge_m3s": 150.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T21:00:00+00:00",
         "lead_hours": 33,
-        "stage_m": 534.37,
-        "discharge_m3s": 225.8,
+        "stage_m": 533.79,
+        "discharge_m3s": 150.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T22:00:00+00:00",
         "lead_hours": 34,
-        "stage_m": 534.35,
-        "discharge_m3s": 223.2,
+        "stage_m": 533.79,
+        "discharge_m3s": 149.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T23:00:00+00:00",
         "lead_hours": 35,
-        "stage_m": 534.32,
-        "discharge_m3s": 219.6,
+        "stage_m": 533.78,
+        "discharge_m3s": 148.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T00:00:00+00:00",
         "lead_hours": 36,
-        "stage_m": 534.29,
-        "discharge_m3s": 215.3,
+        "stage_m": 533.76,
+        "discharge_m3s": 146.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T01:00:00+00:00",
         "lead_hours": 37,
-        "stage_m": 534.25,
-        "discharge_m3s": 210.5,
+        "stage_m": 533.75,
+        "discharge_m3s": 145.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T02:00:00+00:00",
         "lead_hours": 38,
-        "stage_m": 534.22,
-        "discharge_m3s": 205.8,
+        "stage_m": 533.74,
+        "discharge_m3s": 143.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T03:00:00+00:00",
         "lead_hours": 39,
-        "stage_m": 534.19,
-        "discharge_m3s": 201.4,
+        "stage_m": 533.73,
+        "discharge_m3s": 143.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T04:00:00+00:00",
         "lead_hours": 40,
-        "stage_m": 534.16,
-        "discharge_m3s": 197.7,
+        "stage_m": 533.72,
+        "discharge_m3s": 142.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T05:00:00+00:00",
         "lead_hours": 41,
-        "stage_m": 534.14,
-        "discharge_m3s": 195.1,
+        "stage_m": 533.73,
+        "discharge_m3s": 143.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T06:00:00+00:00",
         "lead_hours": 42,
-        "stage_m": 534.13,
-        "discharge_m3s": 193.9,
+        "stage_m": 533.74,
+        "discharge_m3s": 144.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T07:00:00+00:00",
         "lead_hours": 43,
-        "stage_m": 534.13,
-        "discharge_m3s": 193.5,
+        "stage_m": 533.77,
+        "discharge_m3s": 147.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T08:00:00+00:00",
         "lead_hours": 44,
-        "stage_m": 534.13,
-        "discharge_m3s": 194.2,
+        "stage_m": 533.8,
+        "discharge_m3s": 150.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T09:00:00+00:00",
         "lead_hours": 45,
-        "stage_m": 534.15,
-        "discharge_m3s": 196.4,
+        "stage_m": 533.84,
+        "discharge_m3s": 156.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T10:00:00+00:00",
         "lead_hours": 46,
-        "stage_m": 534.16,
-        "discharge_m3s": 198.3,
+        "stage_m": 533.89,
+        "discharge_m3s": 162.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T11:00:00+00:00",
         "lead_hours": 47,
-        "stage_m": 534.18,
-        "discharge_m3s": 200.6,
+        "stage_m": 533.93,
+        "discharge_m3s": 167.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T12:00:00+00:00",
         "lead_hours": 48,
-        "stage_m": 534.2,
-        "discharge_m3s": 203.6,
+        "stage_m": 533.97,
+        "discharge_m3s": 173.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T13:00:00+00:00",
         "lead_hours": 49,
-        "stage_m": 534.23,
-        "discharge_m3s": 206.9,
+        "stage_m": 534.01,
+        "discharge_m3s": 178.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T14:00:00+00:00",
         "lead_hours": 50,
-        "stage_m": 534.25,
-        "discharge_m3s": 209.8,
+        "stage_m": 534.04,
+        "discharge_m3s": 182.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T15:00:00+00:00",
         "lead_hours": 51,
-        "stage_m": 534.26,
-        "discharge_m3s": 211.9,
+        "stage_m": 534.06,
+        "discharge_m3s": 185.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T16:00:00+00:00",
         "lead_hours": 52,
-        "stage_m": 534.28,
-        "discharge_m3s": 213.6,
+        "stage_m": 534.08,
+        "discharge_m3s": 187.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T17:00:00+00:00",
         "lead_hours": 53,
-        "stage_m": 534.28,
-        "discharge_m3s": 214.0,
+        "stage_m": 534.09,
+        "discharge_m3s": 188.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T18:00:00+00:00",
         "lead_hours": 54,
-        "stage_m": 534.27,
-        "discharge_m3s": 213.3,
+        "stage_m": 534.09,
+        "discharge_m3s": 188.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T19:00:00+00:00",
         "lead_hours": 55,
-        "stage_m": 534.26,
-        "discharge_m3s": 211.7,
+        "stage_m": 534.09,
+        "discharge_m3s": 188.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T20:00:00+00:00",
         "lead_hours": 56,
-        "stage_m": 534.25,
-        "discharge_m3s": 209.4,
+        "stage_m": 534.08,
+        "discharge_m3s": 187.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T21:00:00+00:00",
         "lead_hours": 57,
-        "stage_m": 534.23,
-        "discharge_m3s": 206.6,
+        "stage_m": 534.07,
+        "discharge_m3s": 185.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T22:00:00+00:00",
         "lead_hours": 58,
-        "stage_m": 534.2,
-        "discharge_m3s": 203.3,
+        "stage_m": 534.05,
+        "discharge_m3s": 183.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T23:00:00+00:00",
         "lead_hours": 59,
-        "stage_m": 534.17,
-        "discharge_m3s": 199.7,
+        "stage_m": 534.03,
+        "discharge_m3s": 181.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T00:00:00+00:00",
         "lead_hours": 60,
-        "stage_m": 534.15,
-        "discharge_m3s": 196.1,
+        "stage_m": 534.01,
+        "discharge_m3s": 178.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T01:00:00+00:00",
         "lead_hours": 61,
-        "stage_m": 534.12,
-        "discharge_m3s": 192.9,
+        "stage_m": 533.99,
+        "discharge_m3s": 175.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T02:00:00+00:00",
         "lead_hours": 62,
-        "stage_m": 534.1,
-        "discharge_m3s": 189.7,
+        "stage_m": 533.97,
+        "discharge_m3s": 173.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T03:00:00+00:00",
         "lead_hours": 63,
-        "stage_m": 534.07,
-        "discharge_m3s": 186.4,
+        "stage_m": 533.95,
+        "discharge_m3s": 170.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T04:00:00+00:00",
         "lead_hours": 64,
-        "stage_m": 534.05,
-        "discharge_m3s": 184.0,
+        "stage_m": 533.93,
+        "discharge_m3s": 167.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T05:00:00+00:00",
         "lead_hours": 65,
-        "stage_m": 534.05,
-        "discharge_m3s": 183.0,
+        "stage_m": 533.92,
+        "discharge_m3s": 166.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T06:00:00+00:00",
         "lead_hours": 66,
-        "stage_m": 534.05,
-        "discharge_m3s": 183.5,
+        "stage_m": 533.93,
+        "discharge_m3s": 167.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T07:00:00+00:00",
         "lead_hours": 67,
-        "stage_m": 534.07,
-        "discharge_m3s": 186.1,
+        "stage_m": 533.95,
+        "discharge_m3s": 170.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T08:00:00+00:00",
         "lead_hours": 68,
-        "stage_m": 534.11,
-        "discharge_m3s": 191.4,
+        "stage_m": 534.0,
+        "discharge_m3s": 176.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T09:00:00+00:00",
         "lead_hours": 69,
-        "stage_m": 534.16,
-        "discharge_m3s": 197.9,
+        "stage_m": 534.05,
+        "discharge_m3s": 183.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T10:00:00+00:00",
         "lead_hours": 70,
-        "stage_m": 534.21,
-        "discharge_m3s": 204.3,
+        "stage_m": 534.1,
+        "discharge_m3s": 190.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T11:00:00+00:00",
         "lead_hours": 71,
-        "stage_m": 534.27,
-        "discharge_m3s": 212.2,
+        "stage_m": 534.16,
+        "discharge_m3s": 198.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T12:00:00+00:00",
         "lead_hours": 72,
-        "stage_m": 534.32,
-        "discharge_m3s": 219.0,
+        "stage_m": 534.21,
+        "discharge_m3s": 205.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T13:00:00+00:00",
         "lead_hours": 73,
-        "stage_m": 534.35,
-        "discharge_m3s": 223.5,
+        "stage_m": 534.25,
+        "discharge_m3s": 209.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T14:00:00+00:00",
         "lead_hours": 74,
-        "stage_m": 534.37,
-        "discharge_m3s": 226.3,
+        "stage_m": 534.26,
+        "discharge_m3s": 211.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T15:00:00+00:00",
         "lead_hours": 75,
-        "stage_m": 534.37,
-        "discharge_m3s": 226.9,
-        "alert_level": "NORMAL",
-        "is_above_danger": false
-      },
-      {
-        "forecast_time": "2026-09-07T16:00:00+00:00",
-        "lead_hours": 76,
-        "stage_m": 534.37,
-        "discharge_m3s": 225.8,
-        "alert_level": "NORMAL",
-        "is_above_danger": false
-      },
-      {
-        "forecast_time": "2026-09-07T17:00:00+00:00",
-        "lead_hours": 77,
-        "stage_m": 534.35,
-        "discharge_m3s": 223.4,
-        "alert_level": "NORMAL",
-        "is_above_danger": false
-      },
-      {
-        "forecast_time": "2026-09-07T18:00:00+00:00",
-        "lead_hours": 78,
-        "stage_m": 534.33,
-        "discharge_m3s": 220.3,
-        "alert_level": "NORMAL",
-        "is_above_danger": false
-      },
-      {
-        "forecast_time": "2026-09-07T19:00:00+00:00",
-        "lead_hours": 79,
-        "stage_m": 534.3,
-        "discharge_m3s": 216.6,
-        "alert_level": "NORMAL",
-        "is_above_danger": false
-      },
-      {
-        "forecast_time": "2026-09-07T20:00:00+00:00",
-        "lead_hours": 80,
         "stage_m": 534.27,
         "discharge_m3s": 212.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
+        "forecast_time": "2026-09-07T16:00:00+00:00",
+        "lead_hours": 76,
+        "stage_m": 534.26,
+        "discharge_m3s": 211.7,
+        "alert_level": "NORMAL",
+        "is_above_danger": false
+      },
+      {
+        "forecast_time": "2026-09-07T17:00:00+00:00",
+        "lead_hours": 77,
+        "stage_m": 534.25,
+        "discharge_m3s": 209.7,
+        "alert_level": "NORMAL",
+        "is_above_danger": false
+      },
+      {
+        "forecast_time": "2026-09-07T18:00:00+00:00",
+        "lead_hours": 78,
+        "stage_m": 534.23,
+        "discharge_m3s": 207.1,
+        "alert_level": "NORMAL",
+        "is_above_danger": false
+      },
+      {
+        "forecast_time": "2026-09-07T19:00:00+00:00",
+        "lead_hours": 79,
+        "stage_m": 534.2,
+        "discharge_m3s": 203.9,
+        "alert_level": "NORMAL",
+        "is_above_danger": false
+      },
+      {
+        "forecast_time": "2026-09-07T20:00:00+00:00",
+        "lead_hours": 80,
+        "stage_m": 534.18,
+        "discharge_m3s": 200.6,
+        "alert_level": "NORMAL",
+        "is_above_danger": false
+      },
+      {
         "forecast_time": "2026-09-07T21:00:00+00:00",
         "lead_hours": 81,
-        "stage_m": 534.24,
-        "discharge_m3s": 208.6,
+        "stage_m": 534.16,
+        "discharge_m3s": 197.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T22:00:00+00:00",
         "lead_hours": 82,
-        "stage_m": 534.21,
-        "discharge_m3s": 204.7,
+        "stage_m": 534.13,
+        "discharge_m3s": 194.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T23:00:00+00:00",
         "lead_hours": 83,
-        "stage_m": 534.18,
-        "discharge_m3s": 200.7,
+        "stage_m": 534.11,
+        "discharge_m3s": 190.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T00:00:00+00:00",
         "lead_hours": 84,
-        "stage_m": 534.15,
-        "discharge_m3s": 196.8,
+        "stage_m": 534.08,
+        "discharge_m3s": 187.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T01:00:00+00:00",
         "lead_hours": 85,
-        "stage_m": 534.12,
-        "discharge_m3s": 192.1,
+        "stage_m": 534.05,
+        "discharge_m3s": 183.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T02:00:00+00:00",
         "lead_hours": 86,
-        "stage_m": 534.08,
-        "discharge_m3s": 187.0,
+        "stage_m": 534.01,
+        "discharge_m3s": 178.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T03:00:00+00:00",
         "lead_hours": 87,
-        "stage_m": 534.04,
-        "discharge_m3s": 181.5,
+        "stage_m": 533.98,
+        "discharge_m3s": 173.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T04:00:00+00:00",
         "lead_hours": 88,
-        "stage_m": 533.99,
-        "discharge_m3s": 175.9,
+        "stage_m": 533.94,
+        "discharge_m3s": 168.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T05:00:00+00:00",
         "lead_hours": 89,
-        "stage_m": 533.95,
-        "discharge_m3s": 170.3,
+        "stage_m": 533.9,
+        "discharge_m3s": 163.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       }
@@ -19230,11 +19230,11 @@
     "live_sensor": {
       "status": "SUCCESS",
       "channel_id": "3424513",
-      "timestamp": "2026-09-04T12:50:58Z",
-      "entry_id": 7923,
-      "raw_feet": 53.21,
+      "timestamp": "2026-09-04T17:43:26Z",
+      "entry_id": 7980,
+      "raw_feet": 53.33,
       "sensor_datum_msl": 549.35,
-      "stage_m": 533.13
+      "stage_m": 533.1
     }
   },
   "bridgeRajaram": {
@@ -19257,720 +19257,720 @@
       {
         "forecast_time": "2026-09-04T12:00:00+00:00",
         "lead_hours": 0,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T13:00:00+00:00",
         "lead_hours": 1,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T14:00:00+00:00",
         "lead_hours": 2,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T15:00:00+00:00",
         "lead_hours": 3,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T16:00:00+00:00",
         "lead_hours": 4,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T17:00:00+00:00",
         "lead_hours": 5,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T18:00:00+00:00",
         "lead_hours": 6,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T19:00:00+00:00",
         "lead_hours": 7,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T20:00:00+00:00",
         "lead_hours": 8,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T21:00:00+00:00",
         "lead_hours": 9,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T22:00:00+00:00",
         "lead_hours": 10,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.6,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-04T23:00:00+00:00",
         "lead_hours": 11,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.7,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T00:00:00+00:00",
         "lead_hours": 12,
-        "stage_m": 533.86,
-        "discharge_m3s": 99.8,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T01:00:00+00:00",
         "lead_hours": 13,
-        "stage_m": 533.87,
-        "discharge_m3s": 100.2,
+        "stage_m": 533.83,
+        "discharge_m3s": 97.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T02:00:00+00:00",
         "lead_hours": 14,
-        "stage_m": 533.87,
-        "discharge_m3s": 100.9,
+        "stage_m": 533.84,
+        "discharge_m3s": 97.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T03:00:00+00:00",
         "lead_hours": 15,
-        "stage_m": 533.89,
-        "discharge_m3s": 102.3,
+        "stage_m": 533.84,
+        "discharge_m3s": 98.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T04:00:00+00:00",
         "lead_hours": 16,
-        "stage_m": 533.92,
-        "discharge_m3s": 104.4,
+        "stage_m": 533.85,
+        "discharge_m3s": 98.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T05:00:00+00:00",
         "lead_hours": 17,
-        "stage_m": 533.95,
-        "discharge_m3s": 107.2,
+        "stage_m": 533.86,
+        "discharge_m3s": 99.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T06:00:00+00:00",
         "lead_hours": 18,
-        "stage_m": 534.0,
-        "discharge_m3s": 111.0,
+        "stage_m": 533.87,
+        "discharge_m3s": 100.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T07:00:00+00:00",
         "lead_hours": 19,
-        "stage_m": 534.06,
-        "discharge_m3s": 116.2,
+        "stage_m": 533.89,
+        "discharge_m3s": 102.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T08:00:00+00:00",
         "lead_hours": 20,
-        "stage_m": 534.15,
-        "discharge_m3s": 123.4,
+        "stage_m": 533.93,
+        "discharge_m3s": 105.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T09:00:00+00:00",
         "lead_hours": 21,
-        "stage_m": 534.26,
-        "discharge_m3s": 133.2,
+        "stage_m": 533.98,
+        "discharge_m3s": 109.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T10:00:00+00:00",
         "lead_hours": 22,
-        "stage_m": 534.39,
-        "discharge_m3s": 144.4,
+        "stage_m": 534.04,
+        "discharge_m3s": 114.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T11:00:00+00:00",
         "lead_hours": 23,
-        "stage_m": 534.53,
-        "discharge_m3s": 156.7,
+        "stage_m": 534.1,
+        "discharge_m3s": 119.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T12:00:00+00:00",
         "lead_hours": 24,
-        "stage_m": 534.69,
-        "discharge_m3s": 170.0,
+        "stage_m": 534.18,
+        "discharge_m3s": 125.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T13:00:00+00:00",
         "lead_hours": 25,
-        "stage_m": 534.83,
-        "discharge_m3s": 183.3,
+        "stage_m": 534.24,
+        "discharge_m3s": 131.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T14:00:00+00:00",
         "lead_hours": 26,
-        "stage_m": 534.97,
-        "discharge_m3s": 195.5,
+        "stage_m": 534.3,
+        "discharge_m3s": 136.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T15:00:00+00:00",
         "lead_hours": 27,
-        "stage_m": 535.08,
-        "discharge_m3s": 205.9,
+        "stage_m": 534.36,
+        "discharge_m3s": 141.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T16:00:00+00:00",
         "lead_hours": 28,
-        "stage_m": 535.17,
-        "discharge_m3s": 214.2,
+        "stage_m": 534.4,
+        "discharge_m3s": 144.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T17:00:00+00:00",
         "lead_hours": 29,
-        "stage_m": 535.24,
-        "discharge_m3s": 220.5,
+        "stage_m": 534.43,
+        "discharge_m3s": 147.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T18:00:00+00:00",
         "lead_hours": 30,
-        "stage_m": 535.29,
-        "discharge_m3s": 224.6,
+        "stage_m": 534.45,
+        "discharge_m3s": 149.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T19:00:00+00:00",
         "lead_hours": 31,
-        "stage_m": 535.31,
-        "discharge_m3s": 226.8,
+        "stage_m": 534.46,
+        "discharge_m3s": 150.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T20:00:00+00:00",
         "lead_hours": 32,
-        "stage_m": 535.31,
-        "discharge_m3s": 227.0,
+        "stage_m": 534.46,
+        "discharge_m3s": 150.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T21:00:00+00:00",
         "lead_hours": 33,
-        "stage_m": 535.3,
-        "discharge_m3s": 225.8,
+        "stage_m": 534.46,
+        "discharge_m3s": 150.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T22:00:00+00:00",
         "lead_hours": 34,
-        "stage_m": 535.27,
-        "discharge_m3s": 223.2,
+        "stage_m": 534.45,
+        "discharge_m3s": 149.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-05T23:00:00+00:00",
         "lead_hours": 35,
-        "stage_m": 535.23,
-        "discharge_m3s": 219.6,
+        "stage_m": 534.44,
+        "discharge_m3s": 148.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T00:00:00+00:00",
         "lead_hours": 36,
-        "stage_m": 535.18,
-        "discharge_m3s": 215.3,
+        "stage_m": 534.42,
+        "discharge_m3s": 146.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T01:00:00+00:00",
         "lead_hours": 37,
-        "stage_m": 535.13,
-        "discharge_m3s": 210.5,
+        "stage_m": 534.4,
+        "discharge_m3s": 145.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T02:00:00+00:00",
         "lead_hours": 38,
-        "stage_m": 535.08,
-        "discharge_m3s": 205.8,
+        "stage_m": 534.39,
+        "discharge_m3s": 143.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T03:00:00+00:00",
         "lead_hours": 39,
-        "stage_m": 535.03,
-        "discharge_m3s": 201.4,
+        "stage_m": 534.38,
+        "discharge_m3s": 143.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T04:00:00+00:00",
         "lead_hours": 40,
-        "stage_m": 534.99,
-        "discharge_m3s": 197.7,
+        "stage_m": 534.37,
+        "discharge_m3s": 142.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T05:00:00+00:00",
         "lead_hours": 41,
-        "stage_m": 534.96,
-        "discharge_m3s": 195.1,
+        "stage_m": 534.38,
+        "discharge_m3s": 143.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T06:00:00+00:00",
         "lead_hours": 42,
-        "stage_m": 534.95,
-        "discharge_m3s": 193.9,
+        "stage_m": 534.4,
+        "discharge_m3s": 144.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T07:00:00+00:00",
         "lead_hours": 43,
-        "stage_m": 534.95,
-        "discharge_m3s": 193.5,
+        "stage_m": 534.43,
+        "discharge_m3s": 147.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T08:00:00+00:00",
         "lead_hours": 44,
-        "stage_m": 534.95,
-        "discharge_m3s": 194.2,
+        "stage_m": 534.47,
+        "discharge_m3s": 150.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T09:00:00+00:00",
         "lead_hours": 45,
-        "stage_m": 534.98,
-        "discharge_m3s": 196.4,
+        "stage_m": 534.53,
+        "discharge_m3s": 156.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T10:00:00+00:00",
         "lead_hours": 46,
-        "stage_m": 535.0,
-        "discharge_m3s": 198.3,
+        "stage_m": 534.6,
+        "discharge_m3s": 162.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T11:00:00+00:00",
         "lead_hours": 47,
-        "stage_m": 535.02,
-        "discharge_m3s": 200.6,
+        "stage_m": 534.66,
+        "discharge_m3s": 167.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T12:00:00+00:00",
         "lead_hours": 48,
-        "stage_m": 535.06,
-        "discharge_m3s": 203.6,
+        "stage_m": 534.72,
+        "discharge_m3s": 173.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T13:00:00+00:00",
         "lead_hours": 49,
-        "stage_m": 535.09,
-        "discharge_m3s": 206.9,
+        "stage_m": 534.78,
+        "discharge_m3s": 178.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T14:00:00+00:00",
         "lead_hours": 50,
-        "stage_m": 535.13,
-        "discharge_m3s": 209.8,
+        "stage_m": 534.82,
+        "discharge_m3s": 182.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T15:00:00+00:00",
         "lead_hours": 51,
-        "stage_m": 535.15,
-        "discharge_m3s": 211.9,
+        "stage_m": 534.85,
+        "discharge_m3s": 185.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T16:00:00+00:00",
         "lead_hours": 52,
-        "stage_m": 535.17,
-        "discharge_m3s": 213.6,
+        "stage_m": 534.88,
+        "discharge_m3s": 187.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T17:00:00+00:00",
         "lead_hours": 53,
-        "stage_m": 535.17,
-        "discharge_m3s": 214.0,
+        "stage_m": 534.89,
+        "discharge_m3s": 188.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T18:00:00+00:00",
         "lead_hours": 54,
-        "stage_m": 535.16,
-        "discharge_m3s": 213.3,
+        "stage_m": 534.89,
+        "discharge_m3s": 188.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T19:00:00+00:00",
         "lead_hours": 55,
-        "stage_m": 535.15,
-        "discharge_m3s": 211.7,
+        "stage_m": 534.89,
+        "discharge_m3s": 188.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T20:00:00+00:00",
         "lead_hours": 56,
-        "stage_m": 535.12,
-        "discharge_m3s": 209.4,
+        "stage_m": 534.88,
+        "discharge_m3s": 187.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T21:00:00+00:00",
         "lead_hours": 57,
-        "stage_m": 535.09,
-        "discharge_m3s": 206.6,
+        "stage_m": 534.86,
+        "discharge_m3s": 185.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T22:00:00+00:00",
         "lead_hours": 58,
-        "stage_m": 535.05,
-        "discharge_m3s": 203.3,
+        "stage_m": 534.84,
+        "discharge_m3s": 183.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-06T23:00:00+00:00",
         "lead_hours": 59,
-        "stage_m": 535.01,
-        "discharge_m3s": 199.7,
+        "stage_m": 534.81,
+        "discharge_m3s": 181.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T00:00:00+00:00",
         "lead_hours": 60,
-        "stage_m": 534.98,
-        "discharge_m3s": 196.1,
+        "stage_m": 534.78,
+        "discharge_m3s": 178.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T01:00:00+00:00",
         "lead_hours": 61,
-        "stage_m": 534.94,
-        "discharge_m3s": 192.9,
+        "stage_m": 534.75,
+        "discharge_m3s": 175.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T02:00:00+00:00",
         "lead_hours": 62,
-        "stage_m": 534.9,
-        "discharge_m3s": 189.7,
+        "stage_m": 534.72,
+        "discharge_m3s": 173.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T03:00:00+00:00",
         "lead_hours": 63,
-        "stage_m": 534.87,
-        "discharge_m3s": 186.4,
+        "stage_m": 534.69,
+        "discharge_m3s": 170.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T04:00:00+00:00",
         "lead_hours": 64,
-        "stage_m": 534.84,
-        "discharge_m3s": 184.0,
+        "stage_m": 534.66,
+        "discharge_m3s": 167.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T05:00:00+00:00",
         "lead_hours": 65,
-        "stage_m": 534.83,
-        "discharge_m3s": 183.0,
+        "stage_m": 534.65,
+        "discharge_m3s": 166.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T06:00:00+00:00",
         "lead_hours": 66,
-        "stage_m": 534.84,
-        "discharge_m3s": 183.5,
+        "stage_m": 534.65,
+        "discharge_m3s": 167.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T07:00:00+00:00",
         "lead_hours": 67,
-        "stage_m": 534.86,
-        "discharge_m3s": 186.1,
+        "stage_m": 534.69,
+        "discharge_m3s": 170.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T08:00:00+00:00",
         "lead_hours": 68,
-        "stage_m": 534.92,
-        "discharge_m3s": 191.4,
+        "stage_m": 534.76,
+        "discharge_m3s": 176.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T09:00:00+00:00",
         "lead_hours": 69,
-        "stage_m": 534.99,
-        "discharge_m3s": 197.9,
+        "stage_m": 534.83,
+        "discharge_m3s": 183.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T10:00:00+00:00",
         "lead_hours": 70,
-        "stage_m": 535.07,
-        "discharge_m3s": 204.3,
+        "stage_m": 534.91,
+        "discharge_m3s": 190.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T11:00:00+00:00",
         "lead_hours": 71,
-        "stage_m": 535.15,
-        "discharge_m3s": 212.2,
+        "stage_m": 535.0,
+        "discharge_m3s": 198.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T12:00:00+00:00",
         "lead_hours": 72,
-        "stage_m": 535.23,
-        "discharge_m3s": 219.0,
+        "stage_m": 535.07,
+        "discharge_m3s": 205.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T13:00:00+00:00",
         "lead_hours": 73,
-        "stage_m": 535.27,
-        "discharge_m3s": 223.5,
+        "stage_m": 535.12,
+        "discharge_m3s": 209.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T14:00:00+00:00",
         "lead_hours": 74,
-        "stage_m": 535.31,
-        "discharge_m3s": 226.3,
+        "stage_m": 535.15,
+        "discharge_m3s": 211.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T15:00:00+00:00",
         "lead_hours": 75,
-        "stage_m": 535.31,
-        "discharge_m3s": 226.9,
-        "alert_level": "NORMAL",
-        "is_above_danger": false
-      },
-      {
-        "forecast_time": "2026-09-07T16:00:00+00:00",
-        "lead_hours": 76,
-        "stage_m": 535.3,
-        "discharge_m3s": 225.8,
-        "alert_level": "NORMAL",
-        "is_above_danger": false
-      },
-      {
-        "forecast_time": "2026-09-07T17:00:00+00:00",
-        "lead_hours": 77,
-        "stage_m": 535.27,
-        "discharge_m3s": 223.4,
-        "alert_level": "NORMAL",
-        "is_above_danger": false
-      },
-      {
-        "forecast_time": "2026-09-07T18:00:00+00:00",
-        "lead_hours": 78,
-        "stage_m": 535.24,
-        "discharge_m3s": 220.3,
-        "alert_level": "NORMAL",
-        "is_above_danger": false
-      },
-      {
-        "forecast_time": "2026-09-07T19:00:00+00:00",
-        "lead_hours": 79,
-        "stage_m": 535.2,
-        "discharge_m3s": 216.6,
-        "alert_level": "NORMAL",
-        "is_above_danger": false
-      },
-      {
-        "forecast_time": "2026-09-07T20:00:00+00:00",
-        "lead_hours": 80,
         "stage_m": 535.15,
         "discharge_m3s": 212.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
+        "forecast_time": "2026-09-07T16:00:00+00:00",
+        "lead_hours": 76,
+        "stage_m": 535.15,
+        "discharge_m3s": 211.7,
+        "alert_level": "NORMAL",
+        "is_above_danger": false
+      },
+      {
+        "forecast_time": "2026-09-07T17:00:00+00:00",
+        "lead_hours": 77,
+        "stage_m": 535.12,
+        "discharge_m3s": 209.7,
+        "alert_level": "NORMAL",
+        "is_above_danger": false
+      },
+      {
+        "forecast_time": "2026-09-07T18:00:00+00:00",
+        "lead_hours": 78,
+        "stage_m": 535.1,
+        "discharge_m3s": 207.1,
+        "alert_level": "NORMAL",
+        "is_above_danger": false
+      },
+      {
+        "forecast_time": "2026-09-07T19:00:00+00:00",
+        "lead_hours": 79,
+        "stage_m": 535.06,
+        "discharge_m3s": 203.9,
+        "alert_level": "NORMAL",
+        "is_above_danger": false
+      },
+      {
+        "forecast_time": "2026-09-07T20:00:00+00:00",
+        "lead_hours": 80,
+        "stage_m": 535.02,
+        "discharge_m3s": 200.6,
+        "alert_level": "NORMAL",
+        "is_above_danger": false
+      },
+      {
         "forecast_time": "2026-09-07T21:00:00+00:00",
         "lead_hours": 81,
-        "stage_m": 535.11,
-        "discharge_m3s": 208.6,
+        "stage_m": 534.99,
+        "discharge_m3s": 197.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T22:00:00+00:00",
         "lead_hours": 82,
-        "stage_m": 535.07,
-        "discharge_m3s": 204.7,
+        "stage_m": 534.95,
+        "discharge_m3s": 194.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-07T23:00:00+00:00",
         "lead_hours": 83,
-        "stage_m": 535.03,
-        "discharge_m3s": 200.7,
+        "stage_m": 534.92,
+        "discharge_m3s": 190.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T00:00:00+00:00",
         "lead_hours": 84,
-        "stage_m": 534.98,
-        "discharge_m3s": 196.8,
+        "stage_m": 534.88,
+        "discharge_m3s": 187.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T01:00:00+00:00",
         "lead_hours": 85,
-        "stage_m": 534.93,
-        "discharge_m3s": 192.1,
+        "stage_m": 534.83,
+        "discharge_m3s": 183.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T02:00:00+00:00",
         "lead_hours": 86,
-        "stage_m": 534.87,
-        "discharge_m3s": 187.0,
+        "stage_m": 534.78,
+        "discharge_m3s": 178.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T03:00:00+00:00",
         "lead_hours": 87,
-        "stage_m": 534.81,
-        "discharge_m3s": 181.5,
+        "stage_m": 534.73,
+        "discharge_m3s": 173.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T04:00:00+00:00",
         "lead_hours": 88,
-        "stage_m": 534.75,
-        "discharge_m3s": 175.9,
+        "stage_m": 534.67,
+        "discharge_m3s": 168.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-08T05:00:00+00:00",
         "lead_hours": 89,
-        "stage_m": 534.69,
-        "discharge_m3s": 170.3,
+        "stage_m": 534.61,
+        "discharge_m3s": 163.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       }
@@ -20085,41 +20085,41 @@
       "end_time": "2026-09-04T12:00:37+00:00",
       "duration_seconds": 36.9,
       "total_rainfall_mm": 37.1,
-      "peak_discharge_m3s": 227.0,
-      "peak_stage_m": 534.38,
+      "peak_discharge_m3s": 212.5,
+      "peak_stage_m": 534.27,
       "alert_level": "NORMAL"
     }
   },
   "logs": [
     {
-      "t": "12:50:00",
+      "t": "17:44:36",
       "lv": "INFO",
       "msg": "Forecast cycle CYC_20260904_12z initiated across 18 Panchganga stations"
     },
     {
-      "t": "12:53:25",
+      "t": "17:47:02",
       "lv": "INFO",
       "msg": "Open-Meteo 90-hr precipitation forecast downloaded successfully"
     },
     {
-      "t": "12:53:25",
+      "t": "17:47:02",
       "lv": "INFO",
       "msg": "Dynamic subbasin selector evaluated: S1\u2192Karveer, S2\u2192Balinga, S6\u2192Gaganbawda"
     },
     {
-      "t": "12:53:25",
+      "t": "17:47:02",
       "lv": "INFO",
       "msg": "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/"
     },
     {
-      "t": "12:53:25",
+      "t": "17:47:02",
       "lv": "INFO",
-      "msg": "ThingSpeak Shivaji Live Ground Truth: Distance=53.21 ft -> Water Level=533.13 m MSL"
+      "msg": "ThingSpeak Shivaji Live Ground Truth: Distance=53.33 ft -> Water Level=533.10 m MSL"
     },
     {
-      "t": "12:53:25",
+      "t": "17:47:02",
       "lv": "INFO",
-      "msg": "HEC-HMS 4.13 execution completed (CALIBRATED_RJKT): Peak Discharge 227.0 m\u00b3/s at T+32h in 14.8s"
+      "msg": "HEC-HMS 4.13 execution completed (CALIBRATED_RJKT): Peak Discharge 212.5 m\u00b3/s at T+75h in 14.8s"
     }
   ],
   "runs_history": [
@@ -20129,12 +20129,12 @@
       "cycle_time": "12z",
       "start_time": "2026-09-04T12:00:00+00:00",
       "duration_seconds": 36.9,
-      "peak_discharge_m3s": 227.0,
-      "lead_hours_to_peak": 32,
-      "total_volume_mcm": 57.8,
+      "peak_discharge_m3s": 212.5,
+      "lead_hours_to_peak": 75,
+      "total_volume_mcm": 49.6,
       "total_rainfall_mm": 37.1,
-      "shivaji_peak_stage_m": 534.38,
-      "rajaram_peak_stage_m": 535.31,
+      "shivaji_peak_stage_m": 534.27,
+      "rajaram_peak_stage_m": 535.15,
       "alert_level": "NORMAL",
       "status": "completed",
       "has_validation": false,
