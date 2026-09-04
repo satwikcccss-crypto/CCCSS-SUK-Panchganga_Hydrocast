@@ -1,4 +1,4 @@
-# HydroCast Frontend Architecture & Design System
+﻿# HydroCast Frontend Architecture & Design System
 
 ```
 ========================================================================================
@@ -136,7 +136,7 @@ The cross-section viewer renders a direct 2D geometric elevation slice of the Pa
 
 ## 5. State Synchronization & SWR Configuration
 
-Data fetching is wrapped through the client abstraction [`lib/api.ts`](file:///e:/hydrocast_complete/system/frontend/lib/api.ts):
+Data fetching is wrapped through the client abstraction [`lib/api.ts`](file:///e:/hydrocast_complete/frontend/lib/api.ts):
 
 ```typescript
 export async function fetchDashboardData(runId?: string) {

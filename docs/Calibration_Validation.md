@@ -1,4 +1,4 @@
-# Model Calibration, Validation Metrics & Accuracy Engine
+﻿# Model Calibration, Validation Metrics & Accuracy Engine
 
 ```
 ========================================================================================
@@ -13,7 +13,7 @@
                    └─────────────────────────┬────────────────────────┘
                                              ▼
                              Validation Metrics Engine
-                     (system/src/hydrology/validation_metrics.py)
+                     (src/hydrology/validation_metrics.py)
                                              │
       ┌──────────────────────┬───────────────┴───────────────┬──────────────────────┐
       ▼                      ▼                               ▼                      ▼
@@ -148,7 +148,7 @@ Across the Panchganga catchment, basin-wide volumetric rainfall accuracy current
 
 ## 5. Automated Validation Execution in Pipeline
 
-The validation engine runs automatically on every 6-hour simulation cycle in [`open_meteo.py`](file:///e:/hydrocast_complete/system/src/ecmwf/open_meteo.py):
+The validation engine runs automatically on every 6-hour simulation cycle in [`open_meteo.py`](file:///e:/hydrocast_complete/src/ecmwf/open_meteo.py):
 
 ```python
 from src.hydrology.validation_metrics import evaluate_forecast_accuracy
@@ -163,4 +163,4 @@ log.info("Forecast validation complete: Spearman ρ=%.4f, NSE=%.4f, Grade=%s",
          metrics["spearman_rho"], metrics["nse_discharge"], validation_results["performance_grade"])
 ```
 
-Results are permanently embedded in the historical runs ledger (`system/data/runs/{cycle_id}.json`) and rendered interactively on the Next.js **Accuracy & Run Log** dashboard.
+Results are permanently embedded in the historical runs ledger (`data/runs/{cycle_id}.json`) and rendered interactively on the Next.js **Accuracy & Run Log** dashboard.

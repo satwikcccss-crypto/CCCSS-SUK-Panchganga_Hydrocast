@@ -1,4 +1,4 @@
-# Technological Novelty & Innovation Architecture of HydroCast
+﻿# Technological Novelty & Innovation Architecture of HydroCast
 
 ```
 ========================================================================================
@@ -83,7 +83,7 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ### Novelty 7: Immutable Historical Simulation Runs Ledger & "Run Inspector"
 - **The Breakthrough:** Full auditability and time-travel inspection for post-disaster inquiries and model validation.
-- **How It Works:** Every forecast execution is archived as an immutable, timestamped JSON document under `system/data/runs/{cycle_id}.json`.
+- **How It Works:** Every forecast execution is archived as an immutable, timestamped JSON document under `data/runs/{cycle_id}.json`.
 - **The User Experience:** On the **Accuracy & Run Log** dashboard, operators can scroll through a ledger of past cycles (`CYC_20260901_06z`, `CYC_20260902_18z`, etc.) and click **"Inspect Run"**. SWR instantly reloads that historical run into all hydrographs, scatter plots, and prediction tables without a full page refresh, allowing operators to verify what the model predicted 72 hours ago versus what physically occurred.
 
 ---

@@ -49,7 +49,8 @@
 13. [Quickstart & Local Installation](#13-quickstart--local-installation)
 14. [Production Deployment & Cron Automation](#14-production-deployment--cron-automation)
 15. [Repository Structure](#15-repository-structure)
-16. [License & Institutional Attribution](#16-license--institutional-attribution)
+16. [Enterprise Restructure & Modernization Changelog](#16-enterprise-restructure--modernization-changelog)
+17. [License & Institutional Attribution](#17-license--institutional-attribution)
 
 ---
 
@@ -277,18 +278,18 @@ In multi-station subbasins ($S_2, S_3, S_6, S_8$), the system dynamically evalua
 +----+-------------------------------+-----------------------------------------------------------+
 |Step| Pipeline Phase                | Operational Responsibility & Implementation Source        |
 +----+-------------------------------+-----------------------------------------------------------+
-| 01 | ECMWF Precipitation Ingestion | system/src/ecmwf/open_meteo.py (fetch_point_forecast)     |
-| 02 | Dynamic Subbasin Selection    | system/src/ecmwf/station_selector.py (STATION_REGISTRY)   |
-| 03 | Antecedent Soil Moisture Calc | system/src/ecmwf/open_meteo.py (calculate_amc_condition)  |
-| 04 | DSS Meteorological Boundary   | system/src/hms/runner.py (Met_1.dss precipitation tables) |
-| 05 | Hydrologic Watershed Modeling | system/src/hms/runner.py (execute_hec_hms / SCS-CN)       |
-| 06 | Outlet Hydrograph Routing     | system/src/hms/runner.py (extract_outlet_hydrograph)      |
-| 07 | Live IoT Radar Polling        | system/src/sensors/thingspeak_gauge.py (ThingSpeak 3424513|
-| 08 | Hydraulic Rating Conversion   | system/src/hydrology/stage_converter.py (PCHIP converter) |
-| 09 | Accuracy & Validation Eval    | system/src/hydrology/validation_metrics.py (Spearman ρ)   |
-| 10 | Persistent Runs Archiving     | system/src/hydrology/runs_tracker.py (save_computation...)|
-| 11 | Database & State Broadcast    | system/src/ecmwf/open_meteo.py (latest_pipeline_state)   |
-| 12 | Live WebSocket Push           | system/src/api/main.py (/ws/live push to Next.js)         |
+| 01 | ECMWF Precipitation Ingestion | src/ecmwf/open_meteo.py (fetch_point_forecast)             |
+| 02 | Dynamic Subbasin Selection    | src/ecmwf/station_selector.py (STATION_REGISTRY)           |
+| 03 | Antecedent Soil Moisture Calc | src/ecmwf/open_meteo.py (calculate_amc_condition)          |
+| 04 | DSS Meteorological Boundary   | src/hms/runner.py (Met_1.dss precipitation tables)         |
+| 05 | Hydrologic Watershed Modeling | src/hms/runner.py (execute_hec_hms / SCS-CN)               |
+| 06 | Outlet Hydrograph Routing     | src/hms/runner.py (extract_outlet_hydrograph)              |
+| 07 | Live IoT Radar Polling        | src/sensors/thingspeak_gauge.py (ThingSpeak 3424513)       |
+| 08 | Hydraulic Rating Conversion   | src/hydrology/stage_converter.py (PCHIP converter)         |
+| 09 | Accuracy & Validation Eval    | src/hydrology/validation_metrics.py (Spearman ρ)           |
+| 10 | Persistent Runs Archiving     | src/hydrology/runs_tracker.py (save_computation_run)       |
+| 11 | Database & State Broadcast    | src/ecmwf/open_meteo.py (latest_pipeline_state)           |
+| 12 | Live WebSocket Push           | src/api/main.py (/ws/live push to Next.js)                 |
 +----+-------------------------------+-----------------------------------------------------------+
 ```
 
@@ -331,6 +332,9 @@ The documentation suite is organized in the [`docs/`](file:///e:/hydrocast_compl
 | ⚠️ **[`docs/Errors_Mistakes_Engineering_Assumptions.md`](file:///e:/hydrocast_complete/docs/Errors_Mistakes_Engineering_Assumptions.md)** | Comprehensive autopsy of 30.2× bed slope distortion, wetted perimeter collapse, spline oscillations, and engineering assumptions. |
 | 💡 **[`docs/Novelty_of_this_System.md`](file:///e:/hydrocast_complete/docs/Novelty_of_this_System.md)** | The 10 core architectural and hydrologic novelties of HydroCast, comparative innovation matrix vs traditional CWC/IMD systems. |
 | 🎓 **[`docs/Accuracy_Analysis_PI_Report.md`](file:///e:/hydrocast_complete/docs/Accuracy_Analysis_PI_Report.md)** | Formal academic accuracy and simulation validation research memorandum prepared for the Principal Investigator (PI). |
+| 🌦️ **[`docs/Rainfall_Validation_Pipeline.md`](file:///e:/hydrocast_complete/docs/Rainfall_Validation_Pipeline.md)** | Concrete observed rainfall validation pipeline, WRD gauge ingestion, and ground-truth telemetry accuracy verification. |
+| 🏛️ **[`docs/WRD_Historical_Rating_Curve_CrossCheck.md`](file:///e:/hydrocast_complete/docs/WRD_Historical_Rating_Curve_CrossCheck.md)** | Ground-truth flood record verification vs Maharashtra WRD government records and bed slope calibration ($S_0 = 0.005858$). |
+| 🗺️ **[`docs/ROADMAP.md`](file:///e:/hydrocast_complete/docs/ROADMAP.md)** | Enterprise production roadmap: Orchestration, automated alerting, Docker containerization, archival, and API security. |
 
 ---
 
@@ -382,7 +386,7 @@ curl -s http://localhost:8000/api/v1/accuracy | jq .
 
 ## 12. Frontend Intelligence Dashboard
 
-The frontend application (`system/frontend/`) is built on **Next.js 14** and features four specialized operational views:
+The frontend application (`frontend/`) is built on **Next.js 14** and features four specialized operational views:
 
 1. **Verification Charts (Chart.js):** Dual-axis stage ($m$ MSL) vs flow ($m^3/s$) hydrograph over 90 lead hours, Spearman scatter plot with $1:1$ reference line, and 18-station rainfall volume comparison.
 2. **Hourly Prediction Log Table (90h):** Lead hour ($+0\text{h} \to +89\text{h}$), Shivaji Stage & Flow, Rajaram Stage, Actual Observed Water Level, Error Delta $\Delta H$, Alert status, and 1-click CSV Export.
@@ -400,33 +404,38 @@ The frontend application (`system/frontend/`) is built on **Next.js 14** and fea
 
 ### Step 1: Clone Repository & Create Virtual Environment
 ```bash
-git clone https://github.com/your-org/hydrocast.git
-cd hydrocast
+git clone https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast.git
+cd CCCSS-SUK-Panchganga_Hydrocast
 python -m venv venv
 venv\Scripts\activate          # Windows
 # source venv/bin/activate     # Linux / macOS
-pip install -r system/requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Step 2: Configure Environment (Optional)
 ```bash
-cp system/.env.example system/.env
+cp .env.example .env
 # If DATABASE_URL is unset, HydroCast runs autonomously in standalone JSON mode!
 ```
 
 ### Step 3: Run a Simulation Cycle
 ```bash
-python system/src/ecmwf/open_meteo.py
+python -m src.ecmwf.open_meteo
 ```
 
-### Step 4: Start Backend API Server
+### Step 4: Run Automated Tests
 ```bash
-uvicorn src.api.main:app --app-dir system --host 0.0.0.0 --port 8000 --reload
+python -m unittest discover tests
 ```
 
-### Step 5: Start Next.js Frontend Dashboard
+### Step 5: Start Backend API Server
 ```bash
-cd system/frontend
+uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### Step 6: Start Next.js Frontend Dashboard
+```bash
+cd frontend
 npm install
 npm run build
 npm run start
@@ -445,7 +454,7 @@ Forecast cycles run automatically 45 minutes after ECMWF global assimilation:
 - **18z Cycle:** 12:45 AM IST (19:15 UTC)
 
 ```cron
-15 1,7,13,19 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python system/src/ecmwf/open_meteo.py >> system/data/logs/cron.log 2>&1
+15 1,7,13,19 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python -m src.ecmwf.open_meteo >> data/logs/cron.log 2>&1
 ```
 
 ---
@@ -453,78 +462,172 @@ Forecast cycles run automatically 45 minutes after ECMWF global assimilation:
 ## 15. Repository Structure
 
 ```
-CCCSS-SUK-Panchganga_Hydrocast/ (GitHub Repository Root)
+CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  ├── .github/
  │    └── workflows/
  │         └── pipeline.yml              # 6-Hourly automated CI/CD forecast runner
- ├── data/
- │    ├── gov_rating_curve_records.json # 19 Maharashtra WRD ground truth benchmarks
- │    ├── hms/
- │    │    └── HMS_Automation_RJKT/      # USACE HEC-HMS 4.x basin & DSS models
- │    ├── openmeteo_dss/
- │    │    └── latest_pipeline_state.json# Runtime state cache
- │    ├── runs/                         # Immutable persistent historical runs archive
+ ├── .env.example                         # Environment variable configuration template
+ ├── .gitignore                           # Git ignore rules
+ ├── ARCHITECTURE.md                      # System architecture & high-level design
+ ├── LICENSE                              # MIT Open-Source License
+ ├── README.md                            # Master repository documentation hub
+ ├── requirements.txt                     # Core & scientific Python dependencies
+ ├── data/                                # Hydrological data, shapefiles & historical runs
+ │    ├── Shapefiles_Panchganga basin/    # Subbasin & stream network GeoJSON boundary layers
+ │    ├── gov_rating_curve_records.json   # 19 Maharashtra WRD ground truth benchmarks
+ │    ├── hms/                            # USACE HEC-HMS 4.x basin models & DSS storage
+ │    │    └── HMS_Automation_RJKT/
+ │    ├── observed_rainfall/              # Daily rain gauge observation templates
+ │    ├── openmeteo_dss/                  # ECMWF hyetographs & latest pipeline state
+ │    │    ├── csv/                       # Tabular hyetographs per station & subbasin
+ │    │    ├── dss/                       # DSS Jython scripts & rainfall tables
+ │    │    └── latest_pipeline_state.json # Runtime state cache for dashboard & DB
+ │    ├── openmeteo_dss_centroids/        # Subbasin centroid hyetographs
+ │    ├── runs/                           # Immutable persistent historical runs archive
  │    │    ├── CYC_20260831_06z.json
  │    │    ├── ...
- │    │    └── runs_index.json           # Fast index of historical computation cycles
- │    └── Shapefiles_Panchganga basin/  # Subbasin & stream network GeoJSON layers
- ├── database/
- │    ├── schema_v3.sql                 # PostgreSQL relational production schema
- │    └── supabase_schema.sql           # Supabase cloud database schema
- ├── docs/                             # Comprehensive 18-module technical documentation library
- │    ├── Accuracy_Analysis_PI_Report.md# Research report for Principal Investigator
- │    ├── Architecture.md              # 12-Step pipeline & fault tolerance
- │    ├── Backend.md                   # FastAPI services, asyncpg, WebSocket
- │    ├── Calibration_Validation.md    # Spearman rank ρ, NSE, WRD benchmarks
- │    ├── Database.md                  # PostgreSQL, Supabase, JSON ledger schemas
- │    ├── Deployment_Operations.md     # Production systemd, PM2, cron scheduling
+ │    │    └── runs_index.json            # Fast index of historical computation cycles
+ │    └── stations/                       # Authoritative rain gauge coordinates & metadata
+ ├── database/                            # Database schemas, migrations & analytics
+ │    ├── README.md                       # Database setup & execution guide
+ │    ├── schema_v3.sql                   # PostgreSQL relational production schema
+ │    └── supabase_schema.sql             # Supabase cloud schema with views & analytical metrics
+ ├── docs/                                # Comprehensive 21-module technical documentation library
+ │    ├── README.md                       # Technical documentation index
+ │    ├── Accuracy_Analysis_PI_Report.md  # Research report for Principal Investigator
+ │    ├── Architecture.md                 # 12-Step pipeline & fault tolerance
+ │    ├── Backend.md                      # FastAPI services, asyncpg, WebSocket
+ │    ├── Calibration_Validation.md       # Spearman rank ρ, NSE, WRD benchmarks
+ │    ├── Database.md                     # PostgreSQL, Supabase, JSON ledger schemas
+ │    ├── Deployment_Operations.md        # Production systemd, PM2, cron scheduling
  │    ├── Errors_Mistakes_Engineering_Assumptions.md # Autopsy of past bugs & assumptions
- │    ├── Frontend.md                  # Next.js 14, Tailwind, Chart.js
- │    ├── HMS.md                       # HEC-HMS headless automation & DSS container
- │    ├── Hydraulics.md                # Manning equation, slope calibration
- │    ├── Hydrology.md                 # 2,140 km² basin hydrology, SCS-CN
- │    ├── IoT_Telemetry.md             # ThingSpeak radar sensor, 549.35m datum
- │    ├── Novelty_of_this_System.md    # 10 technological novelties & innovation matrix
- │    ├── Openmeteo.md                 # ECMWF IFS 0.25° meteorological ingestion
- │    ├── Raingauge_Station.md         # 18 rain gauge registry & selection
- │    ├── Runoff_Computation.md        # Mathematical runoff continuum & routing
- │    ├── Shpfiles.md                  # Vector GeoJSON, stream ordering, DEM
- │    └── Stage_Conversion_Discharge.md# Monotonic PCHIP rating curves
- ├── frontend/                         # Next.js 14 Web Application
+ │    ├── Frontend.md                     # Next.js 14, Tailwind, Chart.js
+ │    ├── HMS.md                          # HEC-HMS headless automation & DSS container
+ │    ├── Hydraulics.md                   # Manning equation, slope calibration
+ │    ├── Hydrology.md                    # 2,140 km² basin hydrology, SCS-CN
+ │    ├── IoT_Telemetry.md                # ThingSpeak radar sensor, 549.35m datum
+ │    ├── Novelty_of_this_System.md       # 10 technological novelties & innovation matrix
+ │    ├── Openmeteo.md                    # ECMWF IFS 0.25° meteorological ingestion
+ │    ├── Rainfall_Validation_Pipeline.md # Observed rainfall verification pipeline
+ │    ├── Raingauge_Station.md            # 18 rain gauge registry & selection
+ │    ├── ROADMAP.md                      # Enterprise production roadmap & hardening pillars
+ │    ├── Runoff_Computation.md           # Mathematical runoff continuum & routing
+ │    ├── Shpfiles.md                     # Vector GeoJSON, stream ordering, DEM
+ │    ├── Stage_Conversion_Discharge.md   # Monotonic PCHIP rating curves
+ │    └── WRD_Historical_Rating_Curve_CrossCheck.md # Ground-truth WRD calibration report
+ ├── frontend/                            # Next.js 14 Operational Intelligence Web Dashboard
  │    ├── app/
- │    │    ├── api/v1/dashboard/route.ts # Next.js API proxy route
- │    │    └── dashboard/page.tsx        # Responsive dashboard shell
+ │    │    ├── api/v1/dashboard/route.ts  # Next.js API proxy route
+ │    │    ├── api/v1/history/route.ts    # Historical run viewer route
+ │    │    ├── dashboard/page.tsx         # Responsive dashboard shell
+ │    │    ├── globals.css                # Global Tailwind styles
+ │    │    └── layout.tsx                 # Root application layout
  │    ├── components/
- │    │    ├── AccuracyPanel.tsx         # Accuracy, WRD table & run ledger
- │    │    ├── OverviewPanel.tsx         # Executive KPI tiles & Leaflet map
- │    │    ├── RainfallPanel.tsx         # 18-station hyetographs & bar charts
- │    │    ├── RunoffPanel.tsx           # HEC-HMS hydrograph & 2D SVG river cross-section
- │    │    └── SystemPanel.tsx           # 12-Step pipeline health & logs
+ │    │    ├── charts/                    # Hydrograph & Hyetograph Chart.js components
+ │    │    ├── map/                       # Leaflet GIS interactive basin map
+ │    │    ├── AccuracyPanel.tsx          # Accuracy metrics, WRD table & run ledger
+ │    │    ├── CrossSectionViewer.tsx     # 2D SVG river cross-section visualizer
+ │    │    ├── DischargeDetailsCard.tsx   # Peak flow metrics card
+ │    │    ├── EngineeringGauge.tsx       # Gauge dial with CWC alert zones
+ │    │    ├── FloodBanner.tsx            # Real-time alert status banner
+ │    │    ├── OverviewPanel.tsx          # Executive KPI tiles & Leaflet map
+ │    │    ├── RainfallPanel.tsx          # 18-station hyetographs & bar charts
+ │    │    ├── RunoffPanel.tsx            # Hydrographs & cross-section view
+ │    │    ├── StageGauge.tsx             # Vertical river stage column visualizer
+ │    │    ├── StationDetailsCard.tsx     # Station coordinates & rain card
+ │    │    └── SystemPanel.tsx            # 12-Step pipeline health & logs
+ │    ├── hooks/
+ │    │    └── useWebSocket.ts            # Live WebSocket client hook
  │    ├── lib/
- │    │    └── api.ts                    # SWR client & fetch wrappers
- │    └── public/data/                  # Mirrored runtime JSON datasets
- ├── src/                              # Python Core Hydrological Engine
+ │    │    ├── api.ts                     # SWR client & fetch wrappers
+ │    │    └── hydraulics.ts              # Frontend rating curve interpolation
+ │    ├── public/data/                    # Mirrored runtime JSON datasets & GeoJSON
+ │    ├── package.json                    # Node dependencies & build scripts
+ │    ├── tailwind.config.js              # Tailwind theme configuration
+ │    └── tsconfig.json                   # TypeScript configuration
+ ├── src/                                 # Enterprise Python Hydrologic Engine (Root Package)
+ │    ├── __init__.py                     # Package metadata & exports
+ │    ├── orchestrator.py                 # 12-Step automated pipeline orchestrator
+ │    ├── alerts/
+ │    │    ├── __init__.py
+ │    │    └── evaluator.py               # CWC alert evaluation & notifications
  │    ├── api/
- │    │    └── main.py                   # FastAPI REST API & WebSocket service
+ │    │    ├── __init__.py
+ │    │    ├── main.py                    # FastAPI REST API & WebSocket service
+ │    │    └── notifier.py                # WebSocket cycle completion broadcaster
+ │    ├── db/
+ │    │    ├── __init__.py
+ │    │    ├── cycle_complete.py          # Run status updater CLI shim
+ │    │    └── store_results.py           # PostgreSQL simulation results persistence
+ │    ├── dss/
+ │    │    ├── __init__.py
+ │    │    └── writer.py                  # USACE HEC-DSS binary writer
  │    ├── ecmwf/
- │    │    ├── open_meteo.py             # ECMWF fetcher, runner, & Supabase sync
- │    │    └── station_selector.py       # 18-station dynamic conservative router
+ │    │    ├── __init__.py
+ │    │    ├── downloader.py              # Raw GRIB2 downloader
+ │    │    ├── open_meteo.py              # ECMWF fetcher, runner & Supabase sync
+ │    │    └── station_selector.py        # 18-station dynamic conservative router
  │    ├── hms/
- │    │    └── runner.py                 # HEC-HMS batch runner & Python SCS-CN emulator
+ │    │    ├── __init__.py
+ │    │    └── runner.py                  # HEC-HMS batch runner & SCS-CN emulator
  │    ├── hydrology/
- │    │    ├── stage_converter.py        # Calibrated dual-regime PCHIP rating curves
- │    │    ├── validation_metrics.py     # Spearman ρ, NSE, RMSE & volume metrics
- │    │    └── runs_tracker.py           # Multi-run JSON persistence ledger
+ │    │    ├── __init__.py
+ │    │    ├── observed_rainfall_pipeline.py # Observed rainfall ingestion pipeline
+ │    │    ├── post_process.py            # Stage conversion & bridge forecast builder
+ │    │    ├── runs_tracker.py            # Multi-run JSON persistence ledger
+ │    │    ├── stage_converter.py         # Calibrated dual-regime PCHIP rating curves
+ │    │    └── validation_metrics.py      # Spearman ρ, NSE, RMSE & volume metrics
+ │    ├── processing/
+ │    │    ├── __init__.py
+ │    │    ├── gauge_fetcher.py           # IoT telemetry gauge fetcher
+ │    │    ├── station_rainfall_to_dss.py # Standalone rainfall to DSS converter
+ │    │    ├── station_selector.py        # Database-driven runtime station selector
+ │    │    └── validator.py               # Pre-simulation data QC validator
  │    └── sensors/
- │         └── thingspeak_gauge.py       # ThingSpeak IoT ultrasonic radar telemetry
- ├── requirements.txt                  # Python dependencies
- ├── README.md                         # Master repository documentation hub
- └── LICENSE                           # MIT License
+ │         ├── __init__.py
+ │         └── thingspeak_gauge.py        # ThingSpeak ultrasonic radar telemetry
+ ├── tests/                               # Enterprise Automated Unit & Regression Tests
+ │    ├── __init__.py
+ │    ├── test_hydrology.py               # Rating curve monotonicity & Manning physics
+ │    ├── test_station_selector.py        # Spatial topology & station selection logic
+ │    └── test_validation_metrics.py     # Spearman ρ, NSE, and PBIAS accuracy tests
+ └── windows/                             # Windows Server automation & setup
+      ├── install_postgres.ps1            # Automated PostgreSQL 15 installation script
+      └── storage_setup.sql               # PostgreSQL tablespace & storage init
 ```
 
 ---
 
-## 16. License & Institutional Attribution
+## 16. Enterprise Restructure & Modernization Changelog
+
+In September 2026, the HydroCast repository underwent a comprehensive architectural restructuring to align with enterprise production standards:
+
+1. **Repository Unification & Deduplication**:
+   - Promoted the codebase from a nested `system/` subfolder directly to the repository root.
+   - Eliminated redundant root duplicates (`docs/`, `data/`, `README.md`) and reconciled all files with the official GitHub remote (`origin/main`).
+   - Replaced the detached outer `.git` wrapper with the official repository Git ledger, restoring full commit history and direct remote tracking.
+
+2. **Purging of Malformed Shell Artifacts**:
+   - Removed empty directories inadvertently created by Bash brace expansion syntax on Windows PowerShell (`{src`, `{app`, etc.).
+
+3. **Formalization of Technical Documentation & Strategic Roadmap**:
+   - Promoted `Next Work.txt` into [`docs/ROADMAP.md`](file:///e:/hydrocast_complete/docs/ROADMAP.md) detailing the 5 production hardening pillars (Orchestration, Multi-Channel Alerting, Dockerization, Telemetry Archival, and API Security).
+   - Promoted `Cross check Rating curve with historical data RJKT.txt` into [`docs/WRD_Historical_Rating_Curve_CrossCheck.md`](file:///e:/hydrocast_complete/docs/WRD_Historical_Rating_Curve_CrossCheck.md), formalizing the hydraulic slope calibration and Maharashtra WRD benchmark data.
+   - Created [`docs/README.md`](file:///e:/hydrocast_complete/docs/README.md) as a clean module catalog for all 21 technical documents.
+   - Added [`database/README.md`](file:///e:/hydrocast_complete/database/README.md) providing clear schema migration and deployment instructions.
+
+4. **Python Package Modularity & Standardized Exports**:
+   - Introduced explicit `__init__.py` files across `src/` and all 9 subpackages (`alerts`, `api`, `db`, `dss`, `ecmwf`, `hms`, `hydrology`, `processing`, `sensors`), enabling clean package discovery and standard namespace imports.
+   - Modularized `src/api/notifier.py` by extracting the CLI shim into [`src/db/cycle_complete.py`](file:///e:/hydrocast_complete/src/db/cycle_complete.py).
+   - Hardened [`src/dss/writer.py`](file:///e:/hydrocast_complete/src/dss/writer.py) by updating the default basin parameter to `PANCHGANGA` and standardizing imports.
+
+5. **Automated Unit & Regression Test Suite**:
+   - Introduced [`tests/`](file:///e:/hydrocast_complete/tests/) with 11 automated test cases verifying rating curve monotonicity ($dQ/dh > 0$), physical bed slope effects, catchment topology coverage, and statistical validation metrics (Spearman $\rho$, NSE, RMSE, PBIAS).
+   - All tests pass with 100% success (`Ran 11 tests in 0.034s, OK`).
+
+---
+
+## 17. License & Institutional Attribution
 
 - **Developed By:** HydroCast Core Hydrologic Engineering Team
 - **Meteorological Boundary Data:** [Open-Meteo](https://open-meteo.com) & European Centre for Medium-Range Weather Forecasts (ECMWF)

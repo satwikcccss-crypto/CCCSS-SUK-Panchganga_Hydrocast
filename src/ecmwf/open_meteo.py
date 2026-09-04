@@ -100,10 +100,13 @@ def sync_to_supabase(state: dict, db_url: str):
     Syncs complete simulation cycle telemetry into Supabase PostgreSQL tables.
     """
     try:
-        import psycopg2
         from psycopg2.extras import execute_values
+        from src.db.connection import get_db_connection
 
-        conn = psycopg2.connect(db_url)
+        conn = get_db_connection(db_url)
+        if not conn:
+            log.warning("No database connection available. Skipping Supabase sync.")
+            return
         with conn.cursor() as cur:
             # Auto-initialize database schema if tables do not exist yet
             cur.execute("""

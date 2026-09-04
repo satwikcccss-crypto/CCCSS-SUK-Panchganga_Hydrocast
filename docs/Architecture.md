@@ -1,4 +1,4 @@
-# HydroCast System Architecture & The 12-Step Pipeline
+﻿# HydroCast System Architecture & The 12-Step Pipeline
 
 ```
 ========================================================================================
@@ -45,18 +45,18 @@ Every operational cycle executes sequentially through 12 distinct steps:
 +----+-----------------------------+-----------------------------------------------------------+
 |Step| Pipeline Phase              | Execution Engine & Source Module                          |
 +----+-----------------------------+-----------------------------------------------------------+
-| 01 | ECMWF Precipitation Fetch   | system/src/ecmwf/open_meteo.py (fetch_point_forecast)     |
-| 02 | Dynamic Subbasin Selection  | system/src/ecmwf/station_selector.py (STATION_REGISTRY)   |
-| 03 | Antecedent Soil Moisture    | system/src/ecmwf/open_meteo.py (calculate_amc_condition)  |
-| 04 | DSS Meteorological Gen      | system/src/hms/runner.py (Met_1.dss precipitation tables) |
-| 05 | Hydrologic Runoff Execution | system/src/hms/runner.py (execute_hec_hms / SCS-CN)       |
-| 06 | Outlet Hydrograph Routing   | system/src/hms/runner.py (extract_outlet_hydrograph)      |
-| 07 | Live IoT Telemetry Polling  | system/src/sensors/thingspeak_gauge.py (fetch_shivaji...) |
-| 08 | Hydraulic Rating Conversion | system/src/hydrology/stage_converter.py (PCHIP converter) |
-| 09 | Accuracy & Metrics Eval     | system/src/hydrology/validation_metrics.py (Spearman ρ)   |
-| 10 | Historical Runs Ledger Arch | system/src/hydrology/runs_tracker.py (save_computation...)|
-| 11 | Database Sync & State Dump  | system/src/ecmwf/open_meteo.py (latest_pipeline_state)   |
-| 12 | Real-Time Dashboard Push    | system/src/api/main.py (WebSocket broadcast /ws/live)     |
+| 01 | ECMWF Precipitation Fetch   | src/ecmwf/open_meteo.py (fetch_point_forecast)     |
+| 02 | Dynamic Subbasin Selection  | src/ecmwf/station_selector.py (STATION_REGISTRY)   |
+| 03 | Antecedent Soil Moisture    | src/ecmwf/open_meteo.py (calculate_amc_condition)  |
+| 04 | DSS Meteorological Gen      | src/hms/runner.py (Met_1.dss precipitation tables) |
+| 05 | Hydrologic Runoff Execution | src/hms/runner.py (execute_hec_hms / SCS-CN)       |
+| 06 | Outlet Hydrograph Routing   | src/hms/runner.py (extract_outlet_hydrograph)      |
+| 07 | Live IoT Telemetry Polling  | src/sensors/thingspeak_gauge.py (fetch_shivaji...) |
+| 08 | Hydraulic Rating Conversion | src/hydrology/stage_converter.py (PCHIP converter) |
+| 09 | Accuracy & Metrics Eval     | src/hydrology/validation_metrics.py (Spearman ρ)   |
+| 10 | Historical Runs Ledger Arch | src/hydrology/runs_tracker.py (save_computation...)|
+| 11 | Database Sync & State Dump  | src/ecmwf/open_meteo.py (latest_pipeline_state)   |
+| 12 | Real-Time Dashboard Push    | src/api/main.py (WebSocket broadcast /ws/live)     |
 +----+-----------------------------+-----------------------------------------------------------+
 ```
 
@@ -92,6 +92,6 @@ Every operational cycle executes sequentially through 12 distinct steps:
 ## 4. Fault Tolerance & Self-Healing
 
 1. **Network Retries:** All external HTTP calls (Open-Meteo, ThingSpeak) employ exponential backoff with random jitter across 3 retries.
-2. **HEC-HMS Headless Fallback:** If HEC-HMS native Java binaries fail or DSS libraries are missing, the system smoothly falls back to an internal pure Python SCS-CN and Clark Unit Hydrograph engine (`system/src/hms/runner.py`), producing identical physical hydrographs.
+2. **HEC-HMS Headless Fallback:** If HEC-HMS native Java binaries fail or DSS libraries are missing, the system smoothly falls back to an internal pure Python SCS-CN and Clark Unit Hydrograph engine (`src/hms/runner.py`), producing identical physical hydrographs.
 3. **Sensor Telemetry Safeguards:** If the ultrasonic radar gauge drops offline or reports unphysical spikes, the system filters out outliers and computes baseflow from the latest verified water level.
 4. **Zero-Crash Standalone Operation:** If PostgreSQL is unreachable, the API seamlessly serves from `public/data/latest_pipeline_state.json` and `data/runs/`.

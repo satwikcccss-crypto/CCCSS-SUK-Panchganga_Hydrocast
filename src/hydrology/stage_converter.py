@@ -1001,12 +1001,15 @@ def run_pipeline():
     db_url = os.getenv("DATABASE_URL") or os.getenv("SUPABASE_DB_URL") or os.getenv("SUPABASE_DATABASE_URL")
     if db_url:
         try:
-            import psycopg2
-            conn = psycopg2.connect(db_url)
-            for site_id, (cs, df) in curves.items():
-                store_rating_curve_db(conn, cs, df)
-            conn.close()
-            log.info("Database sync completed successfully for both bridge sites!")
+            from src.db.connection import get_db_connection
+            conn = get_db_connection(db_url)
+            if conn:
+                for site_id, (cs, df) in curves.items():
+                    store_rating_curve_db(conn, cs, df)
+                conn.close()
+                log.info("Database sync completed successfully for both bridge sites!")
+            else:
+                log.warning("No database connection established. Skipping rating curve DB sync.")
         except Exception as e:
             log.error("Database sync failed: %s", e)
     else:

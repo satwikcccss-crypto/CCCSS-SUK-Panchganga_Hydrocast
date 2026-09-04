@@ -1,4 +1,4 @@
-# HydroCast Backend API & Orchestration Architecture
+﻿# HydroCast Backend API & Orchestration Architecture
 
 ```
 ========================================================================================
@@ -9,7 +9,7 @@
                                                 │
                                                 ▼
                                     FastAPI Application Server
-                                  (system/src/api/main.py :8000)
+                                  (src/api/main.py :8000)
                                                 │
       ┌─────────────────────────────────────────┼─────────────────────────────────────────┐
       ▼                                         ▼                                         ▼
@@ -25,8 +25,8 @@
                  ┌──────────────────────────────┴──────────────────────────────┐
                  ▼                                                             ▼
     [ PostgreSQL / Supabase DB ]                                  [ Standalone JSON Ledger ]
-    asyncpg async connection pool                                  system/data/runs/{cycle_id}.json
-    Tables: simulation_runs, hydrographs,                          system/data/runs/runs_index.json
+    asyncpg async connection pool                                  data/runs/{cycle_id}.json
+    Tables: simulation_runs, hydrographs,                          data/runs/runs_index.json
     station_telemetry, pipeline_steps                              frontend/public/data/latest_pipeline_state.json
 ```
 
@@ -51,9 +51,9 @@ The backend is engineered for zero-dependency resilience:
    If `DATABASE_URL` or `SUPABASE_DB_URL` is set in `.env`, the server initializes an asynchronous connection pool (`asyncpg.create_pool(min_size=2, max_size=10)`), logging every cycle, hyetograph, hydrograph, and step execution into structured relational tables.
 2. **Standalone Embedded Mode (JSON Ledger):**
    If no external database is configured, the server operates autonomously using high-speed atomic JSON writes into:
-   - `system/data/runs/{cycle_id}.json`: Complete immutable snapshot of the computation cycle.
-   - `system/data/runs/runs_index.json`: Fast KPI index for historical queries.
-   - `system/frontend/public/data/latest_pipeline_state.json`: Direct zero-copy broadcast to Next.js.
+   - `data/runs/{cycle_id}.json`: Complete immutable snapshot of the computation cycle.
+   - `data/runs/runs_index.json`: Fast KPI index for historical queries.
+   - `frontend/public/data/latest_pipeline_state.json`: Direct zero-copy broadcast to Next.js.
 
 ---
 

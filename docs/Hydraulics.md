@@ -1,4 +1,4 @@
-# Open-Channel Hydraulics & River Stage Mechanics
+﻿# Open-Channel Hydraulics & River Stage Mechanics
 
 ```
 ========================================================================================
@@ -111,7 +111,7 @@ Three severe hydraulic flaws caused this:
 
 ### 3.2 The Dual-Regime Hydraulic Calibration
 
-To resolve this, we re-engineered the rating curve engine in [`stage_converter.py`](file:///e:/hydrocast_complete/system/src/hydrology/stage_converter.py) using a **dual-regime physical formulation**:
+To resolve this, we re-engineered the rating curve engine in [`stage_converter.py`](file:///e:/hydrocast_complete/src/hydrology/stage_converter.py) using a **dual-regime physical formulation**:
 
 1. **In-Bank Regime ($h \le 535.0\text{ m MSL}$):**
    Governed strictly by surveyed channel slope ($S_0 = 0.005858$), carrying normal monsoon baseflows ($40 - 280\text{ m}^3/s$).

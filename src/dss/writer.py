@@ -6,28 +6,34 @@ Uses pydsstools (pip install pydsstools) – wraps the official HEC-DSSVue Java 
 
 DSS pathname convention:
   /BASIN/SUBBASIN/PRECIP-INC//1HOUR/ECMWF-GAUGE-SEL/
-  e.g. /GODAVARI/SUB_01/PRECIP-INC//1HOUR/ECMWF-GAUGE-SEL/
+  e.g. /PANCHGANGA/SUB_01/PRECIP-INC//1HOUR/ECMWF-GAUGE-SEL/
 
-One record per subbasin per cycle.  Old record for same subbasin+run_time
+One record per subbasin per cycle. Old record for same subbasin+run_time
 is OVERWRITTEN (HEC-HMS reads the latest interval matching its control spec).
 """
 
 import logging
+import os
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 
 import numpy as np
-from pydsstools.heclib.dss.HecDss import HecDss      # pip install pydsstools
-from pydsstools.core import TimeSeriesContainer, UNDEFINED
+try:
+    from pydsstools.heclib.dss.HecDss import HecDss      # pip install pydsstools
+    from pydsstools.core import TimeSeriesContainer, UNDEFINED
+except ImportError:
+    HecDss = None
+    TimeSeriesContainer = None
+    UNDEFINED = -9999.0
 
-from processing.station_selector import SubbasinRainfall
+from src.processing.station_selector import SubbasinRainfall
 
 log = logging.getLogger(__name__)
 
 # Configured in environment / system_config.json
-DSS_FILE = Path("data/hms/rainfall_input.dss")
-BASIN_NAME = "GODAVARI"     # top-level DSS A-part
+DSS_FILE = Path(os.getenv("DSS_PATH", "data/hms/rainfall_input.dss"))
+BASIN_NAME = os.getenv("BASIN_NAME", "PANCHGANGA")     # top-level DSS A-part
 
 
 def _hec_dtime(dt: datetime) -> str:
@@ -36,7 +42,7 @@ def _hec_dtime(dt: datetime) -> str:
 
 
 def write_subbasin_to_dss(
-    dss: HecDss,
+    dss: Any,
     sub_id: str,
     result: SubbasinRainfall,
     run_time: datetime,
@@ -77,6 +83,9 @@ def write_all_subbasins(
     Write all selected subbasin hyetographs to DSS.
     Returns list of pathnames written.
     """
+    if HecDss is None:
+        raise RuntimeError("pydsstools not installed or Java JDK missing from system PATH")
+
     dss_path = dss_path or DSS_FILE
     dss_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -96,6 +105,9 @@ def write_all_subbasins(
 
 def verify_dss(dss_path: Path, expected_subbasins: list[str]) -> bool:
     """Read back each written record and verify non-zero values."""
+    if HecDss is None:
+        return False
+
     ok = True
     with HecDss.Open(str(dss_path)) as dss:
         for sub_id in expected_subbasins:

@@ -1,4 +1,4 @@
-# Mathematical Runoff Computation & Hydrograph Routing
+﻿# Mathematical Runoff Computation & Hydrograph Routing
 
 ```
 ========================================================================================
@@ -108,7 +108,7 @@ $$\text{Conservation of Mass Check: } C_0 + C_1 + C_2 \equiv 1.000$$
 
 ## 5. Vectorized Python Implementation (`runner.py`)
 
-In [`runner.py`](file:///e:/hydrocast_complete/system/src/hms/runner.py), the entire runoff continuum executes in $< 15\text{ milliseconds}$ via vectorized NumPy operations:
+In [`runner.py`](file:///e:/hydrocast_complete/src/hms/runner.py), the entire runoff continuum executes in $< 15\text{ milliseconds}$ via vectorized NumPy operations:
 
 ```python
 # 1. Potential soil retention

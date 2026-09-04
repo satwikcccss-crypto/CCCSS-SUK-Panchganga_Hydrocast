@@ -1,4 +1,4 @@
-# Production Deployment, Operations & Automation Manual
+﻿# Production Deployment, Operations & Automation Manual
 
 ```
 ========================================================================================
@@ -8,7 +8,7 @@
                  [ 6-Hourly Cron / Task Scheduler (00z, 06z, 12z, 18z) ]
                                             │
                                             ▼
-                    Python Orchestrator (system/src/ecmwf/open_meteo.py)
+                    Python Orchestrator (src/ecmwf/open_meteo.py)
                     - 18-Station Rainfall Fetch
                     - HEC-HMS / SCS-CN Hydrologic Simulation
                     - Monotonic PCHIP Hydraulic Conversion
@@ -42,10 +42,10 @@ The European Centre for Medium-Range Weather Forecasts releases operational IFS 
 ### Linux Crontab Configuration:
 ```cron
 # Edit with: crontab -e
-15 1 * * *  cd /opt/hydrocast && /opt/hydrocast/venv/bin/python system/src/ecmwf/open_meteo.py >> system/data/logs/cron_00z.log 2>&1
-15 7 * * *  cd /opt/hydrocast && /opt/hydrocast/venv/bin/python system/src/ecmwf/open_meteo.py >> system/data/logs/cron_06z.log 2>&1
-15 13 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python system/src/ecmwf/open_meteo.py >> system/data/logs/cron_12z.log 2>&1
-15 19 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python system/src/ecmwf/open_meteo.py >> system/data/logs/cron_18z.log 2>&1
+15 1 * * *  cd /opt/hydrocast && /opt/hydrocast/venv/bin/python src/ecmwf/open_meteo.py >> data/logs/cron_00z.log 2>&1
+15 7 * * *  cd /opt/hydrocast && /opt/hydrocast/venv/bin/python src/ecmwf/open_meteo.py >> data/logs/cron_06z.log 2>&1
+15 13 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python src/ecmwf/open_meteo.py >> data/logs/cron_12z.log 2>&1
+15 19 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python src/ecmwf/open_meteo.py >> data/logs/cron_18z.log 2>&1
 ```
 
 ---
@@ -65,7 +65,7 @@ WorkingDirectory=/opt/hydrocast
 ExecStart=/opt/hydrocast/venv/bin/uvicorn src.api.main:app --app-dir system --host 0.0.0.0 --port 8000 --workers 4
 Restart=always
 RestartSec=5
-EnvironmentFile=/opt/hydrocast/system/.env
+EnvironmentFile=/opt/hydrocast/.env
 
 [Install]
 WantedBy=multi-user.target
@@ -90,7 +90,7 @@ pm2 startup
 
 ---
 
-## 3. Environment Variable Configuration (`system/.env`)
+## 3. Environment Variable Configuration (`.env`)
 
 ```ini
 # Database (Leave blank to use standalone JSON ledger mode)
@@ -163,5 +163,5 @@ server {
 
 - **Health Check Endpoint:** `curl -s http://localhost:8000/health | jq`
   - Returns `{"status": "healthy", "database": "connected", "last_cycle": "CYC_..."}`.
-- **Log Rotation:** Logs are kept under `system/data/logs/` and automatically rotated using `logrotate` with 14-day retention.
+- **Log Rotation:** Logs are kept under `data/logs/` and automatically rotated using `logrotate` with 14-day retention.
 - **Zero-Dependency Fallback:** If PostgreSQL or internet APIs fail, HydroCast defaults to the pre-cached static dataset and physical SCS-CN emulator, guaranteeing that emergency centers always have active flood projections.

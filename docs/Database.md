@@ -25,8 +25,11 @@ The persistence layer supports both **PostgreSQL / Supabase** for enterprise mul
 
 - **Primary Database:** PostgreSQL 15+ (Hosted on Supabase or self-hosted)
 - **Spatial Extensions:** `postgis` (Native on Supabase for coordinate geometry)
-- **Driver:** `asyncpg` (Asynchronous connection pooling, parameterized queries)
-- **Execution Script:** [`system/database/supabase_schema.sql`](file:///e:/hydrocast_complete/system/database/supabase_schema.sql)
+- **Driver:** `asyncpg` (Asynchronous connection pooling), `psycopg2` (ETL pipeline sync via `src.db.connection`)
+- **Execution Script:** [`database/supabase_schema.sql`](file:///e:/hydrocast_complete/database/supabase_schema.sql)
+- **Connection Mode:**
+  - **Direct (`db.[ref].supabase.co:5432`):** IPv6-only. Suitable for local environments with IPv6 support.
+  - **Connection Pooler (`aws-0-[region].pooler.supabase.com:6543`):** Dual-stack IPv4/IPv6 (Supavisor). **Mandatory** for GitHub Actions CI/CD runners and environments without IPv6 routing. Format: `postgresql://postgres.[ref]:[pwd]@aws-0-[region].pooler.supabase.com:6543/postgres?sslmode=require`.
 
 ---
 

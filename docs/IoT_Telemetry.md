@@ -1,4 +1,4 @@
-# IoT Ultrasonic Water Level Telemetry & Sensor Integration
+﻿# IoT Ultrasonic Water Level Telemetry & Sensor Integration
 
 ```
 ========================================================================================
@@ -52,7 +52,7 @@ $$d_{air} = \frac{v_{sound}(T) \cdot t_{transit}}{2} \quad (\text{measured in fe
 Where $v_{sound}(T) \approx 331.3 \cdot \sqrt{1 + \frac{T}{273.15}}\text{ m/s}$ accounts for ambient air temperature compensation.
 
 ### Conversion to Stage in Meters MSL:
-In [`thingspeak_gauge.py`](file:///e:/hydrocast_complete/system/src/sensors/thingspeak_gauge.py):
+In [`thingspeak_gauge.py`](file:///e:/hydrocast_complete/src/sensors/thingspeak_gauge.py):
 
 $$\text{Stage } h\text{ (m MSL)} = 549.35 - \left(d_{air} \times 0.3048\right)$$
 

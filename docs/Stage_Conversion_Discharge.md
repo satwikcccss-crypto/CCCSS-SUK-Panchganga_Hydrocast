@@ -1,4 +1,4 @@
-# Hydraulic Stage-to-Discharge & Inverse Rating Curve Conversion
+﻿# Hydraulic Stage-to-Discharge & Inverse Rating Curve Conversion
 
 ```
 ========================================================================================
@@ -130,7 +130,7 @@ The rating curves are anchored directly to official field-gauged records from th
 
 ## 5. API Functions & Code Implementation
 
-All conversions are encapsulated in [`stage_converter.py`](file:///e:/hydrocast_complete/system/src/hydrology/stage_converter.py):
+All conversions are encapsulated in [`stage_converter.py`](file:///e:/hydrocast_complete/src/hydrology/stage_converter.py):
 
 ```python
 # Stage to Discharge:

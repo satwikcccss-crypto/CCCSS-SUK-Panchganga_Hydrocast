@@ -1,4 +1,4 @@
-# HEC-HMS Headless Automation & DSS File Architecture
+﻿# HEC-HMS Headless Automation & DSS File Architecture
 
 ```
 ========================================================================================
@@ -44,10 +44,10 @@ In HydroCast, HEC-HMS operates in **headless batch mode** on Windows/Linux serve
 
 ## 2. Project Directory Layout & File Manifest
 
-The HEC-HMS model files reside in [`system/data/hms/HMS_Automation_RJKT/`](file:///e:/hydrocast_complete/system/data/hms/HMS_Automation_RJKT/):
+The HEC-HMS model files reside in [`data/hms/HMS_Automation_RJKT/`](file:///e:/hydrocast_complete/data/hms/HMS_Automation_RJKT/):
 
 ```
-system/data/hms/HMS_Automation_RJKT/
+data/hms/HMS_Automation_RJKT/
  ├── HMS_Automation_RJKT.hms   # Master project configuration & module registry
  ├── Basin_1.basin              # Subbasin topology, area, CN, Tc, R, reach geometry
  ├── Met_1.met                  # Meteorologic model specification (Gage Weights)
@@ -83,7 +83,7 @@ Where:
 
 ## 4. Headless Execution Scripting
 
-HEC-HMS runs headlessly using an embedded Jython / Jython console script generated dynamically by [`runner.py`](file:///e:/hydrocast_complete/system/src/hms/runner.py):
+HEC-HMS runs headlessly using an embedded Jython / Jython console script generated dynamically by [`runner.py`](file:///e:/hydrocast_complete/src/hms/runner.py):
 
 ```python
 # Generated jython execution script: run_hms.py
@@ -91,7 +91,7 @@ from hms.model import Hms
 from hms import HmsRun
 
 hms = Hms()
-hms.openProject("system/data/hms/HMS_Automation_RJKT/HMS_Automation_RJKT.hms")
+hms.openProject("data/hms/HMS_Automation_RJKT/HMS_Automation_RJKT.hms")
 hms.compute("Run 1")
 hms.closeProject()
 ```
@@ -105,7 +105,7 @@ hms.closeProject()
 
 ## 5. Pure Python SCS-CN Hybrid Fallback Engine
 
-Because native HEC-HMS requires Java runtime dependencies and proprietary 64-bit C-libraries (`heclib.dll`), HydroCast includes a **built-in high-speed pure Python hydrologic emulator** in [`runner.py`](file:///e:/hydrocast_complete/system/src/hms/runner.py):
+Because native HEC-HMS requires Java runtime dependencies and proprietary 64-bit C-libraries (`heclib.dll`), HydroCast includes a **built-in high-speed pure Python hydrologic emulator** in [`runner.py`](file:///e:/hydrocast_complete/src/hms/runner.py):
 
 - Emulates SCS-CN soil moisture infiltration curve.
 - Emulates Clark Unit Hydrograph translation and linear reservoir attenuation.

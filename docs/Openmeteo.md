@@ -1,4 +1,4 @@
-# Open-Meteo & ECMWF Meteorological Data Pipeline
+﻿# Open-Meteo & ECMWF Meteorological Data Pipeline
 
 ```
 ========================================================================================
@@ -98,7 +98,7 @@ The system tracks 18 distinct meteorological nodes across the 9 hydrologic subba
 
 ## 4. API Request Construction & Parameter Specification
 
-The forecast fetcher in [`open_meteo.py`](file:///e:/hydrocast_complete/system/src/ecmwf/open_meteo.py) queries the Open-Meteo v1 forecast endpoint:
+The forecast fetcher in [`open_meteo.py`](file:///e:/hydrocast_complete/src/ecmwf/open_meteo.py) queries the Open-Meteo v1 forecast endpoint:
 
 ### 4.1 Endpoint URL
 `GET https://api.open-meteo.com/v1/forecast`
