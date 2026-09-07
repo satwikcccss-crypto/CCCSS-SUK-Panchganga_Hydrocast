@@ -74,8 +74,76 @@ gov_records = [
 gov_data = [(stg, q_cfs, q_cfs * CUSEC_TO_CUMEC) for stg, q_cfs in gov_records]
 ```
 
-### Key Verification Metric:
-- **Calibrated Bed Slope Median**: $S_0 = 0.005858\text{ m/m}$
-- **Spearman Rank Correlation ($\rho$)**: $> 0.988$
-- **Nash-Sutcliffe Efficiency (NSE)**: $> 0.987$
-- **Volume Bias (PBIAS)**: $-0.08\%$
+### Key Verification Metrics:
+- **Calibrated Bed Slope (Shivaji Bridge)**: $S_0 = 0.005858\text{ m/m}$
+- **Calibrated Bed Slope (Rajaram K.T. Weir)**: $S_0 = 0.002318\text{ m/m}$
+- **Spearman Rank Correlation ($\rho$)**: $> 0.995$
+- **Nash-Sutcliffe Efficiency (NSE)**: $> 0.998$
+- **Volume Bias (PBIAS)**: $< 0.2\%$
+
+---
+
+## 4. Empirical WRD Rajaram Weir Register Validation (Daily & Hourly)
+
+Official Maharashtra WRD Kolhapur Division (उत्तर विभाग) daily and hourly water level & discharge registers for Rajaram K.T. Weir were cross-checked against the calibrated rating curve:
+
+### A. 2020–2021 Daily Monsoon Register ($N = 153$ Days, June–October)
+- **Stage Range**: $533.26\text{ m}$ to $543.79\text{ m MSL}$ ($10'6''$ to $44'8''$)
+- **Discharge Range**: $36.8\text{ m}^3/\text{s}$ to $1,814.2\text{ m}^3/\text{s}$ ($1,300$ to $64,068\text{ cusecs}$)
+- **Stage Prediction**:
+  - **NSE**: **0.9983**
+  - **RMSE**: $0.110\text{ m}$ ($11.0\text{ cm}$)
+  - **MAE**: $0.051\text{ m}$ ($5.1\text{ cm}$)
+  - **Spearman Rank Correlation ($\rho$)**: **0.9957**
+- **Discharge Prediction**:
+  - **NSE**: **0.9993**
+  - **RMSE**: $10.99\text{ m}^3/\text{s}$
+  - **PBIAS**: **+0.19%**
+  - **Pearson $R^2$**: **0.9994**
+
+### B. 2021 & 2023 Hourly Flood Registers ($N = 2,406$ Hourly Observations)
+Covers the devastating July–August 2021 flood event up to the all-time historic peak ($56'03''$ / $547.33\text{ m MSL}$ / $76,383\text{ cusecs}$):
+- **Stage Range**: $532.70\text{ m}$ to $547.33\text{ m MSL}$ ($8'3''$ to $56'03''$)
+- **Discharge Range**: $7.1\text{ m}^3/\text{s}$ to $2,162.9\text{ m}^3/\text{s}$ ($250$ to $76,383\text{ cusecs}$)
+- **Stage Prediction**:
+  - **NSE**: **0.9990**
+  - **RMSE**: $0.104\text{ m}$ ($10.4\text{ cm}$)
+  - **MAE**: **$0.049\text{ m}$ ($4.9\text{ cm}$)**
+  - **Spearman Rank Correlation ($\rho$)**: **0.9961**
+- **Discharge Prediction**:
+  - **NSE**: **0.9996**
+  - **RMSE**: $10.70\text{ m}^3/\text{s}$
+  - **PBIAS**: **+0.03%**
+  - **Pearson $R^2$**: **0.9996**
+
+---
+
+## 5. Spatial Reach & Telemetry Validation Architecture
+
+```
+                                 Panchganga River Reach Topology
+                                 
+  [J_Outlet (Basin Outflow)] 
+              |
+              | ~12 km River Reach (1.5h wave travel time)
+              v
+  [Chhatrapati Shivaji Maharaj Bridge]
+      - Sensor: Ultrasonic IoT Radar (ThingSpeak Channel 3424513)
+      - Mount Datum: 549.35 m MSL
+      - Channel Slope: S0 = 0.005858 m/m
+      - Live Calibration: Real-time 5-min pings resampled to hourly means
+              |
+              | 3.8 km Downstream Reach (~1.0h wave travel time)
+              v
+  [Rajaram K.T. Weir (Kasba Bawada)]
+      - Gauge: WRD Maharashtra staff gauge & weir register
+      - Weir Crest / Datum: 530.18 m MSL
+      - Channel Slope: S0 = 0.002318 m/m (floodplain attenuation)
+      - Calibration: Calibrated empirical anchors up to 547.33m / 76,383 cusecs
+```
+
+### Multi-Run Continuous Lifecycle Tracking
+- **The Problem Solved**: Previously, once a new 90-hour cycle was executed, older cycles were left at partial completion (e.g. 17/90h) with status frozen at `IN_PROGRESS`.
+- **The Solution**: `validate_all_pending_runs()` continuously queries the persistent telemetry cache (`data/telemetry/thingspeak_hourly_cache.json`) and backfills all archived cycles. Once all 90 hours of a cycle elapse, the run automatically transitions to `LIFECYCLE_VERIFIED`.
+- **Complete PostgreSQL Persistence**: Both `simulation_runs` and `forecast_validation_metrics` are synchronized with all 14 columns fully populated (including `spearman_rho_q`, `nse_discharge`, `rmse_q_m3s`, `mae_q_m3s`, and `pbias_discharge_pct`).
+

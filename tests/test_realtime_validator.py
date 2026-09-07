@@ -85,6 +85,44 @@ class TestRealtimeTelemetryValidator(unittest.TestCase):
         self.assertIsNone(metrics["rmse_stage_m"])
         self.assertIsNone(metrics["nse_stage"])
 
+    def test_compute_pure_metrics_with_discharge(self):
+        """Verify dual stage and discharge accuracy metrics computation."""
+        obs_s = np.array([533.24, 533.30, 533.40, 533.55, 533.70])
+        pred_s = np.array([533.22, 533.32, 533.38, 533.58, 533.68])
+        obs_q = np.array([105.0, 115.0, 130.0, 160.0, 195.0])
+        pred_q = np.array([103.0, 117.0, 128.0, 163.0, 192.0])
+
+        metrics = compute_pure_metrics(pred_s, obs_s, pred_q, obs_q)
+        self.assertEqual(metrics["sample_size_hours"], 5)
+        self.assertIsNotNone(metrics["rmse_q_m3s"])
+        self.assertIsNotNone(metrics["mae_q_m3s"])
+        self.assertIsNotNone(metrics["nse_discharge"])
+        self.assertIsNotNone(metrics["pbias_discharge_pct"])
+        self.assertIsNotNone(metrics["spearman_rho_q"])
+        self.assertGreater(metrics["nse_discharge"], 0.95)
+        self.assertGreater(metrics["spearman_rho_q"], 0.95)
+
+    def test_lifecycle_verification_completion(self):
+        """Verify that 90-hour complete match transitions to LIFECYCLE_VERIFIED."""
+        from src.hydrology.realtime_telemetry_validator import validate_run_with_observations
+        forecast = [
+            {"forecast_time": f"2026-09-01T{h:02d}:00:00Z", "stage_m": 533.20 + 0.01 * h, "discharge_m3s": 100.0 + 2.0 * h}
+            for h in range(90)
+        ]
+        # Full 90 hours of observations
+        obs_hourly = {
+            f"2026-09-01T{h:02d}:00:00Z": {
+                "observed_stage_m": 533.20 + 0.01 * h,
+                "observed_distance_ft": 52.80,
+            }
+            for h in range(90)
+        }
+        res = validate_run_with_observations("TEST_CYCLE_01", forecast, obs_hourly)
+        self.assertEqual(res["verified_hours"], 90)
+        self.assertEqual(res["lifecycle_status"], "LIFECYCLE_VERIFIED")
+        self.assertEqual(res["completion_pct"], 100.0)
+        self.assertAlmostEqual(res["metrics"]["nse_stage"], 1.0, places=3)
+
 
 if __name__ == "__main__":
     unittest.main()

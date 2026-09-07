@@ -14,11 +14,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": -0.6527,
-    "nse": -1.547,
-    "rmse": 0.083,
-    "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 17
+    "spearman_rho": -0.535,
+    "nse": -275.541,
+    "rmse": 0.938,
+    "lifecycle_status": "LIFECYCLE_VERIFIED",
+    "verified_hours": 90
   },
   {
     "cycle_id": "CYC_20260903_06z",
@@ -35,11 +35,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.9902,
-    "nse": 0.9935,
-    "rmse": 0.026,
+    "spearman_rho": -0.5762,
+    "nse": -209.334,
+    "rmse": 1.007,
     "lifecycle_status": "LIFECYCLE_VERIFIED",
-    "verified_hours": 48
+    "verified_hours": 90
   },
   {
     "cycle_id": "CYC_20260902_18z",
@@ -56,11 +56,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.9992,
-    "nse": 0.9997,
-    "rmse": 0.031,
+    "spearman_rho": 0.8093,
+    "nse": -376.7129,
+    "rmse": 1.618,
     "lifecycle_status": "LIFECYCLE_VERIFIED",
-    "verified_hours": 48
+    "verified_hours": 90
   },
   {
     "cycle_id": "CYC_20260902_06z",
@@ -77,11 +77,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.9991,
-    "nse": 0.9997,
-    "rmse": 0.032,
+    "spearman_rho": 0.4102,
+    "nse": -80.936,
+    "rmse": 1.659,
     "lifecycle_status": "LIFECYCLE_VERIFIED",
-    "verified_hours": 48
+    "verified_hours": 90
   },
   {
     "cycle_id": "CYC_20260901_06z",
@@ -98,11 +98,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.9743,
-    "nse": 0.9995,
-    "rmse": 0.029,
+    "spearman_rho": -0.8291,
+    "nse": -31.3428,
+    "rmse": 1.424,
     "lifecycle_status": "LIFECYCLE_VERIFIED",
-    "verified_hours": 48
+    "verified_hours": 90
   },
   {
     "cycle_id": "CYC_20260831_06z",
@@ -119,10 +119,10 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.9219,
-    "nse": 0.9995,
-    "rmse": 0.031,
+    "spearman_rho": -0.4686,
+    "nse": -40.2736,
+    "rmse": 1.508,
     "lifecycle_status": "LIFECYCLE_VERIFIED",
-    "verified_hours": 48
+    "verified_hours": 90
   }
 ]

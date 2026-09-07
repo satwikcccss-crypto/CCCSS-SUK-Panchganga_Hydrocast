@@ -46,11 +46,11 @@ jobs:
           THINGSPEAK_CHANNEL_ID: ${{ env.THINGSPEAK_CHANNEL_ID }}
           THINGSPEAK_API_KEY: ${{ env.THINGSPEAK_API_KEY }}
         run: |
-          python -m src.hydrology.realtime_telemetry_validator
+          python -m src.hydrology.realtime_telemetry_validator --all-pending
 
       - name: Commit & Push Verified Telemetry State to GitHub
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add frontend/public/data/latest_pipeline_state.json frontend/public/data/runs_history.json frontend/public/data/runs/ data/runs/
-          git diff --staged --quiet || (git commit -m "chore(telemetry): update 1-hr real-time ThingSpeak validation metrics [skip ci]" && git push)
+          git add frontend/public/data/latest_pipeline_state.json frontend/public/data/runs_history.json frontend/public/data/runs/ data/runs/ data/telemetry/
+          git diff --staged --quiet || (git commit -m "chore(telemetry): update continuous real-time ThingSpeak validation across cycles [skip ci]" && git push)

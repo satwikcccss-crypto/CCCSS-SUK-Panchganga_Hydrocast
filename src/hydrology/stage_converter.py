@@ -760,12 +760,14 @@ def _wetted_properties(station: np.ndarray, elevation: np.ndarray, wse: float):
 # 545.33          49' 8"       135,961              3850.00 (HFL)
 
 RAJARAM_ANCHORS_STAGE = np.array([
-    530.18,  532.63,  533.54,  533.71,  533.99,  535.21,  535.59,
-    535.77,  536.41,  538.16,  539.02,  541.50,  542.07,  543.30,  545.33, 548.00
+    530.18,  531.50,  532.70,  533.36,  533.54,  534.15,  535.19,  536.00,
+    537.04,  538.29,  539.46,  540.37,  541.51,  542.38,  543.29,  544.39,
+    545.38,  546.19,  547.00,  547.33,  549.00
 ])
 RAJARAM_ANCHORS_Q = np.array([
-    0.0,     46.02,   80.00,   88.74,   110.49,  217.59,  253.66,
-    274.39,  370.58,  613.06,  800.52,  1480.00, 1850.00, 2400.00, 3600.00, 5200.00
+    0.0,     3.00,    14.16,   71.25,   80.00,   125.00,  214.25,  305.17,
+    448.12,  648.29,  883.87,  965.89,  1219.13, 1690.01, 1776.51, 1857.73,
+    1935.00, 2015.31, 2116.14, 2162.93, 2450.00
 ])
 
 # Shivaji Bridge (higher channel slope S0 = 0.005858 vs Rajaram S0 = 0.002318)
@@ -939,8 +941,8 @@ def get_rajaram_rating_curve() -> pd.DataFrame:
     if _RAJARAM_RC_CACHE is None:
         cs = load_cross_section_array("RAJARAM_BRIDGE", SHIVAJI_SURVEY, {
             "name": "Rajaram K.T. Weir (Kasba Bawada)",
-            "latitude": 16.6903,
-            "longitude": 74.2308,
+            "latitude": 16.736167,
+            "longitude": 74.235889,
             "slope": 0.002318,
             "n_main": 0.035,
             "alert_stage_m": 541.50,
@@ -962,7 +964,7 @@ def build_all_rating_curves():
     })
     cs_r = load_cross_section_array("RAJARAM_BRIDGE", SHIVAJI_SURVEY, {
         "name": "Rajaram K.T. Weir (Kasba Bawada)",
-        "latitude": 16.6903, "longitude": 74.2308, "slope": 0.002318, "n_main": 0.035,
+        "latitude": 16.736167, "longitude": 74.235889, "slope": 0.002318, "n_main": 0.035,
         "alert_stage_m": 541.50, "warning_stage_m": 542.07, "danger_stage_m": 543.30, "hfl_m": 545.33,
     })
     return {
