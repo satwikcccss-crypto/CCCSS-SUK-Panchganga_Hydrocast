@@ -334,7 +334,13 @@ def load_run_forecast(
         with open(target_path, "r", encoding="utf-8") as f:
             data = json.load(f)
             cycle_id = data.get("cycle_id") or data.get("summary", {}).get("cycle_id", target_path.stem)
-            shivaji_fc = data.get("bridgeShivaji", {}).get("forecast", [])
+            b_raw = data.get("bridgeShivaji", [])
+            if isinstance(b_raw, dict):
+                shivaji_fc = b_raw.get("forecast", [])
+            elif isinstance(b_raw, list):
+                shivaji_fc = b_raw
+            else:
+                shivaji_fc = []
             return cycle_id, shivaji_fc, data
     except Exception as e:
         log.error("Failed to load run forecast from %s: %s", target_path, e)
@@ -365,7 +371,7 @@ def validate_run_with_observations(
     last_hour_dt = None
 
     for h, fc in enumerate(forecast[:90]):
-        fc_time = fc.get("forecast_time", "")
+        fc_time = fc.get("forecast_time") or fc.get("timestamp") or ""
         dt_clean = fc_time.replace("+00:00", "Z")
         if "T" in dt_clean:
             base_hour = dt_clean[:13] + ":00:00Z"
@@ -598,143 +604,42 @@ def sync_validation_to_storage_and_db(
 
 def sync_to_postgres_db(validation_result: Dict[str, Any]) -> None:
     """
-    Inserts or updates the master `simulation_runs` row and `forecast_validation_metrics`
-    with all 14 columns fully populated.
+    Inserts or updates the master `simulation_runs` row and all tables using the unified synchronizer.
     """
     try:
         from src.db.connection import get_db_connection
+        from src.db.sync_all_to_supabase import apply_core_schema, sync_single_run
+
         conn = get_db_connection()
         if not conn:
             return
 
-        cycle_id = validation_result["cycle_id"]
-        m = validation_result.get("metrics", {})
+        cycle_id = validation_result.get("cycle_id")
+        if not cycle_id:
+            conn.close()
+            return
 
-        # Parse cycle date and time from cycle_id (e.g. CYC_20260903_18z)
-        parts = cycle_id.split("_")
-        if len(parts) >= 3:
-            c_date_str = parts[1]
-            c_time_str = parts[2]
+        apply_core_schema(conn)
+
+        # Check if full run JSON file is available on disk
+        run_file = ROOT_DIR / "data" / "runs" / f"{cycle_id}.json"
+        if run_file.exists():
             try:
-                cycle_date = datetime.strptime(c_date_str, "%Y%m%d").date()
-            except ValueError:
-                cycle_date = datetime.now(timezone.utc).date()
-            cycle_time = c_time_str
+                with open(run_file, "r", encoding="utf-8") as f:
+                    run_payload = json.load(f)
+                run_payload["validation"] = validation_result
+            except Exception:
+                run_payload = {"cycle_id": cycle_id, "validation": validation_result}
         else:
-            cycle_date = datetime.now(timezone.utc).date()
-            cycle_time = "06z"
+            run_payload = {"cycle_id": cycle_id, "validation": validation_result}
 
-        with conn.cursor() as cur:
-            # 1. Ensure tables exist
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS simulation_runs (
-                    run_id VARCHAR(100) PRIMARY KEY,
-                    cycle_date DATE NOT NULL,
-                    cycle_time VARCHAR(32) NOT NULL,
-                    start_time TIMESTAMPTZ NOT NULL,
-                    end_time TIMESTAMPTZ,
-                    status VARCHAR(32) NOT NULL DEFAULT 'completed',
-                    model_version VARCHAR(64) DEFAULT 'HEC-HMS-4.13',
-                    peak_discharge_m3s NUMERIC(10,2),
-                    peak_stage_m NUMERIC(6,2),
-                    lead_hours_to_peak SMALLINT,
-                    total_volume_mcm NUMERIC(10,2),
-                    total_rainfall_mm NUMERIC(8,2),
-                    total_rainfall_volume_mcm NUMERIC(10,2),
-                    alert_level VARCHAR(32) DEFAULT 'NORMAL',
-                    spearman_rho NUMERIC(6,4),
-                    nse_score NUMERIC(6,4),
-                    created_at TIMESTAMPTZ DEFAULT NOW()
-                );
-
-                CREATE TABLE IF NOT EXISTS forecast_validation_metrics (
-                    id BIGSERIAL PRIMARY KEY,
-                    run_id VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
-                    spearman_rho NUMERIC(6,4),
-                    spearman_rho_q NUMERIC(6,4),
-                    pearson_r2 NUMERIC(6,4),
-                    nse_stage NUMERIC(6,4),
-                    nse_discharge NUMERIC(6,4),
-                    rmse_stage_m NUMERIC(6,4),
-                    mae_stage_m NUMERIC(6,4),
-                    rmse_q_m3s NUMERIC(8,2),
-                    mae_q_m3s NUMERIC(8,2),
-                    pbias_stage_pct NUMERIC(6,2),
-                    pbias_discharge_pct NUMERIC(6,2),
-                    basin_rainfall_accuracy_pct NUMERIC(5,2),
-                    performance_grade VARCHAR(32),
-                    sample_size_hours INT,
-                    created_at TIMESTAMPTZ DEFAULT NOW(),
-                    UNIQUE (run_id)
-                );
-            """)
-
-            # 2. Upsert simulation_runs row
-            cur.execute("""
-                INSERT INTO simulation_runs (
-                    run_id, cycle_date, cycle_time, start_time, end_time, status, model_version,
-                    spearman_rho, nse_score
-                ) VALUES (%s, %s, %s, NOW(), NOW(), %s, %s, %s, %s)
-                ON CONFLICT (run_id) DO UPDATE SET
-                    status = EXCLUDED.status,
-                    spearman_rho = EXCLUDED.spearman_rho,
-                    nse_score = EXCLUDED.nse_score;
-            """, (
-                cycle_id,
-                cycle_date,
-                cycle_time,
-                "completed" if validation_result.get("lifecycle_status") == "LIFECYCLE_VERIFIED" else "in_progress",
-                "HEC-HMS-4.13",
-                m.get("spearman_rho"),
-                m.get("nse_stage"),
-            ))
-
-            # 3. Upsert full 14-column forecast_validation_metrics
-            cur.execute("""
-                INSERT INTO forecast_validation_metrics (
-                    run_id, spearman_rho, spearman_rho_q, pearson_r2,
-                    nse_stage, nse_discharge, rmse_stage_m, mae_stage_m,
-                    rmse_q_m3s, mae_q_m3s, pbias_stage_pct, pbias_discharge_pct,
-                    basin_rainfall_accuracy_pct, performance_grade, sample_size_hours
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                ON CONFLICT (run_id) DO UPDATE SET
-                    spearman_rho = EXCLUDED.spearman_rho,
-                    spearman_rho_q = EXCLUDED.spearman_rho_q,
-                    pearson_r2 = EXCLUDED.pearson_r2,
-                    nse_stage = EXCLUDED.nse_stage,
-                    nse_discharge = EXCLUDED.nse_discharge,
-                    rmse_stage_m = EXCLUDED.rmse_stage_m,
-                    mae_stage_m = EXCLUDED.mae_stage_m,
-                    rmse_q_m3s = EXCLUDED.rmse_q_m3s,
-                    mae_q_m3s = EXCLUDED.mae_q_m3s,
-                    pbias_stage_pct = EXCLUDED.pbias_stage_pct,
-                    pbias_discharge_pct = EXCLUDED.pbias_discharge_pct,
-                    basin_rainfall_accuracy_pct = EXCLUDED.basin_rainfall_accuracy_pct,
-                    performance_grade = EXCLUDED.performance_grade,
-                    sample_size_hours = EXCLUDED.sample_size_hours;
-            """, (
-                cycle_id,
-                m.get("spearman_rho"),
-                m.get("spearman_rho_q"),
-                m.get("pearson_r2"),
-                m.get("nse_stage"),
-                m.get("nse_discharge"),
-                m.get("rmse_stage_m"),
-                m.get("mae_stage_m"),
-                m.get("rmse_q_m3s"),
-                m.get("mae_q_m3s"),
-                m.get("pbias_stage_pct"),
-                m.get("pbias_discharge_pct"),
-                m.get("basin_rainfall_accuracy_pct", 94.50),
-                m.get("performance_grade", "EXCELLENT"),
-                m.get("sample_size_hours", 0),
-            ))
-
-        conn.commit()
+        sync_single_run(conn, run_payload)
         conn.close()
         log.info("✓ Telemetry validation metrics saved to Postgres DB (run_id: %s)", cycle_id)
     except Exception as e:
-        log.warning("Supabase validation sync skipped: %s", e)
+        log.error("Supabase validation sync failed: %s", e, exc_info=True)
+        if os.getenv("GITHUB_ACTIONS") == "true":
+            raise
 
 
 def validate_active_cycle(
@@ -784,7 +689,13 @@ def validate_all_pending_runs(
             if not force_revalidate and current_status == "LIFECYCLE_VERIFIED" and verified_h >= 85:
                 continue
 
-            shivaji_fc = data.get("bridgeShivaji", {}).get("forecast", [])
+            b_raw = data.get("bridgeShivaji", [])
+            if isinstance(b_raw, dict):
+                shivaji_fc = b_raw.get("forecast", [])
+            elif isinstance(b_raw, list):
+                shivaji_fc = b_raw
+            else:
+                shivaji_fc = []
             if not shivaji_fc:
                 continue
 
