@@ -38,9 +38,9 @@ from fastapi.responses import JSONResponse
 log = logging.getLogger(__name__)
 
 app = FastAPI(
-    title="HydroForecast API",
+    title="Hydrocast API",
     version="2.0.0",
-    description="Real-time rainfall-runoff prediction for Godavari basin",
+    description="Real-time rainfall-runoff prediction for Panchganga basin",
 )
 
 app.add_middleware(
@@ -120,7 +120,7 @@ def _jsonify(rows) -> list[dict]:
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
-@app.get("/api/v1/status")
+@app.get("/api/v1/status", dependencies=[ExternalDep])
 async def system_status():
     pool = await get_pool()
     async with pool.acquire() as conn:
@@ -144,7 +144,7 @@ async def system_status():
     }
 
 
-@app.get("/api/v1/rainfall/ecmwf")
+@app.get("/api/v1/rainfall/ecmwf", dependencies=[ExternalDep])
 async def ecmwf_hyetograph(subbasin_id: Optional[str] = None):
     """90-hr ECMWF IFS areal rainfall per subbasin (mm/hr, hourly)."""
     pool = await get_pool()
@@ -173,7 +173,7 @@ async def ecmwf_hyetograph(subbasin_id: Optional[str] = None):
     return result
 
 
-@app.get("/api/v1/rainfall/stations")
+@app.get("/api/v1/rainfall/stations", dependencies=[ExternalDep])
 async def station_selection():
     """Selection decision for each subbasin in the latest cycle."""
     pool = await get_pool()
@@ -190,7 +190,7 @@ async def station_selection():
     return _jsonify(rows)
 
 
-@app.get("/api/v1/rainfall/gauges")
+@app.get("/api/v1/rainfall/gauges", dependencies=[ExternalDep])
 async def gauge_hyetographs():
     """All individual gauge 90-hr hyetographs for the latest cycle."""
     pool = await get_pool()
@@ -207,7 +207,7 @@ async def gauge_hyetographs():
     return _jsonify(rows)
 
 
-@app.get("/api/v1/runoff/hydrograph")
+@app.get("/api/v1/runoff/hydrograph", dependencies=[ExternalDep])
 async def outlet_hydrograph(outlet_node: str = "J_Outlet"):
     """90-hr discharge + stage at the sink outlet node."""
     pool = await get_pool()
@@ -222,7 +222,7 @@ async def outlet_hydrograph(outlet_node: str = "J_Outlet"):
     return _jsonify(rows)
 
 
-@app.get("/api/v1/runoff/summary")
+@app.get("/api/v1/runoff/summary", dependencies=[ExternalDep])
 async def runoff_summary():
     """Peak Q, Tp, volume, flood alert for the latest run."""
     pool = await get_pool()
@@ -246,7 +246,7 @@ async def runoff_summary():
     }
 
 
-@app.get("/api/v1/runoff/stage/{site_id}")
+@app.get("/api/v1/runoff/stage/{site_id}", dependencies=[ExternalDep])
 async def bridge_stage_forecast(site_id: str):
     """90-hr stage + alert classification at a bridge site."""
     pool = await get_pool()
@@ -270,7 +270,7 @@ async def bridge_stage_forecast(site_id: str):
     }
 
 
-@app.get("/api/v1/alerts")
+@app.get("/api/v1/alerts", dependencies=[ExternalDep])
 async def active_alerts():
     pool = await get_pool()
     async with pool.acquire() as conn:
@@ -278,7 +278,7 @@ async def active_alerts():
     return _jsonify(rows)
 
 
-@app.get("/api/v1/alerts/bulletin")
+@app.get("/api/v1/alerts/bulletin", dependencies=[ExternalDep])
 async def flood_bulletin():
     """
     Generate CWC-style flood bulletin JSON for all bridge sites.
@@ -313,7 +313,7 @@ async def flood_bulletin():
     }
 
 
-@app.get("/api/v1/pipeline")
+@app.get("/api/v1/pipeline", dependencies=[ExternalDep])
 async def pipeline_status():
     """Current cycle pipeline step statuses."""
     pool = await get_pool()
@@ -338,7 +338,7 @@ async def pipeline_status():
     }
 
 
-@app.get("/api/v1/pipeline/history")
+@app.get("/api/v1/pipeline/history", dependencies=[ExternalDep])
 async def cycle_history(limit: int = 48):
     """Last N cycle summaries."""
     pool = await get_pool()
@@ -353,7 +353,7 @@ async def cycle_history(limit: int = 48):
 
 # ── Historical Runs & Accuracy Validation Endpoints ───────────────────────────
 
-@app.get("/api/v1/runs")
+@app.get("/api/v1/runs", dependencies=[ExternalDep])
 async def list_runs(limit: int = 50):
     """List all tracked historical computation runs with KPIs & accuracy summary."""
     try:
@@ -364,7 +364,7 @@ async def list_runs(limit: int = 50):
         return []
 
 
-@app.get("/api/v1/runs/{run_id}")
+@app.get("/api/v1/runs/{run_id}", dependencies=[ExternalDep])
 async def get_run_details(run_id: str):
     """Retrieve full computation payload for a specific historical run."""
     from src.hydrology.runs_tracker import get_computation_run
@@ -374,7 +374,7 @@ async def get_run_details(run_id: str):
     return run
 
 
-@app.get("/api/v1/accuracy")
+@app.get("/api/v1/accuracy", dependencies=[ExternalDep])
 async def forecast_accuracy(run_id: Optional[str] = None):
     """
     Computes and returns Spearman rank correlation, Pearson R2, NSE, RMSE, MAE,

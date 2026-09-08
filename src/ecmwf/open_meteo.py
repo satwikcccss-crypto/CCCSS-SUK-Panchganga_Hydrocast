@@ -19,6 +19,15 @@ import numpy as np
 import pandas as pd
 import requests
 
+import openmeteo_requests
+import requests_cache
+from retry_requests import retry
+
+# Setup the Open-Meteo API client with cache and retry on error
+cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
+retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
+openmeteo = openmeteo_requests.Client(session=retry_session)
+
 from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_gages
 from src.hms.runner import execute_hec_hms
 from src.sensors.thingspeak_gauge import fetch_shivaji_live_telemetry
@@ -60,35 +69,36 @@ def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarr
         "forecast_days": 4,
         "timezone":      "UTC",
     }
-    for attempt in range(3):
-        try:
-            # Polite pause to avoid hitting rate-limits
-            time.sleep(0.25)
-            resp = requests.get(OM_URL, params=params, timeout=15)
-            resp.raise_for_status()
-            data = resp.json()
-            hourly = data.get("hourly", {})
-            times  = hourly.get("time", [])
-            precip = hourly.get("precipitation", [])
-
-            df = pd.DataFrame({"time": pd.to_datetime(times, utc=True), "precip": precip})
-            df = df[df["time"] >= start_dt].head(90)
-
-            arr = np.zeros(90, dtype=np.float32)
-            if len(df) > 0:
-                arr[: len(df)] = df["precip"].fillna(0).values
-            return arr
-        except Exception as e:
-            if attempt < 2:
-                time.sleep(1.0 * (attempt + 1))
-                continue
-            log.warning("Open-Meteo fetch failed for (%.4f, %.4f): %s — generating physical fallback", lat, lon, e)
-            # Synthetic fallback based on latitude
-            arr = np.zeros(90, dtype=np.float32)
-            peak_hr = 20
-            for h in range(90):
-                arr[h] = max(0.0, float(np.exp(-((h - peak_hr) ** 2) / 70) * (2.5 if lat < 16.6 else 1.2)))
-            return arr
+    
+    try:
+        responses = openmeteo.weather_api(OM_URL, params=params)
+        response = responses[0]
+        
+        hourly = response.Hourly()
+        hourly_rain = hourly.Variables(0).ValuesAsNumpy()
+        
+        times = pd.date_range(
+            start=pd.to_datetime(hourly.Time(), unit="s", utc=True),
+            end=pd.to_datetime(hourly.TimeEnd(), unit="s", utc=True),
+            freq=pd.Timedelta(seconds=hourly.Interval()),
+            inclusive="left"
+        )
+        
+        df = pd.DataFrame({"time": times, "precip": hourly_rain})
+        df = df[df["time"] >= start_dt].head(90)
+        
+        arr = np.zeros(90, dtype=np.float32)
+        if len(df) > 0:
+            arr[: len(df)] = df["precip"].fillna(0).values
+        return arr
+    except Exception as e:
+        log.warning("Open-Meteo fetch failed for (%.4f, %.4f): %s — generating physical fallback", lat, lon, e)
+        # Synthetic fallback based on latitude
+        arr = np.zeros(90, dtype=np.float32)
+        peak_hr = 20
+        for h in range(90):
+            arr[h] = max(0.0, float(np.exp(-((h - peak_hr) ** 2) / 70) * (2.5 if lat < 16.6 else 1.2)))
+        return arr
 
 
 def convert_discharge_to_stage(q: float, site: str) -> float:
