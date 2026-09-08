@@ -19873,7 +19873,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260906_12z",
-    "validation_timestamp": "2026-09-08T07:26:37.024666+00:00",
+    "validation_timestamp": "2026-09-08T07:32:20.280330+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -19890,16 +19890,16 @@
     "completion_pct": 48.9,
     "metrics": {
       "sample_size_hours": 44,
-      "rmse_stage_m": 0.082,
+      "rmse_stage_m": 0.083,
       "mae_stage_m": 0.062,
-      "nse_stage": -0.6929,
+      "nse_stage": -0.6862,
       "pbias_stage_pct": 0.01,
       "spearman_rho": 0.0,
       "pearson_r2": 0.0,
-      "rmse_q_m3s": 5.1,
-      "mae_q_m3s": 4.4,
-      "nse_discharge": -0.8856,
-      "pbias_discharge_pct": -3.7,
+      "rmse_q_m3s": 5.12,
+      "mae_q_m3s": 4.41,
+      "nse_discharge": -0.8667,
+      "pbias_discharge_pct": -3.69,
       "spearman_rho_q": 0.0,
       "pearson_r2_q": 0.0,
       "basin_rainfall_accuracy_pct": 94.5,
@@ -20165,10 +20165,10 @@
         "actual_distance_ft": 53.97
       },
       {
-        "actual_stage": 532.89,
+        "actual_stage": 532.88,
         "predicted_stage": 533.1,
         "lead_hours": 43,
-        "actual_distance_ft": 54.0
+        "actual_distance_ft": 54.03
       }
     ],
     "actual_observed_series": [
@@ -20736,11 +20736,11 @@
         "timestamp": "2026-09-08T07:00:00+00:00",
         "predicted_stage_m": 533.1,
         "predicted_discharge_m3s": 91.1,
-        "observed_stage_m": 532.89,
-        "observed_distance_ft": 54.0,
-        "observed_discharge_m3s": 85.6,
-        "error_delta_m": 0.21,
-        "error_delta_ft": 0.69,
+        "observed_stage_m": 532.88,
+        "observed_distance_ft": 54.03,
+        "observed_discharge_m3s": 85.1,
+        "error_delta_m": 0.22,
+        "error_delta_ft": 0.72,
         "alert_level": "NORMAL",
         "has_observation": true
       },

@@ -36,8 +36,8 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -1.4235,
-    "rmse": 0.072,
+    "nse": -1.3835,
+    "rmse": 0.073,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 26
   },
@@ -57,8 +57,8 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -0.92,
-    "rmse": 0.088,
+    "nse": -0.9098,
+    "rmse": 0.089,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 38
   },
@@ -78,8 +78,8 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -0.6929,
-    "rmse": 0.082,
+    "nse": -0.6862,
+    "rmse": 0.083,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 44
   },
@@ -99,8 +99,8 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -0.3499,
-    "rmse": 0.071,
+    "nse": -0.3475,
+    "rmse": 0.072,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 50
   },
@@ -120,8 +120,8 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -0.5581,
-    "rmse": 0.075,
+    "nse": -0.5533,
+    "rmse": 0.076,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 62
   },
@@ -141,7 +141,7 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -0.0415,
+    "nse": -0.0419,
     "rmse": 0.06,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 68
@@ -162,7 +162,7 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": -0.2826,
-    "nse": -0.0492,
+    "nse": -0.0487,
     "rmse": 0.058,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 74
@@ -183,7 +183,7 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": -0.6163,
-    "nse": -0.4967,
+    "nse": -0.4932,
     "rmse": 0.065,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 86
