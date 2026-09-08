@@ -139,7 +139,7 @@ easting,northing,elevation_m
    - `A, P = wetted_area_and_perimeter(station, elev, WSE)`
    - `R = A / P`
    - `Q = (1/n) * A * R^(2/3) * S^(1/2)` (Manning)
-3. Table: H=0.5m..HFL+2m at 0.1m steps → stored in `rating_curves`
+3. Process: H=0.5m..HFL+2m at 0.1m steps. Data is used dynamically in memory rather than persisted.
 
 **CWC Alert Classification**:
 ```
