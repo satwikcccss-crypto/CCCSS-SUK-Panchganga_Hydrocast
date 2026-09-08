@@ -325,7 +325,40 @@ def seed_static_metadata(conn) -> None:
                     primary_station_id = EXCLUDED.primary_station_id;
             """)
 
-            # 2. Bridge sites
+            # 2. Gauge stations (20 Panchganga basin stations + KARVIR alias)
+            cur.execute("""
+                INSERT INTO gauge_stations (station_id, station_name, subbasin_id, latitude, longitude, elevation_m, is_primary)
+                VALUES
+                    ('KARVEER', 'Karveer', 'S1', 16.706369, 74.2481772, 550.0, TRUE),
+                    ('KARVIR', 'Karveer (Alt Alias)', 'S1', 16.706369, 74.2481772, 550.0, TRUE),
+                    ('SANGARUL', 'Sangarul', 'S2', 16.6841962, 74.0931627, 572.0, TRUE),
+                    ('BALINGA', 'Balinga', 'S2', 16.6878443, 74.17031, 560.0, FALSE),
+                    ('KALE', 'Kale', 'S2', 16.7228087, 74.0564499, 580.0, FALSE),
+                    ('KOTOLI', 'Kotoli', 'S3', 16.7820174, 74.0518705, 585.0, TRUE),
+                    ('BAJAR_BHOGAON', 'Bajar Bhogaon', 'S3', 16.8086769, 74.1107824, 590.0, FALSE),
+                    ('PADAL', 'Padal', 'S3', 16.7446006, 74.115187, 575.0, FALSE),
+                    ('KARANJPHEN', 'Karanjphen', 'S4', 16.7850973, 73.9036487, 640.0, TRUE),
+                    ('PADASALI', 'Padasali', 'S5', 16.701934, 73.843584, 620.0, TRUE),
+                    ('SALWAN', 'Salwan', 'S5', 16.6712, 73.9735, 595.0, FALSE),
+                    ('GAGANBAWDA', 'Gaganbawda', 'S6', 16.5469926, 73.8346738, 680.0, TRUE),
+                    ('GARIVADE', 'Garivade', 'S7', 16.520366, 73.918419, 610.0, TRUE),
+                    ('BEED', 'Beed', 'S8', 16.647984, 74.1288964, 565.0, TRUE),
+                    ('SHIROLI_DHUMALA', 'Shiroli-Dhumala', 'S8', 16.6166768, 74.1062828, 560.0, FALSE),
+                    ('RADHANAGARI', 'Radhanagari', 'S9', 16.41021, 73.9971822, 615.0, TRUE),
+                    ('HALADI', 'Haladi', 'S9', 16.5932632, 74.156292, 555.0, FALSE),
+                    ('RASHIWADE_BK', 'Rashiwade Bk.', 'S9', 16.5475641, 74.1019728, 570.0, FALSE),
+                    ('AAVALI_BK', 'Aavali Bk.', 'S9', 16.481009, 74.0549812, 585.0, FALSE),
+                    ('KASABA_TARALE', 'Kasaba Tarale', 'S9', 16.4478876, 74.021589, 595.0, FALSE),
+                    ('KASABA_WALAWE', 'Kasaba Walawe', 'S9', 16.41021, 73.9971822, 615.0, FALSE)
+                ON CONFLICT (station_id) DO UPDATE SET
+                    latitude = EXCLUDED.latitude,
+                    longitude = EXCLUDED.longitude,
+                    subbasin_id = EXCLUDED.subbasin_id,
+                    elevation_m = EXCLUDED.elevation_m,
+                    is_primary = EXCLUDED.is_primary;
+            """)
+
+            # 3. Bridge sites
             cur.execute("""
                 INSERT INTO bridge_sites (site_id, site_name, latitude, longitude,
                     alert_stage_m, warning_stage_m, danger_stage_m, hfl_m,
@@ -534,10 +567,16 @@ def sync_single_run(conn, data: Dict[str, Any]) -> bool:
         st_list = data.get("stations", [])
         if st_list:
             cur.execute("DELETE FROM station_rainfall_telemetry WHERE run_id = %s;", (cycle_id,))
-            st_rows = [
-                (
+            st_rows = []
+            for st in st_list:
+                if "station_id" not in st:
+                    continue
+                st_id = str(st["station_id"]).strip().upper()
+                if st_id == "KARVIR":
+                    st_id = "KARVEER"
+                st_rows.append((
                     cycle_id,
-                    st["station_id"],
+                    st_id,
                     st.get("subbasin_id", "S1"),
                     float(st.get("lat", 0.0)),
                     float(st.get("lon", 0.0)),
@@ -546,9 +585,7 @@ def sync_single_run(conn, data: Dict[str, Any]) -> bool:
                     bool(st.get("is_primary", True)),
                     bool(st.get("is_governing", False)),
                     str(st.get("method", "MAX_RAIN_VOLUME")),
-                )
-                for st in st_list if "station_id" in st
-            ]
+                ))
             if st_rows:
                 execute_values(cur, """
                     INSERT INTO station_rainfall_telemetry

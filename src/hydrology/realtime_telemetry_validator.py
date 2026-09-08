@@ -44,6 +44,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
+import warnings
 from scipy import stats
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -229,16 +230,18 @@ def compute_pure_metrics(
     sum_obs_s = float(np.sum(obs_stages))
     pbias_s = float((np.sum(pred_stages - obs_stages) / sum_obs_s) * 100.0) if abs(sum_obs_s) > 1e-6 else 0.0
 
-    res_spearman_s = stats.spearmanr(pred_stages, obs_stages)
-    rho_s = float(res_spearman_s.statistic) if hasattr(res_spearman_s, "statistic") else float(res_spearman_s[0])
-    if math.isnan(rho_s):
-        rho_s = 0.0
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=getattr(stats, "ConstantInputWarning", UserWarning))
+        res_spearman_s = stats.spearmanr(pred_stages, obs_stages)
+        rho_s = float(res_spearman_s.statistic) if hasattr(res_spearman_s, "statistic") else float(res_spearman_s[0])
+        if math.isnan(rho_s):
+            rho_s = 0.0
 
-    res_pearson_s = stats.pearsonr(pred_stages, obs_stages)
-    r_val_s = float(res_pearson_s.statistic) if hasattr(res_pearson_s, "statistic") else float(res_pearson_s[0])
-    if math.isnan(r_val_s):
-        r_val_s = 0.0
-    r2_s = r_val_s ** 2
+        res_pearson_s = stats.pearsonr(pred_stages, obs_stages)
+        r_val_s = float(res_pearson_s.statistic) if hasattr(res_pearson_s, "statistic") else float(res_pearson_s[0])
+        if math.isnan(r_val_s):
+            r_val_s = 0.0
+        r2_s = r_val_s ** 2
 
     # 2. Discharge Metrics (if provided)
     if pred_discharges is not None and obs_discharges is not None and len(pred_discharges) == n:
@@ -255,16 +258,18 @@ def compute_pure_metrics(
         sum_obs_q = float(np.sum(obs_discharges))
         pbias_q = float((np.sum(pred_discharges - obs_discharges) / sum_obs_q) * 100.0) if abs(sum_obs_q) > 1e-6 else 0.0
 
-        res_spearman_q = stats.spearmanr(pred_discharges, obs_discharges)
-        rho_q = float(res_spearman_q.statistic) if hasattr(res_spearman_q, "statistic") else float(res_spearman_q[0])
-        if math.isnan(rho_q):
-            rho_q = 0.0
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=getattr(stats, "ConstantInputWarning", UserWarning))
+            res_spearman_q = stats.spearmanr(pred_discharges, obs_discharges)
+            rho_q = float(res_spearman_q.statistic) if hasattr(res_spearman_q, "statistic") else float(res_spearman_q[0])
+            if math.isnan(rho_q):
+                rho_q = 0.0
 
-        res_pearson_q = stats.pearsonr(pred_discharges, obs_discharges)
-        r_val_q = float(res_pearson_q.statistic) if hasattr(res_pearson_q, "statistic") else float(res_pearson_q[0])
-        if math.isnan(r_val_q):
-            r_val_q = 0.0
-        r2_q = r_val_q ** 2
+            res_pearson_q = stats.pearsonr(pred_discharges, obs_discharges)
+            r_val_q = float(res_pearson_q.statistic) if hasattr(res_pearson_q, "statistic") else float(res_pearson_q[0])
+            if math.isnan(r_val_q):
+                r_val_q = 0.0
+            r2_q = r_val_q ** 2
     else:
         rmse_q = None
         mae_q = None
@@ -608,7 +613,7 @@ def sync_to_postgres_db(validation_result: Dict[str, Any]) -> None:
     """
     try:
         from src.db.connection import get_db_connection
-        from src.db.sync_all_to_supabase import apply_core_schema, sync_single_run
+        from src.db.sync_all_to_supabase import apply_core_schema, seed_static_metadata, sync_single_run
 
         conn = get_db_connection()
         if not conn:
@@ -620,6 +625,7 @@ def sync_to_postgres_db(validation_result: Dict[str, Any]) -> None:
             return
 
         apply_core_schema(conn)
+        seed_static_metadata(conn)
 
         # Check if full run JSON file is available on disk
         run_file = ROOT_DIR / "data" / "runs" / f"{cycle_id}.json"
