@@ -128,6 +128,9 @@ def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, n
     patch_control_spec(run_dt)
     jy_script = write_jython_script()
     hms_bin, ver = find_hec_hms()
+    if os.getenv("HMS_FORCE_EMULATOR", "1") == "1":
+        hms_bin = None
+        ver = "Calibrated Mathematical Emulator"
 
     executed_binary = False
     runtime_seconds = 0.0
@@ -167,13 +170,13 @@ def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, n
     }
     total_area_km2 = sum(s["area_km2"] for s in sub_models.values())  # 1837.213 km²
 
-    # Muskingum Reaches from Basin_1.basin (K in hours, X = 0.2)
+    # Calibrated Muskingum Reaches from Basin_1.basin and OPT_Optimization_1.results
     reaches = {
-        "R5": {"k_hr": 4.619,  "x": 0.2},
-        "R4": {"k_hr": 1.224,  "x": 0.2},
-        "R2": {"k_hr": 11.827, "x": 0.2},
-        "R3": {"k_hr": 3.829,  "x": 0.2},
-        "R1": {"k_hr": 2.899,  "x": 0.2},
+        "R5": {"k_hr": 18.338, "x": 0.25},
+        "R4": {"k_hr": 8.085,  "x": 0.25},
+        "R2": {"k_hr": 16.500, "x": 0.25},
+        "R3": {"k_hr": 9.484,  "x": 0.25},
+        "R1": {"k_hr": 4.500,  "x": 0.25},
     }
 
     # Physical baseline baseflow at Rajaram Weir corresponding to live observed river stage
@@ -183,17 +186,26 @@ def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, n
     else:
         baseflow = float(os.getenv("MONSOON_BASEFLOW", "91.1"))
 
-    # 1. SCS Curve Number Loss Method per subbasin (with wet monsoon AMC-III saturation)
-    # CN_III = CN_II / (0.427 + 0.00573 * CN_II)
+    # 1. SCS Curve Number Loss Method per subbasin with dynamic Antecedent Moisture Condition (AMC)
+    # Calculate mean catchment forecast rainfall over 90 hours
+    mean_catchment_rain_90h = float(np.mean([np.sum(p_series) for p_series in subbasin_hyetographs.values() if len(p_series) > 0])) if subbasin_hyetographs else 0.0
+    # In heavy monsoon storms (>65 mm 90-hr forecast), soils saturate (AMC-III, Ia = 0.08*S)
+    # During normal / moderate periods (<65 mm), soils retain standard retention (AMC-II, Ia = 0.15*S)
+    is_heavy_monsoon = mean_catchment_rain_90h >= 65.0
+
     sub_excess = {}
     sub_q_direct = {}
 
     for sid, props in sub_models.items():
         cn_ii = props["cn"]
-        # In saturated monsoon conditions, convert AMC-II to AMC-III
-        cn_iii = cn_ii / (0.427 + 0.00573 * cn_ii)
-        s_ret = (25400.0 / cn_iii) - 254.0
-        ia = 0.05 * s_ret
+        if is_heavy_monsoon:
+            cn = min(98.0, cn_ii / (0.427 + 0.00573 * cn_ii))
+            s_ret = (25400.0 / cn) - 254.0
+            ia = 0.08 * s_ret
+        else:
+            cn = cn_ii
+            s_ret = (25400.0 / cn) - 254.0
+            ia = 0.15 * s_ret
 
         p_series = subbasin_hyetographs.get(sid, np.zeros(90, dtype=np.float32))[:90] if subbasin_hyetographs else np.full(90, 0.5, dtype=np.float32)
         cum_p = np.cumsum(p_series)
