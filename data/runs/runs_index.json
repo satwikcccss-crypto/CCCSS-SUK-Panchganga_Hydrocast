@@ -36,8 +36,8 @@
     "status": "completed",
     "has_validation": false,
     "spearman_rho": 0.0,
-    "nse": -0.3218,
-    "rmse": 0.032,
+    "nse": -0.3349,
+    "rmse": 0.034,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 7
   },
@@ -57,8 +57,8 @@
     "status": "completed",
     "has_validation": false,
     "spearman_rho": 0.0,
-    "nse": -2.4894,
-    "rmse": 0.071,
+    "nse": -2.3894,
+    "rmse": 0.072,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 13
   },
@@ -78,7 +78,7 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -1.3545,
+    "nse": -1.3462,
     "rmse": 0.146,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 37
@@ -99,7 +99,7 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -1.0364,
+    "nse": -1.0322,
     "rmse": 0.155,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 49
@@ -120,8 +120,8 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -0.8231,
-    "rmse": 0.146,
+    "nse": -0.8201,
+    "rmse": 0.147,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 55
   },
@@ -141,7 +141,7 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -0.5435,
+    "nse": -0.542,
     "rmse": 0.133,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 61
@@ -162,8 +162,8 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -0.6143,
-    "rmse": 0.133,
+    "nse": -0.6123,
+    "rmse": 0.134,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 73
   },
@@ -183,7 +183,7 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": -0.4888,
-    "nse": -0.2542,
+    "nse": -0.254,
     "rmse": 0.115,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 79
@@ -204,7 +204,7 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": -0.626,
-    "nse": -0.1328,
+    "nse": -0.1327,
     "rmse": 0.106,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 85
