@@ -1,413 +1,185 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="100%" height="100%" style="background: #040711; font-family: 'JetBrains Mono', 'Segoe UI', -apple-system, monospace; border-radius: 12px; border: 1px solid #1e293b;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 450" width="100%" height="100%">
+  <!-- Definitions for Gradients, Dropshadows, and Patterns -->
   <defs>
-    <!-- Background Technical Grid -->
-    <pattern id="hud-grid-fine" width="20" height="20" patternUnits="userSpaceOnUse">
-      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#0c1424" stroke-width="0.6"/>
-    </pattern>
-    <pattern id="hud-grid-major" width="100" height="100" patternUnits="userSpaceOnUse">
-      <rect width="100" height="100" fill="url(#hud-grid-fine)"/>
-      <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#132038" stroke-width="1.2"/>
-      <circle cx="0" cy="0" r="1.5" fill="#38bdf8" opacity="0.4"/>
-    </pattern>
-
-    <!-- Sci-Fi Glow Filters -->
-    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <filter id="glow-neon" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="6" result="blur1"/>
-      <feGaussianBlur stdDeviation="2" result="blur2"/>
-      <feMerge>
-        <feMergeNode in="blur1"/>
-        <feMergeNode in="blur2"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <filter id="glow-amber" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <filter id="glow-green" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <!-- Gradients -->
-    <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#38bdf8"/>
-      <stop offset="40%" stop-color="#00f0ff"/>
-      <stop offset="75%" stop-color="#60a5fa"/>
-      <stop offset="100%" stop-color="#3b82f6"/>
+    <!-- Background Gradient (Soft Light / Ice Blue) -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#e2e8f0" />
     </linearGradient>
 
-    <linearGradient id="hydro-fill" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.5"/>
-      <stop offset="40%" stop-color="#0284c7" stop-opacity="0.2"/>
-      <stop offset="100%" stop-color="#0369a1" stop-opacity="0.0"/>
+    <!-- Node Gradients -->
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
     </linearGradient>
 
-    <linearGradient id="radar-cone" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.85"/>
-      <stop offset="40%" stop-color="#fbbf24" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#d97706" stop-opacity="0.02"/>
+    <linearGradient id="secondaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
     </linearGradient>
 
-    <linearGradient id="card-panel" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0a1222" stop-opacity="0.95"/>
-      <stop offset="100%" stop-color="#050a14" stop-opacity="0.95"/>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#6d28d9" />
+    </linearGradient>
+    
+    <linearGradient id="warningGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
     </linearGradient>
 
-    <!-- Animations -->
+    <!-- Soft Drop Shadow for Elements -->
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="2" dy="5" stdDeviation="5" flood-opacity="0.15" />
+    </filter>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Moving Dot Path Animation -->
     <style>
-      @keyframes radarBeamScan {
-        0% { transform: translateY(0) scaleX(0.2); opacity: 1; }
-        60% { opacity: 0.8; }
-        100% { transform: translateY(130px) scaleX(1.3); opacity: 0; }
+      .dash-path {
+        stroke-dasharray: 10, 10;
+        animation: dash 3s linear infinite;
       }
-      @keyframes dataStreamPulse {
-        from { stroke-dashoffset: 300; }
-        to { stroke-dashoffset: 0; }
+      @keyframes dash {
+        to {
+          stroke-dashoffset: -20;
+        }
       }
-      @keyframes pingStatus {
-        0%, 100% { r: 4px; fill: #10b981; filter: drop-shadow(0 0 6px #10b981); }
-        50% { r: 6.5px; fill: #34d399; filter: drop-shadow(0 0 12px #34d399); }
+      .node-text {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        fill: #ffffff;
       }
-      @keyframes waterGlance {
-        0% { transform: translateX(0); }
-        50% { transform: translateX(8px); }
-        100% { transform: translateX(0); }
+      .sub-text {
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-weight: 400;
+        font-size: 12px;
+        fill: #e2e8f0;
       }
-      @keyframes rainDrop {
-        0% { transform: translateY(-10px); opacity: 0; }
-        50% { opacity: 1; }
-        100% { transform: translateY(45px); opacity: 0; }
+      .title-text {
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-weight: 800;
+        font-size: 28px;
+        fill: #0f172a;
       }
-      @keyframes scanSweep {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(95px); }
+      .subtitle-text {
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        fill: #475569;
+        letter-spacing: 1px;
       }
-      .radar-wave-1 { animation: radarBeamScan 2s cubic-bezier(0.2, 0.7, 0.4, 1) infinite; }
-      .radar-wave-2 { animation: radarBeamScan 2s cubic-bezier(0.2, 0.7, 0.4, 1) 0.65s infinite; }
-      .radar-wave-3 { animation: radarBeamScan 2s cubic-bezier(0.2, 0.7, 0.4, 1) 1.3s infinite; }
-      .data-flow { stroke-dasharray: 6 5; animation: dataStreamPulse 6s linear infinite; }
-      .live-dot { animation: pingStatus 1.5s infinite; }
-      .water-anim { animation: waterGlance 3s ease-in-out infinite; }
-      .rain-p1 { animation: rainDrop 1.6s ease-in infinite; }
-      .rain-p2 { animation: rainDrop 1.6s ease-in 0.5s infinite; }
-      .rain-p3 { animation: rainDrop 1.6s ease-in 1s infinite; }
-      .oscilloscope-scan { animation: scanSweep 8s ease-in-out infinite alternate; }
+      .pulse {
+        animation: pulse-anim 2s infinite ease-in-out;
+      }
+      @keyframes pulse-anim {
+        0% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.05); opacity: 1; }
+        100% { transform: scale(1); opacity: 0.8; }
+      }
     </style>
   </defs>
 
-  <!-- Canvas Background -->
-  <rect width="1200" height="480" fill="#040711"/>
-  <rect width="1200" height="480" fill="url(#hud-grid-major)"/>
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="url(#bgGradient)" rx="16" ry="16" />
 
-  <!-- Outer Sci-Fi Border & Corner Brackets -->
-  <rect x="14" y="14" width="1172" height="452" rx="8" fill="none" stroke="#1e293b" stroke-width="1.5"/>
-  <rect x="18" y="18" width="1164" height="444" rx="6" fill="none" stroke="#0e1726" stroke-width="0.8"/>
+  <!-- Grid Pattern Overlay for Tech Feel -->
+  <g opacity="0.05">
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#000" stroke-width="1"/>
+    </pattern>
+    <rect width="100%" height="100%" fill="url(#grid)" rx="16" ry="16" />
+  </g>
+
+  <!-- Header -->
+  <text x="600" y="55" class="title-text" text-anchor="middle">HYDROCAST PIPELINE ARCHITECTURE</text>
+  <text x="600" y="80" class="subtitle-text" text-anchor="middle">REAL-TIME FLOOD INTELLIGENCE &amp; HYDRAULIC MODELING</text>
+
+  <!-- Connection Lines (Data Flow) -->
+  <!-- Meteo to Python -->
+  <path d="M 230 200 C 300 200, 300 200, 380 200" fill="none" stroke="#3b82f6" stroke-width="4" class="dash-path" />
+  <!-- Python to HMS -->
+  <path d="M 580 200 C 620 200, 640 150, 680 150" fill="none" stroke="#8b5cf6" stroke-width="4" class="dash-path" />
+  <!-- IoT to Python -->
+  <path d="M 230 320 C 300 320, 380 260, 480 260" fill="none" stroke="#10b981" stroke-width="4" class="dash-path" />
+  <!-- HMS to DB -->
+  <path d="M 880 150 C 920 150, 940 200, 980 200" fill="none" stroke="#8b5cf6" stroke-width="4" class="dash-path" />
+  <!-- DB to Frontend -->
+  <path d="M 1030 240 L 1030 300" fill="none" stroke="#f59e0b" stroke-width="4" class="dash-path" />
   
-  <!-- Corner Tech Reticles (HUD Brackets) -->
-  <path d="M 22 42 L 22 22 L 42 22" fill="none" stroke="#00f0ff" stroke-width="2.5"/>
-  <path d="M 1178 42 L 1178 22 L 1158 22" fill="none" stroke="#00f0ff" stroke-width="2.5"/>
-  <path d="M 22 438 L 22 458 L 42 458" fill="none" stroke="#00f0ff" stroke-width="2.5"/>
-  <path d="M 1178 438 L 1178 458 L 1158 458" fill="none" stroke="#00f0ff" stroke-width="2.5"/>
+  <!-- Back channel: Python dumping JSON directly to Frontend -->
+  <path d="M 530 240 L 530 340 L 930 340" fill="none" stroke="#1d4ed8" stroke-width="3" stroke-dasharray="5,5" opacity="0.6"/>
 
-  <!-- ==================== 1. TOP HERO HEADER & LOGO ==================== -->
-  <g transform="translate(42, 36)">
-    <!-- Top System Breadcrumb -->
-    <g transform="translate(0, 0)">
-      <rect width="110" height="20" rx="3" fill="#0c1a30" stroke="#0284c7" stroke-width="1"/>
-      <circle cx="12" cy="10" r="3.5" class="live-dot"/>
-      <text x="22" y="13.5" fill="#38bdf8" font-size="8.5" font-weight="900" letter-spacing="1">SYSTEM V2.4</text>
-
-      <rect x="118" y="0" width="145" height="20" rx="3" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
-      <text x="126" y="13.5" fill="#a7f3d0" font-size="8.5" font-weight="900" letter-spacing="1">1-HR DISCRETE BATCH</text>
-
-      <text x="275" y="14" fill="#64748b" font-size="9">PANCHGANGA BASIN DIGITAL TWIN // KOLHAPUR, MAHARASHTRA</text>
-    </g>
-
-    <!-- Main Stylized Typography: HYDROCAST -->
-    <g transform="translate(0, 32)">
-      <!-- Main Glowing Logo Wordmark -->
-      <text x="0" y="44" fill="url(#brand-grad)" font-size="48" font-weight="900" letter-spacing="4" filter="url(#glow-neon)">HYDROCAST</text>
-      <text x="350" y="40" fill="#f8fafc" font-size="14" font-weight="800" letter-spacing="1.5">OPERATIONAL FLOOD INTELLIGENCE PLATFORM</text>
-      <text x="350" y="56" fill="#94a3b8" font-size="10" font-weight="500">PHYSICAL RUNOFF CONTINUUM · MONOTONIC PCHIP HYDRAULICS · THINGSPEAK ULTRASONIC TELEMETRY</text>
-    </g>
-
-    <!-- Top-Right Institutional Credentials -->
-    <g transform="translate(850, 0)">
-      <rect width="265" height="66" rx="4" fill="#070d18" stroke="#1e293b" stroke-width="1"/>
-      <text x="14" y="20" fill="#38bdf8" font-size="9" font-weight="800">CENTRE FOR CYBER SECURITY SYSTEMS</text>
-      <text x="14" y="34" fill="#cbd5e1" font-size="8.5" font-weight="600">SHIVAJI UNIVERSITY, KOLHAPUR (SUK)</text>
-      <text x="14" y="48" fill="#94a3b8" font-size="8">WATER RESOURCES DEPARTMENT (WRD)</text>
-      <line x1="14" y1="54" x2="251" y2="54" stroke="#1e293b" stroke-width="0.8"/>
-      <circle cx="245" cy="20" r="3.5" fill="#10b981"/>
-    </g>
+  <!-- BLOCK 1: ECMWF / NWP Data -->
+  <g transform="translate(50, 160)" filter="url(#dropShadow)">
+    <rect x="0" y="0" width="180" height="80" rx="12" fill="url(#primaryGradient)" />
+    <circle cx="20" cy="20" r="4" fill="#60a5fa" class="pulse"/>
+    <text x="90" y="35" class="node-text" text-anchor="middle">Open-Meteo SDK</text>
+    <text x="90" y="55" class="sub-text" text-anchor="middle">ECMWF IFS 9km HRES</text>
+    <text x="90" y="70" class="sub-text" text-anchor="middle">90-Hour Forecast</text>
   </g>
 
-  <!-- ==================== 2. THREE-PANE CYBER-PHYSICAL WORKFLOW ==================== -->
-
-  <!-- PANEL A: METEOROLOGY & 3D BASIN TOPOGRAPHY (LEFT, X: 42 to 390) -->
-  <g transform="translate(42, 148)">
-    <rect width="345" height="235" rx="6" fill="url(#card-panel)" stroke="#1e293b" stroke-width="1.2"/>
-    
-    <!-- Panel Header -->
-    <path d="M 0 0 L 345 0 L 345 28 L 0 28 Z" fill="#0b1324"/>
-    <circle cx="16" cy="14" r="3.5" fill="#38bdf8"/>
-    <text x="28" y="18" fill="#38bdf8" font-size="9" font-weight="900" letter-spacing="1">01 // METEOROLOGY &amp; BASIN MORPHOLOGY</text>
-
-    <!-- Cloud & ECMWF Hyetograph Source -->
-    <g transform="translate(18, 42)">
-      <!-- Cyber Rain Cloud Graphic -->
-      <path d="M 12 18 C 12 12, 18 8, 25 8 C 30 4, 38 4, 44 8 C 50 6, 58 10, 58 16 C 64 16, 68 20, 68 26 C 68 32, 62 36, 56 36 L 14 36 C 8 36, 4 32, 4 26 C 4 21, 8 18, 12 18 Z" 
-            fill="#1e293b" stroke="#38bdf8" stroke-width="1.4" filter="url(#glow-cyan)"/>
-      <!-- Falling Animated Rain Packets -->
-      <g stroke="#00f0ff" stroke-width="1.5" stroke-linecap="round">
-        <line x1="16" y1="42" x2="14" y2="50" class="rain-p1"/>
-        <line x1="28" y1="40" x2="26" y2="52" class="rain-p2"/>
-        <line x1="42" y1="42" x2="40" y2="50" class="rain-p3"/>
-        <line x1="56" y1="40" x2="54" y2="52" class="rain-p1"/>
-      </g>
-      <text x="80" y="20" fill="#f8fafc" font-size="9" font-weight="800">ECMWF IFS 0.25°</text>
-      <text x="80" y="32" fill="#94a3b8" font-size="8">90-hr Hyetograph Horizon</text>
-      <text x="80" y="44" fill="#f59e0b" font-size="7.5" font-weight="700">Worst-Case Cloudburst Router</text>
-    </g>
-
-    <!-- 3D Holographic Terrain Wireframe (Western Ghats Sahyadri to Valley) -->
-    <g transform="translate(18, 105)">
-      <!-- Mountain Ridges -->
-      <path d="M 0 65 L 45 25 L 85 45 L 125 10 L 165 35 L 210 20 L 250 50 L 305 65" 
-            fill="none" stroke="#10b981" stroke-width="1.5" opacity="0.6"/>
-      <path d="M 15 70 L 60 35 L 95 55 L 135 20 L 175 45 L 220 30 L 260 60 L 305 70" 
-            fill="none" stroke="#059669" stroke-width="1" opacity="0.4"/>
-      
-      <!-- 5 Tributaries Converging (Kasari, Kumbhi, Tulshi, Bhogawati, Dhamani) -->
-      <path d="M 20 60 Q 60 70 120 75 Q 160 80 200 85" fill="none" stroke="#38bdf8" stroke-width="1.8"/>
-      <path d="M 40 40 Q 80 55 140 70 Q 180 80 200 85" fill="none" stroke="#38bdf8" stroke-width="1.8"/>
-      <path d="M 70 30 Q 110 50 160 70 Q 185 80 200 85" fill="none" stroke="#38bdf8" stroke-width="2"/>
-      <path d="M 125 20 Q 150 45 180 65 Q 195 78 200 85" fill="none" stroke="#38bdf8" stroke-width="2"/>
-      
-      <!-- Main Stem Flow from Prayag Chikhali Confluence -->
-      <path d="M 200 85 Q 240 88 305 90" fill="none" stroke="#00f0ff" stroke-width="3.5" filter="url(#glow-cyan)"/>
-      <path d="M 200 85 Q 240 88 305 90" fill="none" stroke="#ffffff" stroke-width="1.5" class="data-flow"/>
-
-      <!-- Confluence Beacon -->
-      <circle cx="200" cy="85" r="4.5" fill="#f59e0b" filter="url(#glow-amber)"/>
-      <text x="200" y="102" fill="#fbbf24" font-size="7.5" font-weight="800" text-anchor="middle">PRAYAG CHIKHALI</text>
-      <text x="15" y="18" fill="#34d399" font-size="7.5" font-weight="700">SAHYADRI (EL 1,000m)</text>
-      <text x="290" y="112" fill="#38bdf8" font-size="7.5" font-weight="800" text-anchor="end">PANCHGANGA MAIN STEM</text>
-    </g>
+  <!-- BLOCK 2: IoT Sensors -->
+  <g transform="translate(50, 280)" filter="url(#dropShadow)">
+    <rect x="0" y="0" width="180" height="80" rx="12" fill="url(#secondaryGradient)" />
+    <circle cx="20" cy="20" r="4" fill="#34d399" class="pulse"/>
+    <text x="90" y="35" class="node-text" text-anchor="middle">ThingSpeak IoT</text>
+    <text x="90" y="55" class="sub-text" text-anchor="middle">Ultrasonic Water Level</text>
+    <text x="90" y="70" class="sub-text" text-anchor="middle">Shivaji Bridge Telemetry</text>
   </g>
 
-  <!-- CONNECTOR DATA FLOW A -> B -->
-  <g transform="translate(390, 245)" stroke="#00f0ff" fill="none">
-    <line x1="0" y1="0" x2="35" y2="0" stroke-width="2" class="data-flow"/>
-    <polygon points="35,-4 42,0 35,4" fill="#00f0ff"/>
+  <!-- BLOCK 3: Python Hydrology Runner -->
+  <g transform="translate(380, 160)" filter="url(#dropShadow)">
+    <rect x="0" y="0" width="200" height="80" rx="12" fill="#1e293b" />
+    <circle cx="20" cy="20" r="4" fill="#facc15" class="pulse"/>
+    <text x="100" y="35" class="node-text" text-anchor="middle">Python Run Engine</text>
+    <text x="100" y="55" class="sub-text" text-anchor="middle">Dynamic Subbasin Selector</text>
+    <text x="100" y="70" class="sub-text" text-anchor="middle">HEC-DSS PyDSS Integration</text>
   </g>
 
-  <!-- PANEL B: PHYSICAL BRIDGE & IOT RADAR TELEMETRY (CENTER, X: 430 to 770) -->
-  <g transform="translate(430, 148)">
-    <rect width="340" height="235" rx="6" fill="url(#card-panel)" stroke="#1e293b" stroke-width="1.2"/>
-    
-    <!-- Panel Header -->
-    <path d="M 0 0 L 340 0 L 340 28 L 0 28 Z" fill="#0b1324"/>
-    <circle cx="16" cy="14" r="3.5" fill="#f59e0b"/>
-    <text x="28" y="18" fill="#fbbf24" font-size="9" font-weight="900" letter-spacing="1">02 // CHHATRAPATI SHIVAJI BRIDGE RADAR</text>
-
-    <!-- Bridge Graphic Structure -->
-    <g transform="translate(20, 42)">
-      <!-- Bridge Girder Deck (Elevation: 549.35 m MSL) -->
-      <rect x="10" y="10" width="280" height="12" rx="2" fill="#1e293b" stroke="#475569" stroke-width="1.2"/>
-      <line x1="10" y1="16" x2="290" y2="16" stroke="#ffffff" stroke-width="1" stroke-dasharray="8 6" opacity="0.7"/>
-      
-      <!-- Bridge Piers -->
-      <rect x="40" y="22" width="20" height="110" fill="#334155" stroke="#1e293b" stroke-width="1"/>
-      <rect x="240" y="22" width="20" height="110" fill="#334155" stroke="#1e293b" stroke-width="1"/>
-
-      <!-- Riverbed Invert (Elevation: 530.18 m MSL) -->
-      <path d="M 10 132 L 60 145 L 240 145 L 290 132" fill="none" stroke="#475569" stroke-width="2"/>
-
-      <!-- Flowing River Water (Stage: 533.20 m MSL, Depth y = 3.02m) -->
-      <path d="M 50 115 L 60 145 L 240 145 L 250 115 Z" fill="#0284c7" fill-opacity="0.5" stroke="#38bdf8" stroke-width="1.5"/>
-      <line x1="45" y1="115" x2="255" y2="115" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" class="water-anim"/>
-
-      <!-- Ultrasonic/Radar Sensor Rig (Attached Under Girder at x=150) -->
-      <g transform="translate(150, 22)">
-        <!-- Transducer Mount -->
-        <rect x="-8" y="0" width="16" height="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
-        <circle cx="0" cy="10" r="4" fill="#f59e0b"/>
-
-        <!-- Radar Beam Envelope (Conical Scanning Wavefronts) -->
-        <polygon points="0,10 -55,93 55,93" fill="url(#radar-cone)"/>
-        
-        <path d="M -12 25 Q 0 32 12 25" fill="none" stroke="#f59e0b" stroke-width="2" class="radar-wave-1"/>
-        <path d="M -26 48 Q 0 58 26 48" fill="none" stroke="#f59e0b" stroke-width="1.8" class="radar-wave-2"/>
-        <path d="M -44 75 Q 0 88 44 75" fill="none" stroke="#f59e0b" stroke-width="1.5" class="radar-wave-3"/>
-
-        <!-- Echo Reflection Waves Bouncing Up -->
-        <path d="M -30 70 Q 0 60 30 70" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 2"/>
-      </g>
-
-      <!-- Dimension Callout: Air Gap -->
-      <g transform="translate(195, 22)">
-        <line x1="0" y1="0" x2="0" y2="93" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="3 2"/>
-        <rect x="8" y="32" width="90" height="28" rx="3" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
-        <text x="14" y="44" fill="#fbbf24" font-size="7.5" font-weight="900">AIR GAP (d_air)</text>
-        <text x="14" y="55" fill="#ffffff" font-size="9.5" font-weight="900">52.95 ft (16.1m)</text>
-      </g>
-    </g>
-
-    <!-- Telemetry Chipset HUD at Bottom -->
-    <g transform="translate(16, 195)">
-      <rect width="308" height="28" rx="3" fill="#070e1a" stroke="#1e293b" stroke-width="0.8"/>
-      <circle cx="12" cy="14" r="3" fill="#10b981" class="live-dot"/>
-      <text x="22" y="18" fill="#f8fafc" font-size="8" font-weight="800">STAGE: <tspan fill="#38bdf8">533.20 m MSL</tspan></text>
-      <text x="140" y="18" fill="#94a3b8" font-size="8">Q: <tspan fill="#34d399" font-weight="800">80.0 m³/s</tspan></text>
-      <text x="225" y="18" fill="#64748b" font-size="7.5">CH: 3424513</text>
-    </g>
+  <!-- BLOCK 4: HEC-HMS Model -->
+  <g transform="translate(680, 110)" filter="url(#dropShadow)">
+    <rect x="0" y="0" width="200" height="80" rx="12" fill="url(#accentGradient)" />
+    <text x="100" y="35" class="node-text" text-anchor="middle">HEC-HMS Engine</text>
+    <text x="100" y="55" class="sub-text" text-anchor="middle">SCS-CN &amp; Muskingum</text>
+    <text x="100" y="70" class="sub-text" text-anchor="middle">Discharge Routing</text>
   </g>
 
-  <!-- CONNECTOR DATA FLOW B -> C -->
-  <g transform="translate(770, 245)" stroke="#00f0ff" fill="none">
-    <line x1="0" y1="0" x2="40" y2="0" stroke-width="2" class="data-flow"/>
-    <polygon points="40,-4 47,0 40,4" fill="#00f0ff"/>
+  <!-- BLOCK 5: PostgreSQL Database -->
+  <g transform="translate(930, 160)" filter="url(#dropShadow)">
+    <rect x="0" y="0" width="180" height="80" rx="12" fill="url(#warningGradient)" />
+    <text x="90" y="35" class="node-text" text-anchor="middle">Supabase Postgres</text>
+    <text x="90" y="55" class="sub-text" text-anchor="middle">Ledger &amp; Analytics</text>
+    <text x="90" y="70" class="sub-text" text-anchor="middle">Cloud Persistence</text>
   </g>
 
-  <!-- PANEL C: 90-HOUR HYDROGRAPH DIGITAL TWIN OSCILLOSCOPE (RIGHT, X: 815 to 1158) -->
-  <g transform="translate(815, 148)">
-    <rect width="343" height="235" rx="6" fill="url(#card-panel)" stroke="#1e293b" stroke-width="1.2"/>
-    
-    <!-- Panel Header -->
-    <path d="M 0 0 L 343 0 L 343 28 L 0 28 Z" fill="#0b1324"/>
-    <circle cx="16" cy="14" r="3.5" fill="#10b981"/>
-    <text x="28" y="18" fill="#a7f3d0" font-size="9" font-weight="900" letter-spacing="1">03 // 90-HR HYDROGRAPH DIGITAL TWIN</text>
-
-    <!-- Oscilloscope Display Grid -->
-    <g transform="translate(18, 38)">
-      <rect width="307" height="150" rx="4" fill="#040814" stroke="#1e293b" stroke-width="1"/>
-      
-      <!-- Scope Horizontal Alert Reference Gridlines -->
-      <line x1="0" y1="20" x2="307" y2="20" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 2" opacity="0.8"/>
-      <text x="302" y="16" fill="#ef4444" font-size="6.5" font-weight="800" text-anchor="end">DANGER: 543.30m</text>
-
-      <line x1="0" y1="35" x2="307" y2="35" stroke="#f97316" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.8"/>
-      <line x1="0" y1="50" x2="307" y2="50" stroke="#eab308" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.8"/>
-
-      <line x1="0" y1="90" x2="307" y2="90" stroke="#1e293b" stroke-width="0.6"/>
-      <line x1="0" y1="125" x2="307" y2="125" stroke="#1e293b" stroke-width="0.6"/>
-
-      <!-- Vertical Time Division Dashes (T+0 to T+90h) -->
-      <line x1="60" y1="0" x2="60" y2="150" stroke="#10b981" stroke-width="1.2" stroke-dasharray="3 2"/>
-      <line x1="120" y1="0" x2="120" y2="150" stroke="#1e293b" stroke-width="0.6"/>
-      <line x1="180" y1="0" x2="180" y2="150" stroke="#1e293b" stroke-width="0.6"/>
-      <line x1="240" y1="0" x2="240" y2="150" stroke="#1e293b" stroke-width="0.6"/>
-
-      <!-- Verified Window Ribbon (T+0 to T+18h = 60px) -->
-      <rect x="0" y="0" width="60" height="150" fill="#10b981" fill-opacity="0.08"/>
-
-      <!-- 90h Hydrograph Forecast Curve (Peak at T+32h, x=108, y=72) -->
-      <path d="M 0 126 
-               C 35 125, 70 118, 95 95 
-               C 104 85, 108 72, 112 72 
-               C 120 72, 145 88, 175 105 
-               C 220 120, 270 125, 307 128 
-               L 307 150 L 0 150 Z" 
-            fill="url(#hydro-fill)"/>
-
-      <path d="M 0 126 
-               C 35 125, 70 118, 95 95 
-               C 104 85, 108 72, 112 72 
-               C 120 72, 145 88, 175 105 
-               C 220 120, 270 125, 307 128" 
-            fill="none" stroke="#00f0ff" stroke-width="2.5" filter="url(#glow-cyan)"/>
-
-      <!-- Peak Flag -->
-      <circle cx="112" cy="72" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="1.5"/>
-      <rect x="80" y="44" width="75" height="18" rx="2" fill="#082f49" stroke="#38bdf8" stroke-width="0.8"/>
-      <text x="117" y="56" fill="#7dd3fc" font-size="7.5" font-weight="900" text-anchor="middle">PEAK: 544.4 m³/s</text>
-
-      <!-- Observed Telemetry Points (T+0 to T+18h) -->
-      <g fill="#fbbf24">
-        <circle cx="0" cy="126" r="2.5"/><circle cx="10" cy="127" r="2.5"/>
-        <circle cx="20" cy="125" r="2.5"/><circle cx="30" cy="124" r="2.5"/>
-        <circle cx="40" cy="126" r="2.5"/><circle cx="50" cy="125" r="2.5"/>
-        <circle cx="60" cy="123" r="3.5" fill="#f59e0b" filter="url(#glow-amber)"/>
-      </g>
-
-      <!-- Moving Scan Bar -->
-      <line x1="60" y1="0" x2="60" y2="150" stroke="#00f0ff" stroke-width="1" class="oscilloscope-scan" opacity="0.6"/>
-
-      <!-- X-Axis Labels -->
-      <text x="4" y="145" fill="#10b981" font-size="6.5" font-weight="800">T+0h</text>
-      <text x="60" y="145" fill="#10b981" font-size="6.5" font-weight="800">T+18h</text>
-      <text x="112" y="145" fill="#38bdf8" font-size="6.5" font-weight="800">T+32h</text>
-      <text x="303" y="145" fill="#94a3b8" font-size="6.5" text-anchor="end">T+90h</text>
-    </g>
-
-    <!-- Scorecard Summary -->
-    <g transform="translate(18, 195)">
-      <rect width="307" height="28" rx="3" fill="#070e1a" stroke="#1e293b" stroke-width="0.8"/>
-      <text x="12" y="18" fill="#a5b4fc" font-size="8" font-weight="800">NSE: <tspan fill="#ffffff">0.88</tspan></text>
-      <text x="90" y="18" fill="#7dd3fc" font-size="8" font-weight="800">R²: <tspan fill="#ffffff">0.91</tspan></text>
-      <text x="165" y="18" fill="#6ee7b7" font-size="8" font-weight="800">PBIAS: <tspan fill="#ffffff">0.01%</tspan></text>
-      <text x="250" y="18" fill="#f59e0b" font-size="8" font-weight="800">Δt: <tspan fill="#ffffff">0 hr</tspan></text>
-    </g>
+  <!-- BLOCK 6: Next.js Frontend Dashboard -->
+  <g transform="translate(930, 300)" filter="url(#dropShadow)">
+    <rect x="0" y="0" width="180" height="80" rx="12" fill="#0f172a" />
+    <text x="90" y="35" class="node-text" text-anchor="middle">Next.js App Router</text>
+    <text x="90" y="55" class="sub-text" text-anchor="middle">React Dashboard</text>
+    <text x="90" y="70" class="sub-text" text-anchor="middle">API Route Export</text>
   </g>
 
-  <!-- ==================== 3. BOTTOM TELEMETRY TELEMETRY TICKER BAR ==================== -->
-  <g transform="translate(42, 396)">
-    <rect width="1116" height="54" rx="5" fill="#080e1a" stroke="#1e293b" stroke-width="1.2"/>
-    
-    <!-- Metric Block 1 -->
-    <g transform="translate(16, 12)">
-      <text x="0" y="14" fill="#64748b" font-size="7.5" font-weight="800">PHYSICAL RADAR GAUGE</text>
-      <text x="0" y="30" fill="#f8fafc" font-size="11" font-weight="900">533.20 m MSL <tspan fill="#f59e0b" font-size="9">(52.95 ft)</tspan></text>
-    </g>
-
-    <line x1="230" y1="8" x2="230" y2="46" stroke="#1e293b" stroke-width="1"/>
-
-    <!-- Metric Block 2 -->
-    <g transform="translate(245, 12)">
-      <text x="0" y="14" fill="#64748b" font-size="7.5" font-weight="800">PCHIP DISCHARGE</text>
-      <text x="0" y="30" fill="#34d399" font-size="11" font-weight="900">80.0 m³/s <tspan fill="#94a3b8" font-size="9">(2,825 cfs)</tspan></text>
-    </g>
-
-    <line x1="450" y1="8" x2="450" y2="46" stroke="#1e293b" stroke-width="1"/>
-
-    <!-- Metric Block 3 -->
-    <g transform="translate(465, 12)">
-      <text x="0" y="14" fill="#64748b" font-size="7.5" font-weight="800">STATISTICAL FIT INDEX</text>
-      <text x="0" y="30" fill="#38bdf8" font-size="11" font-weight="900">R²: 0.91 · NSE: 0.88</text>
-    </g>
-
-    <line x1="680" y1="8" x2="680" y2="46" stroke="#1e293b" stroke-width="1"/>
-
-    <!-- Metric Block 4 -->
-    <g transform="translate(695, 12)">
-      <text x="0" y="14" fill="#64748b" font-size="7.5" font-weight="800">CATCHMENT SCALE</text>
-      <text x="0" y="30" fill="#f8fafc" font-size="11" font-weight="900">2,570 km² · 9 Subbasins</text>
-    </g>
-
-    <line x1="910" y1="8" x2="910" y2="46" stroke="#1e293b" stroke-width="1"/>
-
-    <!-- Metric Block 5: Auto-Sync Engine -->
-    <g transform="translate(925, 12)">
-      <text x="0" y="14" fill="#64748b" font-size="7.5" font-weight="800">AUTONOMOUS ENGINE</text>
-      <text x="0" y="30" fill="#10b981" font-size="11" font-weight="900">1-Hour Live Validation</text>
-    </g>
+  <!-- Small labels for edges -->
+  <g font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#64748b">
+    <text x="310" y="190">NWP Precip.</text>
+    <text x="310" y="295">Obs. Stage</text>
+    <text x="630" y="140">Hyetographs</text>
+    <text x="930" y="140">Discharge</text>
+    <text x="730" y="335">JSON Pipeline Dump</text>
+    <text x="1040" y="275">Fetch</text>
   </g>
+
+  <!-- Validation loop representation -->
+  <path d="M 680 180 C 600 230, 480 300, 380 300" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" opacity="0.6"/>
+  <text x="500" y="280" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#ef4444">Accuracy Evaluation</text>
+
+  <!-- Add some techy accent lines -->
+  <rect x="0" y="440" width="1200" height="10" fill="url(#primaryGradient)" />
 </svg>
