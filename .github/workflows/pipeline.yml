@@ -100,6 +100,7 @@ jobs:
           THINGSPEAK_CHANNEL_ID: "3424513"
           THINGSPEAK_API_KEY: "TSUKPZEUN1BXODUF"
         run: |
+          python scratch/cleanup_schema.py
           python -m src.hydrology.realtime_telemetry_validator --all-pending
           python -m src.db.sync_all_to_supabase
 

@@ -192,30 +192,13 @@ def apply_core_schema(conn) -> bool:
     ALTER TABLE hydrograph_results ADD COLUMN IF NOT EXISTS stage_m NUMERIC(6,2);
     ALTER TABLE hydrograph_results ADD COLUMN IF NOT EXISTS is_peak BOOLEAN DEFAULT FALSE;
 
-    -- 7. Bridge stage forecasts (plural)
-    CREATE TABLE IF NOT EXISTS bridge_stage_forecasts (
-        id BIGSERIAL PRIMARY KEY,
-        run_id VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
-        bridge_id VARCHAR(32) NOT NULL,
-        hour_offset INTEGER NOT NULL,
-        forecast_timestamp TIMESTAMPTZ NOT NULL,
-        predicted_stage_m NUMERIC(6,2) NOT NULL,
-        discharge_m3s NUMERIC(10,2),
-        alert_level VARCHAR(32) DEFAULT 'NORMAL',
-        created_at TIMESTAMPTZ DEFAULT NOW()
-    );
-
-    ALTER TABLE bridge_stage_forecasts ADD COLUMN IF NOT EXISTS hour_offset INTEGER;
-    ALTER TABLE bridge_stage_forecasts ADD COLUMN IF NOT EXISTS forecast_timestamp TIMESTAMPTZ;
-    ALTER TABLE bridge_stage_forecasts ADD COLUMN IF NOT EXISTS predicted_stage_m NUMERIC(6,2);
-    ALTER TABLE bridge_stage_forecasts ADD COLUMN IF NOT EXISTS discharge_m3s NUMERIC(10,2);
-    ALTER TABLE bridge_stage_forecasts ADD COLUMN IF NOT EXISTS alert_level VARCHAR(32) DEFAULT 'NORMAL';
+    -- 7. (Removed redundant plural table: bridge_stage_forecasts)
 
     -- 8. Bridge stage forecast (singular)
     CREATE TABLE IF NOT EXISTS bridge_stage_forecast (
         id BIGSERIAL PRIMARY KEY,
-        site_id VARCHAR(50) NOT NULL,
-        forecast_run_id VARCHAR(100) NOT NULL,
+        site_id VARCHAR(50) NOT NULL REFERENCES bridge_sites(site_id) ON DELETE CASCADE,
+        forecast_run_id VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
         forecast_time TIMESTAMPTZ NOT NULL,
         lead_hours SMALLINT NOT NULL,
         discharge_m3s NUMERIC(10,2) NOT NULL,
@@ -238,8 +221,8 @@ def apply_core_schema(conn) -> bool:
     CREATE TABLE IF NOT EXISTS station_rainfall_telemetry (
         id                  BIGSERIAL PRIMARY KEY,
         run_id              VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
-        station_id          VARCHAR(64) NOT NULL,
-        subbasin_id         VARCHAR(32),
+        station_id          VARCHAR(64) NOT NULL REFERENCES gauge_stations(station_id) ON DELETE CASCADE,
+        subbasin_id         VARCHAR(32) NOT NULL REFERENCES subbasins(subbasin_id) ON DELETE CASCADE,
         latitude            NUMERIC(8,4),
         longitude           NUMERIC(8,4),
         elevation_m         NUMERIC(6,1),
@@ -255,7 +238,7 @@ def apply_core_schema(conn) -> bool:
 
     -- 10. Pipeline Step Execution Log
     CREATE TABLE IF NOT EXISTS pipeline_step_log (
-        cycle_id            VARCHAR(100) NOT NULL,
+        cycle_id            VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
         step_number         SMALLINT NOT NULL,
         step_name           VARCHAR(256) NOT NULL,
         status              VARCHAR(32) NOT NULL,
@@ -266,17 +249,7 @@ def apply_core_schema(conn) -> bool:
         PRIMARY KEY (cycle_id, step_number)
     );
 
-    -- 11. Rating curves table
-    CREATE TABLE IF NOT EXISTS rating_curves (
-        id BIGSERIAL PRIMARY KEY,
-        site_id VARCHAR(50) NOT NULL,
-        stage_m NUMERIC(6,2) NOT NULL,
-        discharge_m3s NUMERIC(10,2) NOT NULL,
-        area_m2 NUMERIC(10,2),
-        wp_m NUMERIC(10,2),
-        hyd_radius NUMERIC(10,3),
-        created_at TIMESTAMPTZ DEFAULT NOW()
-    );
+    -- 11. (Removed unused rating_curves table)
 
     -- 12. WRD Field Benchmarks
     CREATE TABLE IF NOT EXISTS wrd_field_benchmarks (
@@ -543,13 +516,6 @@ def sync_single_run(conn, data: Dict[str, Any]) -> bool:
                 bsf_rows.append((cycle_id, b_id, b_off, b_ts, b_stg, float(peak_q), b_alert))
 
         if bsf_rows:
-            # Plural table: bridge_stage_forecasts
-            cur.execute("DELETE FROM bridge_stage_forecasts WHERE run_id = %s;", (cycle_id,))
-            execute_values(cur, """
-                INSERT INTO bridge_stage_forecasts
-                (run_id, bridge_id, hour_offset, forecast_timestamp, predicted_stage_m, discharge_m3s, alert_level)
-                VALUES %s
-            """, bsf_rows)
 
             # Singular table: bridge_stage_forecast
             cur.execute("DELETE FROM bridge_stage_forecast WHERE forecast_run_id = %s;", (cycle_id,))

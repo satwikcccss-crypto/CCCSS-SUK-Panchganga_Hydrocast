@@ -221,8 +221,8 @@ CREATE INDEX IF NOT EXISTS idx_fvm_run ON forecast_validation_metrics (run_id);
 CREATE TABLE IF NOT EXISTS station_rainfall_telemetry (
     id                  BIGSERIAL PRIMARY KEY,
     run_id              VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
-    station_id          VARCHAR(64) NOT NULL REFERENCES gauge_stations(station_id),
-    subbasin_id         VARCHAR(32) NOT NULL,
+    station_id          VARCHAR(64) NOT NULL REFERENCES gauge_stations(station_id) ON DELETE CASCADE,
+    subbasin_id         VARCHAR(32) NOT NULL REFERENCES subbasins(subbasin_id) ON DELETE CASCADE,
     latitude            NUMERIC(8,4),
     longitude           NUMERIC(8,4),
     elevation_m         NUMERIC(6,1),
@@ -323,7 +323,7 @@ ON CONFLICT DO NOTHING;
 -- 11. Pipeline Step Execution Telemetry Log
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS pipeline_step_log (
-    cycle_id            VARCHAR(100) NOT NULL,
+    cycle_id            VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
     step_number         SMALLINT NOT NULL,
     step_name           VARCHAR(256) NOT NULL,
     status              VARCHAR(32) NOT NULL CHECK (status IN ('PENDING','RUNNING','COMPLETED','FAILED','SKIPPED')),
