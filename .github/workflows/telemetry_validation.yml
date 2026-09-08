@@ -9,6 +9,12 @@ on:
   schedule:
     - cron: "0 * * * *"    # Every 1 hour at minute 0
   workflow_dispatch:        # Manual on-demand execution
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/db/**'
+      - '.github/workflows/**'
 
 env:
   PYTHON_VERSION: "3.11"
@@ -17,7 +23,7 @@ env:
 
 jobs:
   validate_telemetry:
-    name: "ThingSpeak Live Telemetry vs 90-hr Hydrograph Validation"
+    name: "ThingSpeak Live Telemetry vs 90-hr Hydrograph Validation & Supabase Sync"
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -39,7 +45,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Real-Time ThingSpeak Validation Engine
+      - name: Run Real-Time Validation & Supabase Sync
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DATABASE_URL }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
@@ -47,6 +53,7 @@ jobs:
           THINGSPEAK_API_KEY: ${{ env.THINGSPEAK_API_KEY }}
         run: |
           python -m src.hydrology.realtime_telemetry_validator --all-pending
+          python -m src.db.sync_all_to_supabase
 
       - name: Commit & Push Verified Telemetry State to GitHub
         run: |

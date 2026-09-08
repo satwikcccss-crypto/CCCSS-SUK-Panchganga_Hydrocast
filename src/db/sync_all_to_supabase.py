@@ -28,32 +28,30 @@ def get_connection(db_url: Optional[str] = None):
 
 
 def apply_schema(conn) -> bool:
-    """Executes database/supabase_schema.sql to create and verify all tables."""
+    """Creates core operational tables, views, and optional GIS extensions."""
+    # 1. Guarantee core operational tables, columns, and compatibility views
+    core_ok = apply_core_schema(conn)
+
+    # 2. Apply extended schema (e.g. gauge station metadata, subbasins, WRD field benchmarks)
     schema_path = PROJECT_ROOT / "database" / "supabase_schema.sql"
-    if not schema_path.exists():
-        log.error("Schema file not found at %s", schema_path)
-        return False
+    if schema_path.exists():
+        log.info("Executing Supabase database extended schema from %s...", schema_path.name)
+        try:
+            with open(schema_path, "r", encoding="utf-8") as f:
+                sql = f.read()
+            with conn.cursor() as cur:
+                cur.execute(sql)
+            conn.commit()
+            log.info("✓ Extended schema successfully applied.")
+        except Exception as e:
+            conn.rollback()
+            log.warning("Extended schema note (core tables remain active): %s", e)
 
-    log.info("Executing Supabase database schema from %s...", schema_path.name)
-    with open(schema_path, "r", encoding="utf-8") as f:
-        sql = f.read()
-
-    try:
-        with conn.cursor() as cur:
-            cur.execute(sql)
-        conn.commit()
-        log.info("✓ Schema successfully applied and verified.")
-        return True
-    except Exception as e:
-        conn.rollback()
-        log.error("Failed to apply full schema: %s", e)
-        # Attempt minimal critical schema if postgis extension or seeding had issues
-        log.info("Applying core tables fallback...")
-        return apply_core_schema(conn)
+    return core_ok
 
 
 def apply_core_schema(conn) -> bool:
-    """Fallback to ensure core operational tables exist."""
+    """Fallback to ensure core operational tables exist and have all required columns."""
     core_sql = """
     CREATE TABLE IF NOT EXISTS simulation_runs (
         run_id VARCHAR(100) PRIMARY KEY,
@@ -75,6 +73,16 @@ def apply_core_schema(conn) -> bool:
         created_at TIMESTAMPTZ DEFAULT NOW()
     );
 
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS peak_discharge_m3s NUMERIC(10,2);
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS peak_stage_m NUMERIC(6,2);
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS lead_hours_to_peak SMALLINT;
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS total_volume_mcm NUMERIC(10,2);
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS total_rainfall_mm NUMERIC(8,2);
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS total_rainfall_volume_mcm NUMERIC(10,2);
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS alert_level VARCHAR(32) DEFAULT 'NORMAL';
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS spearman_rho NUMERIC(6,4);
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS nse_score NUMERIC(6,4);
+
     CREATE TABLE IF NOT EXISTS forecast_validation_metrics (
         id BIGSERIAL PRIMARY KEY,
         run_id VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
@@ -94,8 +102,7 @@ def apply_core_schema(conn) -> bool:
         sample_size_hours INTEGER,
         sensor_source VARCHAR(64),
         validation_timestamp TIMESTAMPTZ DEFAULT NOW(),
-        created_at TIMESTAMPTZ DEFAULT NOW(),
-        CONSTRAINT uq_run_validation UNIQUE (run_id)
+        created_at TIMESTAMPTZ DEFAULT NOW()
     );
 
     CREATE TABLE IF NOT EXISTS hydrograph_results (
@@ -108,8 +115,7 @@ def apply_core_schema(conn) -> bool:
         baseflow_m3s NUMERIC(10,2),
         stage_m NUMERIC(6,2),
         is_peak BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMPTZ DEFAULT NOW(),
-        CONSTRAINT uq_run_hour UNIQUE (run_id, hour_offset)
+        created_at TIMESTAMPTZ DEFAULT NOW()
     );
 
     CREATE TABLE IF NOT EXISTS bridge_stage_forecasts (
@@ -121,15 +127,34 @@ def apply_core_schema(conn) -> bool:
         predicted_stage_m NUMERIC(6,2) NOT NULL,
         discharge_m3s NUMERIC(10,2),
         alert_level VARCHAR(32) DEFAULT 'NORMAL',
-        created_at TIMESTAMPTZ DEFAULT NOW(),
-        CONSTRAINT uq_bridge_run_hour UNIQUE (run_id, bridge_id, hour_offset)
+        created_at TIMESTAMPTZ DEFAULT NOW()
     );
+
+    -- Unique indexes for idempotent ON CONFLICT upserting
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_fvm_run_id ON forecast_validation_metrics (run_id);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_hg_run_hour ON hydrograph_results (run_id, hour_offset);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_bsf_run_bridge_hour ON bridge_stage_forecasts (run_id, bridge_id, hour_offset);
+
+    -- Compatibility view for code querying singular 'bridge_stage_forecast'
+    CREATE OR REPLACE VIEW bridge_stage_forecast AS
+    SELECT 
+        id,
+        bridge_id AS site_id,
+        run_id AS forecast_run_id,
+        forecast_timestamp AS forecast_time,
+        hour_offset AS lead_hours,
+        discharge_m3s,
+        predicted_stage_m AS stage_m,
+        alert_level,
+        (predicted_stage_m >= 543.30) AS is_above_danger,
+        created_at
+    FROM bridge_stage_forecasts;
     """
     try:
         with conn.cursor() as cur:
             cur.execute(core_sql)
         conn.commit()
-        log.info("✓ Core operational tables verified.")
+        log.info("✓ Core operational tables and compatibility views verified.")
         return True
     except Exception as e:
         conn.rollback()
@@ -174,7 +199,7 @@ def push_all_runs(conn) -> int:
             alert = summary.get("bridges", {}).get("shivaji", {}).get("alert_level", "NORMAL")
 
             with conn.cursor() as cur:
-                # Master run row
+                # 1. Master simulation_runs row
                 cur.execute("""
                     INSERT INTO simulation_runs (
                         run_id, cycle_date, cycle_time, start_time, end_time,
@@ -201,7 +226,7 @@ def push_all_runs(conn) -> int:
                     alert, m.get("spearman_rho"), m.get("nse_stage")
                 ))
 
-                # Validation metrics
+                # 2. Validation metrics
                 if m:
                     cur.execute("""
                         INSERT INTO forecast_validation_metrics (
@@ -243,7 +268,7 @@ def push_all_runs(conn) -> int:
                         val.get("sensor_source", "ThingSpeak Ultrasonic Channel 3424513")
                     ))
 
-                # Hydrograph points (90 hours)
+                # 3. Hydrograph points (90 hours)
                 hg = data.get("hydrograph", [])
                 for p in hg:
                     h_off = p.get("hour", p.get("lead_hours", 0))
@@ -265,9 +290,26 @@ def push_all_runs(conn) -> int:
                             is_peak = EXCLUDED.is_peak;
                     """, (cycle_id, h_off, ts, q_val, s_val, b_val, stg, p.get("is_peak", False)))
 
+                # 4. Bridge stage forecasts (90 hours for Shivaji Bridge & Rajaram Weir)
+                for b_key, b_id in [("bridgeShivaji", "SHIVAJI_BRIDGE"), ("bridgeRajaram", "RAJARAM_BRIDGE")]:
+                    for b_pt in data.get(b_key, []):
+                        b_off = b_pt.get("hour", 0)
+                        b_ts = b_pt.get("timestamp")
+                        b_stg = b_pt.get("stage_m", 533.0)
+                        b_alert = b_pt.get("alert_level", "NORMAL")
+                        cur.execute("""
+                            INSERT INTO bridge_stage_forecasts (
+                                run_id, bridge_id, hour_offset, forecast_timestamp,
+                                predicted_stage_m, discharge_m3s, alert_level
+                            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                            ON CONFLICT (run_id, bridge_id, hour_offset) DO UPDATE SET
+                                predicted_stage_m = EXCLUDED.predicted_stage_m,
+                                alert_level = EXCLUDED.alert_level;
+                        """, (cycle_id, b_id, b_off, b_ts, b_stg, peak_q, b_alert))
+
             conn.commit()
             synced_count += 1
-            log.info("✓ Synced cycle %s (hydrograph + validation metrics) to Supabase", cycle_id)
+            log.info("✓ Synced cycle %s (hydrograph + bridge stages + metrics) to Supabase", cycle_id)
         except Exception as e:
             conn.rollback()
             log.error("Failed syncing cycle %s: %s", r_path.name, e)
