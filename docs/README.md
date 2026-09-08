@@ -28,7 +28,7 @@ Welcome to the comprehensive technical documentation for **HydroCast: Real-Time 
 | **API & Backend** | [`Backend.md`](./Backend.md) | FastAPI REST services, asyncpg connection pooling, WebSocket broadcasting, and endpoints. |
 | **Frontend Dashboard** | [`Frontend.md`](./Frontend.md) | Next.js 14 App Router, Tailwind CSS design system, Chart.js, and Leaflet GIS mapping. |
 | **Database Architecture** | [`Database.md`](./Database.md) | PostgreSQL production schema, Supabase cloud sync, views, and JSON multi-run ledger. |
-| **Open-Meteo & ECMWF** | [`Openmeteo.md`](./Openmeteo.md) | ECMWF IFS 0.25° quantitative precipitation forecasting pipeline and API integration. |
+| **Open-Meteo & ECMWF** | [`Openmeteo.md`](./Openmeteo.md) | ECMWF IFS HRES 9km quantitative precipitation forecasting pipeline and API integration. |
 | **Rain Gauge Network** | [`Raingauge_Station.md`](./Raingauge_Station.md) | 18 primary and alternate stations, geographical topology, and dynamic selection. |
 | **Basin Hydrology** | [`Hydrology.md`](./Hydrology.md) | 2,140 km² Panchganga basin physiography, subbasins S1–S9, and SCS Curve Number model. |
 | **Runoff Computation** | [`Runoff_Computation.md`](./Runoff_Computation.md) | Mathematical runoff continuum, loss rate, unit hydrograph convolution, and routing. |

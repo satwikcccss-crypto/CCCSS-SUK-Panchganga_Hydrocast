@@ -7,7 +7,7 @@
 
 | Layer | Technology | Reason |
 |---|---|---|
-| NWP Data | ECMWF IFS (ecmwf-opendata / MARS API) | Free open data at 0.25°; MARS for true 9km |
+| NWP Data | ECMWF IFS HRES 9km (0.1°) | Highest resolution available via Open-Meteo |
 | Data processing | Python 3.11, NumPy, xarray, cfgrib | GRIB2 decode, array ops, interpolation |
 | DSS I/O | pydsstools | Python wrapper for HEC-DSS binary format |
 | HMS automation | HEC-HMS 4.11 headless + Jython script | Batch compute, no GUI needed |
@@ -35,7 +35,7 @@
 │                                                                          │
 │  Step 1: ECMWF IFS Download                                             │
 │    ecmwf-opendata client → GRIB2 → de-accumulate TP → hourly mm/hr NC  │
-│    Bbox crop to catchment | 0.25° or 9km (MARS) | 90 lead hours         │
+│    Bbox crop to catchment | 9km (0.1°) HRES | 90 lead hours                   │
 │                                                                          │
 │  Step 2: Gauge Station Fetch                                             │
 │    IoT API → 90-hr observed hyetograph per station → Postgres insert     │

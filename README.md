@@ -58,7 +58,7 @@
 During the Southwest Monsoon (June–September), intense orographic rainfall along the crest of the Western Ghats (Sahyadri mountains, often exceeding $100-250\text{ mm/day}$) drains rapidly through steep basaltic gorges, converging into the urban bottleneck of **Kolhapur city**. Catastrophic floods in August 2019 and July 2021 demonstrated that municipal authorities require **at least 48 to 72 hours of predictive lead time** to orchestrate barrier deployments, sluice gate operations, and civilian evacuations.
 
 HydroCast solves this challenge by coupling:
-- **Numerical Weather Prediction (ECMWF IFS 0.25°):** 90-hour forward quantitative precipitation forecasts updated every 6 hours.
+- **Numerical Weather Prediction (ECMWF IFS HRES 9km / 0.1°):** 90-hour forward quantitative precipitation forecasts updated every 6 hours.
 - **Physical Hydrologic Watershed Routing (HEC-HMS 4.x / SCS-CN):** Loss modeling, Clark unit hydrograph transformation, and Muskingum channel routing across 9 subbasins.
 - **Calibrated Multi-Regime River Hydraulics:** Bi-directional stage-to-discharge rating curves based on surveyed bed slopes and anchored to 19 official Government field gauge records.
 - **Real-Time Automated Validation:** Continuous computation of Spearman rank correlation ($\rho$), Nash-Sutcliffe Efficiency (NSE), RMSE, MAE, and station-by-station volumetric accuracy.
@@ -101,7 +101,7 @@ Below Prayag, the consolidated **Panchganga River** flows through Kolhapur city 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                 1. METEOROLOGICAL FORCING INGESTION                                      │
-│  Open-Meteo REST API ──> ECMWF IFS 0.25° (~9 km Grid) ──> 90-Hour Precipitation Forecast (mm/hr)        │
+│  Open-Meteo REST API ──> ECMWF IFS HRES (9 km Grid) ──> 90-Hour Precipitation Forecast (mm/hr)          │
 │  Spatial Catchment Bounding Box: 16.20°N - 17.20°N, 73.70°E - 74.50°E                                   │
 └────────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
                                                      │
@@ -356,7 +356,7 @@ The documentation suite is organized in the [`docs/`](file:///e:/hydrocast_compl
 | Document | Description |
 | :--- | :--- |
 | 🌊 **[`docs/Hydraulics.md`](file:///e:/hydrocast_complete/docs/Hydraulics.md)** | Open-channel flow, Manning's equation, surveyed slopes ($S_0 = 0.005858$), wetted perimeter collapse fix, and WRD benchmarks. |
-| 🌦️ **[`docs/Openmeteo.md`](file:///e:/hydrocast_complete/docs/Openmeteo.md)** | Open-Meteo & ECMWF IFS 0.25° pipeline, 90h precipitation arrays, bounding box ($16.20^\circ - 17.20^\circ\text{ N}$), and retry policies. |
+| 🌦️ **[`docs/Openmeteo.md`](file:///e:/hydrocast_complete/docs/Openmeteo.md)** | Open-Meteo & ECMWF IFS HRES 9km pipeline, 90h precipitation arrays, bounding box ($16.20^\circ - 17.20^\circ\text{ N}$), and retry policies. |
 | 💻 **[`docs/Frontend.md`](file:///e:/hydrocast_complete/docs/Frontend.md)** | Next.js 14 App Router, Tailwind CSS design system, Chart.js 4 dual-axis hydrographs, and SWR state synchronization. |
 | ⚡ **[`docs/Backend.md`](file:///e:/hydrocast_complete/docs/Backend.md)** | FastAPI REST services, asyncpg connection pooling, `/api/v1/runs`, `/api/v1/accuracy`, and WebSocket live broadcasting. |
 | 📐 **[`docs/Stage_Conversion_Discharge.md`](file:///e:/hydrocast_complete/docs/Stage_Conversion_Discharge.md)** | Piecewise Cubic Hermite Interpolating Polynomials (PCHIP), monotonicity proof ($dQ/dh > 0$), and zero datum ($530.18\text{m}$). |
@@ -562,7 +562,7 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    ├── Hydrology.md                    # 2,140 km² basin hydrology, SCS-CN
  │    ├── IoT_Telemetry.md                # ThingSpeak radar sensor, 549.35m datum
  │    ├── Novelty_of_this_System.md       # 10 technological novelties & innovation matrix
- │    ├── Openmeteo.md                    # ECMWF IFS 0.25° meteorological ingestion
+ │    ├── Openmeteo.md                    # ECMWF IFS HRES 9km meteorological ingestion
  │    ├── Rainfall_Validation_Pipeline.md # Observed rainfall verification pipeline
  │    ├── Raingauge_Station.md            # 18 rain gauge registry & selection
  │    ├── ROADMAP.md                      # Production roadmap & hardening pillars

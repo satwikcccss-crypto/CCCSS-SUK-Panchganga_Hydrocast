@@ -56,6 +56,7 @@ def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarr
         "latitude":      round(lat, 4),
         "longitude":     round(lon, 4),
         "hourly":        "precipitation",
+        "models":        "ecmwf_ifs",
         "forecast_days": 4,
         "timezone":      "UTC",
     }

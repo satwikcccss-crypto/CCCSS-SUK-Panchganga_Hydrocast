@@ -37,7 +37,7 @@ Through a comprehensive hydraulic re-calibration anchored to **19 official Gover
   Validation Experimental Architecture:
   
   [ Input Meteorological Forcing ]            [ Real-Time Physical Observations ]
-  - ECMWF IFS 0.25° NWP Hyetographs           - ThingSpeak IoT Ultrasonic Radar Sensor (549.35m MSL)
+  - ECMWF IFS HRES 9km NWP Hyetographs        - ThingSpeak IoT Ultrasonic Radar Sensor (549.35m MSL)
   - 18 Panchganga Rain Gauge Telemetry        - 19 Maharashtra WRD Field Records (cusecs & feet)
                  │                                                │
                  ▼                                                ▼

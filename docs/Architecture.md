@@ -6,7 +6,7 @@
 ========================================================================================
 
   [ STEP 1: MET INGESTION ]         [ STEP 2: SPATIAL ROUTER ]       [ STEP 3: SOIL RETENTION ]
-  Open-Meteo ECMWF IFS 0.25°  ───>  Dynamic Subbasin Station  ───>  90-Day Antecedent Moisture
+  Open-Meteo ECMWF IFS HRES 9km ───>  Dynamic Subbasin Station  ───>  90-Day Antecedent Moisture
   90-Hour Precipitation (mm)        Selector (18 Panchganga)         AMC-I / AMC-II / AMC-III
               │                                 │                                 │
               ▼                                 ▼                                 ▼

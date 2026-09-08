@@ -3,7 +3,7 @@
 ## Executive Architecture Evaluation
 
 HydroCast implements an end-to-end, operational hydrologic and hydraulic intelligence continuum:
-1. **Meteorological Ingestion**: ECMWF IFS 0.25° quantitative precipitation forecasts via Open-Meteo API v1.
+1. **Meteorological Ingestion**: ECMWF IFS HRES 9km quantitative precipitation forecasts via Open-Meteo API v1.
 2. **Dynamic Station Selection**: Multi-gauge maximum-precipitation and centroid routing across 9 Panchganga subbasins.
 3. **Hydrologic Watershed Simulation**: Loss modeling, Clark unit hydrograph transform, and Muskingum reach routing via HEC-HMS 4.x (with pure-Python SCS-CN fallback).
 4. **Calibrated River Hydraulics**: Bi-directional monotonic PCHIP rating curves anchored to surveyed river bed slopes ($S_0 = 0.005858$ at Shivaji, $S_0 = 0.002318$ at Rajaram) and verified against Maharashtra WRD ground truth.

@@ -1,11 +1,11 @@
-﻿# Open-Meteo & ECMWF Meteorological Data Pipeline
+# Open-Meteo & ECMWF Meteorological Data Pipeline
 
 ```
 ========================================================================================
              HYDROCAST METEOROLOGICAL INGESTION & FORECAST ENGINE
 ========================================================================================
 
-           ECMWF Integrated Forecasting System (IFS 0.25° / ~9 km Grid)
+           ECMWF Integrated Forecasting System (IFS HRES 9km / 0.1° Grid)
                                        │
                                        ▼
                        Open-Meteo High-Performance REST API
@@ -34,7 +34,7 @@ Resolution: 1 hour                                       AMC-I (Dry) / AMC-II / 
 The HydroCast system requires forward-looking meteorological forcing data to drive hydrological flood predictions with a minimum lead time of **48 to 72 hours**. 
 
 ### Why Open-Meteo over Direct ECMWF MARS Subscriptions?
-1. **Zero License Friction:** Open-Meteo aggregates the open-data releases from ECMWF (European Centre for Medium-Range Weather Forecasts) IFS 0.25° (Integrated Forecasting System), DWD ICON, and NOAA GFS.
+1. **Zero License Friction:** Open-Meteo aggregates the open-data releases from ECMWF (European Centre for Medium-Range Weather Forecasts) IFS HRES 9km (Integrated Forecasting System), DWD ICON, and NOAA GFS.
 2. **Sub-second Response Times:** High-performance Rust-based servers deliver point forecasts in $< 150\text{ ms}$ per coordinate.
 3. **No Local GRIB2 Storage Overhead:** Directly extracts 1D precipitation arrays without downloading multi-gigabyte GRIB2 grid files across India.
 4. **Deterministic Run Schedules:** Aligned to the 00z, 06z, 12z, and 18z ECMWF operational forecast cycles.

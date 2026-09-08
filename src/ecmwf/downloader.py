@@ -2,7 +2,7 @@
 ECMWF IFS 9km Rainfall Downloader
 ===================================
 Downloads total precipitation from ECMWF IFS HRES forecast.
-- Public path  : ecmwf-opendata (0.25° / 28km, free, no account)
+- Public path  : ecmwf-opendata (HRES 9km, free, no account)
 - 9km HRES path: requires ECMWF MARS credentials → set USE_MARS=True
 
 Output: /data/raw/ecmwf_<YYYYMMDD>_<HHz>.nc  (NetCDF, hourly TP mm/hr)
@@ -50,7 +50,7 @@ def latest_available_run() -> tuple[str, str]:
 
 def download_opendata(date: str, time: str, out_path: Path) -> Path:
     """
-    Download ECMWF Open Data (free, 0.25°).
+    Download ECMWF Open Data (free, HRES 9km).
     param date: 'YYYYMMDD'
     param time: '00z' or '12z'
     Returns path to downloaded GRIB2 file.
@@ -147,7 +147,7 @@ def grib_to_hourly_nc(grib_path: Path, out_nc: Path) -> xr.Dataset:
         },
         attrs={
             "source":     "ECMWF IFS HRES",
-            "resolution": "0.083 deg (~9km)" if USE_MARS else "0.25 deg (Open Data)",
+            "resolution": "0.083 deg (~9km)" if USE_MARS else "0.1 deg (~9km) (HRES Open Data)",
             "units":      "mm/hr",
             "lead_hours": "1-90",
         },
