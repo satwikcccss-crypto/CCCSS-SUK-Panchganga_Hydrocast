@@ -55,7 +55,7 @@ Where:
 ---
 
 ### 2.2 Nash-Sutcliffe Model Efficiency (NSE)
-The gold standard metric in international hydrologic engineering:
+The standard metric in international hydrologic engineering:
 
 $$\text{NSE} = 1 - \frac{\sum_{t=1}^{n} \left(Q_{obs}(t) - Q_{sim}(t)\right)^2}{\sum_{t=1}^{n} \left(Q_{obs}(t) - \overline{Q_{obs}}\right)^2}$$
 

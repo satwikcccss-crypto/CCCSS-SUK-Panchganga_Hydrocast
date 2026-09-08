@@ -111,21 +111,14 @@
 
 ```
 gauge_stations           Station registry (PostGIS point)
-rainfall_data            Observed gauge readings (TimescaleDB hypertable)
-subbasin_rainfall_ts     Selected hyetograph per subbasin per cycle
-station_selection_log    Audit: which station was selected + why
-ecmwf_forecast           Raw ECMWF gridded data (TimescaleDB hypertable)
-simulation_runs          HMS run metadata (status, duration)
-hydrograph_results       90-hr Q at outlet (TimescaleDB hypertable)
-peak_discharge_events    Peak Q, Tp, volume per run
-runoff_summary           One-row summary per run
+subbasins                Catchment topology and physical parameters
+station_rainfall_telemetry Input telemetry per subbasin per cycle (Single Tree FK)
+simulation_runs          HMS run metadata (Master Ledger)
+hydrograph_results       90-hr Q at outlet (Single Tree FK)
 bridge_sites             CWC bridge gauge sites + alert thresholds
-rating_curves            H vs Q table per bridge (from Manning's)
-bridge_stage_forecast    90-hr stage forecast per bridge (TimescaleDB)
-alert_events             Issued flood alerts
-pipeline_step_log        Step-level status for each cycle
-model_calibration        CN, Lag, K, X, Ia per subbasin
-system_logs              Operational logs (TimescaleDB)
+bridge_stage_forecast    90-hr stage forecast per bridge (Single Tree FK)
+forecast_validation_metrics Analytical accuracy metrics (Spearman, NSE, RMSE)
+pipeline_step_log        Step-level execution status for each cycle
 ```
 
 ---
@@ -219,7 +212,7 @@ Nginx              → reverse proxy for FastAPI + serve Next.js static build
 ### Quick start (Supabase + Vercel + Railway)
 ```bash
 # 1. Database
-# Sign up at supabase.com → new project → SQL Editor → paste schema_v3.sql
+# Sign up at supabase.com → new project → SQL Editor → paste supabase_schema.sql
 # Get connection string → set DATABASE_URL secret in GitHub
 
 # 2. API

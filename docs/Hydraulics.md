@@ -1,4 +1,4 @@
-﻿# Open-Channel Hydraulics & River Stage Mechanics
+# Open-Channel Hydraulics & River Stage Mechanics
 
 ```
 ========================================================================================
@@ -14,7 +14,7 @@
   540 +                                                         |   Compound Valley Storage
   536 +                     ~~~~~~~~~~~~~~~~~                   |
   534 +             . - ~ ~                   ~ ~ - .           |   Bankfull Level (~535.0m)
-  532 +---------+  /    Live RTDAS (533.28m)         \  +-------+
+  532 +---------+  /    Observed Stage (533.28m)       \  +-------+
   530 +   LOB   |_/     Bed Level: 530.18m MSL        \_|  ROB      In-Bank Main Channel Flow
       +---------+---------------------------------------+-------+
       0        40       80      120     160     200     240    280  Station (meters)
@@ -149,7 +149,7 @@ The table below reflects the exact benchmark records from the Maharashtra Water 
 
 ## 5. Live Telemetry Alignment
 
-At current observed RTDAS radar telemetry:
+At current observed radar telemetry:
 - **Measured Water Level:** $533.28\text{ m MSL}$ ($10'\ 2''$ above bed)
 - **Computed Discharge (Shivaji Bridge):** $\mathbf{109.2\text{ m}^3/s}$ ($3,856\text{ cusecs}$)
 - **Computed Discharge (Rajaram Weir):** $\mathbf{62.4\text{ m}^3/s}$ ($2,203\text{ cusecs}$)

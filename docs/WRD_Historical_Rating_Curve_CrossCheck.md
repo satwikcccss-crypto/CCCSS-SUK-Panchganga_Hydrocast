@@ -21,7 +21,7 @@ The legacy code utilized a single rating curve for both sites, applying an arbit
 
 ### 3. Calibrated Rating Curves Comparison
 
-#### At RTDAS Live Stage (532.63 m MSL):
+#### At Current Observed Stage (532.63 m MSL):
 | Bridge Site | Uncalibrated $Q$ | Calibrated $Q$ |
 | :--- | :--- | :--- |
 | **Shivaji Bridge** | $18.8\text{ m}^3/\text{s}$ | **$91.1\text{ m}^3/\text{s}$** |

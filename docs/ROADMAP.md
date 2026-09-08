@@ -9,7 +9,7 @@ HydroCast implements an end-to-end, operational hydrologic and hydraulic intelli
 4. **Calibrated River Hydraulics**: Bi-directional monotonic PCHIP rating curves anchored to surveyed river bed slopes ($S_0 = 0.005858$ at Shivaji, $S_0 = 0.002318$ at Rajaram) and verified against Maharashtra WRD ground truth.
 5. **Persistence & Presentation**: Resilient dual-layer persistence (immutable JSON multi-run ledger + Supabase/PostgreSQL) serving a Next.js 14 executive dashboard with live WebSocket broadcast.
 
-To advance HydroCast from a **Functional Operational System** to an **Enterprise Mission-Critical Production Platform**, five architectural hardening pillars are defined below.
+To advance HydroCast from a **Functional Operational System** to a **Mission-Critical Production Platform**, five architectural hardening pillars are defined below.
 
 ---
 
@@ -17,7 +17,7 @@ To advance HydroCast from a **Functional Operational System** to an **Enterprise
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────┐
-│                    HYDROCAST ENTERPRISE PRODUCTION PILLARS                       │
+│                       HYDROCAST PRODUCTION PILLARS                       │
 ├───────────────────┬───────────────────┬──────────────────┬───────────────────────┤
 │ 1. Orchestration  │ 2. Real-Time Alert│ 3. Docker        │ 4. Archival & Security│
 │    & Scheduling   │    & Telegram Bot │    Containers    │    Rate-Limiting      │

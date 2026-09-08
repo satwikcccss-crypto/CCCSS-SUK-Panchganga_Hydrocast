@@ -46,7 +46,7 @@
 13. [Quickstart & Local Installation](#13-quickstart--local-installation)
 14. [Production Deployment & Cron Automation](#14-production-deployment--cron-automation)
 15. [Repository Structure](#15-repository-structure)
-16. [Enterprise Restructure & Modernization Changelog](#16-enterprise-restructure--modernization-changelog)
+16. [Architecture Restructure & Modernization Changelog](#16-architecture-restructure--modernization-changelog)
 17. [License & Institutional Attribution](#17-license--institutional-attribution)
 
 ---
@@ -167,7 +167,7 @@ The root cause was traced to three fatal hydraulic flaws:
 3. **True Gauge Zero Datum:**
    Established that the river gauge zero datum ($0'\ 0''$) is at **$530.18\text{ m MSL}$**.
 
-**Current Performance:** At live RTDAS stage ($533.28\text{m}$), discharge is now computed at **$109.2\text{ m}^3/s$** ($3,856\text{ cusecs}$) at Shivaji Bridge and **$62.4\text{ m}^3/s$** at Rajaram Weir, perfectly matching observed physical conditions and reducing PBIAS to **$-0.08\%$**.
+**Current Performance:** At current observed stage ($533.28\text{m}$), discharge is now computed at **$109.2\text{ m}^3/s$** ($3,856\text{ cusecs}$) at Shivaji Bridge and **$62.4\text{ m}^3/s$** at Rajaram Weir, perfectly matching observed physical conditions and reducing PBIAS to **$-0.08\%$**.
 
 ---
 
@@ -375,7 +375,7 @@ The documentation suite is organized in the [`docs/`](file:///e:/hydrocast_compl
 | 🎓 **[`docs/Accuracy_Analysis_PI_Report.md`](file:///e:/hydrocast_complete/docs/Accuracy_Analysis_PI_Report.md)** | Formal academic accuracy and simulation validation research memorandum prepared for the Principal Investigator (PI). |
 | 🌦️ **[`docs/Rainfall_Validation_Pipeline.md`](file:///e:/hydrocast_complete/docs/Rainfall_Validation_Pipeline.md)** | Concrete observed rainfall validation pipeline, WRD gauge ingestion, and ground-truth telemetry accuracy verification. |
 | 🏛️ **[`docs/WRD_Historical_Rating_Curve_CrossCheck.md`](file:///e:/hydrocast_complete/docs/WRD_Historical_Rating_Curve_CrossCheck.md)** | Ground-truth flood record verification vs Maharashtra WRD government records and bed slope calibration ($S_0 = 0.005858$). |
-| 🗺️ **[`docs/ROADMAP.md`](file:///e:/hydrocast_complete/docs/ROADMAP.md)** | Enterprise production roadmap: Orchestration, automated alerting, Docker containerization, archival, and API security. |
+| 🗺️ **[`docs/ROADMAP.md`](file:///e:/hydrocast_complete/docs/ROADMAP.md)** | Production roadmap: Orchestration, automated alerting, Docker containerization, archival, and API security. |
 
 ---
 
@@ -544,7 +544,6 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    └── stations/                       # Authoritative rain gauge coordinates & metadata
  ├── database/                            # Database schemas, migrations & analytics
  │    ├── README.md                       # Database setup & execution guide
- │    ├── schema_v3.sql                   # PostgreSQL relational production schema
  │    └── supabase_schema.sql             # Supabase cloud schema with views & analytical metrics
  ├── docs/                                # Comprehensive 21-module technical documentation library
  │    ├── assets/
@@ -566,7 +565,7 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    ├── Openmeteo.md                    # ECMWF IFS 0.25° meteorological ingestion
  │    ├── Rainfall_Validation_Pipeline.md # Observed rainfall verification pipeline
  │    ├── Raingauge_Station.md            # 18 rain gauge registry & selection
- │    ├── ROADMAP.md                      # Enterprise production roadmap & hardening pillars
+ │    ├── ROADMAP.md                      # Production roadmap & hardening pillars
  │    ├── Runoff_Computation.md           # Mathematical runoff continuum & routing
  │    ├── Shpfiles.md                     # Vector GeoJSON, stream ordering, DEM
  │    ├── Stage_Conversion_Discharge.md   # Monotonic PCHIP rating curves
@@ -607,7 +606,7 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    ├── package.json                    # Node dependencies & build scripts
  │    ├── tailwind.config.js              # Tailwind theme configuration
  │    └── tsconfig.json                   # TypeScript configuration
- ├── src/                                 # Enterprise Python Hydrologic Engine (Root Package)
+ ├── src/                                 # Python Hydrologic Engine (Root Package)
  │    ├── __init__.py                     # Package metadata & exports
  │    ├── orchestrator.py                 # 12-Step automated pipeline orchestrator
  │    ├── alerts/
@@ -649,7 +648,7 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    └── sensors/
  │         ├── __init__.py
  │         └── thingspeak_gauge.py        # ThingSpeak ultrasonic radar telemetry
- ├── tests/                               # Enterprise Automated Unit & Regression Tests
+ ├── tests/                               # Automated Unit & Regression Tests
  │    ├── __init__.py
  │    ├── test_hydrology.py               # Rating curve monotonicity & Manning physics
  │    ├── test_realtime_validator.py      # Real-time ThingSpeak validation unit tests
@@ -662,9 +661,9 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
 
 ---
 
-## 16. Enterprise Restructure & Modernization Changelog
+## 16. Architecture Restructure & Modernization Changelog
 
-In September 2026, the HydroCast repository underwent a comprehensive architectural restructuring to align with enterprise production standards:
+In September 2026, the HydroCast repository underwent a comprehensive architectural restructuring to align with production standards:
 
 1. **Repository Unification & Deduplication**:
    - Promoted the codebase from a nested `system/` subfolder directly to the repository root.

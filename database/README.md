@@ -22,8 +22,7 @@ HydroCast relies on PostgreSQL (local production or Supabase managed cloud) for 
 
 | Schema File | Target Environment | Description |
 | :--- | :--- | :--- |
-| `schema_v3.sql` | Self-Hosted PostgreSQL 15+ | Core relational schema including tables for `simulation_runs`, `hydrograph_results`, `peak_discharge_events`, `bridge_sites`, `rating_curves`, and `alert_events`. |
-| `supabase_schema.sql` | Supabase (Cloud Production) | Hardened schema with idempotent migration guards, analytical views (`v_active_alerts`, `v_latest_bridge_forecast`, `v_station_selection_latest`), subbasin topology, and RMSE accuracy matrices. |
+| `supabase_schema.sql` | PostgreSQL & Supabase (Cloud Production) | The "Single-Tree" relational schema. Includes tables for `simulation_runs`, `hydrograph_results`, `bridge_stage_forecast`, and strict `ON DELETE CASCADE` foreign keys enforcing perfect data lineage. Also includes analytical views (`v_model_accuracy_summary`, `v_bridge_alert_summary`, `v_historical_runs_ledger`). |
 
 ---
 
@@ -41,7 +40,7 @@ HydroCast relies on PostgreSQL (local production or Supabase managed cloud) for 
    ```
 2. Apply the foundational schema:
    ```bash
-   psql -U hms_app -d rainfall_runoff -f database/schema_v3.sql
+   psql -U hms_app -d rainfall_runoff -f database/supabase_schema.sql
    ```
 3. Set your environment variable:
    ```bash

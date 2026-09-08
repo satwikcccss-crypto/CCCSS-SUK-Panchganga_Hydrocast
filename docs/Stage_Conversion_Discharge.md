@@ -1,4 +1,4 @@
-﻿# Hydraulic Stage-to-Discharge & Inverse Rating Curve Conversion
+# Hydraulic Stage-to-Discharge & Inverse Rating Curve Conversion
 
 ```
 ========================================================================================
@@ -22,7 +22,7 @@
   1500 +                                . - '
   1000 +                          . - '
    500 +                   . - *  (Bankfull: 536.41m, 370.6 m³/s)
-   100 +           . - - *  (Live RTDAS: 533.28m, 109.2 m³/s)
+   100 +           . - - *  (Observed Stage: 533.28m, 109.2 m³/s)
      0 +--*-------+---------+---------+---------+---------+---------+---------+
         530.18   532       534       536       538       540       542       545   Stage h (m MSL)
        (Zero Datum)

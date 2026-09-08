@@ -23,7 +23,7 @@ Historically, early iterations of the numerical model suffered from a severe vol
 
 Through a comprehensive hydraulic re-calibration anchored to **19 official Government field gauge records from the Maharashtra Water Resources Department (WRD)** and the deployment of a **Shape-Preserving Piecewise Cubic Hermite Interpolating Polynomial (PCHIP)** rating solver, the platform has achieved benchmark-level predictive performance:
 - **Spearman Rank Correlation:** $\mathbf{\rho = 0.9889}$ ($p < 0.001$, confirming monotonic flood wave tracking)
-- **Nash-Sutcliffe Model Efficiency:** $\mathbf{\text{NSE} = 0.9879}$ (classified as *Gold Standard / Excellent* under international criteria)
+- **Nash-Sutcliffe Model Efficiency:** $\mathbf{\text{NSE} = 0.9879}$ (classified as *Excellent* under international criteria)
 - **Linear Stage Correlation:** $\mathbf{R^2 = 0.9880}$ ($r = 0.9940$)
 - **Stage Dispersion:** $\text{RMSE} = \mathbf{\pm 0.031\text{ m}}$ ($3.1\text{ cm}$), $\text{MAE} = \mathbf{\pm 0.024\text{ m}}$ ($2.4\text{ cm}$)
 - **Volumetric Runoff Conservation:** $\text{PBIAS} = \mathbf{-0.08\%}$ (well within the $\pm 5\%$ research threshold)
@@ -102,7 +102,7 @@ $$\text{RMSE} = \sqrt{\frac{1}{n} \sum_{t=1}^{n} \left(h_{sim}(t) - h_{obs}(t)\r
 | Normal Stage Discharge (533.28m)  | 16.6 m³/s (Flawed)    | 109.2 m³/s (Physical) | Resolves low-flow bug   |
 | Rating Monotonicity (dQ/dh)       | Non-monotonic (Dips)  | Strictly > 0 (PCHIP)  | Prevents perimeter drop |
 | Spearman Rank Correlation (ρ)     | 0.684                 | 0.9889 (p < 0.001)    | Monotonic wave tracking |
-| Nash-Sutcliffe Efficiency (NSE)   | 0.412 (Unsatisfactory)| 0.9879 (Gold Standard)| High energy fit         |
+| Nash-Sutcliffe Efficiency (NSE)   | 0.412 (Unsatisfactory)| 0.9879 (Excellent)    | High energy fit         |
 | Pearson Coefficient (R²)          | 0.582                 | 0.9880                | Linear correspondence   |
 | Percent Bias (PBIAS %)            | +34.8% (Severe bias)  | -0.08% (Optimal)      | Exact mass conservation |
 | Stage RMSE (m)                    | ± 0.842 m             | ± 0.031 m (3.1 cm)    | 27x error reduction     |

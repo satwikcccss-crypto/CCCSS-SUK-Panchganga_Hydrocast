@@ -21,7 +21,7 @@
 
 ## 1. Database Architecture & Design Strategy
 
-The persistence layer supports both **PostgreSQL / Supabase** for enterprise multi-user querying and a **file-based immutable JSON ledger** for standalone edge resilience.
+The persistence layer supports both **PostgreSQL / Supabase** for multi-user querying and a **file-based immutable JSON ledger** for standalone edge resilience.
 
 - **Primary Database:** PostgreSQL 15+ (Hosted on Supabase or self-hosted)
 - **Spatial Extensions:** `postgis` (Native on Supabase for coordinate geometry)
@@ -109,8 +109,8 @@ Audits the input rainfall volumes across all 20 primary and alternate rain gauge
 CREATE TABLE IF NOT EXISTS station_rainfall_telemetry (
     id                  BIGSERIAL PRIMARY KEY,
     run_id              VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
-    station_id          VARCHAR(64) NOT NULL,
-    subbasin_id         VARCHAR(32) NOT NULL,
+    station_id          VARCHAR(64) NOT NULL REFERENCES gauge_stations(station_id) ON DELETE CASCADE,
+    subbasin_id         VARCHAR(32) NOT NULL REFERENCES subbasins(subbasin_id) ON DELETE CASCADE,
     latitude            NUMERIC(8, 4),
     longitude           NUMERIC(8, 4),
     elevation_m         NUMERIC(6, 1),

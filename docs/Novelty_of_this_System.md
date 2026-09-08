@@ -1,4 +1,4 @@
-﻿# Technological Novelty & Innovation Architecture of HydroCast
+# Technological Novelty & Innovation Architecture of HydroCast
 
 ```
 ========================================================================================
@@ -90,7 +90,7 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ### Novelty 8: Zero-Dependency Dual-Mode Data Persistence
 - **The Breakthrough:** The platform cannot crash due to database outages during extreme storms.
-- **How It Works:** When connected to enterprise PostgreSQL / Supabase, the backend utilizes asynchronous connection pooling (`asyncpg`). If the database server is unreachable, connection drops, or credentials are unconfigured, HydroCast automatically and silently falls back to an internal **atomic JSON ledger storage engine**. The entire API and Next.js frontend continue to function with 100% feature parity.
+- **How It Works:** When connected to PostgreSQL / Supabase, the backend utilizes asynchronous connection pooling (`asyncpg`). If the database server is unreachable, connection drops, or credentials are unconfigured, HydroCast automatically and silently falls back to an internal **atomic JSON ledger storage engine**. The entire API and Next.js frontend continue to function with 100% feature parity.
 
 ---
 
