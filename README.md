@@ -15,7 +15,7 @@
 
 <!-- Animated System Flow Banner -->
 <p align="center">
-  <img src="docs/assets/hydrocast_flow_animation.svg" alt="HydroCast End-to-End Operational Flow & Telemetry Validation Architecture" width="100%">
+  <img src="docs/assets/hydrocast_flow_animation.jpg" alt="HydroCast End-to-End Operational Flow & Telemetry Validation Architecture" width="100%">
 </p>
 
 | Area | Tool |

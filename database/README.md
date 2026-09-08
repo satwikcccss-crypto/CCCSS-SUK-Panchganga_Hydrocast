@@ -1,7 +1,7 @@
 # Database Architecture & Migration Guide
 
 <p align="center">
-  <img src="../docs/assets/hydrocast_flow_animation.svg" alt="HydroCast Operational Continuum" width="100%">
+  <img src="../docs/assets/hydrocast_database_banner.jpg" alt="HydroCast Database Operations Command Center" width="100%">
 </p>
 
 ## Relational Schema Specifications
