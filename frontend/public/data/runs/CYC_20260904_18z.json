@@ -20278,7 +20278,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260904_18z",
-    "validation_timestamp": "2026-09-07T21:58:11.480197+00:00",
+    "validation_timestamp": "2026-09-08T00:06:22.733836+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20290,23 +20290,23 @@
       "downstream_weir": "Rajaram K.T. Weir (3.8 km downstream, S0=0.002318)"
     },
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 76,
+    "verified_hours": 79,
     "total_forecast_hours": 90,
-    "completion_pct": 84.4,
+    "completion_pct": 87.8,
     "metrics": {
-      "sample_size_hours": 76,
+      "sample_size_hours": 79,
       "rmse_stage_m": 0.943,
-      "mae_stage_m": 0.812,
-      "nse_stage": -805.3522,
+      "mae_stage_m": 0.816,
+      "nse_stage": -672.958,
       "pbias_stage_pct": 0.15,
-      "spearman_rho": 0.3766,
-      "pearson_r2": 0.0318,
-      "rmse_q_m3s": 90.64,
-      "mae_q_m3s": 76.29,
-      "nse_discharge": -2040.6028,
-      "pbias_discharge_pct": 78.56,
-      "spearman_rho_q": 0.3745,
-      "pearson_r2_q": 0.0501,
+      "spearman_rho": 0.3785,
+      "pearson_r2": 0.0238,
+      "rmse_q_m3s": 90.12,
+      "mae_q_m3s": 76.27,
+      "nse_discharge": -1696.5098,
+      "pbias_discharge_pct": 78.69,
+      "spearman_rho_q": 0.3769,
+      "pearson_r2_q": 0.0445,
       "basin_rainfall_accuracy_pct": 94.5,
       "performance_grade": "CALIBRATION_REQUIRED"
     },
@@ -20766,6 +20766,24 @@
         "predicted_stage": 533.98,
         "lead_hours": 75,
         "actual_distance_ft": 53.59
+      },
+      {
+        "actual_stage": 533.02,
+        "predicted_stage": 533.95,
+        "lead_hours": 76,
+        "actual_distance_ft": 53.59
+      },
+      {
+        "actual_stage": 533.01,
+        "predicted_stage": 533.93,
+        "lead_hours": 77,
+        "actual_distance_ft": 53.62
+      },
+      {
+        "actual_stage": 532.98,
+        "predicted_stage": 533.91,
+        "lead_hours": 78,
+        "actual_distance_ft": 53.72
       }
     ],
     "actual_observed_series": [
@@ -21762,39 +21780,39 @@
         "timestamp": "2026-09-07T22:00:00+00:00",
         "predicted_stage_m": 533.95,
         "predicted_discharge_m3s": 170.6,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 533.02,
+        "observed_distance_ft": 53.59,
+        "observed_discharge_m3s": 92.9,
+        "error_delta_m": 0.93,
+        "error_delta_ft": 3.05,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 77,
         "timestamp": "2026-09-07T23:00:00+00:00",
         "predicted_stage_m": 533.93,
         "predicted_discharge_m3s": 167.7,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 533.01,
+        "observed_distance_ft": 53.62,
+        "observed_discharge_m3s": 92.3,
+        "error_delta_m": 0.92,
+        "error_delta_ft": 3.02,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 78,
         "timestamp": "2026-09-08T00:00:00+00:00",
         "predicted_stage_m": 533.91,
         "predicted_discharge_m3s": 164.7,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 532.98,
+        "observed_distance_ft": 53.72,
+        "observed_discharge_m3s": 90.6,
+        "error_delta_m": 0.93,
+        "error_delta_ft": 3.05,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 79,
