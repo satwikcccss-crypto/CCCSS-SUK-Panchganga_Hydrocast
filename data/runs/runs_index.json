@@ -1,5 +1,26 @@
 [
   {
+    "cycle_id": "CYC_20260909_12z",
+    "run_date": "09 Sep 2026",
+    "cycle_time": "12z",
+    "start_time": "2026-09-09T12:00:00+00:00",
+    "duration_seconds": 36.9,
+    "peak_discharge_m3s": 68.1,
+    "lead_hours_to_peak": 0,
+    "total_volume_mcm": 22.1,
+    "total_rainfall_mm": 18.5,
+    "shivaji_peak_stage_m": 532.51,
+    "rajaram_peak_stage_m": 533.32,
+    "alert_level": "NORMAL",
+    "status": "completed",
+    "has_validation": false,
+    "spearman_rho": null,
+    "nse": null,
+    "rmse": null,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 2
+  },
+  {
     "cycle_id": "CYC_20260909_06z",
     "run_date": "09 Sep 2026",
     "cycle_time": "06z",
@@ -15,10 +36,10 @@
     "status": "completed",
     "has_validation": false,
     "spearman_rho": 0.0,
-    "nse": -0.0714,
-    "rmse": 0.013,
+    "nse": -1.6914,
+    "rmse": 0.085,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 3
+    "verified_hours": 8
   },
   {
     "cycle_id": "CYC_20260908_18z",
@@ -36,10 +57,10 @@
     "status": "completed",
     "has_validation": false,
     "spearman_rho": 0.0,
-    "nse": -1.7133,
-    "rmse": 0.085,
+    "nse": -1.5168,
+    "rmse": 0.149,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 15
+    "verified_hours": 20
   },
   {
     "cycle_id": "CYC_20260908_12z",
@@ -57,10 +78,10 @@
     "status": "completed",
     "has_validation": false,
     "spearman_rho": 0.0,
-    "nse": -1.6948,
-    "rmse": 0.109,
+    "nse": -1.4985,
+    "rmse": 0.167,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 21
+    "verified_hours": 26
   },
   {
     "cycle_id": "CYC_20260908_06z",
@@ -78,10 +99,10 @@
     "status": "completed",
     "has_validation": false,
     "spearman_rho": 0.0,
-    "nse": -2.6028,
-    "rmse": 0.151,
+    "nse": -2.0709,
+    "rmse": 0.204,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 27
+    "verified_hours": 32
   },
   {
     "cycle_id": "CYC_20260907_06z",
@@ -99,10 +120,10 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -1.6264,
-    "rmse": 0.228,
+    "nse": -1.5509,
+    "rmse": 0.273,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 51
+    "verified_hours": 56
   },
   {
     "cycle_id": "CYC_20260906_18z",
@@ -120,10 +141,10 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -1.2595,
-    "rmse": 0.235,
+    "nse": -1.236,
+    "rmse": 0.277,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 63
+    "verified_hours": 68
   },
   {
     "cycle_id": "CYC_20260906_12z",
@@ -141,10 +162,10 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -1.0323,
-    "rmse": 0.224,
+    "nse": -1.029,
+    "rmse": 0.265,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 69
+    "verified_hours": 74
   },
   {
     "cycle_id": "CYC_20260906_06z",
@@ -162,10 +183,10 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": 0.0,
-    "nse": -0.7645,
-    "rmse": 0.209,
+    "nse": -0.7875,
+    "rmse": 0.249,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 75
+    "verified_hours": 80
   },
   {
     "cycle_id": "CYC_20260905_18z",
@@ -182,11 +203,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": -0.5985,
-    "nse": -0.8007,
-    "rmse": 0.209,
-    "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 87
+    "spearman_rho": -0.648,
+    "nse": -0.8065,
+    "rmse": 0.235,
+    "lifecycle_status": "LIFECYCLE_VERIFIED",
+    "verified_hours": 90
   },
   {
     "cycle_id": "CYC_20260905_12z",
