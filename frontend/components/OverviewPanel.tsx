@@ -68,6 +68,9 @@ export default function OverviewPanel({
   const shivajiLead = shivajiPeakArr?.peak_lead_hours ?? outlet?.lead_hours_to_peak ?? 0;
   const rajaramLead = rajaramPeakArr?.peak_lead_hours ?? outlet?.lead_hours_to_peak ?? 0;
 
+  const shivajiLvl = b0?.current_stage_m ?? b0?.stage_m ?? 532.63;
+  const shivajiPeak = b0?.peak_stage_m ?? (bShivaji?.forecast ? Math.max(...bShivaji.forecast.map((f: any) => f.stage_m)) : shivajiLvl);
+
   const shivajiData: GaugeData = {
     waterLevel: shivajiLvl,
     forecastLevel: shivajiPeak,
@@ -181,6 +184,8 @@ export default function OverviewPanel({
             Cycle: {lastCycle?.run_id ?? "Awaiting first run"}
           </div>
         </div>
+      </div>
+
       {/* ── PEAK FLOOD ARRIVAL & CONFIDENCE INTERVAL MONITOR (±2.0h) ─────────── */}
       <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-4 border-b border-slate-100 gap-2">
