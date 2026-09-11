@@ -64,25 +64,19 @@ export default function VisitorCounterWidget() {
   if (!mounted) return null;
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 bg-white border border-gray-200 shadow-lg rounded-md p-3 flex items-center gap-5 animate-in fade-in slide-in-from-bottom-5 duration-700">
-      <div className="flex items-center gap-2.5">
-        <div className="p-1.5 bg-blue-50/50 rounded-sm">
-          <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-        </div>
-        <div>
+    <div className="bg-white border border-gray-200 shadow-sm rounded-md p-3 flex flex-col items-center gap-3 animate-in fade-in duration-700">
+      <div className="flex w-full justify-around items-center">
+        <div className="flex flex-col items-center gap-1.5">
           <p className="text-[9px] tracking-wider uppercase font-semibold text-gray-400 mb-0.5">Today</p>
           <Odometer value={daily} padLength={4} />
         </div>
-      </div>
-      
-      <div className="w-px h-8 bg-gray-100"></div>
+        
+        <div className="w-px h-8 bg-gray-100"></div>
 
-      <div>
-        <p className="text-[9px] tracking-wider uppercase font-semibold text-gray-400 mb-0.5">Total Visits</p>
-        <Odometer value={total} padLength={6} />
+        <div className="flex flex-col items-center gap-1.5">
+          <p className="text-[9px] tracking-wider uppercase font-semibold text-gray-400 mb-0.5">Total Visits</p>
+          <Odometer value={total} padLength={6} />
+        </div>
       </div>
     </div>
   );

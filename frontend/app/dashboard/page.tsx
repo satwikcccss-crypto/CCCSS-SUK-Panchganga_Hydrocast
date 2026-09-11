@@ -89,7 +89,6 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
-      <VisitorCounterWidget />
       {/* ── TOP FLOOD ALERT BANNER ───────────────────────────────────── */}
       {activeAlerts.length > 0 && <FloodBanner alerts={activeAlerts} />}
 
@@ -217,6 +216,10 @@ export default function Dashboard() {
                   </span>
                 </div>
               </div>
+            </div>
+
+            <div className="mt-auto pt-6">
+              <VisitorCounterWidget />
             </div>
           </div>
         </aside>
