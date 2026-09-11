@@ -82,6 +82,8 @@ export default function Dashboard() {
   const shivajiBridge = summary?.bridges?.[0];
   const rajaramBridge = summary?.bridges?.[1];
 
+  const isOnline = connected || !!status;
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
       {/* ── TOP FLOOD ALERT BANNER ───────────────────────────────────── */}
@@ -117,10 +119,10 @@ export default function Dashboard() {
           <div className="hidden sm:flex items-center gap-2 text-xs text-gray-600">
             <span
               className={`w-1.5 h-1.5 rounded-full ${
-                connected ? "bg-green-500" : "bg-gray-400"
+                isOnline ? "bg-green-500" : "bg-gray-400"
               }`}
             />
-            {connected ? "Live" : "Offline"}
+            {isOnline ? "Live" : "Offline"}
           </div>
 
           <div className="text-right hidden lg:block text-xs text-gray-500">
