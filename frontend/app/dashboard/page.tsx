@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { api } from "@/lib/api";
@@ -10,6 +10,7 @@ import RunoffPanel from "@/components/RunoffPanel";
 import SystemPanel from "@/components/SystemPanel";
 import AccuracyPanel from "@/components/AccuracyPanel";
 import FloodBanner from "@/components/FloodBanner";
+import VisitorCounterWidget from "@/components/OdometerCounter";
 
 const NAV = [
   {
@@ -62,6 +63,8 @@ export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedStationId, setSelectedStationId] = useState<string>("KARANJPHEN");
   const { connected, lastEvent } = useWebSocket();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const { data: status, mutate: refreshAll } = useSWR("status", api.status, { refreshInterval: 30000 });
   const { data: summary } = useSWR("summary", api.runoffSummary, { refreshInterval: 60000 });
@@ -86,6 +89,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
+      <VisitorCounterWidget />
       {/* ── TOP FLOOD ALERT BANNER ───────────────────────────────────── */}
       {activeAlerts.length > 0 && <FloodBanner alerts={activeAlerts} />}
 
@@ -104,9 +108,6 @@ export default function Dashboard() {
           <div>
             <div className="flex items-center gap-2">
               <span className="font-semibold text-gray-900">HYDROCAST</span>
-              <span className="text-[10px] uppercase px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded">
-                Pro Enterprise
-              </span>
               <span className="text-xs text-gray-500 hidden md:inline">
                 / Panchganga Basin
               </span>
@@ -126,7 +127,7 @@ export default function Dashboard() {
           </div>
 
           <div className="text-right hidden lg:block text-xs text-gray-500">
-            {status?.last_cycle?.start_time
+            {mounted && status?.last_cycle?.start_time
               ? new Date(status.last_cycle.start_time).toUTCString().replace(" GMT", " UTC")
               : "Live Pipeline State"}
           </div>

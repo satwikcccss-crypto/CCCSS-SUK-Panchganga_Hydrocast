@@ -36,6 +36,7 @@ import hmac
 import json
 import asyncio
 import logging
+import hashlib
 from datetime import datetime, timezone
 from typing import Optional, Any
 
@@ -102,18 +103,54 @@ async def get_pool() -> asyncpg.Pool:
         _pool = await asyncpg.create_pool(DB_URL, min_size=2, max_size=10)
     return _pool
 
+telegram_app = None
+
 @app.on_event("startup")
 async def startup():
     try:
-        await get_pool()
+        pool = await get_pool()
         log.info("Database connection pool established")
+        
+        # Init Visitor Counter Tables
+        async with pool.acquire() as conn:
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS site_visits (
+                    visit_date DATE PRIMARY KEY,
+                    visit_count INT DEFAULT 1
+                );
+                CREATE TABLE IF NOT EXISTS site_visitor_ips (
+                    ip_hash TEXT,
+                    visit_date DATE,
+                    PRIMARY KEY(ip_hash, visit_date)
+                );
+            """)
     except Exception as e:
         log.warning("Database pool connection delayed or offline: %s", e)
+
+    try:
+        from src.alerts.telegram_bot import build_telegram_application
+        global telegram_app
+        telegram_app = build_telegram_application()
+        if telegram_app:
+            await telegram_app.initialize()
+            await telegram_app.start()
+            await telegram_app.updater.start_polling()
+            log.info("Telegram Bot started successfully")
+    except Exception as e:
+        log.warning(f"Telegram Bot failed to start: {e}")
 
 @app.on_event("shutdown")
 async def shutdown():
     if _pool:
         await _pool.close()
+    if telegram_app:
+        try:
+            await telegram_app.updater.stop()
+            await telegram_app.stop()
+            await telegram_app.shutdown()
+            log.info("Telegram Bot stopped")
+        except Exception as e:
+            log.error(f"Error stopping Telegram Bot: {e}")
 
 
 # ── Auth & Dependencies ───────────────────────────────────────────────────────
@@ -214,6 +251,36 @@ async def system_status(request: Request):
             "server_time": datetime.now(timezone.utc).isoformat(),
             "note": "Database query pending or initial run awaiting",
         }
+
+
+@app.post("/api/v1/visits/record", dependencies=[PublicDep], tags=["System"])
+@limiter.limit(RATE_LIMIT_PUBLIC)
+async def record_visit(request: Request):
+    """Records a unique visit and returns today's and total visitor counts."""
+    client_ip = request.client.host if request.client else "unknown"
+    ip_hash = hashlib.sha256(client_ip.encode()).hexdigest()
+    
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        exists = await conn.fetchval(
+            "SELECT 1 FROM site_visitor_ips WHERE ip_hash=$1 AND visit_date=CURRENT_DATE",
+            ip_hash
+        )
+        if not exists:
+            await conn.execute(
+                "INSERT INTO site_visitor_ips (ip_hash, visit_date) VALUES ($1, CURRENT_DATE)",
+                ip_hash
+            )
+            await conn.execute("""
+                INSERT INTO site_visits (visit_date, visit_count)
+                VALUES (CURRENT_DATE, 1)
+                ON CONFLICT (visit_date) DO UPDATE SET visit_count = site_visits.visit_count + 1
+            """)
+        
+        daily = await conn.fetchval("SELECT visit_count FROM site_visits WHERE visit_date=CURRENT_DATE")
+        total = await conn.fetchval("SELECT SUM(visit_count) FROM site_visits")
+        
+    return {"daily": daily or 0, "total": total or 0}
 
 
 @app.get("/api/v1/rainfall/ecmwf", dependencies=[PublicDep], tags=["Hydrology"])

@@ -10,10 +10,12 @@ import asyncio
 import json
 import logging
 import os
+import hashlib
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import requests
+import asyncpg
 
 log = logging.getLogger(__name__)
 
@@ -199,8 +201,87 @@ def build_telegram_application():
             parse_mode="HTML",
         )
 
+    async def get_db_pool():
+        # Import dynamically to avoid circular dependencies
+        from src.api.main import get_pool
+        return await get_pool()
+
+    async def stage_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        try:
+            pool = await get_db_pool()
+            async with pool.acquire() as conn:
+                rows = await conn.fetch("SELECT * FROM v_active_alerts_enriched ORDER BY arrival_time ASC NULLS LAST LIMIT 5")
+            
+            if not rows:
+                await update.message.reply_text("ℹ️ No active stage forecasts available.", parse_mode="HTML")
+                return
+
+            msg = "📊 <b>Current Bridge Stages</b>\n━━━━━━━━━━━━━━━━━━━━━━\n"
+            for r in rows:
+                msg += f"📍 <b>{r['site_name']}</b>\n"
+                msg += f"Current: {r['discharge_m3s']:.2f} m\n"
+                msg += f"Peak: <code>{r['peak_stage']:.2f} m</code> at {r['arrival_time'].strftime('%m-%d %H:%M') if r['arrival_time'] else 'N/A'}\n\n"
+            
+            await update.message.reply_text(msg, parse_mode="HTML")
+        except Exception as e:
+            log.error(f"Telegram /stage error: {e}")
+            await update.message.reply_text("⚠️ Error fetching stage data.", parse_mode="HTML")
+
+    async def alerts_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        try:
+            pool = await get_db_pool()
+            async with pool.acquire() as conn:
+                rows = await conn.fetch("SELECT * FROM v_active_alerts_enriched WHERE alert_type IN ('WARNING', 'DANGER', 'HFL_EXCEEDED')")
+            
+            if not rows:
+                await update.message.reply_text("✅ No active flood warnings.", parse_mode="HTML")
+                return
+
+            msg = "🚨 <b>Active Flood Alerts</b>\n━━━━━━━━━━━━━━━━━━━━━━\n"
+            for r in rows:
+                badge = get_severity_badge(r["alert_type"])
+                msg += f"{badge} <b>{r['site_name']}</b>\n"
+                msg += f"<i>{r['recommended_action']}</i>\n\n"
+            
+            await update.message.reply_text(msg, parse_mode="HTML")
+        except Exception as e:
+            log.error(f"Telegram /alerts error: {e}")
+            await update.message.reply_text("⚠️ Error fetching alerts.", parse_mode="HTML")
+
+    async def bulletin_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        try:
+            pool = await get_db_pool()
+            async with pool.acquire() as conn:
+                rows = await conn.fetch("SELECT * FROM v_active_alerts_enriched ORDER BY alert_type DESC LIMIT 1")
+            
+            if not rows:
+                await update.message.reply_text("ℹ️ No critical bulletin available.", parse_mode="HTML")
+                return
+
+            r = rows[0]
+            card = format_telegram_alert(
+                site_id=r["site_id"],
+                site_name=r["site_name"],
+                level=r["alert_type"],
+                peak_stage=r["peak_stage"] or 0.0,
+                current_stage=r["discharge_m3s"] or 0.0,
+                warning_stage=r["warning_stage_m"] or 0.0,
+                danger_stage=r["danger_stage_m"] or 0.0,
+                hfl_stage=r["hfl_m"] or 0.0,
+                arrival_str=r["arrival_time"].strftime('%Y-%m-%d %H:%M UTC') if r["arrival_time"] else "N/A",
+                cycle_id=r["run_id"],
+                action=r["recommended_action"] or "Monitor closely."
+            )
+            await update.message.reply_text(card, parse_mode="HTML")
+        except Exception as e:
+            log.error(f"Telegram /bulletin error: {e}")
+            await update.message.reply_text("⚠️ Error generating bulletin.", parse_mode="HTML")
+
     app.add_handler(CommandHandler("start", start_cmd))
     app.add_handler(CommandHandler("help", start_cmd))
     app.add_handler(CommandHandler("status", status_cmd))
+    app.add_handler(CommandHandler("stage", stage_cmd))
+    app.add_handler(CommandHandler("alerts", alerts_cmd))
+    app.add_handler(CommandHandler("bulletin", bulletin_cmd))
 
     return app
