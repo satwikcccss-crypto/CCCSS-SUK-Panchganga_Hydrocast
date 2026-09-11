@@ -328,14 +328,23 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
       </div>
 
       {/* Live System Activity Log Viewer */}
-      <div className={CARD}>
-        <div className={CARD_HEADER}>
-          <span className="flex items-center gap-1.5 font-semibold text-gray-800">
-            <span>📜</span> Panchganga Hydrological Pipeline Activity Log
+      <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm flex flex-col mt-5">
+        <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <div className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            </div>
+            <h2 className="text-sm font-semibold text-slate-800 tracking-wide uppercase">
+              Live Computation & Runtime Logs
+            </h2>
+          </div>
+          <span className="text-[10px] font-mono-code font-semibold px-2 py-1 bg-slate-100 text-slate-600 rounded">
+            Auto-scrolling stream
           </span>
-          <span className="text-[11px] font-mono-code text-slate-500">Live Simulation Log Stream</span>
         </div>
-        <div className="font-mono-code text-[11px] max-h-56 overflow-y-auto bg-slate-900 text-slate-200 p-4 rounded-lg border border-slate-800 space-y-1.5">
+        
+        <div className="overflow-y-auto h-72 font-mono-code text-[11px] space-y-2 pr-2">
           {logsData && logsData.length > 0 ? (
             logsData.map((log: any, idx: number) => {
               const isWarn = log.lv === "WARN" || log.level === "WARNING";
@@ -343,23 +352,57 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
               const timeStr = log.t || log.timestamp || log.time || "";
               const levelStr = log.lv || log.level || "INFO";
               const msgStr = log.msg || log.message || "";
+
+              let bgClass = "bg-slate-50";
+              let borderClass = "border-l-slate-300";
+              let textClass = "text-slate-700";
+              let badgeClass = "bg-slate-200 text-slate-600";
+
+              if (isErr) {
+                bgClass = "bg-rose-50";
+                borderClass = "border-l-rose-500";
+                textClass = "text-rose-800";
+                badgeClass = "bg-rose-200 text-rose-800";
+              } else if (isWarn) {
+                bgClass = "bg-amber-50";
+                borderClass = "border-l-amber-500";
+                textClass = "text-amber-800";
+                badgeClass = "bg-amber-200 text-amber-800";
+              } else if (msgStr.toLowerCase().includes("computed") || msgStr.toLowerCase().includes("success") || msgStr.toLowerCase().includes("calibrated")) {
+                bgClass = "bg-emerald-50";
+                borderClass = "border-l-emerald-500";
+                textClass = "text-emerald-800";
+                badgeClass = "bg-emerald-200 text-emerald-800";
+              } else {
+                borderClass = "border-l-sky-400";
+                badgeClass = "bg-sky-100 text-sky-700";
+              }
+
+              // Extract just the time if it's an ISO string
+              const displayTime = timeStr.includes("T") ? timeStr.split("T")[1].substring(0, 8) : timeStr;
+
               return (
-                <div key={idx} className="flex items-start gap-2 py-0.5 border-b border-slate-800/60">
-                  <span className="text-slate-500 select-none">{timeStr}</span>
-                  <span
-                    className={`font-bold select-none ${
-                      isErr ? "text-rose-400" : isWarn ? "text-amber-400" : "text-sky-400"
-                    }`}
-                  >
-                    [{levelStr}]
-                  </span>
-                  <span className={isErr ? "text-rose-200" : isWarn ? "text-amber-200" : "text-slate-300"}>{msgStr}</span>
+                <div key={idx} className={`flex items-start gap-3 p-2.5 rounded border border-slate-100 border-l-4 ${bgClass} ${borderClass} transition-colors hover:shadow-sm`}>
+                  <div className="flex-shrink-0 text-[10px] text-slate-400 font-medium whitespace-nowrap mt-0.5">
+                    {displayTime}
+                  </div>
+                  <div className="flex-shrink-0">
+                    <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${badgeClass}`}>
+                      {levelStr}
+                    </span>
+                  </div>
+                  <div className={`flex-1 break-words leading-relaxed ${textClass}`}>
+                    {msgStr}
+                  </div>
                 </div>
               );
             })
           ) : (
-            <div className="text-slate-400 py-4 text-center italic text-xs">
-              Live simulation log stream will populate upon pipeline execution.
+            <div className="flex flex-col items-center justify-center h-full text-slate-400">
+              <svg className="w-8 h-8 mb-2 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span className="italic text-xs font-medium">Listening for live computations...</span>
             </div>
           )}
         </div>
