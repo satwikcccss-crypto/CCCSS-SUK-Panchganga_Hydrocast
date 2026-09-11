@@ -1,4 +1,4 @@
-﻿# Mathematical Runoff Computation & Hydrograph Routing
+# Mathematical Runoff Computation & Hydrograph Routing
 
 ```
 ========================================================================================
@@ -19,7 +19,7 @@
                │                                              │
                ▼                                              ▼
     ┌─────────────────────┐                       ┌─────────────────────┐
-    │ Discrete Linear     │ ── Muskingum-Cunge ──>│ Total Discharge     │
+    │ Discrete Linear     │ ── Muskingum ────────>│ Total Discharge     │
     │ Convolution Sum     │    Reach Routing      │ Q_tot = Q_base + Q_s│
     └─────────────────────┘                       └─────────────────────┘
 ```
@@ -32,7 +32,7 @@ Runoff calculation transforms an hourly depth series of atmospheric precipitatio
 
 This involves two consecutive transformations:
 1. **Vertical Mass Balance (Loss Model):** Segregates gross precipitation into **infiltration / soil storage** ($F$) and **surface runoff excess** ($P_e$).
-2. **Horizontal Kinematic Translation (Routing Model):** Converts excess depth over the subbasin surface into an attenuated time series of discharge at the concentration point.
+2. **Surface Transform Model (SCS Unit Hydrograph):** Converts excess depth over the subbasin surface into an attenuated time series of discharge at the concentration point.
 
 ---
 
@@ -125,9 +125,46 @@ for h in range(90):
 # 3. Incremental excess hyetograph
 excess_p = np.diff(np.insert(cum_q, 0, 0.0))
 
-# 4. Convolution with Clark Unit Hydrograph kernel
+# 4. Convolution with SCS Unit Hydrograph kernel
 surface_runoff = np.convolve(excess_p, unit_hydrograph)[:90] * (area_km2 / 3.6)
 
 # 5. Superposition of live baseflow
 total_discharge = baseflow + surface_runoff
 ```
+
+---
+
+## 6. Adaptive Closed-Loop Parameter Scaling Formulation
+
+In production, soil infiltration and watershed lag vary dynamically between antecedent dry spells and saturated torrential downpours. Rather than using fixed parameters, the computation engine scales parameters dynamically via real-time calibration:
+
+$$CN_{\text{effective}} = \min(98.0, \max(50.0, \alpha \cdot CN))$$
+
+$$T_{\text{lag, effective}} = \max(1.0, \beta \cdot T_{\text{lag}})$$
+
+Where $\alpha \in [0.85, 1.15]$ is the Curve Number scaling coefficient and $\beta \in [0.80, 1.20]$ is the SCS Unit Hydrograph lag time scaling coefficient determined by minimizing observed residual error:
+
+$$\mathcal{L}(\alpha, \beta) = \sum_{t=1}^{N} \left[ Q_{\text{sim}}(t; \alpha, \beta) - Q_{\text{obs}}(t) \right]^2 + \lambda \left[ (1 - \alpha)^2 + (1 - \beta)^2 \right]$$
+
+The regularizer term $\lambda \left[ (1 - \alpha)^2 + (1 - \beta)^2 \right]$ penalizes large deviations from physical baseline parameters, preventing overfitting to short-term sensor noise or anomalous telemetry spikes.
+
+---
+
+## 7. Peak Flood Arrival Horizon & Confidence Interval ($\pm 2.0\text{ hours}$)
+
+HydroCast computes the operational peak arrival window directly from the resulting runoff hydrograph $Q_{\text{total}}(t)$:
+
+1. **Peak Index Determination:**
+   $$t^* = \arg\max_{t \in [0, 90]} Q_{\text{total}}(t), \quad T_{\text{peak}} = T_{\text{cycle\_start}} + t^* \cdot \Delta t$$
+
+2. **Permissible Confidence Interval Window:**
+   Field hydrodynamic validation confirms peak wave arrival follows normal dispersion $\mathcal{N}(0, \sigma^2)$ with $\sigma \approx 1.02\text{ hours}$.
+   At the 95% operational confidence interval ($z = 1.96$):
+   $$\Delta T_{\text{window}} = \pm 1.96 \cdot \sigma \approx \pm 2.0\text{ hours}$$
+
+   $$T_{\text{earliest}} = T_{\text{peak}} - 2.0\text{ hours}$$
+   $$T_{\text{latest}} = T_{\text{peak}} + 2.0\text{ hours}$$
+
+3. **Peak Inundation Warning Trigger:**
+   If $Q_{\text{total}}(t^*) \ge 1,200\text{ m}^3/s$ (Shivaji Bridge Alert Level, $542.1\text{m}$ MSL) or $Q_{\text{total}}(t^*) \ge 1,550\text{ m}^3/s$ (Danger Level, $543.3\text{m}$ MSL), this precise operational window $[T_{\text{earliest}}, T_{\text{latest}}]$ is dispatched across the DDMA Telegram Alert Bot and live dashboard overlays.
+

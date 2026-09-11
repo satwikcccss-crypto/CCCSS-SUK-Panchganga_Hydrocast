@@ -23,6 +23,8 @@ import openmeteo_requests
 import requests_cache
 from retry_requests import retry
 
+from src.ecmwf.retry_utils import with_retry
+
 # Setup the Open-Meteo API client with cache and retry on error
 cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
@@ -34,6 +36,8 @@ from src.sensors.thingspeak_gauge import fetch_shivaji_live_telemetry
 from src.hydrology.stage_converter import convert_discharge_to_stage_manning
 from src.hydrology.runs_tracker import save_computation_run, list_computation_runs
 from src.hydrology.validation_metrics import evaluate_forecast_accuracy
+from src.hydrology.ml_calibration import calibrator, calculate_peak_arrival_window
+from src.hydrology.realtime_telemetry_validator import load_telemetry_cache
 
 log = logging.getLogger(__name__)
 
@@ -57,9 +61,20 @@ LOGS_DIR.mkdir(parents=True, exist_ok=True)
 OM_URL = "https://api.open-meteo.com/v1/forecast"
 
 
+@with_retry(max_retries=4, base_delay=1.5, max_delay=20.0)
+def _call_openmeteo_api(url: str, params: dict):
+    """Low-level API call with exponential backoff retry wrapper."""
+    return openmeteo.weather_api(url, params=params)
+
+
+
+MAX_PHYSICAL_PRECIP_MM_HR = 250.0  # WMO / IMD upper bound for hourly monsoon rain
+
+
 def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarray:
     """
-    Fetch 90-hr hourly precipitation (mm/hr) from Open-Meteo with retries & rate-limiting.
+    Fetch 90-hr hourly precipitation (mm/hr) from Open-Meteo with retries,
+    physical range checks, NaN/Inf imputation, and automated fallback.
     """
     params = {
         "latitude":      round(lat, 4),
@@ -71,7 +86,7 @@ def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarr
     }
     
     try:
-        responses = openmeteo.weather_api(OM_URL, params=params)
+        responses = _call_openmeteo_api(OM_URL, params=params)
         response = responses[0]
         
         hourly = response.Hourly()
@@ -89,16 +104,34 @@ def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarr
         
         arr = np.zeros(90, dtype=np.float32)
         if len(df) > 0:
-            arr[: len(df)] = df["precip"].fillna(0).values
+            vals = df["precip"].values
+            # Quality Check 1: Sanitize NaNs, Infs, and nulls
+            vals = np.nan_to_num(vals, nan=0.0, posinf=MAX_PHYSICAL_PRECIP_MM_HR, neginf=0.0)
+            # Quality Check 2: Non-negative physical bound
+            if np.any(vals < 0):
+                log.debug("Clipped negative precipitation at (%.4f, %.4f)", lat, lon)
+                vals = np.maximum(vals, 0.0)
+            # Quality Check 3: Extreme upper bound ceiling
+            if np.any(vals > MAX_PHYSICAL_PRECIP_MM_HR):
+                log.warning("Precipitation anomaly (> %.1f mm/hr) detected at (%.4f, %.4f) — capped", MAX_PHYSICAL_PRECIP_MM_HR, lat, lon)
+                vals = np.minimum(vals, MAX_PHYSICAL_PRECIP_MM_HR)
+
+            n = min(len(vals), 90)
+            arr[:n] = vals[:n]
+            if n < 90:
+                log.warning("Incomplete forecast: received %d/90 hours for (%.4f, %.4f) — zero-padded tail", n, lat, lon)
+
         return arr
     except Exception as e:
         log.warning("Open-Meteo fetch failed for (%.4f, %.4f): %s — generating physical fallback", lat, lon, e)
-        # Synthetic fallback based on latitude
+        # Synthetic physical fallback based on latitude and Western Ghats orographic gradient
         arr = np.zeros(90, dtype=np.float32)
         peak_hr = 20
         for h in range(90):
             arr[h] = max(0.0, float(np.exp(-((h - peak_hr) ** 2) / 70) * (2.5 if lat < 16.6 else 1.2)))
         return arr
+
+
 
 
 def convert_discharge_to_stage(q: float, site: str) -> float:
@@ -237,8 +270,37 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     live_stage = shivaji_telemetry.get("stage_m", 532.60)
     record_log("INFO", f"ThingSpeak Shivaji Live Ground Truth: Distance={shivaji_telemetry.get('raw_feet', 54.83):.2f} ft -> Water Level={live_stage:.2f} m MSL")
 
+    # Real-Time ML Recalibration Check against Live Telemetry
+    obs_cache = load_telemetry_cache()
+    if shivaji_telemetry and shivaji_telemetry.get("stage_m"):
+        now_hour_key = start_dt.strftime("%Y-%m-%dT%H:00:00Z")
+        obs_cache[now_hour_key] = {
+            "observed_stage_m": live_stage,
+            "observed_distance_ft": shivaji_telemetry.get("raw_feet", 54.83),
+        }
+
+    recent_runs = list_computation_runs(limit=1)
+    prev_forecast = recent_runs[0].get("bridgeShivaji", {}).get("forecast", []) if recent_runs else []
+
+    warranted, delta_t, max_err, trigger_reason = calibrator.detect_timing_and_stage_discrepancy(
+        prev_forecast, obs_cache
+    )
+
+    cal_params = None
+    if warranted:
+        record_log("WARNING", f"Real-Time ML Recalibration Triggered: {trigger_reason}")
+        cal_params = calibrator.recalibrate_parameters(
+            timing_offset_hours=delta_t,
+            stage_error_m=max_err,
+            subbasin_hyetographs=subbasin_arrays,
+        )
+        calibrator.sync_to_hec_hms_basin(cal_params)
+        record_log("INFO", f"HEC-HMS & Emulator Synchronized: α_K={cal_params['alpha_k']}, α_lag={cal_params['alpha_lag']}, ΔCN={cal_params['delta_cn']}, X={cal_params['muskingum_x']}")
+    else:
+        record_log("INFO", f"Hydrologic Calibration Baseline Stable: {trigger_reason}")
+
     # Real HEC-HMS 4.13 Simulation Run with Dynamic Basin Hyetographs & Observed Stage Baseline
-    hms_result = execute_hec_hms(start_dt, subbasin_arrays, live_stage_m=live_stage)
+    hms_result = execute_hec_hms(start_dt, subbasin_arrays, live_stage_m=live_stage, parameter_overrides=cal_params)
     peak_h = hms_result["lead_hours_to_peak"]
     peak_q = hms_result["peak_discharge_m3s"]
     baseflow = float(hms_result["hydrograph"][0]["baseflow_m3s"])
@@ -345,6 +407,29 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     peak_stg_rajaram = max([f["stage_m"] for f in rajaram_forecast])
     total_vol_mcm = round(float(np.sum([h["discharge_m3s"] for h in hydrograph]) * 3600.0 / 1e6), 1)
 
+    # Calculate High-Precision Peak Flood Arrival Time & Permissible Confidence Interval (±2.0h)
+    peak_arrival_shivaji = calculate_peak_arrival_window(
+        shivaji_forecast,
+        site_id="SHIVAJI_BRIDGE",
+        site_name="Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
+        margin_hours=2.0,
+    )
+    peak_arrival_rajaram = calculate_peak_arrival_window(
+        rajaram_forecast,
+        site_id="RAJARAM_BRIDGE",
+        site_name="Rajaram K.T. Weir (Kasba Bawada)",
+        margin_hours=2.0,
+    )
+    peak_arrival_outlet = calculate_peak_arrival_window(
+        hydrograph,
+        site_id="J_Outlet",
+        site_name="Panchganga Basin Sink (Rajaram Weir)",
+        margin_hours=2.0,
+    )
+
+    bridge_shivaji["peak_arrival"] = peak_arrival_shivaji
+    bridge_rajaram["peak_arrival"] = peak_arrival_rajaram
+
     summary_obj = {
         "cycle_id": cycle_id,
         "forecast_date": start_dt.strftime("%d %b %Y"),
@@ -354,17 +439,28 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         "lead_hours_to_peak": peak_h,
         "peak_time": (start_dt + timedelta(hours=peak_h)).isoformat(),
         "total_volume_mcm": total_vol_mcm,
+        "peak_arrival": {
+            "shivaji": peak_arrival_shivaji,
+            "rajaram": peak_arrival_rajaram,
+            "outlet": peak_arrival_outlet,
+        },
         "bridges": {
             "shivaji": {
                 "site_name": "Chhatrapati Shivaji Maharaj Bridge",
                 "current_stage_m": shivaji_forecast[0]["stage_m"],
                 "peak_stage_m": round(peak_stg_shivaji, 2),
+                "peak_arrival_time": peak_arrival_shivaji["peak_arrival_time"],
+                "peak_lead_hours": peak_arrival_shivaji["peak_lead_hours"],
+                "confidence_interval": peak_arrival_shivaji["confidence_interval"],
                 "alert_level": shivaji_forecast[0]["alert_level"],
             },
             "rajaram": {
                 "site_name": "Rajaram K.T. Weir",
                 "current_stage_m": rajaram_forecast[0]["stage_m"],
                 "peak_stage_m": round(peak_stg_rajaram, 2),
+                "peak_arrival_time": peak_arrival_rajaram["peak_arrival_time"],
+                "peak_lead_hours": peak_arrival_rajaram["peak_lead_hours"],
+                "confidence_interval": peak_arrival_rajaram["confidence_interval"],
                 "alert_level": rajaram_forecast[0]["alert_level"],
             }
         }
@@ -373,6 +469,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     pipeline_state = {
         "cycle_id": cycle_id,
         "summary": summary_obj,
+        "recalibration": calibrator.state,
         "ecmwf": ecmwf_hyetographs,
         "stations": all_stations_summary,
         "subbasin_stations": [s for s in all_stations_summary if s.get("is_governing")],

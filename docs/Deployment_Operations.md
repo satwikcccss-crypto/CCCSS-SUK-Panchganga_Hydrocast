@@ -5,26 +5,123 @@
              HYDROCAST PRODUCTION INFRASTRUCTURE & ORCHESTRATION
 ========================================================================================
 
-                 [ 6-Hourly Cron / Task Scheduler (00z, 06z, 12z, 18z) ]
-                                            │
-                                            ▼
-                    Python Orchestrator (src/ecmwf/open_meteo.py)
-                    - 18-Station Rainfall Fetch
-                    - HEC-HMS / SCS-CN Hydrologic Simulation
-                    - Monotonic PCHIP Hydraulic Conversion
-                    - Validation Engine & Runs Ledger Archiving
-                                            │
-                 ┌──────────────────────────┴──────────────────────────┐
-                 ▼                                                     ▼
-     [ FastAPI Backend Service ]                             [ Next.js 14 Web App ]
-     Managed by systemd / PM2                                Managed by PM2
-     Port: 8000 (ASGI / Uvicorn)                             Port: 3000 (Production Node)
-     Reverse Proxy: NGINX / Cloudflare                       Reverse Proxy: NGINX / Cloudflare
+                [ Automated 6-Hourly Cron / GHA Scheduler (00z, 06z, 12z, 18z) ]
+                                           │
+                                           ▼
+                 Python Pipeline Orchestrator (src/ecmwf/open_meteo.py)
+                 - Open-Meteo ECMWF QPF with Exponential Retries & Jitter
+                 - Dynamic Conservative Maximum-Rainfall Station Selection
+                 - Live Discrepancy Detection & Real-Time ML Recalibration
+                 - Dual-Regime PCHIP Hydraulic Conversion & Peak Horizon (±2.0h CI)
+                 - Multi-Channel DDMA Telegram Broadcast & Agency Webhooks
+                                           │
+                ┌──────────────────────────┴──────────────────────────┐
+                ▼                                                     ▼
+    [ Docker Compose / systemd ]                            [ Next.js 14 Web App ]
+    hydrocast-backend (FastAPI :8000)                       hydrocast-frontend (:3000)
+    hydrocast-db (PostGIS :5432)                            Standalone SSR Container
+    Rate Limiting & JWT Auth                                Vercel Edge Serverless
 ```
 
 ---
 
-## 1. Automated Cron Scheduling (ECMWF Operational Cycles)
+## 1. Unified Container Deployment (Docker & Docker Compose)
+
+HydroCast is fully containerized for reproducible 1-command deployment across cloud virtual machines (AWS EC2, GCP Compute Engine, Azure VM, DigitalOcean) and on-premise workstations:
+
+### 1.1 Architecture & Services (`docker-compose.yml`)
+
+```yaml
+version: "3.8"
+
+services:
+  hydrocast-db:
+    image: postgis/postgis:15-3.4
+    container_name: hydrocast-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: rainfall_runoff
+      POSTGRES_USER: hms_app
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/supabase_schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hms_app -d rainfall_runoff"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  hydrocast-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hydrocast-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      hydrocast-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://hms_app:password@hydrocast-db:5432/rainfall_runoff
+      API_KEY: Hydrocast_PCH
+      INTERNAL_KEY: internal_secret
+      API_BASE_URL: http://hydrocast-backend:8000
+      RATE_LIMIT_PUBLIC: 100/minute
+      JWT_SECRET: your_production_jwt_secret_min_32_chars
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: your_strong_admin_password
+      ARCHIVE_RETENTION_DAYS: 90
+    volumes:
+      - hydrocast_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  hydrocast-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+        NEXT_PUBLIC_WS_URL: ws://localhost:8000/ws/live
+    container_name: hydrocast-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      hydrocast-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+```
+
+### 1.2 Startup & Management Commands
+```bash
+# Build images and start all services in detached mode
+docker-compose up -d --build
+
+# Inspect container health and port bindings
+docker-compose ps
+
+# Stream unified application logs
+docker-compose logs -f
+
+# Stop and gracefully shut down services
+docker-compose down
+```
+
+---
+
+## 2. Automated Cron Scheduling (ECMWF Operational Cycles)
 
 The European Centre for Medium-Range Weather Forecasts releases operational IFS runs four times daily. HydroCast triggers automated forecast cycles 45 minutes after official model availability to allow for global numerical assimilation:
 
@@ -42,17 +139,94 @@ The European Centre for Medium-Range Weather Forecasts releases operational IFS 
 ### Linux Crontab Configuration:
 ```cron
 # Edit with: crontab -e
-15 1 * * *  cd /opt/hydrocast && /opt/hydrocast/venv/bin/python src/ecmwf/open_meteo.py >> data/logs/cron_00z.log 2>&1
-15 7 * * *  cd /opt/hydrocast && /opt/hydrocast/venv/bin/python src/ecmwf/open_meteo.py >> data/logs/cron_06z.log 2>&1
-15 13 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python src/ecmwf/open_meteo.py >> data/logs/cron_12z.log 2>&1
-15 19 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python src/ecmwf/open_meteo.py >> data/logs/cron_18z.log 2>&1
+# 6-Hourly Forecast Pipeline Execution
+15 1,7,13,19 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python -m src.ecmwf.open_meteo >> data/logs/cron_forecast.log 2>&1
+
+# Weekly Cold Storage Parquet Archival (Sunday 02:00 UTC)
+0 2 * * 0 cd /opt/hydrocast && /opt/hydrocast/venv/bin/python -m src.db.archive_runs --retention-days 90 >> data/logs/cron_archive.log 2>&1
 ```
 
 ---
 
-## 2. Process Management: Systemd & PM2
+## 3. Multi-Channel Emergency Alerting Setup (DDMA & SDRF)
 
-### 2.1 Backend FastAPI Service Unit (`/etc/systemd/system/hydrocast-api.service`)
+HydroCast integrates an automated Telegram alert bot and webhook dispatcher ([`src/alerts/telegram_bot.py`](file:///e:/hydrocast_complete/src/alerts/telegram_bot.py)):
+
+### 3.1 Telegram Bot Configuration
+1. Create a bot via `@BotFather` on Telegram to obtain `TELEGRAM_BOT_TOKEN`.
+2. Add the bot to your District Disaster Management Authority (DDMA) channel, District Collectorate channel, and Emergency Operations Center (EOC) groups.
+3. Configure target chat IDs in `.env`:
+   ```ini
+   TELEGRAM_BOT_TOKEN=123456789:ABCdefGHIjklMNOpqrSTUvwxYZ
+   TELEGRAM_CHAT_ID=-1001234567890
+   DDMA_TELEGRAM_CHATS=-1001234567890,-1009876543210
+   ```
+
+### 3.2 Agency Webhook Endpoints
+To automatically push flood alerts to state disaster management agency dispatch APIs:
+```ini
+DISASTER_MANAGEMENT_WEBHOOKS=https://alert-dispatch.district.gov.in/api/v1/cwc-hook,https://sdrf.maharashtra.gov.in/api/v1/flood
+```
+Whenever river stage breaches the CWC **Warning** ($542.70\text{ m}$) or **Danger** ($543.30\text{ m}$) mark, HydroCast broadcasts formatted HTML bulletins to all Telegram channels and POSTs structured JSON alerts to webhooks within $< 500\text{ ms}$.
+
+---
+
+## 4. Cold Storage & Telemetry Archival Automation
+
+Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/archive_runs.py):
+- **Objective:** Prevent high-frequency time-series tables (`hydrograph_results`, `bridge_stage_forecast`, `rainfall_data`, `station_rainfall_telemetry`, `subbasin_rainfall_ts`) from bloating PostgreSQL storage and degrading query speed.
+- **Mechanism:** Records older than `ARCHIVE_RETENTION_DAYS` (default 90 days) are written to Snappy-compressed Apache Parquet partitions (`data/archives/{table}/year=YYYY/month=MM/`), followed by atomic database pruning.
+- **Manual Execution:**
+  ```bash
+  # Dry run (inspect row counts without deleting)
+  python -m src.db.archive_runs --dry-run
+
+  # Execute archival with 90-day retention
+  python -m src.db.archive_runs --retention-days 90
+  ```
+- **API Invocation:** Authenticated administrators can trigger archival via `POST /api/v1/admin/archive`.
+
+---
+
+## 5. API Security, JWT Authentication & Rate Limiting
+
+### 5.1 Environment Security Variables (`.env`)
+```ini
+# Enterprise Security & Authentication
+API_KEY=Hydrocast_PCH
+INTERNAL_KEY=your_internal_broadcast_key_min_32_chars
+JWT_SECRET=your_jwt_secret_key_minimum_32_characters_random
+JWT_ALGORITHM=HS256
+JWT_EXPIRATION_MINUTES=1440
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your_strong_admin_password
+
+# Rate Limiting
+RATE_LIMIT_PUBLIC=100/minute
+```
+
+### 5.2 Obtaining an Admin JWT Bearer Token
+```bash
+curl -X POST http://localhost:8000/api/v1/admin/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "your_strong_admin_password"}'
+```
+Response:
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "expires_in_seconds": 86400
+}
+```
+
+---
+
+## 6. Process Management without Docker (Systemd & PM2)
+
+For hosts where Docker is not available:
+
+### 6.1 Backend Systemd Unit (`/etc/systemd/system/hydrocast-api.service`)
 ```ini
 [Unit]
 Description=HydroCast FastAPI Backend & WebSocket Service
@@ -62,7 +236,7 @@ After=network.target postgresql.service
 Type=simple
 User=hydrocast
 WorkingDirectory=/opt/hydrocast
-ExecStart=/opt/hydrocast/venv/bin/uvicorn src.api.main:app --app-dir system --host 0.0.0.0 --port 8000 --workers 4
+ExecStart=/opt/hydrocast/venv/bin/uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 4
 Restart=always
 RestartSec=5
 EnvironmentFile=/opt/hydrocast/.env
@@ -71,17 +245,9 @@ EnvironmentFile=/opt/hydrocast/.env
 WantedBy=multi-user.target
 ```
 
-Enable and start the service:
+### 6.2 Frontend PM2 Process
 ```bash
-sudo systemctl daemon-reload
-sudo systemctl enable hydrocast-api
-sudo systemctl start hydrocast-api
-sudo systemctl status hydrocast-api
-```
-
-### 2.2 Frontend Next.js Process via PM2
-```bash
-cd /opt/hydrocast/system/frontend
+cd /opt/hydrocast/frontend
 npm run build
 pm2 start npm --name "hydrocast-frontend" -- start -- -p 3000
 pm2 save
@@ -90,116 +256,12 @@ pm2 startup
 
 ---
 
-## 3. Environment Variable Configuration (`.env`)
+## 7. Continuous 1-Hour Telemetry Validation (GitHub Actions)
 
-```ini
-# Database (Leave blank to use standalone JSON ledger mode)
-DATABASE_URL=postgresql://postgres:password@localhost:5432/hydrocast
-SUPABASE_DB_URL=
-
-# Pipeline Security
-INTERNAL_KEY=your_secure_internal_broadcast_key_here
-
-# Catchment Geographical Envelope
-BBOX_N=17.20
-BBOX_S=16.20
-BBOX_E=74.50
-BBOX_W=73.70
-
-# Hydrologic Baseflow Calibration
-MONSOON_BASEFLOW=91.1
-HEC_HMS_CMD="C:\Program Files\HEC\HEC-HMS-4.10\hec-hms.cmd"
-```
-
----
-
-## 4. NGINX Reverse Proxy & SSL Configuration
-
-```nginx
-server {
-    listen 80;
-    server_name hydrocast.kolhapur.gov.in;
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    server_name hydrocast.kolhapur.gov.in;
-
-    ssl_certificate /etc/letsencrypt/live/hydrocast.kolhapur.gov.in/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/hydrocast.kolhapur.gov.in/privkey.pem;
-
-    # Frontend Next.js Web App
-    location / {
-        proxy_pass http://127.0.0.1:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-
-    # Backend FastAPI REST Endpoints
-    location /api/ {
-        proxy_pass http://127.0.0.1:8000/api/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    # WebSocket Live Push Stream
-    location /ws/ {
-        proxy_pass http://127.0.0.1:8000/ws/;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "Upgrade";
-        proxy_set_header Host $host;
-    }
-}
-```
-
----
-
-## 5. Health Monitoring & Disaster Recovery
-
-- **Health Check Endpoint:** `curl -s http://localhost:8000/health | jq`
-  - Returns `{"status": "healthy", "database": "connected", "last_cycle": "CYC_..."}`.
-- **Log Rotation:** Logs are kept under `data/logs/` and automatically rotated using `logrotate` with 14-day retention.
-- **Zero-Dependency Fallback:** If PostgreSQL or internet APIs fail, HydroCast defaults to the pre-cached static dataset and physical SCS-CN emulator, guaranteeing that emergency centers always have active flood projections.
-
----
-
-## 6. Continuous 1-Hour Telemetry Validation (GitHub Actions)
-
-HydroCast automates continuous physical verification using GitHub Actions in [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
-
-```yaml
-name: ThingSpeak Real-Time Telemetry Validation
-
-on:
-  schedule:
-    - cron: "0 * * * *"   # Every 1 hour at minute 0
-  workflow_dispatch:       # Manual on-demand execution
-```
-
-### Operational Pipeline Flow:
-1. **Pulls Telemetry:** Queries ThingSpeak Channel `3424513` fetching 800 recent 5-minute pings.
-2. **Resamples to Hourly Bins:** Averages distance readings and converts to stage elevation ($549.35\text{m} - \text{ft} \times 0.3048$).
-3. **Calculates Empirical Accuracy:** Computes RMSE, MAE, NSE, PBIAS, Spearman $\rho$, and Pearson $R^2$.
-4. **Synchronizes State:** Updates `frontend/public/data/latest_pipeline_state.json` and mirrored run archives in `frontend/public/data/runs/`.
-5. **Auto-Commits & Pushes:** Commits verified metrics back to `origin/main`, triggering automatic deployment synchronization on Vercel.
-
----
-
-## 7. Vercel Serverless Edge Deployment & Asset Bundling
-
-The Next.js 14 dashboard is designed for continuous deployment to Vercel:
-
-### 7.1 Static Asset & Run Ledger Packaging
-Because Vercel serverless function runners do not package files outside `frontend/`, HydroCast maintains mirrored run archives in:
-- `frontend/public/data/latest_pipeline_state.json`
-- `frontend/public/data/runs_history.json`
-- `frontend/public/data/runs/CYC_*.json`
-
-### 7.2 Dynamic Run Routing
-When a user requests `/api/v1/dashboard?run_id=CYC_20260903_18z`, the serverless API route automatically resolves `path.join(process.cwd(), "public", "data", "runs", `${requestedRunId}.json`)`, ensuring instantaneous sub-50ms response times without cold-start database dependencies.
-
+Autonomous physical verification runs via [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
+- **Interval:** Every hour at minute 0 (`cron: "0 * * * *"`).
+- Pulls 800 raw ultrasonic pings from ThingSpeak Channel `3424513`.
+- Resamples into hourly averages and converts to stage in meters MSL ($549.35\text{m} - \text{ft} \times 0.3048$).
+- Computes genuine RMSE, MAE, NSE, PBIAS, Spearman $\rho$, and Pearson $R^2$.
+- Updates `frontend/public/data/latest_pipeline_state.json` and mirrored run archives in `frontend/public/data/runs/`.
+- Commits and pushes back to GitHub, triggering immediate Vercel production synchronization.

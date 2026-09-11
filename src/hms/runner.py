@@ -18,7 +18,7 @@ import subprocess
 import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -120,10 +120,16 @@ print "HEC-HMS Computation Finished Successfully."
     return script_path
 
 
-def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, np.ndarray]] = None, live_stage_m: Optional[float] = None) -> Dict[str, any]:
+def execute_hec_hms(
+    run_dt: datetime,
+    subbasin_hyetographs: Optional[Dict[str, np.ndarray]] = None,
+    live_stage_m: Optional[float] = None,
+    parameter_overrides: Optional[Dict[str, Any]] = None,
+) -> Dict[str, any]:
     """
     Main entry point for HEC-HMS execution.
     Runs HEC-HMS 4.13 if binary is present, or runs calibrated Panchganga RJKT physical model.
+    Supports real-time ML adaptive parameter overrides (Muskingum K & X, Subbasin lag, Curve Numbers).
     """
     patch_control_spec(run_dt)
     jy_script = write_jython_script()
@@ -168,7 +174,6 @@ def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, n
         "S8": {"name": "Beed",        "area_km2": 177.44, "cn": 65.76, "lag_min": 3387.1},
         "S9": {"name": "Radhanagari", "area_km2": 366.97, "cn": 64.31, "lag_min": 5199.0},
     }
-    total_area_km2 = sum(s["area_km2"] for s in sub_models.values())  # 1837.213 km²
 
     # Calibrated Muskingum Reaches from Basin_1.basin and OPT_Optimization_1.results
     reaches = {
@@ -178,6 +183,65 @@ def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, n
         "R3": {"k_hr": 9.484,  "x": 0.25},
         "R1": {"k_hr": 4.500,  "x": 0.25},
     }
+
+    # Apply real-time parameter overrides if provided or from active calibration state
+    cal_metadata = {
+        "is_recalibrated": False,
+        "alpha_k": 1.0,
+        "alpha_lag": 1.0,
+        "delta_cn": 0.0,
+        "muskingum_x": 0.25,
+    }
+
+    if parameter_overrides:
+        if "sub_models" in parameter_overrides:
+            for sid, p in parameter_overrides["sub_models"].items():
+                if sid in sub_models:
+                    sub_models[sid]["cn"] = p.get("cn", sub_models[sid]["cn"])
+                    sub_models[sid]["lag_min"] = p.get("lag_min", sub_models[sid]["lag_min"])
+        if "reaches" in parameter_overrides:
+            for rid, rp in parameter_overrides["reaches"].items():
+                if rid in reaches:
+                    reaches[rid]["k_hr"] = rp.get("k_hr", reaches[rid]["k_hr"])
+                    reaches[rid]["x"] = rp.get("x", reaches[rid]["x"])
+        cal_metadata = {
+            "is_recalibrated": True,
+            "alpha_k": parameter_overrides.get("alpha_k", 1.0),
+            "alpha_lag": parameter_overrides.get("alpha_lag", 1.0),
+            "delta_cn": parameter_overrides.get("delta_cn", 0.0),
+            "muskingum_x": parameter_overrides.get("muskingum_x", 0.25),
+        }
+    else:
+        # Load from disk state if available
+        cal_file = PROJECT_ROOT / "data" / "telemetry" / "ml_calibration_state.json"
+        if cal_file.exists():
+            try:
+                import json
+                with open(cal_file, "r", encoding="utf-8") as f:
+                    cstate = json.load(f)
+                if cstate.get("last_calibrated_at"):
+                    ak = float(cstate.get("alpha_k", 1.0))
+                    alag = float(cstate.get("alpha_lag", 1.0))
+                    dcn = float(cstate.get("delta_cn", 0.0))
+                    mx = float(cstate.get("muskingum_x", 0.25))
+                    for sid in sub_models:
+                        sub_models[sid]["cn"] = float(np.clip(sub_models[sid]["cn"] + dcn, 45.0, 95.0))
+                        sub_models[sid]["lag_min"] = float(sub_models[sid]["lag_min"] * alag)
+                    for rid in reaches:
+                        reaches[rid]["k_hr"] = float(reaches[rid]["k_hr"] * ak)
+                        reaches[rid]["x"] = mx
+                    cal_metadata = {
+                        "is_recalibrated": True,
+                        "alpha_k": ak,
+                        "alpha_lag": alag,
+                        "delta_cn": dcn,
+                        "muskingum_x": mx,
+                        "last_calibrated_at": cstate.get("last_calibrated_at"),
+                    }
+            except Exception as e:
+                log.warning("Could not load calibration state for runner: %s", e)
+
+    total_area_km2 = sum(s["area_km2"] for s in sub_models.values())  # 1837.213 km²
 
     # Physical baseline baseflow at Rajaram Weir corresponding to live observed river stage
     from src.hydrology.stage_converter import convert_stage_to_discharge_manning
@@ -314,6 +378,7 @@ def execute_hec_hms(run_dt: datetime, subbasin_hyetographs: Optional[Dict[str, n
         "lead_hours_to_peak": peak_h,
         "time_of_peak": timestamps[peak_h],
         "total_volume_mcm": total_volume_mcm,
+        "calibration": cal_metadata,
         "hydrograph": hydrograph,
     }
 

@@ -93,6 +93,11 @@ export const api = {
         time_to_peak_hours: peakHour,
         alert_level: lastCycle.alert_level ?? "NORMAL",
       },
+      peak_arrival: data.summary?.peak_arrival ?? {
+        shivaji: data.bridgeShivaji?.peak_arrival,
+        rajaram: data.bridgeRajaram?.peak_arrival,
+      },
+      recalibration: data.recalibration,
       subbasins: data.stations,
       bridges: [
         {
@@ -112,6 +117,7 @@ export const api = {
           alert_level: shivajiAlert,
           is_above_danger: peakStageShivaji >= (shivajiSite?.danger_stage_m ?? Infinity),
           markerColor: shivajiSite?.markerColor ?? "#0f4c81",
+          peak_arrival: data.bridgeShivaji?.peak_arrival ?? data.summary?.peak_arrival?.shivaji,
         },
         {
           site_id: rajaramSite?.site_id ?? "RAJARAM_BRIDGE",
@@ -128,6 +134,7 @@ export const api = {
           alert_level: rajaramAlert,
           is_above_danger: peakStageRajaram >= (rajaramSite?.danger_stage_m ?? Infinity),
           markerColor: rajaramSite?.markerColor ?? "#0284c7",
+          peak_arrival: data.bridgeRajaram?.peak_arrival ?? data.summary?.peak_arrival?.rajaram,
         },
       ],
     };
@@ -165,6 +172,8 @@ export const api = {
     const data = await fetchDashboardData();
     return siteId.toUpperCase().includes("SHIVAJI") ? data.bridgeShivaji : data.bridgeRajaram;
   },
+  calibration: async () => (await fetchDashboardData()).recalibration ?? null,
+  peakArrival: async () => (await fetchDashboardData()).summary?.peak_arrival ?? null,
   ratingCurves: async () => ({
     SHIVAJI_BRIDGE: [],
     RAJARAM_BRIDGE: [],

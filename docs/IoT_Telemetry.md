@@ -146,3 +146,24 @@ schedule:
 - Updates continuous lifecycle verification progress ($T+0\text{h} \to T+89\text{h}$).
 - Updates `latest_pipeline_state.json`, `data/runs/`, and mirrors archives to `frontend/public/data/runs/` for production Vercel edge deployment.
 
+---
+
+## 6. Integration with Real-Time Closed-Loop Adaptive ML Recalibration
+
+The resampled hourly telemetry stream is not merely displayed—it actively drives the **Adaptive ML Recalibration Loop** ([`src/hydrology/ml_calibration.py`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py)):
+
+1. **Continuous Residual Pipeline:** Every 6 hours during cycle initialization, the engine converts recent hourly stages into observed discharge rates $Q_{\text{obs}}(t)$ via the Shivaji Bridge PCHIP rating curve.
+2. **Discrepancy Trigger:** If the empirical Nash-Sutcliffe Efficiency between recent simulation and observation drops below $0.85$ or volumetric bias exceeds $10\%$, an automated SciPy optimization is triggered.
+3. **Parameter Correction:** Subbasin Curve Numbers and lag times are dynamically adjusted within bounded limits ($\pm 15\%$), and the calibrated state is logged in `data/telemetry/ml_calibration_state.json`.
+
+---
+
+## 7. Resilient Caching & Offline Fail-Safe Operation
+
+To prevent API throttling or network blips from corrupting forecast cycles:
+
+1. **Local Hourly Cache:** Telemetry fetches are automatically persisted to [`data/telemetry/thingspeak_hourly_cache.json`](file:///e:/hydrocast_complete/data/telemetry/thingspeak_hourly_cache.json).
+2. **Exponential Backoff:** ThingSpeak queries utilize the enterprise retry wrappers from [`src/ecmwf/retry_utils.py`](file:///e:/hydrocast_complete/src/ecmwf/retry_utils.py) with exponential delay and random jitter.
+3. **Graceful Degradation:** If ThingSpeak is unreachable during a major storm outage, the pipeline seamlessly interpolates missing hours using the last known water stage and physical recession curve rate, ensuring zero interruption to the 12-step forecast runner.
+
+

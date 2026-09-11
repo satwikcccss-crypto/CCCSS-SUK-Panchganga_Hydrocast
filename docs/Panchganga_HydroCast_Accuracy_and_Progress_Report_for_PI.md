@@ -141,6 +141,7 @@ All validation metrics and operational run ledgers are synchronized to Supabase 
 
 ### 7. Recommendations & Next Steps for the PI
 
-1. **Manuscript Publication**: The cross-validation results (NSE > 0.999, MAE 4.9 cm across 2,406 flood hours) provide solid empirical grounding for a high-impact journal publication in *Journal of Hydrology*, *Water Resources Research*, or *IEEE Access*.
-2. **Stakeholder Demonstration**: The system is ready to be demonstrated to Kolhapur Municipal Corporation (KMC) and the Maharashtra Water Resources Department (WRD) as an operational flood early warning platform.
-3. **Automated Maintenance**: The automated GitHub Actions workflow runs autonomously every hour with zero manual intervention required.
+1. **Manuscript Publication**: The cross-validation results (NSE > 0.999, MAE 4.9 cm across 2,406 flood hours) coupled with real-time closed-loop ML recalibration and bounded $\pm 2.0\text{h}$ peak flood strike horizons provide solid empirical grounding for a high-impact journal publication in *Journal of Hydrology*, *Water Resources Research*, or *IEEE Access*.
+2. **Stakeholder Demonstration**: The system is ready to be demonstrated to Kolhapur Municipal Corporation (KMC), District Disaster Management Authority (DDMA), and the Maharashtra Water Resources Department (WRD) as an operational flood early warning platform with automated Telegram alert bulletins.
+3. **Automated Maintenance & Containerized Deployment**: The platform is fully containerized via Docker Compose with automated 6-hourly cycle execution and hourly GitHub Actions telemetry validation running autonomously with zero manual intervention required.
+

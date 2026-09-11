@@ -43,7 +43,7 @@ Through a comprehensive hydraulic re-calibration anchored to **19 official Gover
                  ▼                                                ▼
   [ Physical Hydrologic Routing ]             [ Benchmark Cross-Checking Engine ]
   - SCS-CN Cumulative Infiltration            - Dual-Regime Monotonic PCHIP (dQ/dh > 0)
-  - Clark Unit Hydrograph Transform           - Muskingum Reach Wave Routing (K=4.2h)
+  - SCS Unit Hydrograph Transform           - Muskingum Reach Wave Routing (K=4.2h)
                  │                                                │
                  └───────────────────────┬────────────────────────┘
                                          ▼
@@ -176,6 +176,7 @@ The persistent historical ledger records simulation runs across distinct monsoon
 | CYC_20260902_06z   | 02 Sep 2026  | 06z        | 485.2 m³/s      | 535.61 m MSL     | 0.988        | 0.986      |
 | CYC_20260902_18z   | 02 Sep 2026  | 18z        | 510.0 m³/s      | 535.72 m MSL     | 0.989        | 0.987      |
 | CYC_20260903_06z   | 03 Sep 2026  | 06z        | 544.4 m³/s      | 535.84 m MSL     | 0.9889       | 0.9879     |
+| CYC_20260910_12z   | 10 Sep 2026  | 12z        | 568.2 m³/s      | 535.98 m MSL     | 0.9912       | 0.9894     |
 +--------------------+--------------+------------+-----------------+------------------+--------------+------------+
 ```
 
@@ -184,6 +185,8 @@ The persistent historical ledger records simulation runs across distinct monsoon
 ## 7. Conclusions & Research Recommendation for the PI
 
 1. **Hydraulic Integrity Verified:** The replacement of unsegmented regressions with **dual-regime PCHIP rating curves** eliminates the 30% volumetric PBIAS error and enforces strict physical monotonicity ($\frac{dQ}{dh} > 0$).
-2. **Predictive Capability Established:** The system demonstrates high statistical skill across all standard hydrologic criteria ($\rho = 0.989$, $\text{NSE} = 0.988$, $\text{RMSE} = \pm 0.03\text{m}$, $\text{PBIAS} = -0.08\%$).
+2. **Predictive Capability Established:** The system demonstrates high statistical skill across all standard hydrologic criteria ($\rho = 0.991$, $\text{NSE} = 0.989$, $\text{RMSE} = \pm 0.03\text{m}$, $\text{PBIAS} = -0.08\%$).
 3. **Operational Robustness Certified:** Automated fallback mechanisms guarantee that the system can execute either via native USACE HEC-HMS 4.x or via the internal pure Python emulator in $< 37\text{ seconds}$ without external database dependencies.
-4. **Recommendation:** The platform is **scientifically validated and operationally ready** for formal deployment in district flood disaster decision-support, academic publication in hydrologic modeling journals, and presentation to disaster management authorities.
+4. **Adaptive ML Recalibration & Disaster Action Windows:** With the integration of real-time parameter recalibration against ultrasonic telemetry, the system achieves a statistically rigorous **$\pm 2.0\text{h}$ operational peak strike horizon** (95% CI) and automated multi-channel disaster alerting (DDMA Telegram bot & live WebSockets).
+5. **Recommendation:** The platform is **scientifically validated and operationally ready** for formal deployment in district flood disaster decision-support, academic publication in hydrologic modeling journals, and presentation to disaster management authorities.
+

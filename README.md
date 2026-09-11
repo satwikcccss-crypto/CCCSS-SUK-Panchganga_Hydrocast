@@ -58,10 +58,15 @@
 During the Southwest Monsoon (June–September), intense orographic rainfall along the crest of the Western Ghats (Sahyadri mountains, often exceeding $100-250\text{ mm/day}$) drains rapidly through steep basaltic gorges, converging into the urban bottleneck of **Kolhapur city**. Catastrophic floods in August 2019 and July 2021 demonstrated that municipal authorities require **at least 48 to 72 hours of predictive lead time** to orchestrate barrier deployments, sluice gate operations, and civilian evacuations.
 
 HydroCast solves this challenge by coupling:
-- **Numerical Weather Prediction (ECMWF IFS HRES 9km / 0.1°):** 90-hour forward quantitative precipitation forecasts updated every 6 hours.
+- **Numerical Weather Prediction (ECMWF IFS HRES 9km / 0.1°):** 90-hour forward quantitative precipitation forecasts updated every 6 hours with exponential backoff & jitter resilience (`src/ecmwf/retry_utils.py`).
 - **Physical Hydrologic Watershed Routing (HEC-HMS 4.x / SCS-CN):** Loss modeling, Clark unit hydrograph transformation, and Muskingum channel routing across 9 subbasins.
 - **Calibrated Multi-Regime River Hydraulics:** Bi-directional stage-to-discharge rating curves based on surveyed bed slopes and anchored to 19 official Government field gauge records.
-- **Real-Time Automated Validation:** Continuous computation of Spearman rank correlation ($\rho$), Nash-Sutcliffe Efficiency (NSE), RMSE, MAE, and station-by-station volumetric accuracy.
+- **Real-Time Adaptive ML Recalibration Engine:** Autonomous L-BFGS-B parameter calibration ($\alpha_K$, $\alpha_{\text{lag}}$, $\Delta\text{CN}$, Muskingum $X$) triggered by ThingSpeak IoT sensor telemetry, syncing directly to `Basin_1.basin` and Python emulator.
+- **High-Precision Peak Flood Strike Horizon:** Computation of exact peak flood arrival times with permissible $\pm 2.0\text{h}$ confidence intervals (95% CI) for Shivaji Bridge, Rajaram Weir, and the basin sink.
+- **Automated Multi-Channel Emergency Alerting:** Real-time CWC flood bulletin formatting and push broadcasting to District Disaster Management Authority (DDMA) Telegram channels and agency webhooks.
+- **Cold Storage & Telemetry Archival:** Automated pruning of high-frequency data older than 90 days into Snappy-compressed Apache Parquet partitions (`src/db/archive_runs.py`).
+- **Enterprise Security & Rate Limiting:** Dual-mode admin authentication (HMAC-SHA256 JWT Bearer + Master Key) with `slowapi` 100 req/min endpoint protection.
+- **Containerized Architecture:** Unified multi-stage Docker & Docker Compose setup packaging Python 3.12, OpenJDK 17, GDAL, Next.js 14 SSR, and PostGIS.
 - **Interactive Decision-Support UI:** Modern Next.js 14 dashboard with live SVG river cross-sections, 90-hour hourly prediction logs, and real-time WebSocket push broadcasting.
 
 ---
@@ -275,18 +280,18 @@ In multi-station subbasins ($S_2, S_3, S_6, S_8$), the system dynamically evalua
 +----+-------------------------------+-----------------------------------------------------------+
 |Step| Pipeline Phase                | Operational Responsibility & Implementation Source        |
 +----+-------------------------------+-----------------------------------------------------------+
-| 01 | ECMWF Precipitation Ingestion | src/ecmwf/open_meteo.py (fetch_point_forecast)             |
+| 01 | ECMWF Precipitation Ingestion | src/ecmwf/open_meteo.py (retry_utils.py exponential retry)|
 | 02 | Dynamic Subbasin Selection    | src/ecmwf/station_selector.py (STATION_REGISTRY)           |
 | 03 | Antecedent Soil Moisture Calc | src/ecmwf/open_meteo.py (calculate_amc_condition)          |
 | 04 | DSS Meteorological Boundary   | src/hms/runner.py (Met_1.dss precipitation tables)         |
-| 05 | Hydrologic Watershed Modeling | src/hms/runner.py (execute_hec_hms / SCS-CN)               |
-| 06 | Outlet Hydrograph Routing     | src/hms/runner.py (extract_outlet_hydrograph)              |
-| 07 | Live IoT Radar Polling        | src/sensors/thingspeak_gauge.py (ThingSpeak 3424513)       |
-| 08 | Hydraulic Rating Conversion   | src/hydrology/stage_converter.py (PCHIP converter)         |
-| 09 | Real-Time Telemetry Validation| src/hydrology/realtime_telemetry_validator.py (ThingSpeak 1h)|
-| 10 | Persistent Runs Archiving     | src/hydrology/runs_tracker.py (save_computation_run)       |
-| 11 | Database & State Broadcast    | src/ecmwf/open_meteo.py (latest_pipeline_state)           |
-| 12 | Live WebSocket Push           | src/api/main.py (/ws/live push to Next.js)                 |
+| 05 | Real-Time ML Recalibration    | src/hydrology/ml_calibration.py (L-BFGS-B α_K, lag, CN, X)|
+| 06 | Hydrologic Watershed Modeling | src/hms/runner.py (execute_hec_hms / SCS-CN emulator)      |
+| 07 | Outlet Hydrograph Routing     | src/hms/runner.py (extract_outlet_hydrograph J_Outlet)    |
+| 08 | Hydraulic Rating Conversion   | src/hydrology/stage_converter.py (Dual-Regime PCHIP)      |
+| 09 | Peak Strike Horizon & ±2.0h CI| src/hydrology/ml_calibration.py (calculate_peak_arrival)  |
+| 10 | Real-Time Telemetry Validation| src/hydrology/realtime_telemetry_validator.py (ThingSpeak)|
+| 11 | DDMA Multi-Channel Alerting   | src/alerts/evaluator.py (telegram_bot.py & agency hooks)  |
+| 12 | Database Sync & WebSocket Push| src/api/main.py (/ws/live push & Parquet archival support)|
 +----+-------------------------------+-----------------------------------------------------------+
 ```
 
@@ -383,19 +388,29 @@ The documentation suite is organized in the [`docs/`](file:///e:/hydrocast_compl
 
 ### 11.1 Key Endpoints:
 ```
-+--------+--------------------------+-------------------------------------------------------+
-| Method | Route Path               | Purpose & Return Payload                              |
-+--------+--------------------------+-------------------------------------------------------+
-| GET    | /health                  | Healthcheck & database pool status                    |
-| GET    | /api/v1/dashboard        | Full aggregated telemetry & current forecast state    |
-| GET    | /api/v1/summary          | Executive summary (peak discharge, lead time, alert)  |
-| GET    | /api/v1/hydrograph       | 90-hour river runoff discharge & stage time series    |
-| GET    | /api/v1/alerts           | Active CWC flood warnings for Shivaji and Rajaram     |
-| GET    | /api/v1/runs             | Paginated historical computation runs ledger          |
-| GET    | /api/v1/runs/{run_id}    | Full archived computation payload for a specific cycle|
-| GET    | /api/v1/accuracy         | Model validation metrics (Spearman ρ, NSE, RMSE, MAE) |
-| WS     | /ws/live                 | Real-time WebSocket event stream for dashboard push   |
-+--------+--------------------------+-------------------------------------------------------+
++--------+-------------------------------+-------------------------------------------------------+
+| Method | Route Path                    | Purpose & Return Payload                              |
++--------+-------------------------------+-------------------------------------------------------+
+| GET    | /api/v1/health                | Docker container & system liveness health probe       |
+| GET    | /api/v1/dashboard             | Full aggregated telemetry & current forecast state    |
+| GET    | /api/v1/runoff/summary        | Peak Q, lead time, alert, and peak arrival ±2.0h CI   |
+| GET    | /api/v1/runoff/calibration    | Real-time hydrologic parameters (α_K, lag, CN, X)     |
+| GET    | /api/v1/runoff/hydrograph     | 90-hour river runoff discharge & stage time series    |
+| GET    | /api/v1/alerts                | Active CWC flood warnings for Shivaji and Rajaram     |
+| GET    | /api/v1/alerts/bulletin       | Official CWC/DDMA formatted flood bulletin JSON       |
+| GET    | /api/v1/runs                  | Paginated historical computation runs ledger          |
+| GET    | /api/v1/runs/{run_id}         | Full archived computation payload for a specific cycle|
+| GET    | /api/v1/accuracy              | Model validation metrics (Spearman ρ, NSE, RMSE, MAE) |
+| POST   | /api/v1/admin/auth/token      | Administrator JWT Bearer login (HS256)                |
+| POST   | /api/v1/admin/trigger-run     | Manual forecast cycle trigger (JWT / X-API-Key)       |
+| POST   | /api/v1/admin/archive         | Cold storage Parquet archival trigger (JWT / API Key) |
+| POST   | /api/v1/admin/recalibrate     | Force ML hydrologic recalibration & sync Basin_1.basin|
+| GET    | /api/v1/admin/me              | Authenticated administrator identity & claims         |
+| WS     | /ws/live                      | Real-time WebSocket event stream for dashboard push   |
++--------+-------------------------------+-------------------------------------------------------+
+
+> [!NOTE]
+> All public GET endpoints are rate-limited via `slowapi` at **100 requests/minute** per IP. Administrative endpoints under `/api/v1/admin/*` require either a valid **JWT Bearer Token** (`Authorization: Bearer <token>`) or the master API key header (`X-API-Key: <key>`).
 ```
 
 ### 11.2 Example Query: Model Accuracy
@@ -483,11 +498,26 @@ npm run start
 # Navigate to http://localhost:3000/dashboard
 ```
 
+### Option B: 1-Command Production Startup via Docker Compose
+HydroCast is fully containerized. To spin up PostgreSQL 15 + PostGIS, the FastAPI Python/Java backend, and the Next.js frontend in isolated production containers:
+```bash
+docker-compose up -d --build
+```
+- **Dashboard:** `http://localhost:3000`
+- **FastAPI API & Docs:** `http://localhost:8000/docs`
+- **Health Check:** `curl http://localhost:8000/api/v1/health`
+
 ---
 
 ## 14. Production Deployment & Continuous Automation
 
-### 14.1 Automated 6-Hourly Forecast Cycles (ECMWF Operational Cycles)
+### 14.1 Docker Multi-Container Compose Architecture
+Production deployments run with zero host configuration using `docker-compose.yml`:
+- **`hydrocast-db`:** PostgreSQL 15 + PostGIS 3.4 with automated schema migration.
+- **`hydrocast-backend`:** Multi-stage image containing Python 3.12, OpenJDK 17, GDAL, libeccodes, and HEC-DSS runtime.
+- **`hydrocast-frontend`:** Node 20 Alpine standalone SSR bundle.
+
+### 14.2 Automated 6-Hourly Forecast Cycles (ECMWF Operational Cycles)
 Forecast cycles run automatically 45 minutes after ECMWF global numerical model releases:
 - **00z Cycle:** 06:45 AM IST (01:15 UTC)
 - **06z Cycle:** 12:45 PM IST (07:15 UTC)
@@ -498,7 +528,7 @@ Forecast cycles run automatically 45 minutes after ECMWF global numerical model 
 15 1,7,13,19 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python -m src.ecmwf.open_meteo >> data/logs/cron.log 2>&1
 ```
 
-### 14.2 Continuous 1-Hour Telemetry Validation (GitHub Actions)
+### 14.3 Continuous 1-Hour Telemetry Validation (GitHub Actions)
 A high-frequency verification workflow operates autonomously via [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
 - **Interval:** **Every 1 hour at minute 0** (`cron: "0 * * * *"`)
 - **Ingestion:** Pulls 800 ultrasonic radar telemetry feeds from **ThingSpeak Channel 3424513**.
@@ -506,7 +536,18 @@ A high-frequency verification workflow operates autonomously via [`.github/workf
 - **Verification:** Evaluates forecast vs observed stage, computing genuine RMSE, MAE, NSE, PBIAS, Spearman $\rho$, and Pearson $R^2$.
 - **Continuous Sync:** Updates `frontend/public/data/latest_pipeline_state.json` and mirrored run archives in `frontend/public/data/runs/`, pushing automatically to GitHub to keep Vercel production synchronized.
 
-### 14.3 Vercel Serverless Frontend Deployment
+### 14.4 Multi-Channel DDMA Telegram Flood Alerting
+The alerting engine (`src/alerts/evaluator.py`, `src/alerts/telegram_bot.py`) monitors bridge stages on every cycle:
+- Automatically formats official DDMA flood bulletins with severity emoji badges.
+- Dispatches emergency push bulletins to district disaster management Telegram channels (`TELEGRAM_CHAT_ID`, `DDMA_TELEGRAM_CHATS`).
+- Dispatches JSON payloads to emergency agency webhooks (`DISASTER_MANAGEMENT_WEBHOOKS`).
+
+### 14.5 Automated Cold Storage & Telemetry Archival
+To ensure PostgreSQL and Supabase queries remain sub-second over years of operation:
+- High-frequency records older than 90 days are pruned into Snappy-compressed columnar Parquet files (`src/db/archive_runs.py`).
+- Executable via weekly cron or authenticated API: `POST /api/v1/admin/archive`.
+
+### 14.6 Vercel Serverless Frontend Deployment
 - The Next.js 14 dashboard deploys serverlessly to Vercel.
 - API route handlers (`/api/v1/dashboard?run_id=...` and `/api/v1/history`) dynamically load active and historical run states directly from bundled static assets in `frontend/public/data/runs/`, guaranteeing 100% uptime with zero serverless filesystem resolution errors.
 
@@ -523,6 +564,8 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  ├── .env.example                         # Environment variable configuration template
  ├── .gitignore                           # Git ignore rules
  ├── ARCHITECTURE.md                      # System architecture & high-level design
+ ├── Dockerfile                           # Multi-stage production backend container
+ ├── docker-compose.yml                   # Unified Compose (PostGIS + Backend + Frontend)
  ├── LICENSE                              # MIT Open-Source License
  ├── README.md                            # Master repository documentation hub
  ├── requirements.txt                     # Core & scientific Python dependencies
@@ -541,28 +584,33 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    │    ├── CYC_20260831_06z.json
  │    │    ├── ...
  │    │    └── runs_index.json            # Fast index of historical computation cycles
+ │    ├── telemetry/                      # Telemetry caches & ML calibration state
+ │    │    ├── thingspeak_hourly_cache.json
+ │    │    └── ml_calibration_state.json  # Calibrated α_K, lag, CN, X state
  │    └── stations/                       # Authoritative rain gauge coordinates & metadata
  ├── database/                            # Database schemas, migrations & analytics
  │    ├── README.md                       # Database setup & execution guide
  │    └── supabase_schema.sql             # Supabase cloud schema with views & analytical metrics
  ├── docs/                                # Comprehensive 21-module technical documentation library
  │    ├── assets/
- │    │    └── hydrocast_flow_animation.svg # Animated SVG architecture banner
+ │    │    ├── hydrocast_flow_animation.jpg # Operational flow architecture banner
+ │    │    └── hydrocast_main_banner.jpg    # Main high-res Panchganga banner
  │    ├── README.md                       # Technical documentation index
  │    ├── Accuracy_Analysis_PI_Report.md  # Research report for Principal Investigator
  │    ├── Architecture.md                 # 12-Step pipeline & fault tolerance
- │    ├── Backend.md                      # FastAPI services, asyncpg, WebSocket
- │    ├── Calibration_Validation.md       # Spearman rank ρ, NSE, WRD benchmarks
- │    ├── Database.md                     # PostgreSQL, Supabase, JSON ledger schemas
- │    ├── Deployment_Operations.md        # Production systemd, PM2, cron scheduling
+ │    ├── Backend.md                      # FastAPI services, asyncpg, WebSocket, security
+ │    ├── Calibration_Validation.md       # Spearman rank ρ, NSE, ML recalibration, WRD benchmarks
+ │    ├── Database.md                     # PostgreSQL, Supabase, Parquet cold storage schemas
+ │    ├── Deployment_Operations.md        # Production Docker Compose, systemd, cron scheduling
  │    ├── Errors_Mistakes_Engineering_Assumptions.md # Autopsy of past bugs & assumptions
- │    ├── Frontend.md                     # Next.js 14, Tailwind, Chart.js
+ │    ├── Frontend.md                     # Next.js 14, Tailwind, Chart.js, peak horizon card
  │    ├── HMS.md                          # HEC-HMS headless automation & DSS container
  │    ├── Hydraulics.md                   # Manning equation, slope calibration
  │    ├── Hydrology.md                    # 2,140 km² basin hydrology, SCS-CN
- │    ├── IoT_Telemetry.md                # ThingSpeak radar sensor, 549.35m datum
- │    ├── Novelty_of_this_System.md       # 10 technological novelties & innovation matrix
- │    ├── Openmeteo.md                    # ECMWF IFS HRES 9km meteorological ingestion
+ │    ├── IoT_Telemetry.md                # ThingSpeak radar sensor, 549.35m datum, ML triggers
+ │    ├── Novelty_of_this_System.md       # 15 technological novelties & innovation matrix
+ │    ├── Openmeteo.md                    # ECMWF IFS HRES 9km meteorological ingestion & retries
+ │    ├── Panchganga_HydroCast_Accuracy_and_Progress_Report_for_PI.md # PI research report
  │    ├── Rainfall_Validation_Pipeline.md # Observed rainfall verification pipeline
  │    ├── Raingauge_Station.md            # 18 rain gauge registry & selection
  │    ├── ROADMAP.md                      # Production roadmap & hardening pillars
@@ -571,6 +619,7 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    ├── Stage_Conversion_Discharge.md   # Monotonic PCHIP rating curves
  │    └── WRD_Historical_Rating_Curve_CrossCheck.md # Ground-truth WRD calibration report
  ├── frontend/                            # Next.js 14 Operational Intelligence Web Dashboard
+ │    ├── Dockerfile                      # Standalone SSR container for Next.js
  │    ├── app/
  │    │    ├── api/v1/dashboard/route.ts  # Next.js API proxy route (serverless bundled)
  │    │    ├── api/v1/history/route.ts    # Historical run viewer route
@@ -582,10 +631,10 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    │    ├── map/                       # Leaflet GIS interactive basin map
  │    │    ├── AccuracyPanel.tsx          # Accuracy metrics, WRD table & run ledger
  │    │    ├── CrossSectionViewer.tsx     # 2D SVG river cross-section visualizer
- │    │    ├── DischargeDetailsCard.tsx   # Peak flow metrics card
+ │    │    ├── DischargeDetailsCard.tsx   # Peak flow metrics & arrival window card
  │    │    ├── EngineeringGauge.tsx       # Gauge dial with CWC alert zones
  │    │    ├── FloodBanner.tsx            # Real-time alert status banner
- │    │    ├── OverviewPanel.tsx          # Executive KPI tiles & Leaflet map
+ │    │    ├── OverviewPanel.tsx          # Executive KPI tiles, Leaflet map, Peak Horizon Card
  │    │    ├── RainfallPanel.tsx          # 18-station hyetographs & bar charts
  │    │    ├── RunoffPanel.tsx            # Hydrographs & cross-section view
  │    │    ├── StageGauge.tsx             # Vertical river stage column visualizer
@@ -594,11 +643,10 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    ├── hooks/
  │    │    └── useWebSocket.ts            # Live WebSocket client hook
  │    ├── lib/
- │    │    ├── api.ts                     # SWR client & fetch wrappers
+ │    │    ├── api.ts                     # SWR client, fetch wrappers & calibration queries
  │    │    └── hydraulics.ts              # Frontend rating curve interpolation
  │    ├── public/                         # Static assets & bundled runtime datasets
  │    │    ├── assets/
- │    │    │    └── hydrocast_flow_animation.svg
  │    │    └── data/                      # Mirrored runtime JSON datasets & GeoJSON
  │    │         ├── runs/                 # Mirrored historical run archives for Vercel
  │    │         ├── latest_pipeline_state.json
@@ -611,28 +659,36 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    ├── orchestrator.py                 # 12-Step automated pipeline orchestrator
  │    ├── alerts/
  │    │    ├── __init__.py
- │    │    └── evaluator.py               # CWC alert evaluation & notifications
+ │    │    ├── evaluator.py               # CWC alert evaluation & notifications
+ │    │    └── telegram_bot.py            # DDMA Telegram Bot & agency webhook dispatcher
  │    ├── api/
  │    │    ├── __init__.py
- │    │    ├── main.py                    # FastAPI REST API & WebSocket service
- │    │    └── notifier.py                # WebSocket cycle completion broadcaster
+ │    │    ├── admin.py                   # Administrative router (JWT login, triggers, archival)
+ │    │    ├── main.py                    # FastAPI REST API, rate limiter & WebSocket service
+ │    │    ├── notifier.py                # WebSocket cycle completion broadcaster
+ │    │    └── security.py                # JWT Bearer auth, password hashing & API key security
  │    ├── db/
  │    │    ├── __init__.py
+ │    │    ├── archive_runs.py            # Cold storage Apache Parquet columnar archival
+ │    │    ├── connection.py              # PostgreSQL database connection factory
  │    │    ├── cycle_complete.py          # Run status updater CLI shim
- │    │    └── store_results.py           # PostgreSQL simulation results persistence
+ │    │    ├── store_results.py           # PostgreSQL simulation results persistence
+ │    │    └── sync_all_to_supabase.py    # Supabase cloud synchronizer
  │    ├── dss/
  │    │    ├── __init__.py
  │    │    └── writer.py                  # USACE HEC-DSS binary writer
  │    ├── ecmwf/
  │    │    ├── __init__.py
- │    │    ├── downloader.py              # Raw GRIB2 downloader
- │    │    ├── open_meteo.py              # ECMWF fetcher, runner & Supabase sync
+ │    │    ├── downloader.py              # Raw GRIB2 downloader with retries
+ │    │    ├── open_meteo.py              # ECMWF fetcher, runner, ML trigger & Supabase sync
+ │    │    ├── retry_utils.py             # Exponential backoff, jitter & transient HTTP retries
  │    │    └── station_selector.py        # 18-station dynamic conservative router
  │    ├── hms/
  │    │    ├── __init__.py
- │    │    └── runner.py                  # HEC-HMS batch runner & SCS-CN emulator
+ │    │    └── runner.py                  # HEC-HMS batch runner & SCS-CN emulator with overrides
  │    ├── hydrology/
  │    │    ├── __init__.py
+ │    │    ├── ml_calibration.py          # Physics-informed ML parameter recalibration & CI window
  │    │    ├── observed_rainfall_pipeline.py # Observed rainfall ingestion pipeline
  │    │    ├── post_process.py            # Stage conversion & bridge forecast builder
  │    │    ├── realtime_telemetry_validator.py # Real-time ThingSpeak IoT verification engine
@@ -648,11 +704,18 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    └── sensors/
  │         ├── __init__.py
  │         └── thingspeak_gauge.py        # ThingSpeak ultrasonic radar telemetry
- ├── tests/                               # Automated Unit & Regression Tests
+ ├── tests/                               # Automated Unit & Regression Tests (100% Pass)
  │    ├── __init__.py
- │    ├── test_hydrology.py               # Rating curve monotonicity & Manning physics
- │    ├── test_realtime_validator.py      # Real-time ThingSpeak validation unit tests
- │    ├── test_station_selector.py        # Spatial topology & station selection logic
+ │    ├── test_alerts_dispatcher.py      # DDMA Telegram formatting & webhook tests
+ │    ├── test_archival.py               # Parquet partitioning & database pruning tests
+ │    ├── test_db_connection.py          # Database connectivity tests
+ │    ├── test_hydrology.py              # Rating curve monotonicity & Manning physics
+ │    ├── test_ml_calibration.py         # Timing offset detection & parameter optimization
+ │    ├── test_qc_pipeline.py            # Rainfall bounds, NaN imputation & range clipping
+ │    ├── test_rate_limiting_and_auth.py # JWT generation, validation & rate limit tests
+ │    ├── test_realtime_validator.py     # Real-time ThingSpeak validation unit tests
+ │    ├── test_retry_utils.py            # Exponential backoff & jitter unit tests
+ │    ├── test_station_selector.py       # Spatial topology & station selection logic
  │    └── test_validation_metrics.py     # Spearman ρ, NSE, and PBIAS accuracy tests
  └── windows/                             # Windows Server automation & setup
       ├── install_postgres.ps1            # Automated PostgreSQL 15 installation script
@@ -677,6 +740,33 @@ In September 2026, the HydroCast repository underwent a comprehensive architectu
    - Promoted `Next Work.txt` into [`docs/ROADMAP.md`](file:///e:/hydrocast_complete/docs/ROADMAP.md) detailing the 5 production hardening pillars (Orchestration, Multi-Channel Alerting, Dockerization, Telemetry Archival, and API Security).
    - Promoted `Cross check Rating curve with historical data RJKT.txt` into [`docs/WRD_Historical_Rating_Curve_CrossCheck.md`](file:///e:/hydrocast_complete/docs/WRD_Historical_Rating_Curve_CrossCheck.md), formalizing the hydraulic slope calibration and Maharashtra WRD benchmark data.
    - Created [`docs/README.md`](file:///e:/hydrocast_complete/docs/README.md) as a clean module catalog for all 21 technical documents.
+   - Added [`database/README.md`](file:///e:/hydrocast_complete/database/README.md) providing clear schema migration and deployment instructions.
+
+4. **Python Package Modularity & Standardized Exports**:
+   - Introduced explicit `__init__.py` files across `src/` and all 9 subpackages (`alerts`, `api`, `db`, `dss`, `ecmwf`, `hms`, `hydrology`, `processing`, `sensors`), enabling clean package discovery and standard namespace imports.
+   - Modularized `src/api/notifier.py` by extracting the CLI shim into [`src/db/cycle_complete.py`](file:///e:/hydrocast_complete/src/db/cycle_complete.py).
+   - Hardened [`src/dss/writer.py`](file:///e:/hydrocast_complete/src/dss/writer.py) by updating the default basin parameter to `PANCHGANGA` and standardizing imports.
+
+5. **Automated Unit & Regression Test Suite**:
+   - Expanded [`tests/`](file:///e:/hydrocast_complete/tests/) to comprehensive coverage across all subsystems: hydrology, alerts, archival, ML calibration, retry utilities, rate limiting, and auth.
+   - All tests pass with 100% success.
+
+6. **Real-Time ThingSpeak IoT Validation & Continuous 1-Hour Verification Pipeline**:
+   - **Pure Empirical Telemetry**: Built [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py) querying ThingSpeak Channel 3424513, fetching 800 live ultrasonic sensor readings, and resampling them into clean hourly averages.
+   - **Elimination of Synthetic Formulas**: Removed synthetic noise sine equations; metrics now compute purely from empirical physical transducer measurements.
+   - **Dual-Units Architecture**: Retained raw ultrasonic distance in feet (`observed_distance_ft`) alongside stage in meters MSL (`observed_stage_m`).
+   - **Continuous 90-Hour Lifecycle**: Validation tracks progress hour-by-hour ($T+0\text{h} \to T+89\text{h}$) with lifecycle status transitions (`IN_PROGRESS` $\to$ `LIFECYCLE_VERIFIED`).
+   - **1-Hour Automated Schedule**: Deployed [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml) executing every 1 hour (`cron: "0 * * * *"`), automatically committing and pushing verified state.
+   - **Vercel Serverless Hardening**: Mirrored run archives to `frontend/public/data/runs/`, enabling seamless `/api/v1/dashboard?run_id=...` resolution on Vercel without filesystem misses.
+
+7. **Production Hardening, Containerization & Adaptive ML Recalibration Release**:
+   - **Adaptive ML Recalibration Engine**: Engineered [`src/hydrology/ml_calibration.py`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py) providing continuous parameter optimization ($\alpha_K$, $\alpha_{\text{lag}}$, $\Delta\text{CN}$, Muskingum $X$) triggered by live ThingSpeak stage discrepancies ($|\Delta t| \ge 1.0\text{h}$ or $\Delta h > 0.25\text{m}$). Synchronizes both pure-Python emulator and disk project file `Basin_1.basin` with automatic timestamped `.bak` backups.
+   - **Peak Flood Strike Horizon & Permissible Confidence Interval ($\pm 2.0\text{h}$, 95% CI)**: High-precision arrival time computation and 95% confidence bands for Shivaji Bridge, Rajaram Weir, and basin sink. Visualized via the new Peak Horizon card in [`OverviewPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/OverviewPanel.tsx).
+   - **Multi-Stage Containerization (Docker & Compose)**: Multi-stage [`Dockerfile`](file:///e:/hydrocast_complete/Dockerfile) (Python 3.12 + OpenJDK 17 + GDAL), standalone Next.js [`frontend/Dockerfile`](file:///e:/hydrocast_complete/frontend/Dockerfile), and 1-command startup [`docker-compose.yml`](file:///e:/hydrocast_complete/docker-compose.yml) bundling PostgreSQL 15 + PostGIS.
+   - **Multi-Channel DDMA Emergency Alerting**: Dedicated Telegram bot dispatcher ([`src/alerts/telegram_bot.py`](file:///e:/hydrocast_complete/src/alerts/telegram_bot.py)) broadcasting formatted HTML flood bulletins to District Disaster Management Authority channels and posting to disaster management agency webhooks.
+   - **Cold Storage Parquet Archival**: Engine ([`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/archive_runs.py)) exporting high-frequency telemetry older than 90 days into Snappy-compressed Apache Parquet partitions, pruning PostgreSQL tables while keeping summary KPIs indefinitely.
+   - **API Rate Limiting & Enterprise Security**: Implemented `slowapi` rate limiting (100 req/min), HMAC-SHA256 JWT bearer authentication, master API key validation, and administrative router ([`src/api/admin.py`](file:///e:/hydrocast_complete/src/api/admin.py), [`src/api/security.py`](file:///e:/hydrocast_complete/src/api/security.py)).
+   - **Meteorological Exponential Backoff & Jitter**: Built [`src/ecmwf/retry_utils.py`](file:///e:/hydrocast_complete/src/ecmwf/retry_utils.py) and quality control pipeline sanitizing NaNs/Infs, clipping negative values, capping extreme rainfall at 250 mm/hr, and providing orographic Ghats fallbacks.
    - Added [`database/README.md`](file:///e:/hydrocast_complete/database/README.md) providing clear schema migration and deployment instructions.
 
 4. **Python Package Modularity & Standardized Exports**:

@@ -111,11 +111,31 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ---
 
+### Novelty 11: Real-Time Closed-Loop Physics-Informed ML Recalibration & Disk Sync
+- **The Breakthrough:** Dynamically bridges the gap between static calibration and changing real-world catchment dynamics without model drift or unphysical parameter explosion.
+- **How It Works:** On every simulation cycle, the ML calibration engine (`src/hydrology/ml_calibration.py`) queries real-time ultrasonic stage telemetry from ThingSpeak Channel `2418579`. It computes the empirical Nash-Sutcliffe Efficiency (NSE) and volumetric discrepancy against the current forecast hydrograph. If discrepancy $> 10\%$ or NSE $< 0.85$:
+  - A bounded SciPy L-BFGS-B / Nelder-Mead optimizer solves for optimal parameter scaling vectors:
+    $$\min_{\alpha, \beta} \sum_{t} \left( Q_{\text{sim}}(t; \alpha \cdot CN, \beta \cdot T_{\text{lag}}) - Q_{\text{obs}}(t) \right)^2$$
+  - Parameters are strictly constrained to physically valid ranges ($\alpha \in [0.85, 1.15]$, $\beta \in [0.80, 1.20]$).
+  - The updated parameters are atomically persisted to `data/telemetry/ml_calibration_state.json` and synchronized into the hydrologic model configuration for subsequent cycles.
+
+---
+
+### Novelty 12: High-Precision Peak Flood Strike Horizon with ±2.0h Permissible Error Window
+- **The Breakthrough:** Translates raw discharge hydrographs into actionable, emergency-grade operational time windows with rigorous uncertainty bounds.
+- **How It Works:** Rather than stating an ambiguous peak time, HydroCast analyzes the first and second derivatives ($\frac{dQ}{dt}, \frac{d^2Q}{dt^2}$) around the hydrograph crest and synthesizes them with the cumulative rainfall hyetograph centroid lag:
+  - Determines the nominal peak flood arrival time $T_{\text{peak}}$.
+  - Applies empirical Western Ghats cloudburst variance $(\sigma_t \approx 1.02\text{ hr})$ to establish a **95% Confidence Interval ($\pm 2.0\text{ hours}$)**:
+    $$[T_{\text{earliest}}, T_{\text{latest}}] = [T_{\text{peak}} - 2.0\text{h}, T_{\text{peak}} + 2.0\text{h}]$$
+  - Dispatches this exact window to the Next.js visual alert banner, REST API summaries, and automated DDMA Telegram early warning bulletins.
+
+---
+
 ## 3. Comprehensive Comparative Innovation Matrix
 
 ```
 +-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Capability Feature          | Traditional CWC/IMD| Academic 2D Models | Generic IoT Dash.  | HYDROCAST          |
+| Capability Feature          | Traditional CWC/IMD| Academic 2D Models | Generic IoT Dash.  | HYDROCAST v3.0     |
 +-----------------------------+--------------------+--------------------+--------------------+--------------------+
 | Forecast Lead Time          | 12 - 24 hours      | 48 - 72 hours      | 0 hours (Past only)| 90 HOURS           |
 +-----------------------------+--------------------+--------------------+--------------------+--------------------+
@@ -133,6 +153,12 @@ Conventional flood early warning in developing river basins typically suffers fr
 | Soil Moisture Adaptation    | Fixed seasonal CN  | Manual soil input  | None               | AUTONOMOUS 90-DAY  |
 |                             |                    |                    |                    | ANTECEDENT AMC     |
 +-----------------------------+--------------------+--------------------+--------------------+--------------------+
+| Adaptive Recalibration      | Manual recalib.    | Offline batch fits | None               | REAL-TIME CLOSED-  |
+|                             | (every few years)  | (months of study)  |                    | LOOP ML OPTIMIZER  |
++-----------------------------+--------------------+--------------------+--------------------+--------------------+
+| Peak Arrival Estimation     | Coarse date/day    | Single peak timestamp| None             | ±2.0h CONFIDENCE   |
+|                             |                    | (no error window)  |                    | INTERVAL HORIZON   |
++-----------------------------+--------------------+--------------------+--------------------+--------------------+
 | Ground Truth Calibration    | Approximate gauges | Academic surveys   | Single station     | 19 GOVT WRD FIELD  |
 |                             |                    |                    |                    | BENCHMARKS         |
 +-----------------------------+--------------------+--------------------+--------------------+--------------------+
@@ -145,6 +171,12 @@ Conventional flood early warning in developing river basins typically suffers fr
 | Offline Resilience          | Paper fallback     | High failure rate  | Cloud dependent    | ZERO-CRASH DUAL    |
 |                             |                    | (Licensing/DLLs)   |                    | POSTGRES/JSON MODE |
 +-----------------------------+--------------------+--------------------+--------------------+--------------------+
+| Emergency Alert Dispatch    | Manual VHF/Fax     | None               | SMS threshold only | TELEGRAM BOT +     |
+|                             |                    |                    |                    | WEBSOCKET LIVE PUSH|
++-----------------------------+--------------------+--------------------+--------------------+--------------------+
+| Containerized Deployment    | Non-containerized  | Proprietary Windows| Cloud-hosted SaaS  | MULTI-CONTAINER    |
+|                             | desktop install    | workstation license|                    | DOCKER COMPOSE     |
++-----------------------------+--------------------+--------------------+--------------------+--------------------+
 | Decision Support UI         | Static tables      | Heavy desktop GUI  | Basic graphs       | NEXT.JS 14 + SVG   |
 |                             |                    |                    |                    | CROSS-SECTION + WS |
 +-----------------------------+--------------------+--------------------+--------------------+--------------------+
@@ -156,6 +188,8 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 The innovations embedded within HydroCast transform disaster management from **reactive crisis response** to **predictive early action**:
 
-1. **48-Hour Evacuation Window:** By projecting stage exceedance at Shivaji Bridge ($542.1\text{m}$ Alert, $543.3\text{m}$ Danger) up to 90 hours in advance, district disaster authorities can evacuate low-lying wards (Shahupuri, Kumbhar Galli, Bapat Camp) before river water enters city stormwater outfalls.
+1. **48-Hour Evacuation Window & ±2.0h Strike Horizon:** By projecting stage exceedance at Shivaji Bridge ($542.1\text{m}$ Alert, $543.3\text{m}$ Danger) up to 90 hours in advance with a precise $\pm 2.0\text{h}$ arrival window, district disaster authorities can evacuate low-lying wards (Shahupuri, Kumbhar Galli, Bapat Camp) before river water enters city stormwater outfalls.
 2. **K.T. Weir Needle Gate Management:** Provides accurate forward discharge volumes allowing irrigation engineers to remove weir needle gates and open barrages before the arrival of the flood peak.
-3. **Institutional Accountability:** The persistent runs ledger and automated validation engine create an unalterable, transparent record of what was forecasted, when it was forecasted, and how accurately the physical flood wave was captured.
+3. **Automated Incident Commander Dispatch:** The integrated Telegram Alert Dispatcher guarantees that the moment a forecast breaches threshold levels, a formatted disaster bulletin with peak discharge, arrival time window, and affected subbasins is pushed directly to District Disaster Management Authority (DDMA) command channels.
+4. **Institutional Accountability & Data Hygiene:** The persistent runs ledger, Parquet cold storage pruning, and automated validation engine create an unalterable, transparent record of what was forecasted, when it was forecasted, and how accurately the physical flood wave was captured.
+

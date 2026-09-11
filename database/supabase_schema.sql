@@ -7,7 +7,13 @@
 -- ===========================================================================
 
 -- 1. Enable PostGIS Extension (Native on Supabase)
-CREATE EXTENSION IF NOT EXISTS postgis;
+-- (Moved to a dedicated 'extensions' schema to prevent exposing 1000+ functions to the public API)
+CREATE SCHEMA IF NOT EXISTS extensions;
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA extensions;
+
+-- Ensure the search_path includes the extensions schema so GEOMETRY types resolve natively
+ALTER ROLE authenticator SET search_path = public, extensions;
+ALTER ROLE postgres SET search_path = public, extensions;
 
 -- ---------------------------------------------------------------------------
 -- 2. Subbasins (Official Panchganga Delineation, Total Area: 1,837.213 km²)
@@ -158,10 +164,11 @@ ON CONFLICT (site_id) DO UPDATE SET
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS simulation_runs (
     run_id                      VARCHAR(100) PRIMARY KEY,
-    cycle_date                  DATE NOT NULL,
-    cycle_time                  VARCHAR(32) NOT NULL, -- e.g. '00z', '06z', '12z', '18z'
-    start_time                  TIMESTAMPTZ NOT NULL,
+    cycle_date                  DATE NOT NULL DEFAULT CURRENT_DATE,
+    cycle_time                  VARCHAR(32) NOT NULL DEFAULT '00z', -- e.g. '00z', '06z', '12z', '18z'
+    start_time                  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     end_time                    TIMESTAMPTZ,
+
     status                      VARCHAR(32) NOT NULL DEFAULT 'completed',
     model_version               VARCHAR(64) DEFAULT 'HEC-HMS-4.13',
     peak_discharge_m3s          NUMERIC(10,2),
@@ -326,13 +333,18 @@ CREATE TABLE IF NOT EXISTS pipeline_step_log (
     cycle_id            VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
     step_number         SMALLINT NOT NULL,
     step_name           VARCHAR(256) NOT NULL,
-    status              VARCHAR(32) NOT NULL CHECK (status IN ('PENDING','RUNNING','COMPLETED','FAILED','SKIPPED')),
-    start_time          TIMESTAMPTZ NOT NULL,
-    end_time            TIMESTAMPTZ NOT NULL,
-    duration_seconds    NUMERIC(10,2) NOT NULL,
+    status              VARCHAR(32) NOT NULL DEFAULT 'running',
+    start_time          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    end_time            TIMESTAMPTZ,
+    duration_seconds    NUMERIC(10,2),
+    details_json        JSONB,
     error_message       TEXT,
     PRIMARY KEY (cycle_id, step_number)
 );
+
+ALTER TABLE pipeline_step_log ADD COLUMN IF NOT EXISTS details_json JSONB;
+ALTER TABLE pipeline_step_log ALTER COLUMN end_time DROP NOT NULL;
+ALTER TABLE pipeline_step_log ALTER COLUMN duration_seconds DROP NOT NULL;
 
 CREATE INDEX IF NOT EXISTS idx_psl_cycle ON pipeline_step_log (cycle_id);
 

@@ -131,32 +131,40 @@ params = {
 
 ---
 
-## 5. Rate-Limiting, Fault Tolerance & Error Handling
+## 5. Enterprise Retry Engine, Fault Tolerance & Error Handling
 
-To guarantee 100% pipeline reliability without triggering IP-level rate-limiting (`HTTP 429 Too Many Requests`), the engine implements:
+To guarantee 100% pipeline reliability without triggering IP-level rate-limiting (`HTTP 429 Too Many Requests`) or crashing on upstream cloud hiccups, HydroCast employs a dedicated retry engine ([`src/ecmwf/retry_utils.py`](file:///e:/hydrocast_complete/src/ecmwf/retry_utils.py)):
 
-1. **Polite Inter-Station Delays:**
-   ```python
-   time.sleep(0.25)  # 250ms spacing between sequential station requests
-   ```
-2. **Exponential Backoff with Jitter:**
-   ```python
-   for attempt in range(max_retries):
-       try:
-           res = requests.get(OM_URL, params=params, timeout=12.0)
-           if res.status_code == 200:
-               return parse_precipitation_array(res.json())
-           elif res.status_code == 429:
-               wait_time = (2 ** attempt) + random.uniform(0.5, 1.5)
-               time.sleep(wait_time)
-       except requests.exceptions.RequestException:
-           time.sleep(2.0)
-   ```
-3. **Spatial Fallback (Nearest Neighbor):**
-   If a station API times out after 3 retries, the dynamic station selector automatically routes to the closest spatial alternate station in the same or adjacent subbasin using Euclidean geographic distance:
+### 5.1 Architecture of `retry_with_backoff`
+The utility wraps both requests and callable workflows:
+```python
+def retry_with_backoff(
+    fn=None,
+    max_retries: int = 4,
+    base_delay: float = 1.0,
+    max_delay: float = 30.0,
+    factor: float = 2.0,
+    jitter: bool = True,
+    retryable_exceptions=(requests.RequestException, Exception),
+    retryable_status_codes=(429, 500, 502, 503, 504),
+):
+    ...
+```
+
+### 5.2 Key Resilience Mechanisms
+1. **Exponential Backoff with Full Random Jitter:**
+   $$\Delta t_{\text{wait}} = \min\left(t_{\text{max}}, t_{\text{base}} \cdot \text{factor}^{\text{attempt}} + \text{uniform}(0, t_{\text{jitter}})\right)$$
+   This prevents synchronized retry storms across concurrent workers.
+2. **Polite Inter-Station Delays:**
+   A 250ms spacing between sequential station requests ensures compliance with Open-Meteo non-commercial fair-use burst limits.
+3. **HTTP Status Code Discrimination:**
+   Transient errors (`429 Too Many Requests`, `500 Internal Server Error`, `502 Bad Gateway`, `503 Service Unavailable`, `504 Gateway Timeout`) trigger automatic backoff, while permanent errors (`400 Bad Request`, `404 Not Found`) fail fast without wasting quota.
+4. **Spatial Fallback (Nearest Neighbor):**
+   If a station API fails after 4 exponential backoff attempts, the dynamic station selector automatically routes to the closest spatial alternate station in the same or adjacent subbasin using Euclidean geographic distance:
    $$d = \sqrt{(\Delta\text{lon} \cdot \cos\bar{\phi})^2 + \Delta\phi^2}$$
 
 ---
+
 
 ## 6. Antecedent Soil Moisture Condition (AMC) Analysis
 

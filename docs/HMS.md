@@ -1,4 +1,4 @@
-﻿# HEC-HMS Headless Automation & DSS File Architecture
+# HEC-HMS Headless Automation & DSS File Architecture
 
 ```
 ========================================================================================
@@ -21,7 +21,7 @@
                                        │
                                        ▼
                   Hydrological Simulation Continuum (48s run)
-               Loss: SCS-CN  |  Transform: Clark  |  Routing: Muskingum
+               Loss: SCS-CN  |  Transform: SCS Unit Hydrograph  |  Routing: Muskingum
                                        │
                                        ▼
                    HEC-DSS Output Binary File: Run_1.dss
@@ -108,7 +108,34 @@ hms.closeProject()
 Because native HEC-HMS requires Java runtime dependencies and proprietary 64-bit C-libraries (`heclib.dll`), HydroCast includes a **built-in high-speed pure Python hydrologic emulator** in [`runner.py`](file:///e:/hydrocast_complete/src/hms/runner.py):
 
 - Emulates SCS-CN soil moisture infiltration curve.
-- Emulates Clark Unit Hydrograph translation and linear reservoir attenuation.
-- Performs Muskingum-Cunge reach routing.
+- Emulates SCS Unit Hydrograph translation and linear reservoir attenuation.
+- Performs Muskingum reach routing.
 - Validated to produce hydrograph outputs identical to HEC-HMS within **$\pm 0.4\%$ tolerance**.
 - Executes in $< 20\text{ ms}$, ensuring that the system never halts even if Java environments or DSS libraries are absent on deployment hosts.
+
+---
+
+## 6. Dynamic Time-Window & Basin Parameter Synchronization
+
+To maintain strict alignment between the 6-hourly operational cycle and the HEC-HMS project files on disk, HydroCast automatically manages:
+
+### 6.1 Control Specification Synchronization (`Control_1.control`)
+At the start of each forecast execution (Step 4), `runner.py` dynamically updates the simulation time window:
+```text
+Control: Control 1
+     Description: Panchganga 90-Hour Operational Simulation
+     Start Date: 10 September 2026
+     Start Time: 12:00
+     End Date: 14 September 2026
+     End Time: 06:00
+     Time Interval: 60
+End:
+```
+This guarantees that both HEC-HMS and the internal Python emulator calculate identical time envelopes ($T+0\text{h} \to T+89\text{h}$).
+
+### 6.2 Closed-Loop Basin Calibration Synchronization (`Basin_1.basin`)
+When the real-time ML calibration engine ([`src/hydrology/ml_calibration.py`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py)) derives updated parameter multipliers ($\alpha, \beta$), it can execute `sync_to_hms_basin_file()`:
+- Parses `Basin_1.basin` text blocks.
+- Rewrites `Curve Number` and `Lag Time` attributes across subbasins $S_1 \dots S_9$.
+- Preserves USACE formatting tags and subbasin topology, ensuring that native HEC-HMS batch runs inherit live empirical calibration.
+

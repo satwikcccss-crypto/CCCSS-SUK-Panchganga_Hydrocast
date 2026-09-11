@@ -241,13 +241,19 @@ def apply_core_schema(conn) -> bool:
         cycle_id            VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
         step_number         SMALLINT NOT NULL,
         step_name           VARCHAR(256) NOT NULL,
-        status              VARCHAR(32) NOT NULL,
-        start_time          TIMESTAMPTZ NOT NULL,
-        end_time            TIMESTAMPTZ NOT NULL,
-        duration_seconds    NUMERIC(10,2) NOT NULL,
+        status              VARCHAR(32) NOT NULL DEFAULT 'running',
+        start_time          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        end_time            TIMESTAMPTZ,
+        duration_seconds    NUMERIC(10,2),
+        details_json        JSONB,
         error_message       TEXT,
         PRIMARY KEY (cycle_id, step_number)
     );
+
+    ALTER TABLE pipeline_step_log ADD COLUMN IF NOT EXISTS details_json JSONB;
+    ALTER TABLE pipeline_step_log ALTER COLUMN end_time DROP NOT NULL;
+    ALTER TABLE pipeline_step_log ALTER COLUMN duration_seconds DROP NOT NULL;
+
 
     -- 11. (Removed unused rating_curves table)
 

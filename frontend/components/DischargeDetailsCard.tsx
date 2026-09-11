@@ -65,9 +65,13 @@ export default function DischargeDetailsCard({ siteId = "RAJARAM_BRIDGE" }: { si
     const peakEntry = forecast.reduce((best: any, f: any) =>
       (f.stage_m > (best?.stage_m ?? 0)) ? f : best, forecast[0]);
     if (peakEntry) {
+      const peakArr = bData?.peak_arrival;
+      const ciStr = peakArr?.confidence_interval
+        ? `[T+${peakArr.confidence_interval.earliest_lead_hours}h to T+${peakArr.confidence_interval.latest_lead_hours}h] (±2.0h)`
+        : `(±2.0h window)`;
       events.push({
         time: `T+${peakEntry.lead_hours}h`,
-        event: `Peak forecast stage`,
+        event: `Peak flood strike ${ciStr}`,
         value: `${peakEntry.stage_m.toFixed(2)}m MSL`,
       });
     }
@@ -97,7 +101,7 @@ export default function DischargeDetailsCard({ siteId = "RAJARAM_BRIDGE" }: { si
     }
 
     return events;
-  }, [forecast, site]);
+  }, [forecast, site, bData]);
 
   if (noData) {
     return (
@@ -107,11 +111,20 @@ export default function DischargeDetailsCard({ siteId = "RAJARAM_BRIDGE" }: { si
     );
   }
 
+  const peakLead = bData?.peak_arrival?.peak_lead_hours ?? (forecast.length > 0 ? forecast.reduce((best: any, f: any) => (f.stage_m > (best?.stage_m ?? 0)) ? f : best, forecast[0])?.lead_hours : 0);
+
   return (
     <div className="bg-white border border-gray-200 rounded p-5">
-      <div className="mb-4 border-b border-gray-100 pb-2">
-        <h2 className="text-base font-semibold text-gray-900">{site.site_name} - Discharge Station</h2>
-        <p className="text-xs text-gray-500">Panchganga Basin Sink</p>
+      <div className="mb-4 border-b border-gray-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 className="text-base font-semibold text-gray-900">{site.site_name} - Discharge Station</h2>
+          <p className="text-xs text-gray-500">Panchganga Basin Sink & Dynamic Rating Station</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center px-2.5 py-1 rounded bg-indigo-50 border border-indigo-200 text-xs font-medium text-indigo-800">
+            Peak Arrival: T+{peakLead}h (±2.0h window)
+          </span>
+        </div>
       </div>
 
       <div className="flex gap-4 mb-4 border-b border-gray-100 pb-2">

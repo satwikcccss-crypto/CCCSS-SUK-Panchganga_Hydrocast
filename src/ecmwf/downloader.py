@@ -18,12 +18,18 @@ import xarray as xr
 import cfgrib                       # pip install cfgrib
 from ecmwf.opendata import Client   # pip install ecmwf-opendata
 
-# ── If you have ECMWF MARS credentials (for true 9km HRES) ──────────────────
 USE_MARS = os.getenv("USE_MARS", "false").lower() == "true"
 if USE_MARS:
-    import ecmwfapi                 # pip install ecmwf-api-client
+    try:
+        import ecmwfapi                 # pip install ecmwf-api-client
+    except ImportError:
+        ecmwfapi = None
+
+from src.ecmwf.retry_utils import with_retry
 
 log = logging.getLogger(__name__)
+
+
 
 # ── Study area bounding box (adjust to your catchment) ──────────────────────
 BBOX = {
@@ -48,6 +54,7 @@ def latest_available_run() -> tuple[str, str]:
     return now_utc.strftime("%Y%m%d"), run_hour + "z"
 
 
+@with_retry(max_retries=4, base_delay=2.0, max_delay=30.0)
 def download_opendata(date: str, time: str, out_path: Path) -> Path:
     """
     Download ECMWF Open Data (free, HRES 9km).
@@ -77,6 +84,7 @@ def download_opendata(date: str, time: str, out_path: Path) -> Path:
     return grib_path
 
 
+@with_retry(max_retries=4, base_delay=2.0, max_delay=30.0)
 def download_mars_9km(date: str, time: str, out_path: Path) -> Path:
     """
     Download true IFS HRES at 9km (~0.083°) via ECMWF MARS API.
@@ -86,7 +94,11 @@ def download_mars_9km(date: str, time: str, out_path: Path) -> Path:
     if grib_path.exists():
         return grib_path
 
+    if ecmwfapi is None:
+        raise ImportError("ecmwfapi package is not installed")
+
     server = ecmwfapi.ECMWFService("mars")
+
     server.execute({
         "class":    "od",
         "date":     date[:4] + "-" + date[4:6] + "-" + date[6:],

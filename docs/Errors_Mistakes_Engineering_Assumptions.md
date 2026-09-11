@@ -157,7 +157,7 @@ Every numerical model is a simplified representation of nature. The following ar
 | (Manning-Strickler formulation)   | PCHIP rating anchors rather than 2D dynamic Saint-Venant. |
 +-----------------------------------+-----------------------------------------------------------+
 | Spatially Lumped Subbasins        | Subbasins S1-S9 are discretized at ~80-510 km² scale;    |
-| (SCS-CN & Clark Unit Hydrograph)  | micro-topography within subbasins is spatially aggregated.|
+| (SCS-CN & SCS Unit Hydrograph)  | micro-topography within subbasins is spatially aggregated.|
 +-----------------------------------+-----------------------------------------------------------+
 | Linear Baseflow Superposition     | Monsoon baseflow is assumed superimposable upon surface   |
 | (Q_total = Q_base + Q_surface)    | runoff without dynamic pressure coupling to groundwater.  |
@@ -215,6 +215,43 @@ The Panchganga river discharges into the Krishna river at Shirol / Narsobawadi, 
 
 ---
 
-## Part III: Operational Summary
+## Part IV: Operational Hardening & Edge-Case Failure Mitigations (v3.0)
+
+During the v3.0 operational production hardening, several systemic risks were diagnosed and engineered against:
+
+```
++-----------------------------------+---------------------------------------+-------------------------------------------+
+| Vulnerability / Edge Case         | Previous Failure Mode                 | Engineered Mitigation (v3.0)              |
++-----------------------------------+---------------------------------------+-------------------------------------------+
+| Weather API Socket Timeouts / 429 | Pipeline aborted on transient errors  | Exponential backoff with random jitter &  |
+|                                   | during Open-Meteo queries             | nearest-neighbor fallback (retry_utils.py)|
++-----------------------------------+---------------------------------------+-------------------------------------------+
+| Unconstrained ML Parameter Drift  | Calibration against noisy sensor data | Hard bounded parameter scaling            |
+|                                   | could explode CN or collapse Tlag     | (α ∈ [0.85, 1.15], β ∈ [0.80, 1.20])      |
++-----------------------------------+---------------------------------------+-------------------------------------------+
+| PostgreSQL Time-Series Bloat      | Accumulation of millions of 15-min    | Scheduled weekly pruning to compressed    |
+|                                   | hydrograph rows degrading DB queries  | Apache Parquet cold storage (archive_runs)|
++-----------------------------------+---------------------------------------+-------------------------------------------+
+| API Scraping & DoS Exhaustion     | Heavy public scraping threatening     | SlowAPI token-bucket rate limits & JWT    |
+|                                   | forecast cycle execution              | authentication on administrative triggers |
++-----------------------------------+---------------------------------------+-------------------------------------------+
+| Peak Arrival Scalar Fallacy       | Publishing single-minute peak time    | Statistically bounded ±2.0h operational   |
+|                                   | creating false precision in EOCs      | window @ 95% confidence interval          |
++-----------------------------------+---------------------------------------+-------------------------------------------+
+```
+
+### 1. The Fallacy of Scalar Peak Flood Prediction
+In early releases, the system reported peak flood arrival as a single scalar timestamp (e.g. `2026-09-11T16:30:00Z`). In real-world Western Ghats hydrology, variations in spatial rainfall distribution, soil heterogeneity, and tributary confluence backwaters introduce non-deterministic travel lags ($\sigma \approx 1.02\text{ hours}$). Reporting a single minute led emergency personnel to expect mathematical precision that nature does not exhibit. In v3.0, the system strictly defines peak arrival as a **$\pm 2.0\text{h}$ operational window** $[T_{\text{peak}} - 2\text{h}, T_{\text{peak}} + 2\text{h}]$ at 95% confidence.
+
+### 2. Guardrails Against ML Parameter Runaway
+When calibrating against live ultrasonic radar telemetry, acoustic echoes from debris or transient sensor dropout can produce artificial stage spikes. If an unconstrained optimizer attempts to fit these anomalies, it might calculate an unphysical Curve Number ($CN > 98$) or an impossible lag time ($T_{\text{lag}} \to 0$), corrupting subsequent cycles. HydroCast enforces:
+- Hard physical clipping bounds: $\alpha \in [0.85, 1.15]$ and $\beta \in [0.80, 1.20]$.
+- Regularized cost functions that penalize deviations from baseline parameters.
+- Discrepancy gating: recalibration only runs when true volumetric divergence exceeds 10% or NSE drops below 0.85.
+
+---
+
+## Part V: Operational Summary
 
 By identifying past mistakes, replacing unsegmented regressions with dual-regime PCHIP interpolators, and establishing clear physical boundaries for engineering assumptions, HydroCast operates with high technical transparency. It delivers robust early warning projections while clearly defining the limits of its predictive certainty.
+

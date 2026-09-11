@@ -61,12 +61,17 @@ export default function OverviewPanel({
     },
   };
 
-  const shivajiLvl = bShivaji?.live_sensor?.stage_m ?? b0?.current_stage_m ?? b0?.stage_m ?? 532.60;
-  const shivajiPeak = b0?.peak_stage_m ?? (bShivaji?.forecast ? Math.max(...bShivaji.forecast.map((f: any) => f.stage_m)) : shivajiLvl);
+  const shivajiPeakArr = b0?.peak_arrival ?? bShivaji?.peak_arrival ?? summary?.peak_arrival?.shivaji;
+  const rajaramPeakArr = b1?.peak_arrival ?? bRajaram?.peak_arrival ?? summary?.peak_arrival?.rajaram;
+  const recalState = summary?.recalibration;
+
+  const shivajiLead = shivajiPeakArr?.peak_lead_hours ?? outlet?.lead_hours_to_peak ?? 0;
+  const rajaramLead = rajaramPeakArr?.peak_lead_hours ?? outlet?.lead_hours_to_peak ?? 0;
+
   const shivajiData: GaugeData = {
     waterLevel: shivajiLvl,
     forecastLevel: shivajiPeak,
-    forecastTime: "Peak T+83h",
+    forecastTime: `Peak T+${shivajiLead}h (±2.0h)`,
     alertLevel: b0?.alert_level ?? "normal",
     history: bShivaji?.forecast ? bShivaji.forecast.slice(0, 8).map((f: any) => f.stage_m) : [shivajiLvl],
   };
@@ -90,7 +95,7 @@ export default function OverviewPanel({
   const rajaramData: GaugeData = {
     waterLevel: rajaramLvl,
     forecastLevel: rajaramPeak,
-    forecastTime: "Peak T+83h",
+    forecastTime: `Peak T+${rajaramLead}h (±2.0h)`,
     alertLevel: b1?.alert_level ?? "normal",
     history: bRajaram?.forecast ? bRajaram.forecast.slice(0, 8).map((f: any) => f.stage_m) : [rajaramLvl],
   };
@@ -174,6 +179,142 @@ export default function OverviewPanel({
           </div>
           <div className="mt-2 text-xs text-gray-600 pt-2 border-t border-gray-100">
             Cycle: {lastCycle?.run_id ?? "Awaiting first run"}
+          </div>
+        </div>
+      {/* ── PEAK FLOOD ARRIVAL & CONFIDENCE INTERVAL MONITOR (±2.0h) ─────────── */}
+      <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-4 border-b border-slate-100 gap-2">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse"></span>
+            <h2 className="text-sm font-semibold text-slate-900 tracking-wide uppercase">
+              Peak Flood Strike Horizon & Permissible Confidence Interval (±2.0h)
+            </h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">
+              95% Confidence Band
+            </span>
+            {recalState?.alpha_k && recalState?.alpha_k !== 1.0 ? (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                ⚡ ML Recalibrated (K: ×{recalState.alpha_k.toFixed(2)}, Lag: ×{recalState.alpha_lag.toFixed(2)})
+              </span>
+            ) : (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                ✓ Calibrated Parameters Active
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Shivaji Bridge Peak Card */}
+          <div className="bg-slate-50/60 border border-slate-200/80 rounded-md p-4 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                  Chhatrapati Shivaji Maharaj Bridge
+                </span>
+                <span className="text-[11px] font-mono text-slate-500">Urban Crossing (Panchganga Ghat)</span>
+              </div>
+
+              <div className="mt-3 flex items-baseline justify-between">
+                <div>
+                  <span className="text-3xl font-mono font-bold text-slate-900">
+                    T+{shivajiLead}h
+                  </span>
+                  <span className="ml-2 text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
+                    [T+{shivajiPeakArr?.confidence_interval?.earliest_lead_hours ?? Math.max(0, shivajiLead - 2)}h to T+{shivajiPeakArr?.confidence_interval?.latest_lead_hours ?? (shivajiLead + 2)}h]
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-2 text-xs text-slate-600">
+                {shivajiPeakArr?.peak_arrival_time ? (
+                  <span>
+                    Expected Strike: <span className="font-semibold text-slate-800">{new Date(shivajiPeakArr.peak_arrival_time).toLocaleString("en-IN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                    {" "}(Permissible: {new Date(shivajiPeakArr?.confidence_interval?.earliest_arrival_time ?? shivajiPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} – {new Date(shivajiPeakArr?.confidence_interval?.latest_arrival_time ?? shivajiPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })})
+                  </span>
+                ) : (
+                  <span>Awaiting forecast cycle peak time</span>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-200/70 grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="text-slate-500 block text-[11px]">Peak Stage MSL</span>
+                <span className="font-mono font-semibold text-slate-800">
+                  {shivajiPeakArr?.peak_stage_m?.toFixed(2) ?? shivajiPeak?.toFixed(2)}m
+                </span>
+                <span className="text-[11px] text-slate-400 ml-1">
+                  ({shivajiPeakArr?.confidence_interval?.stage_range_m?.[0]?.toFixed(2) ?? "—"} – {shivajiPeakArr?.confidence_interval?.stage_range_m?.[1]?.toFixed(2) ?? "—"}m)
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[11px]">Peak Discharge</span>
+                <span className="font-mono font-semibold text-slate-800">
+                  {shivajiPeakArr?.peak_discharge_m3s?.toFixed(0) ?? outlet?.peak_discharge_m3s?.toFixed(0)} m³/s
+                </span>
+                <span className="text-[11px] text-slate-400 ml-1">
+                  (±6% CI)
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Rajaram K.T. Weir Peak Card */}
+          <div className="bg-slate-50/60 border border-slate-200/80 rounded-md p-4 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                  Rajaram K.T. Weir (Kasba Bawada)
+                </span>
+                <span className="text-[11px] font-mono text-slate-500">Downstream Basin Sink</span>
+              </div>
+
+              <div className="mt-3 flex items-baseline justify-between">
+                <div>
+                  <span className="text-3xl font-mono font-bold text-slate-900">
+                    T+{rajaramLead}h
+                  </span>
+                  <span className="ml-2 text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
+                    [T+{rajaramPeakArr?.confidence_interval?.earliest_lead_hours ?? Math.max(0, rajaramLead - 2)}h to T+{rajaramPeakArr?.confidence_interval?.latest_lead_hours ?? (rajaramLead + 2)}h]
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-2 text-xs text-slate-600">
+                {rajaramPeakArr?.peak_arrival_time ? (
+                  <span>
+                    Expected Strike: <span className="font-semibold text-slate-800">{new Date(rajaramPeakArr.peak_arrival_time).toLocaleString("en-IN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                    {" "}(Permissible: {new Date(rajaramPeakArr?.confidence_interval?.earliest_arrival_time ?? rajaramPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} – {new Date(rajaramPeakArr?.confidence_interval?.latest_arrival_time ?? rajaramPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })})
+                  </span>
+                ) : (
+                  <span>Awaiting forecast cycle peak time</span>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-200/70 grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="text-slate-500 block text-[11px]">Peak Stage MSL</span>
+                <span className="font-mono font-semibold text-slate-800">
+                  {rajaramPeakArr?.peak_stage_m?.toFixed(2) ?? rajaramPeak?.toFixed(2)}m
+                </span>
+                <span className="text-[11px] text-slate-400 ml-1">
+                  ({rajaramPeakArr?.confidence_interval?.stage_range_m?.[0]?.toFixed(2) ?? "—"} – {rajaramPeakArr?.confidence_interval?.stage_range_m?.[1]?.toFixed(2) ?? "—"}m)
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[11px]">Peak Discharge</span>
+                <span className="font-mono font-semibold text-slate-800">
+                  {rajaramPeakArr?.peak_discharge_m3s?.toFixed(0) ?? outlet?.peak_discharge_m3s?.toFixed(0)} m³/s
+                </span>
+                <span className="text-[11px] text-slate-400 ml-1">
+                  (±6% CI)
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

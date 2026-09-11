@@ -173,3 +173,64 @@ All metric formatters in [`AccuracyPanel.tsx`](file:///e:/hydrocast_complete/fro
 ```
 This prevents `TypeError: Cannot read properties of null (reading 'toFixed')` during initial hydration or when inspecting runs with incomplete lead hours.
 
+---
+
+## 6. Peak Flood Strike Horizon & Permissible Uncertainty Window UI
+
+To provide municipal emergency coordinators with actionable disaster timelines rather than ambiguous single-point predictions, [`DischargeDetailsCard.tsx`](file:///e:/hydrocast_complete/frontend/components/DischargeDetailsCard.tsx) and [`OverviewPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/OverviewPanel.tsx) render a dedicated early warning card:
+
+```tsx
+<div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg">
+  <Clock className="w-5 h-5 text-amber-600" />
+  <div>
+    <div className="text-xs font-semibold text-amber-800 dark:text-amber-300">
+      Peak Flood Arrival Window (95% CI: ±2.0h)
+    </div>
+    <div className="text-sm font-bold text-amber-950 dark:text-amber-100">
+      {formatDate(peakEarliest)} — {formatDate(peakLatest)}
+    </div>
+    <div className="text-[11px] text-muted-foreground">
+      Nominal Crest: {formatDate(peakNominal)} · Peak Inflow: {peakQ.toFixed(1)} m³/s ({cusecs.toLocaleString()} cfs)
+    </div>
+  </div>
+</div>
+```
+
+- Dynamically extracts `peak_arrival_nominal`, `peak_arrival_earliest`, and `peak_arrival_latest` from the cycle summary.
+- Applies CWC hazard tier styling (Amber for Alert, Red for Danger / HFL).
+
+---
+
+## 7. Containerized Standalone Production Deployment (`frontend/Dockerfile`)
+
+The frontend is containerized using a multi-stage Docker build leveraging Next.js standalone output:
+
+```dockerfile
+# Stage 1: Dependency Installation
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+
+# Stage 2: Production Build
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED 1
+RUN npm run build
+
+# Stage 3: Minimal Production Runner
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV production
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+This reduces the final container image footprint to $< 180\text{ MB}$ and ensures zero external system dependencies.
+
+

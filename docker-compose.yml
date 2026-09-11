@@ -1,0 +1,104 @@
+version: "3.8"
+
+# ==============================================================================
+# HydroCast Unified Production Docker Compose Specification
+# Includes: PostgreSQL 15 + PostGIS, Python/Java Backend, and Next.js 14 Dashboard
+# ==============================================================================
+
+services:
+  # ── 1. Database (PostgreSQL 15 + PostGIS) ──────────────────────────────────
+  hydrocast-db:
+    image: postgis/postgis:15-3.4
+    container_name: hydrocast-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: rainfall_runoff
+      POSTGRES_USER: hms_app
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/supabase_schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hms_app -d rainfall_runoff"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - hydrocast-net
+
+  # ── 2. Backend (FastAPI + HEC-DSS Runtime + Rate Limiter) ───────────────────
+  hydrocast-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hydrocast-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      hydrocast-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://hms_app:password@hydrocast-db:5432/rainfall_runoff
+      API_KEY: Hydrocast_PCH
+      INTERNAL_KEY: internal_secret
+      API_BASE_URL: http://hydrocast-backend:8000
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+      RATE_LIMIT_PUBLIC: 100/minute
+      JWT_SECRET: hydrocast_production_secret_key_change_me_32chars
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: change_this_admin_password_in_production
+      ARCHIVE_RETENTION_DAYS: 90
+      ARCHIVE_DIR: /app/data/archives
+      RAW_DIR: /app/data/raw
+    volumes:
+      - hydrocast_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - hydrocast-net
+
+  # ── 3. Frontend (Next.js 14 Executive Dashboard) ───────────────────────────
+  hydrocast-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+        NEXT_PUBLIC_WS_URL: ws://localhost:8000/ws/live
+    container_name: hydrocast-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      hydrocast-backend:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_WS_URL: ws://localhost:8000/ws/live
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - hydrocast-net
+
+volumes:
+  postgres_data:
+    driver: local
+  hydrocast_data:
+    driver: local
+
+networks:
+  hydrocast-net:
+    driver: bridge
