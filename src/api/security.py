@@ -5,35 +5,49 @@ Enterprise security, JWT token handling, and administrative authentication.
 Provides:
   - HMAC-SHA256 JWT generation and validation
   - Dual-mode admin authentication (JWT Bearer Token or X-API-Key)
-  - Password hashing & verification
+  - Password hashing & verification (bcrypt)
 """
 
-import hashlib
 import hmac
+import logging
 import os
 import time
 from datetime import datetime, timezone, timedelta
 from typing import Optional, Dict, Any
 
+import bcrypt
 import jwt
 from fastapi import HTTPException, Header, Security, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-JWT_SECRET = os.getenv("JWT_SECRET", "hydrocast_enterprise_default_secret_key_change_in_prod_32chars")
+_sec_log = logging.getLogger(__name__)
+
+JWT_SECRET = os.getenv("JWT_SECRET", "")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_EXPIRATION_MINUTES = int(os.getenv("JWT_EXPIRATION_MINUTES", "1440"))  # 24 hours
 
-API_KEY = os.getenv("API_KEY", "Hydrocast_PCH")
+API_KEY = os.getenv("API_KEY", "")
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "hydrocast_admin_2026")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
+
+if not JWT_SECRET:
+    _sec_log.warning("JWT_SECRET is not set — JWT authentication will reject all tokens. Set JWT_SECRET env var.")
+if not API_KEY:
+    _sec_log.warning("API_KEY is not set — API key authentication will reject all requests. Set API_KEY env var.")
+if not ADMIN_PASSWORD:
+    _sec_log.warning("ADMIN_PASSWORD is not set — admin login will be disabled. Set ADMIN_PASSWORD env var.")
 
 security_bearer = HTTPBearer(auto_error=False)
 
 
 def hash_password(password: str) -> str:
-    """Deterministic salted SHA-256 password hash."""
-    salt = "hydrocast_salt_v2"
-    return hashlib.sha256((salt + password).encode("utf-8")).hexdigest()
+    """Bcrypt password hash with auto-generated salt."""
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verify_password(password: str, hashed: str) -> bool:
+    """Verify a password against a bcrypt hash."""
+    return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
 
 
 def verify_admin_credentials(username: str, password: str) -> bool:

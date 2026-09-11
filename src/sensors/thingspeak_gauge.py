@@ -17,7 +17,7 @@ from typing import Optional, Dict, Any
 
 log = logging.getLogger(__name__)
 
-THINGSPEAK_API_KEY = os.getenv("THINGSPEAK_API_KEY", "TSUKPZEUN1BXODUF")
+THINGSPEAK_API_KEY = os.getenv("THINGSPEAK_API_KEY", "")
 THINGSPEAK_CHANNEL_ID = os.getenv("THINGSPEAK_CHANNEL_ID", "3424513")
 SHIVAJI_SENSOR_DATUM_M = 549.35  # Elevation of sensor in meters MSL
 

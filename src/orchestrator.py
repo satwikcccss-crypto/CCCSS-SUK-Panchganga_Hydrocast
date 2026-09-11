@@ -30,7 +30,7 @@ import psycopg2.extras
 
 log = logging.getLogger(__name__)
 
-DB_URL   = os.getenv("DATABASE_URL", "postgresql://hms_app:password@localhost:5432/rainfall_runoff")
+DB_URL   = os.getenv("DATABASE_URL", "")
 DSS_PATH = Path(os.getenv("DSS_PATH", "data/hms/rainfall_input.dss"))
 
 

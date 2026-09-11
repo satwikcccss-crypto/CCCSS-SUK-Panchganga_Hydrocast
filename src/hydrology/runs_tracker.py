@@ -80,7 +80,7 @@ def save_computation_run(run_state: Dict[str, Any]) -> str:
     peak_h = summary.get("lead_hours_to_peak") or last_cycle.get("lead_hours_to_peak", 0)
     total_vol = summary.get("total_volume_mcm") or 0.0
     start_time = last_cycle.get("start_time") or datetime.now(timezone.utc).isoformat()
-    duration_s = last_cycle.get("duration_seconds") or 36.9
+    duration_s = last_cycle.get("duration_seconds") or 0.0
     alert_lvl = summary.get("bridges", {}).get("shivaji", {}).get("alert_level") or last_cycle.get("alert_level", "NORMAL")
 
     shivaji_peak_stg = summary.get("bridges", {}).get("shivaji", {}).get("peak_stage_m") or 532.63
@@ -342,7 +342,7 @@ def seed_historical_runs_if_needed() -> None:
                     "status": "completed",
                     "start_time": cycle_dt.isoformat(),
                     "end_time": (cycle_dt + timedelta(seconds=37)).isoformat(),
-                    "duration_seconds": 36.9,
+                    "duration_seconds": 0.0,
                     "peak_discharge_m3s": round(peak_q_val, 1),
                     "peak_stage_m": round(peak_stg_val, 2),
                     "alert_level": "WARNING" if peak_stg_val >= 542.70 else "NORMAL",

@@ -16,7 +16,7 @@ services:
     environment:
       POSTGRES_DB: rainfall_runoff
       POSTGRES_USER: hms_app
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/supabase_schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
@@ -42,15 +42,15 @@ services:
       hydrocast-db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://hms_app:password@hydrocast-db:5432/rainfall_runoff
-      API_KEY: Hydrocast_PCH
-      INTERNAL_KEY: internal_secret
+      DATABASE_URL: postgresql://hms_app:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@hydrocast-db:5432/rainfall_runoff
+      API_KEY: ${API_KEY:?Set API_KEY in .env}
+      INTERNAL_KEY: ${INTERNAL_KEY:?Set INTERNAL_KEY in .env}
       API_BASE_URL: http://hydrocast-backend:8000
       CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
       RATE_LIMIT_PUBLIC: 100/minute
-      JWT_SECRET: hydrocast_production_secret_key_change_me_32chars
-      ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: change_this_admin_password_in_production
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
       ARCHIVE_RETENTION_DAYS: 90
       ARCHIVE_DIR: /app/data/archives
       RAW_DIR: /app/data/raw

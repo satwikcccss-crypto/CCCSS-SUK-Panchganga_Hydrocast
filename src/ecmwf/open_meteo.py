@@ -123,13 +123,11 @@ def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarr
 
         return arr
     except Exception as e:
-        log.warning("Open-Meteo fetch failed for (%.4f, %.4f): %s — generating physical fallback", lat, lon, e)
-        # Synthetic physical fallback based on latitude and Western Ghats orographic gradient
-        arr = np.zeros(90, dtype=np.float32)
-        peak_hr = 20
-        for h in range(90):
-            arr[h] = max(0.0, float(np.exp(-((h - peak_hr) ** 2) / 70) * (2.5 if lat < 16.6 else 1.2)))
-        return arr
+        log.error("Open-Meteo fetch FAILED for (%.4f, %.4f): %s — NO synthetic fallback, raising error", lat, lon, e)
+        raise RuntimeError(
+            f"Open-Meteo forecast fetch failed for ({lat:.4f}, {lon:.4f}): {e}. "
+            f"No synthetic fallback — station will be marked as FETCH_FAILED."
+        ) from e
 
 
 
@@ -191,16 +189,39 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     cycle_id = f"CYC_{start_dt.strftime('%Y%m%d')}_{h6:02d}z"
     record_log("INFO", f"Forecast cycle {cycle_id} initiated across 18 Panchganga stations")
 
+    # ── Real wall-clock timing instrumentation ────────────────────────────────
+    t_cycle_start = time.perf_counter()
+    step_timings: list = []
+    _step_counter = [0]
+
+    def _start_step(name: str):
+        _step_counter[0] += 1
+        return {"step_number": _step_counter[0], "step_name": name, "t0": time.perf_counter(), "status": "running"}
+
+    def _end_step(step: dict, status: str = "success"):
+        step["duration_seconds"] = round(time.perf_counter() - step.pop("t0"), 2)
+        step["status"] = status
+        step_timings.append(step)
+
     station_time_series: Dict[str, np.ndarray] = {}
     station_cumulatives: Dict[str, float] = {}
     ecmwf_hyetographs: Dict[str, list] = {}
+    station_data_sources: Dict[str, str] = {}  # provenance tracking
 
+    s1 = _start_step("Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)")
     for st in STATION_REGISTRY:
-        series = fetch_point_forecast(st.lat, st.lon, start_dt)
+        try:
+            series = fetch_point_forecast(st.lat, st.lon, start_dt)
+            station_data_sources[st.station_id] = "OPEN_METEO_API"
+        except Exception as e:
+            log.warning("Station %s fetch failed: %s — marked as FETCH_FAILED (zeros)", st.station_id, e)
+            series = np.zeros(90, dtype=np.float32)
+            station_data_sources[st.station_id] = "FETCH_FAILED"
         station_time_series[st.station_id] = series
         tot = float(np.sum(series))
         station_cumulatives[st.station_id] = round(tot, 2)
-        log.info("  -> Station %-16s (%s): 90-hr Total = %.2f mm", st.name, st.subbasin, tot)
+        log.info("  -> Station %-16s (%s): 90-hr Total = %.2f mm [%s]", st.name, st.subbasin, tot, station_data_sources[st.station_id])
+    _end_step(s1)
 
     record_log("INFO", "Open-Meteo 90-hr precipitation forecast downloaded successfully")
 
@@ -256,7 +277,8 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "is_primary": st.is_primary,
             "is_governing": is_gov,
             "method": "GOVERNING (MAX_VOL)" if is_gov else "OBSERVED_POINT",
-            "active_telemetry": True,
+            "data_source": station_data_sources.get(st.station_id, "UNKNOWN"),
+            "active_telemetry": station_data_sources.get(st.station_id) == "OPEN_METEO_API",
         })
 
     # Also include subbasin keys in gauge_hyetographs for backwards compatibility
@@ -481,30 +503,17 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         "pipeline": {
             "stage": "COMPLETED",
             "cycle": cycle_id,
-            "next_run_in_mins": 142,
+            "next_run_in_mins": max(0, int(360 - (time.perf_counter() - t_cycle_start) / 60)),
             "components": {
                 "open_meteo": "ONLINE (18 STATIONS)",
                 "stage_rating": "ONLINE",
                 "database": "CONNECTED" if os.getenv("DATABASE_URL") else "STANDALONE",
                 "hec_hms": "CALIBRATED_RJKT (COMPUTED)",
             },
-            "steps": [
-                { "step_number": 1, "step_name": "Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)", "duration_seconds": 4.2, "status": "success" },
-                { "step_number": 2, "step_name": "Dynamic Subbasin Station Selection & Volume Evaluation (S1–S9)", "duration_seconds": 1.1, "status": "success" },
-                { "step_number": 3, "step_name": "Spatial Great-Circle Fallback for Ungauged Catchments", "duration_seconds": 0.6, "status": "success" },
-                { "step_number": 4, "step_name": "HEC-DSS Time-Series Export (/PANCHGANGA/*/PRECIP-INC/1HOUR/)", "duration_seconds": 2.3, "status": "success" },
-                { "step_number": 5, "step_name": "HEC-HMS Automation Execution (HMS_Automation_RJKT Project)", "duration_seconds": 14.8, "status": "success" },
-                { "step_number": 6, "step_name": "Direct Runoff Simulation & SCS-CN Loss Method", "duration_seconds": 3.4, "status": "success" },
-                { "step_number": 7, "step_name": "Muskingum River Flowpath Routing & Reach Transformation", "duration_seconds": 4.2, "status": "success" },
-                { "step_number": 8, "step_name": "Shivaji Bridge MSL Stage-Discharge Rating Conversion", "duration_seconds": 1.5, "status": "success" },
-                { "step_number": 9, "step_name": "Rajaram K.T. Weir Hydraulic Stage-Discharge Conversion", "duration_seconds": 1.4, "status": "success" },
-                { "step_number": 10, "step_name": "River Flood Threshold & Early Warning Evaluation", "duration_seconds": 0.8, "status": "success" },
-                { "step_number": 11, "step_name": "PostgreSQL / Supabase Telemetry Sync", "duration_seconds": 2.1, "status": "success" },
-                { "step_number": 12, "step_name": "Real-Time WebSocket & Dashboard State Broadcast", "duration_seconds": 0.5, "status": "success" },
-            ],
+            "steps": step_timings,
             "metrics": {
-                "avg_duration_s": 36.9,
-                "success_rate_pct": 100,
+                "avg_duration_s": round(time.perf_counter() - t_cycle_start, 1),
+                "success_rate_pct": round(100 * sum(1 for s in step_timings if s["status"] == "success") / max(len(step_timings), 1), 1),
             },
         },
         "status": {
@@ -513,8 +522,8 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
                 "run_id": cycle_id,
                 "status": "completed",
                 "start_time": start_dt.isoformat(),
-                "end_time": (start_dt + timedelta(seconds=37)).isoformat(),
-                "duration_seconds": 36.9,
+                "end_time": datetime.now(timezone.utc).isoformat(),
+                "duration_seconds": round(time.perf_counter() - t_cycle_start, 1),
                 "total_rainfall_mm": round(max([float(v) for v in station_cumulatives.values()]), 1),
                 "peak_discharge_m3s": peak_q,
                 "peak_stage_m": peak_stg_shivaji,
@@ -557,7 +566,8 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     if db_url:
         sync_to_supabase(pipeline_state, db_url)
 
-    record_log("INFO", f"Forecast cycle {cycle_id} completed in 36.9s. Dashboard live broadcast pushed")
+    _total_elapsed = round(time.perf_counter() - t_cycle_start, 1)
+    record_log("INFO", f"Forecast cycle {cycle_id} completed in {_total_elapsed}s. Dashboard live broadcast pushed")
 
     return governing_subbasin_gages
 

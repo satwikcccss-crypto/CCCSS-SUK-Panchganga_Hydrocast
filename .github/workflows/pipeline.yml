@@ -79,8 +79,8 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DATABASE_URL }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           SUPABASE_DATABASE_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
-          THINGSPEAK_CHANNEL_ID: "3424513"
-          THINGSPEAK_API_KEY: "TSUKPZEUN1BXODUF"
+          THINGSPEAK_CHANNEL_ID: ${{ secrets.THINGSPEAK_CHANNEL_ID }}
+          THINGSPEAK_API_KEY: ${{ secrets.THINGSPEAK_API_KEY }}
         run: |
           python -m src.ecmwf.open_meteo
 
@@ -97,8 +97,8 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DATABASE_URL }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           SUPABASE_DATABASE_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
-          THINGSPEAK_CHANNEL_ID: "3424513"
-          THINGSPEAK_API_KEY: "TSUKPZEUN1BXODUF"
+          THINGSPEAK_CHANNEL_ID: ${{ secrets.THINGSPEAK_CHANNEL_ID }}
+          THINGSPEAK_API_KEY: ${{ secrets.THINGSPEAK_API_KEY }}
         run: |
           python scratch/cleanup_schema.py
           python -m src.hydrology.realtime_telemetry_validator --all-pending

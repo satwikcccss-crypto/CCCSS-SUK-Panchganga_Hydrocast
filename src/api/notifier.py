@@ -12,7 +12,7 @@ import requests
 log = logging.getLogger(__name__)
 
 API_BASE     = os.getenv("API_BASE_URL", "http://localhost:8000")
-INTERNAL_KEY = os.getenv("INTERNAL_KEY", "internal_secret")
+INTERNAL_KEY = os.getenv("INTERNAL_KEY", "")
 
 
 def broadcast_cycle_complete(cycle_id: str) -> None:

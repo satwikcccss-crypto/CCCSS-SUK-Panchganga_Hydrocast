@@ -54,7 +54,7 @@ if str(ROOT_DIR) not in sys.path:
 log = logging.getLogger(__name__)
 
 THINGSPEAK_CHANNEL_ID = os.getenv("THINGSPEAK_CHANNEL_ID", "3424513")
-THINGSPEAK_API_KEY = os.getenv("THINGSPEAK_API_KEY", "TSUKPZEUN1BXODUF")
+THINGSPEAK_API_KEY = os.getenv("THINGSPEAK_API_KEY", "")
 SHIVAJI_DATUM_MSL = 549.35  # Elevation of ultrasonic sensor mount in meters MSL
 
 TELEMETRY_CACHE_DIR = ROOT_DIR / "data" / "telemetry"
@@ -581,7 +581,7 @@ def sync_validation_to_storage_and_db(
                 "run_date": summary.get("forecast_date") or datetime.now(timezone.utc).strftime("%d %b %Y"),
                 "cycle_time": summary.get("cycle_time") or c_time_str,
                 "start_time": (run_data.get("status", {}).get("last_cycle", {}).get("start_time") if "run_data" in locals() else datetime.now(timezone.utc).isoformat()),
-                "duration_seconds": 36.9,
+                "duration_seconds": (run_data.get("status", {}).get("last_cycle", {}).get("duration_seconds", 0.0) if "run_data" in locals() else 0.0),
                 "peak_discharge_m3s": round(float(summary.get("peak_discharge_m3s", 0)), 1),
                 "lead_hours_to_peak": int(summary.get("lead_hours_to_peak", 0)),
                 "total_volume_mcm": round(float(summary.get("total_volume_mcm", 0.0)), 1),

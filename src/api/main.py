@@ -32,6 +32,7 @@ WS  /ws/live                        WebSocket: push on each new cycle result
 """
 
 import os
+import hmac
 import json
 import asyncio
 import logging
@@ -87,9 +88,9 @@ app.add_middleware(
 # Mount Administrative & Control Router (protected by JWT & API Key)
 app.include_router(admin_router)
 
-DB_URL = os.getenv("DATABASE_URL", "postgresql://hms_app:password@localhost:5432/rainfall_runoff")
-API_KEY = os.getenv("API_KEY", "Hydrocast_PCH")
-REQUIRE_API_KEY = os.getenv("REQUIRE_API_KEY", "false").lower() == "true"
+DB_URL = os.getenv("DATABASE_URL", "")
+API_KEY = os.getenv("API_KEY", "")
+REQUIRE_API_KEY = os.getenv("REQUIRE_API_KEY", "true").lower() == "true"
 
 # ── DB pool (asyncpg) ─────────────────────────────────────────────────────────
 
@@ -527,7 +528,8 @@ async def ws_live(websocket: WebSocket):
 @app.post("/internal/broadcast", include_in_schema=False)
 async def internal_broadcast(payload: dict, x_internal_key: str = Header(None)):
     """Called by orchestrator after each successful cycle. Not public."""
-    if x_internal_key != os.getenv("INTERNAL_KEY", "internal_secret"):
-        raise HTTPException(status_code=403)
+    _ik = os.getenv("INTERNAL_KEY", "")
+    if not _ik or not hmac.compare_digest(str(x_internal_key or ""), _ik):
+        raise HTTPException(status_code=403, detail="Invalid internal key")
     await ws_manager.broadcast(payload)
     return {"broadcast_to": len(ws_manager.connections)}

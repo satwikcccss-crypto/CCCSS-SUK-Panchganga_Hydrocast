@@ -3,14 +3,28 @@
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-export async function fetchDashboardData(runId?: string) {
+// ── Response cache (30s TTL) to avoid N+1 API calls across dashboard panels ──
+let _cache: { data: any; ts: number; runId?: string } | null = null;
+const CACHE_TTL_MS = 30_000;
+
+async function _cachedFetch(runId?: string): Promise<any> {
+  const now = Date.now();
+  if (_cache && (now - _cache.ts < CACHE_TTL_MS) && _cache.runId === runId) {
+    return _cache.data;
+  }
   const query = runId ? `?run_id=${encodeURIComponent(runId)}` : "";
-  const url = typeof window !== "undefined" 
-    ? `/api/v1/dashboard${query}` 
+  const url = typeof window !== "undefined"
+    ? `/api/v1/dashboard${query}`
     : `${BASE}/api/v1/dashboard${query}`;
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error("API route response not ok");
-  return await res.json();
+  const data = await res.json();
+  _cache = { data, ts: now, runId };
+  return data;
+}
+
+export async function fetchDashboardData(runId?: string) {
+  return _cachedFetch(runId);
 }
 
 export const api = {
@@ -174,8 +188,11 @@ export const api = {
   },
   calibration: async () => (await fetchDashboardData()).recalibration ?? null,
   peakArrival: async () => (await fetchDashboardData()).summary?.peak_arrival ?? null,
-  ratingCurves: async () => ({
-    SHIVAJI_BRIDGE: [],
-    RAJARAM_BRIDGE: [],
-  }),
+  ratingCurves: async () => {
+    const data = await fetchDashboardData();
+    return data.ratingCurves ?? {
+      SHIVAJI_BRIDGE: data.bridgeShivaji?.rating_curve ?? [],
+      RAJARAM_BRIDGE: data.bridgeRajaram?.rating_curve ?? [],
+    };
+  },
 };
