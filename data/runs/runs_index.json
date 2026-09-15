@@ -4,11 +4,11 @@
     "run_date": "15 Sep 2026",
     "cycle_time": "18z",
     "start_time": "2026-09-15T18:00:00+00:00",
-    "duration_seconds": 2.3,
+    "duration_seconds": 4.6,
     "peak_discharge_m3s": 24.3,
     "lead_hours_to_peak": 0,
     "total_volume_mcm": 7.9,
-    "total_rainfall_mm": 25.3,
+    "total_rainfall_mm": 32.6,
     "shivaji_peak_stage_m": 531.34,
     "rajaram_peak_stage_m": 532.88,
     "alert_level": "NORMAL",
@@ -248,7 +248,7 @@
     "spearman_rho": 0.0,
     "nse": -1.8498,
     "rmse": 0.276,
-    "lifecycle_status": "IN_PROGRESS",
+    "lifecycle_status": "LIFECYCLE_VERIFIED",
     "verified_hours": 78
   },
   {
