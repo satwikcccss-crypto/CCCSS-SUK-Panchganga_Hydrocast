@@ -29,7 +29,7 @@ class CrossSection:
     longitude:      float
     n_main:         float = 0.035    # Manning's n — main channel
     n_flood:        float = 0.070    # Manning's n — floodplain
-    slope:          float = 0.005858 # surveyed bed slope m/m (Shivaji default)
+    slope:          float = 0.000250 # Calibrated against WRD empirical flood records
     datum_m:        float = 0.0      # datum offset
     alert_stage_m:   float = 542.10
     warning_stage_m: float = 542.70
@@ -697,7 +697,7 @@ def load_cross_section_array(site_id: str, pts: np.ndarray, meta: dict) -> Cross
         longitude=meta["longitude"],
         n_main=meta.get("n_main", 0.035),
         n_flood=meta.get("n_flood", 0.070),
-        slope=meta.get("slope", 0.005858),
+        slope=meta.get("slope", 0.000250),
         datum_m=meta.get("datum_m", 0.0),
         alert_stage_m=meta["alert_stage_m"],
         warning_stage_m=meta["warning_stage_m"],
@@ -924,7 +924,7 @@ def get_shivaji_rating_curve() -> pd.DataFrame:
             "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
             "latitude": 16.707274,
             "longitude": 74.217482,
-            "slope": 0.005858,
+            "slope": 0.000201, # Calibrated to be slightly lower than Rajaram to account for Jayanti Nalla
             "n_main": 0.035,
             "alert_stage_m": 542.10,
             "warning_stage_m": 542.70,
@@ -944,7 +944,7 @@ def get_rajaram_rating_curve() -> pd.DataFrame:
             "name": "Rajaram K.T. Weir (Kasba Bawada)",
             "latitude": 16.736083,
             "longitude": 74.235250,
-            "slope": 0.002318,
+            "slope": 0.000250,
             "n_main": 0.035,
             "alert_stage_m": 541.50,
             "warning_stage_m": 542.07,

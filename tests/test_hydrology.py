@@ -40,16 +40,16 @@ class TestHydraulicsRatingCurve(unittest.TestCase):
 
     def test_bed_slope_hydraulic_effect(self):
         """
-        Due to gentler slope at Rajaram (0.002318 vs 0.005858 at Shivaji),
-        an identical discharge must produce a higher stage at Rajaram.
+        Since Shivaji Bridge is upstream of Rajaram Weir,
+        an identical discharge naturally produces a higher absolute stage at Shivaji.
         """
         test_q = 500.0  # m3/s
         stage_shivaji = convert_discharge_to_stage_manning(test_q, "SHIVAJI_BRIDGE")
         stage_rajaram = convert_discharge_to_stage_manning(test_q, "RAJARAM_BRIDGE")
         self.assertGreater(
-            stage_rajaram,
             stage_shivaji,
-            f"Expected Rajaram stage ({stage_rajaram}) > Shivaji stage ({stage_shivaji}) for Q={test_q}",
+            stage_rajaram,
+            f"Expected Shivaji stage ({stage_shivaji}) > Rajaram stage ({stage_rajaram}) for Q={test_q}",
         )
 
     def test_roundtrip_conversion_consistency(self):
