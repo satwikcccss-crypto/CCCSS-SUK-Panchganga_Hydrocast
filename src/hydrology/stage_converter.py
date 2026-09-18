@@ -770,16 +770,6 @@ RAJARAM_ANCHORS_Q = np.array([
     1935.00, 2015.31, 2116.14, 2162.93, 2450.00
 ])
 
-# Shivaji Bridge (higher channel slope S0 = 0.005858 vs Rajaram S0 = 0.002318)
-SHIVAJI_ANCHORS_STAGE = np.array([
-    530.18,  532.63,  533.54,  533.71,  533.99,  535.21,  535.59,
-    535.77,  536.41,  538.16,  539.02,  542.10,  542.70,  543.30,  545.33, 548.00
-])
-SHIVAJI_ANCHORS_Q = np.array([
-    0.0,     73.12,   127.12,  141.01,  175.57,  345.75,  403.07,
-    436.00,  588.85,  974.15,  1272.00, 1800.00, 2200.00, 2675.00, 3850.00, 5600.00
-])
-
 
 def build_calibrated_rating_curve(
     cs: CrossSection,
@@ -797,10 +787,12 @@ def build_calibrated_rating_curve(
     h_max = h_max if h_max is not None else (cs.hfl_m + 3.0)
 
     is_rajaram = cs.site_id in ("RAJARAM_BRIDGE", "RAJARAM_WEIR")
-    anchors_h = RAJARAM_ANCHORS_STAGE if is_rajaram else SHIVAJI_ANCHORS_STAGE
-    anchors_q = RAJARAM_ANCHORS_Q if is_rajaram else SHIVAJI_ANCHORS_Q
 
-    pchip = PchipInterpolator(anchors_h, anchors_q)
+    if is_rajaram:
+        pchip = PchipInterpolator(RAJARAM_ANCHORS_STAGE, RAJARAM_ANCHORS_Q)
+    else:
+        pchip = None
+
     wse_values = np.linspace(h_min, h_max, n_points)
     rows = []
 
@@ -809,19 +801,28 @@ def build_calibrated_rating_curve(
             q = 0.0
             A, P, R = 0.0, 0.0, 0.0
         else:
-            q = float(np.maximum(0.0, pchip(wse)))
             A, P = _wetted_properties(cs.station_m, cs.elevation_m, wse)
             R = A / P if P > 1e-4 else 0.0
+            
+            if is_rajaram and pchip is not None:
+                q = float(np.maximum(0.0, pchip(wse)))
+            else:
+                q = (1.0 / cs.n_main) * A * (R ** (2/3)) * np.sqrt(cs.slope)
 
         rows.append({
             "stage_m":     round(float(wse), 3),
             "area_m2":     round(float(A), 2),
             "wp_m":        round(float(P), 2),
             "hyd_radius":  round(float(R), 4),
-            "q_m3s":       round(float(q), 2),
+            "q_m3s":       float(q),
         })
 
-    return pd.DataFrame(rows)
+    df = pd.DataFrame(rows)
+    # Enforce strict monotonicity (physically, discharge shouldn't drop at higher stages due to 1D Manning floodplain friction artifacts)
+    df["q_m3s"] = np.maximum.accumulate(df["q_m3s"].values)
+    df["q_m3s"] = df["q_m3s"].round(2)
+
+    return df
 
 
 def build_rating_curve(
@@ -921,8 +922,8 @@ def get_shivaji_rating_curve() -> pd.DataFrame:
     if _SHIVAJI_RC_CACHE is None:
         cs = load_cross_section_array("SHIVAJI_BRIDGE", SHIVAJI_SURVEY, {
             "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
-            "latitude": 16.708917,
-            "longitude": 74.219278,
+            "latitude": 16.707274,
+            "longitude": 74.217482,
             "slope": 0.005858,
             "n_main": 0.035,
             "alert_stage_m": 542.10,
@@ -941,8 +942,8 @@ def get_rajaram_rating_curve() -> pd.DataFrame:
     if _RAJARAM_RC_CACHE is None:
         cs = load_cross_section_array("RAJARAM_BRIDGE", SHIVAJI_SURVEY, {
             "name": "Rajaram K.T. Weir (Kasba Bawada)",
-            "latitude": 16.736167,
-            "longitude": 74.235889,
+            "latitude": 16.736083,
+            "longitude": 74.235250,
             "slope": 0.002318,
             "n_main": 0.035,
             "alert_stage_m": 541.50,
@@ -959,12 +960,12 @@ def build_all_rating_curves():
     """Builds and returns rating curves for both bridge sites."""
     cs_s = load_cross_section_array("SHIVAJI_BRIDGE", SHIVAJI_SURVEY, {
         "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
-        "latitude": 16.708917, "longitude": 74.219278, "slope": 0.005858, "n_main": 0.035,
+        "latitude": 16.707274, "longitude": 74.217482, "slope": 0.005858, "n_main": 0.035,
         "alert_stage_m": 542.10, "warning_stage_m": 542.70, "danger_stage_m": 543.30, "hfl_m": 545.33,
     })
     cs_r = load_cross_section_array("RAJARAM_BRIDGE", SHIVAJI_SURVEY, {
         "name": "Rajaram K.T. Weir (Kasba Bawada)",
-        "latitude": 16.736167, "longitude": 74.235889, "slope": 0.002318, "n_main": 0.035,
+        "latitude": 16.736083, "longitude": 74.235250, "slope": 0.002318, "n_main": 0.035,
         "alert_stage_m": 541.50, "warning_stage_m": 542.07, "danger_stage_m": 543.30, "hfl_m": 545.33,
     })
     return {

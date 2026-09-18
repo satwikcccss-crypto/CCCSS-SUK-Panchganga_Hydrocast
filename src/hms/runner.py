@@ -276,8 +276,12 @@ def execute_hec_hms(
         cum_q = np.zeros(90, dtype=np.float32)
 
         for h in range(90):
+            # Base impervious runoff (e.g. river surface, roads) guarantees a realistic hydrograph shape for all rainfall
+            impervious_q = cum_p[h] * 0.02
+            cn_q = 0.0
             if cum_p[h] > ia:
-                cum_q[h] = ((cum_p[h] - ia) ** 2) / (cum_p[h] - ia + s_ret)
+                cn_q = ((cum_p[h] - ia) ** 2) / (cum_p[h] - ia + s_ret)
+            cum_q[h] = cn_q + impervious_q
 
         excess_p = np.diff(cum_q, prepend=0.0)
         excess_p = np.maximum(0.0, excess_p)
@@ -343,12 +347,19 @@ def execute_hec_hms(
     in_r1 = out_r2 + out_r3 + sub_q_direct["S3"] + sub_q_direct["S2"]
     out_r1 = route_muskingum(in_r1, reaches["R1"]["k_hr"], reaches["R1"]["x"])
 
+    # Baseflow Recession: allow baseflow to decay naturally (k = 0.002 per hour) to mimic physical river recession
+    baseflow_array = baseflow * np.exp(-0.002 * np.arange(90, dtype=np.float32))
+
     # Total Basin Outflow at Sink-1 (Rajaram K.T. Weir): R1 Outflow + Local Karveer Subbasin S1
     q_surface = out_r1 + sub_q_direct["S1"]
-    q_total = q_surface + baseflow
+    q_total = q_surface + baseflow_array
 
-    # Determine peak lead time and discharge
-    peak_idx = int(np.argmax(q_total))
+    # Determine peak lead time and discharge based on the surface runoff wave, not the receding baseflow
+    peak_idx = int(np.argmax(q_surface))
+    # If there is absolutely no surface runoff, default to 0
+    if float(q_surface[peak_idx]) < 0.1:
+        peak_idx = 0
+    
     peak_q = round(float(q_total[peak_idx]), 1)
     peak_h = peak_idx
 
@@ -360,12 +371,13 @@ def execute_hec_hms(
     for h in range(90):
         s_q = round(float(q_surface[h]), 1)
         t_q = round(float(q_total[h]), 1)
+        b_q = round(float(baseflow_array[h]), 1)
         hydrograph.append({
             "hour": h,
             "timestamp": timestamps[h],
             "discharge_m3s": t_q,
             "surface_runoff_m3s": s_q,
-            "baseflow_m3s": baseflow,
+            "baseflow_m3s": b_q,
             "is_peak": h == peak_h,
         })
 

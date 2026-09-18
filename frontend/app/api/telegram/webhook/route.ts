@@ -87,12 +87,20 @@ export async function POST(req: Request) {
         if (shivaji) {
           msg += `📍 <b>${shivaji.site_name}</b>\n`;
           msg += `Current: ${shivaji.current_stage_m?.toFixed(2)} m\n`;
-          msg += `Peak: <code>${shivaji.peak_stage_m?.toFixed(2)} m</code> at ${shivaji.peak_arrival_time || 'N/A'}\n\n`;
+          if (shivaji.is_receding) {
+            msg += `Status: 📉 Flow Receding (No Strike Expected)\n\n`;
+          } else {
+            msg += `Peak: <code>${shivaji.peak_stage_m?.toFixed(2)} m</code> at ${shivaji.peak_arrival_time || 'N/A'}\n\n`;
+          }
         }
         if (rajaram) {
           msg += `📍 <b>${rajaram.site_name}</b>\n`;
           msg += `Current: ${rajaram.current_stage_m?.toFixed(2)} m\n`;
-          msg += `Peak: <code>${rajaram.peak_stage_m?.toFixed(2)} m</code> at ${rajaram.peak_arrival_time || 'N/A'}\n\n`;
+          if (rajaram.is_receding) {
+            msg += `Status: 📉 Flow Receding (No Strike Expected)\n\n`;
+          } else {
+            msg += `Peak: <code>${rajaram.peak_stage_m?.toFixed(2)} m</code> at ${rajaram.peak_arrival_time || 'N/A'}\n\n`;
+          }
         }
         await sendMessage(chatId, msg);
       }

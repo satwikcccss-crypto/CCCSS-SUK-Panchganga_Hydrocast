@@ -1,4 +1,5 @@
 # HydroCast: Real-Time Operational Flood Forecasting & Basin Intelligence
+
 ### Panchganga River Catchment · Kolhapur District, Maharashtra, India
 
 ```
@@ -31,6 +32,7 @@
 ---
 
 ## Table of Contents
+
 1. [Executive Summary](#1-executive-summary)
 2. [Geographic & Physiographic Context](#2-geographic--physiographic-context)
 3. [End-to-End System Architecture](#3-end-to-end-system-architecture)
@@ -58,6 +60,7 @@
 During the Southwest Monsoon (June–September), intense orographic rainfall along the crest of the Western Ghats (Sahyadri mountains, often exceeding $100-250\text{ mm/day}$) drains rapidly through steep basaltic gorges, converging into the urban bottleneck of **Kolhapur city**. Catastrophic floods in August 2019 and July 2021 demonstrated that municipal authorities require **at least 48 to 72 hours of predictive lead time** to orchestrate barrier deployments, sluice gate operations, and civilian evacuations.
 
 HydroCast solves this challenge by coupling:
+
 - **Numerical Weather Prediction (ECMWF IFS HRES 9km / 0.1°):** 90-hour forward quantitative precipitation forecasts updated every 6 hours with exponential backoff & jitter resilience (`src/ecmwf/retry_utils.py`).
 - **Physical Hydrologic Watershed Routing (HEC-HMS 4.x / SCS-CN):** Loss modeling, Clark unit hydrograph transformation, and Muskingum channel routing across 9 subbasins.
 - **Calibrated Multi-Regime River Hydraulics:** Bi-directional stage-to-discharge rating curves based on surveyed bed slopes and anchored to 19 official Government field gauge records.
@@ -91,6 +94,7 @@ HydroCast solves this challenge by coupling:
 ```
 
 The basin drains five sacred tributaries that unite at **Prayag Chikhali**:
+
 1. **Kasari River ($S_6, S_3$):** Longest tributary ($48\text{ km}$), draining the high-altitude Gaganbawda ridge.
 2. **Kumbhi River ($S_5$):** Originates near Shengaon, steep basaltic runoff.
 3. **Tulsi River ($S_4, S_2$):** Drains through agricultural valleys into Sangarul.
@@ -151,6 +155,7 @@ Below Prayag, the consolidated **Panchganga River** flows through Kolhapur city 
 ## 4. Hydraulic Calibration & The 30% PBIAS Resolution
 
 ### 4.1 Diagnostic Autopsy of the Uncalibrated Model
+
 In early iterations, the hydrological simulation produced reasonably accurate stage elevations ($\approx 532.6 - 533.5\text{m}$), but calculated river discharge collapsed to only **$16.6\text{ m}^3/s$** (Shivaji) and **$10.4\text{ m}^3/s$** (Rajaram), resulting in an unacceptable volumetric error (**$\text{PBIAS} \approx 30 - 40\%$**).
 
 The root cause was traced to three fatal hydraulic flaws:
@@ -163,6 +168,7 @@ The root cause was traced to three fatal hydraulic flaws:
    Using natural cubic splines introduced severe polynomial overshoots between the live gauge stage and flood levels, creating artificial dips where $\frac{dQ}{dh} < 0$.
 
 ### 4.2 The Hydraulic Resolution
+
 1. **Dual-Regime Segmentation:**
    - In-Bank Flow ($h \le 535.0\text{m}$): Governed by surveyed slope $S_0 = 0.005858$.
    - Overbank Flood Flow ($h \ge 541.0\text{m}$): Calibrated against official government flood records.
@@ -182,7 +188,7 @@ The table below presents the official field telemetry records from the Maharasht
 
 ```
 +----+-----------------------+--------------+------------------+------------------+-------------------------+--------------------+
-| No | आजची पातळी (Stage m)  | पातळी (फुट)  | विसर्ग (क्युसेक्स)| विसर्ग Q (m³/s)  | प्रवाह स्थिती (Regime)  | CWC पूर स्तर (Alert|
+| No | आजची पातळी (Stage m)  | पातळी (फुट)  | विसर्ग (क्युसेक्स)| विसर्ग Q (m³/s)  | प्रवाह स्थिती (Regime)  | CWC पूर स्तर (Alert)|
 +----+-----------------------+--------------+------------------+------------------+-------------------------+--------------------+
 | 01 | 530.18 m MSL          | 00' 00"      | 0 cusecs         | 0.00 m³/s        | गेज शून्य पातळी (Datum) | DRY BED            |
 | 02 | 533.54 m MSL          | 11' 00"      | 2,825 cusecs     | 80.00 m³/s       | पात्रातील प्रवाह        | NORMAL             |
@@ -214,6 +220,7 @@ The table below presents the official field telemetry records from the Maharasht
 ## 6. Hydrologic Runoff & Infiltration Mechanics
 
 ### 6.1 SCS-CN Infiltration Loss Model
+
 Runoff depth $Q_{cum}$ is computed from accumulated rainfall $P$ using the standard USDA-NRCS equation:
 
 $$S_{ret} = \frac{25,400}{CN} - 254 \quad (\text{Potential soil retention in mm})$$
@@ -227,11 +234,13 @@ Incremental excess rainfall generated in each 1-hour interval:
 $$\Delta P_e[h] = Q_{cum}[h] - Q_{cum}[h-1]$$
 
 ### 6.2 Clark Unit Hydrograph Convolution
+
 Runoff depth is converted into river discharge via discrete convolution with the Clark Unit Hydrograph $U(t)$:
 
 $$Q_{surface}[n] = \sum_{m=1}^{\min(n, M)} \Delta P_e[m] \cdot U[n - m + 1] \cdot \left(\frac{A_{subbasin} \cdot 1,000}{3,600}\right)$$
 
 ### 6.3 Muskingum Channel Reach Routing
+
 As flood waves travel downstream through the $42.6\text{ km}$ main river stem, channel storage attenuates peak discharge:
 
 $$O_2 = C_0 \cdot I_2 + C_1 \cdot I_1 + C_2 \cdot O_1$$
@@ -269,7 +278,8 @@ $$\text{With } C_0 + C_1 + C_2 \equiv 1.000, \quad K \approx 4.2\text{ hours}, \
 +----+-------------------+----------+-----------+------------+------------+--------------------+
 ```
 
-### Dynamic Conservative Selection Strategy:
+### Dynamic Conservative Selection Strategy
+
 In multi-station subbasins ($S_2, S_3, S_6, S_8$), the system dynamically evaluates 90-hour cumulative rainfall across all candidate stations and selects the **maximum-rainfall station** as the governing input. This prevents localized cloudbursts over the Sahyadri mountains from being artificially diluted by valley stations.
 
 ---
@@ -322,6 +332,7 @@ HydroCast incorporates an autonomous, real-time IoT verification engine that eva
 ```
 
 ### 9.1 Live Empirical Ground Truth
+
 - **Sensor Instrument:** Autonomous Ultrasonic Water Level Transmitter mounted beneath the central girder of Chhatrapati Shivaji Maharaj Bridge ($16.708917^\circ\text{ N}, 74.219278^\circ\text{ E}$).
 - **Sensor Reference Datum:** Surveyed mounting face at **$549.35\text{ m MSL}$**.
 - **Dual-Units Equation:**
@@ -330,6 +341,7 @@ HydroCast incorporates an autonomous, real-time IoT verification engine that eva
 - **1-Hour Mean Resampling:** Filters surface wave chop and ultrasonic sensor ripple jitter into clean hourly means, calculating mean stage, minimum, maximum, sample count, and raw distance in feet.
 
 ### 9.2 Mathematical Accuracy Metrics (Zero Synthetic Noise)
+
 All accuracy calculations in [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py) use rigorous empirical formulations:
 
 1. **Root Mean Square Error (RMSE):**
@@ -344,6 +356,7 @@ All accuracy calculations in [`src/hydrology/realtime_telemetry_validator.py`](f
    $$\rho = 1 - \frac{6 \sum d_i^2}{N(N^2 - 1)}, \quad R^2 = \left(\frac{\sum (x - \bar{x})(y - \bar{y})}{\sqrt{\sum (x - \bar{x})^2 \sum (y - \bar{y})^2}}\right)^2$$
 
 ### 9.3 Active Simulation Run Performance (`CYC_20260903_18z`)
+
 - **Lifecycle Verification State:** `IN_PROGRESS (17/90h verified - 18.9%)`
 - **Sample Size ($N$):** 17 matched hourly points ($T+0\text{h} \to T+16\text{h}$)
 - **Stage Dispersion:** $\text{RMSE} = \mathbf{\pm 0.083\text{ m}}$ ($8.3\text{ cm}$), $\text{MAE} = \mathbf{\pm 0.057\text{ m}}$ ($5.7\text{ cm}$)
@@ -386,7 +399,8 @@ The documentation suite is organized in the [`docs/`](file:///e:/hydrocast_compl
 
 ## 11. REST API Specification
 
-### 11.1 Key Endpoints:
+### 11.1 Key Endpoints
+
 ```
 +--------+-------------------------------+-------------------------------------------------------+
 | Method | Route Path                    | Purpose & Return Payload                              |
@@ -414,9 +428,11 @@ The documentation suite is organized in the [`docs/`](file:///e:/hydrocast_compl
 ```
 
 ### 11.2 Example Query: Model Accuracy
+
 ```bash
 curl -s http://localhost:8000/api/v1/accuracy | jq .
 ```
+
 ```json
 {
   "cycle_id": "CYC_20260903_06z",
@@ -453,12 +469,14 @@ The frontend application (`frontend/`) is built on **Next.js 14** and features f
 
 ## 13. Quickstart & Local Installation
 
-### Prerequisites:
+### Prerequisites
+
 - Python 3.10+ (64-bit)
 - Node.js 18+ and npm
 - Git
 
 ### Step 1: Clone Repository & Create Virtual Environment
+
 ```bash
 git clone https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast.git
 cd CCCSS-SUK-Panchganga_Hydrocast
@@ -469,27 +487,32 @@ pip install -r requirements.txt
 ```
 
 ### Step 2: Configure Environment (Optional)
+
 ```bash
 cp .env.example .env
 # If DATABASE_URL is unset, HydroCast runs autonomously in standalone JSON mode!
 ```
 
 ### Step 3: Run a Simulation Cycle
+
 ```bash
 python -m src.ecmwf.open_meteo
 ```
 
 ### Step 4: Run Automated Tests
+
 ```bash
 python -m unittest discover tests
 ```
 
 ### Step 5: Start Backend API Server
+
 ```bash
 uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### Step 6: Start Next.js Frontend Dashboard
+
 ```bash
 cd frontend
 npm install
@@ -499,10 +522,13 @@ npm run start
 ```
 
 ### Option B: 1-Command Production Startup via Docker Compose
+
 HydroCast is fully containerized. To spin up PostgreSQL 15 + PostGIS, the FastAPI Python/Java backend, and the Next.js frontend in isolated production containers:
+
 ```bash
 docker-compose up -d --build
 ```
+
 - **Dashboard:** `http://localhost:3000`
 - **FastAPI API & Docs:** `http://localhost:8000/docs`
 - **Health Check:** `curl http://localhost:8000/api/v1/health`
@@ -512,13 +538,17 @@ docker-compose up -d --build
 ## 14. Production Deployment & Continuous Automation
 
 ### 14.1 Docker Multi-Container Compose Architecture
+
 Production deployments run with zero host configuration using `docker-compose.yml`:
+
 - **`hydrocast-db`:** PostgreSQL 15 + PostGIS 3.4 with automated schema migration.
 - **`hydrocast-backend`:** Multi-stage image containing Python 3.12, OpenJDK 17, GDAL, libeccodes, and HEC-DSS runtime.
 - **`hydrocast-frontend`:** Node 20 Alpine standalone SSR bundle.
 
 ### 14.2 Automated 6-Hourly Forecast Cycles (ECMWF Operational Cycles)
+
 Forecast cycles run automatically 45 minutes after ECMWF global numerical model releases:
+
 - **00z Cycle:** 06:45 AM IST (01:15 UTC)
 - **06z Cycle:** 12:45 PM IST (07:15 UTC)
 - **12z Cycle:** 06:45 PM IST (13:15 UTC)
@@ -529,7 +559,9 @@ Forecast cycles run automatically 45 minutes after ECMWF global numerical model 
 ```
 
 ### 14.3 Continuous 1-Hour Telemetry Validation (GitHub Actions)
+
 A high-frequency verification workflow operates autonomously via [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
+
 - **Interval:** **Every 1 hour at minute 0** (`cron: "0 * * * *"`)
 - **Ingestion:** Pulls 800 ultrasonic radar telemetry feeds from **ThingSpeak Channel 3424513**.
 - **Resampling:** Aggregates 5-minute raw transducer pings into clean hourly means.
@@ -537,17 +569,22 @@ A high-frequency verification workflow operates autonomously via [`.github/workf
 - **Continuous Sync:** Updates `frontend/public/data/latest_pipeline_state.json` and mirrored run archives in `frontend/public/data/runs/`, pushing automatically to GitHub to keep Vercel production synchronized.
 
 ### 14.4 Multi-Channel DDMA Telegram Flood Alerting
+
 The alerting engine (`src/alerts/evaluator.py`, `src/alerts/telegram_bot.py`) monitors bridge stages on every cycle:
+
 - Automatically formats official DDMA flood bulletins with severity emoji badges.
 - Dispatches emergency push bulletins to district disaster management Telegram channels (`TELEGRAM_CHAT_ID`, `DDMA_TELEGRAM_CHATS`).
 - Dispatches JSON payloads to emergency agency webhooks (`DISASTER_MANAGEMENT_WEBHOOKS`).
 
 ### 14.5 Automated Cold Storage & Telemetry Archival
+
 To ensure PostgreSQL and Supabase queries remain sub-second over years of operation:
+
 - High-frequency records older than 90 days are pruned into Snappy-compressed columnar Parquet files (`src/db/archive_runs.py`).
 - Executable via weekly cron or authenticated API: `POST /api/v1/admin/archive`.
 
 ### 14.6 Vercel Serverless Frontend Deployment
+
 - The Next.js 14 dashboard deploys serverlessly to Vercel.
 - API route handlers (`/api/v1/dashboard?run_id=...` and `/api/v1/history`) dynamically load active and historical run states directly from bundled static assets in `frontend/public/data/runs/`, guaranteeing 100% uptime with zero serverless filesystem resolution errors.
 
@@ -769,16 +806,16 @@ In September 2026, the HydroCast repository underwent a comprehensive architectu
    - **Meteorological Exponential Backoff & Jitter**: Built [`src/ecmwf/retry_utils.py`](file:///e:/hydrocast_complete/src/ecmwf/retry_utils.py) and quality control pipeline sanitizing NaNs/Infs, clipping negative values, capping extreme rainfall at 250 mm/hr, and providing orographic Ghats fallbacks.
    - Added [`database/README.md`](file:///e:/hydrocast_complete/database/README.md) providing clear schema migration and deployment instructions.
 
-4. **Python Package Modularity & Standardized Exports**:
+8. **Python Package Modularity & Standardized Exports**:
    - Introduced explicit `__init__.py` files across `src/` and all 9 subpackages (`alerts`, `api`, `db`, `dss`, `ecmwf`, `hms`, `hydrology`, `processing`, `sensors`), enabling clean package discovery and standard namespace imports.
    - Modularized `src/api/notifier.py` by extracting the CLI shim into [`src/db/cycle_complete.py`](file:///e:/hydrocast_complete/src/db/cycle_complete.py).
    - Hardened [`src/dss/writer.py`](file:///e:/hydrocast_complete/src/dss/writer.py) by updating the default basin parameter to `PANCHGANGA` and standardizing imports.
 
-5. **Automated Unit & Regression Test Suite**:
+9. **Automated Unit & Regression Test Suite**:
    - Introduced [`tests/`](file:///e:/hydrocast_complete/tests/) with 21 automated test cases verifying rating curve monotonicity ($dQ/dh > 0$), physical bed slope effects, catchment topology coverage, real-time ThingSpeak hourly resampling, and statistical validation metrics (Spearman $\rho$, NSE, RMSE, PBIAS).
    - All tests pass with 100% success (`Ran 21 tests in 0.044s, OK`).
 
-6. **Real-Time ThingSpeak IoT Validation & Continuous 1-Hour Verification Pipeline**:
+10. **Real-Time ThingSpeak IoT Validation & Continuous 1-Hour Verification Pipeline**:
    - **Pure Empirical Telemetry**: Built [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py) querying ThingSpeak Channel 3424513, fetching 800 live ultrasonic sensor readings, and resampling them into clean hourly averages.
    - **Elimination of Synthetic Formulas**: Removed synthetic noise sine equations; metrics now compute purely from empirical physical transducer measurements.
    - **Dual-Units Architecture**: Retained raw ultrasonic distance in feet (`observed_distance_ft`) alongside stage in meters MSL (`observed_stage_m`).

@@ -473,8 +473,8 @@ def validate_run_with_observations(
         "sensor_datum_msl": SHIVAJI_DATUM_MSL,
         "reach_metadata": {
             "validation_point": "Chhatrapati Shivaji Maharaj Bridge",
-            "latitude": 16.708917,
-            "longitude": 74.219278,
+            "latitude": 16.707274,
+            "longitude": 74.217482,
             "channel_slope": 0.005858,
             "travel_time_from_hms_outlet_hours": 1.5,
             "downstream_weir": "Rajaram K.T. Weir (3.8 km downstream, S0=0.002318)",

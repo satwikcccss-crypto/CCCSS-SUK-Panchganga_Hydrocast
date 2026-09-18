@@ -3,7 +3,7 @@ import useSWR from "swr";
 import dynamic from "next/dynamic";
 import { api } from "@/lib/api";
 import FloodBanner from "@/components/FloodBanner";
-import EngineeringGauge, { ZoomedGauge, GaugeSensor, GaugeData } from "@/components/EngineeringGauge";
+import EngineeringGauge, { GaugeSensor, GaugeData } from "@/components/EngineeringGauge";
 
 import DischargeDetailsCard from "@/components/DischargeDetailsCard";
 
@@ -19,7 +19,7 @@ export default function OverviewPanel({
   onNavigateTab: (tab: string) => void;
   onSelectStation: (stationId: string) => void;
 }) {
-  const [activeModalSensor, setActiveModalSensor] = useState<{ sensor: GaugeSensor; data: GaugeData } | null>(null);
+
 
   const { data: status } = useSWR("status", api.status, { refreshInterval: 15000 });
   const { data: summary } = useSWR("summary", api.runoffSummary, { refreshInterval: 30000 });
@@ -235,10 +235,14 @@ export default function OverviewPanel({
 
               <div className="mt-2 text-xs text-slate-600">
                 {shivajiPeakArr?.peak_arrival_time ? (
-                  <span>
-                    Expected Strike: <span className="font-semibold text-slate-800">{new Date(shivajiPeakArr.peak_arrival_time).toLocaleString("en-IN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
-                    {" "}(Permissible: {new Date(shivajiPeakArr?.confidence_interval?.earliest_arrival_time ?? shivajiPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} – {new Date(shivajiPeakArr?.confidence_interval?.latest_arrival_time ?? shivajiPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })})
-                  </span>
+                  shivajiPeakArr.is_receding ? (
+                    <span className="text-slate-500 italic">Flow Receding (No Flood Peak Expected)</span>
+                  ) : (
+                    <span>
+                      Expected Strike: <span className="font-semibold text-slate-800">{new Date(shivajiPeakArr.peak_arrival_time).toLocaleString("en-IN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                      {" "}(Permissible: {new Date(shivajiPeakArr?.confidence_interval?.earliest_arrival_time ?? shivajiPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} – {new Date(shivajiPeakArr?.confidence_interval?.latest_arrival_time ?? shivajiPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })})
+                    </span>
+                  )
                 ) : (
                   <span>Awaiting forecast cycle peak time</span>
                 )}
@@ -290,10 +294,14 @@ export default function OverviewPanel({
 
               <div className="mt-2 text-xs text-slate-600">
                 {rajaramPeakArr?.peak_arrival_time ? (
-                  <span>
-                    Expected Strike: <span className="font-semibold text-slate-800">{new Date(rajaramPeakArr.peak_arrival_time).toLocaleString("en-IN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
-                    {" "}(Permissible: {new Date(rajaramPeakArr?.confidence_interval?.earliest_arrival_time ?? rajaramPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} – {new Date(rajaramPeakArr?.confidence_interval?.latest_arrival_time ?? rajaramPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })})
-                  </span>
+                  rajaramPeakArr.is_receding ? (
+                    <span className="text-slate-500 italic">Flow Receding (No Flood Peak Expected)</span>
+                  ) : (
+                    <span>
+                      Expected Strike: <span className="font-semibold text-slate-800">{new Date(rajaramPeakArr.peak_arrival_time).toLocaleString("en-IN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                      {" "}(Permissible: {new Date(rajaramPeakArr?.confidence_interval?.earliest_arrival_time ?? rajaramPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} – {new Date(rajaramPeakArr?.confidence_interval?.latest_arrival_time ?? rajaramPeakArr.peak_arrival_time).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })})
+                    </span>
+                  )
                 ) : (
                   <span>Awaiting forecast cycle peak time</span>
                 )}
@@ -374,14 +382,12 @@ export default function OverviewPanel({
                 <EngineeringGauge
                   sensor={shivajiSensor}
                   data={shivajiData}
-                  onClick={() => setActiveModalSensor({ sensor: shivajiSensor, data: shivajiData })}
                 />
               </div>
               <div className="flex flex-col">
                 <EngineeringGauge
                   sensor={rajaramSensor}
                   data={rajaramData}
-                  onClick={() => setActiveModalSensor({ sensor: rajaramSensor, data: rajaramData })}
                 />
               </div>
             </div>
@@ -438,14 +444,7 @@ export default function OverviewPanel({
         )}
       </div>
 
-      {/* ── INTERACTIVE ZOOMED GAUGE MODAL ─────────────────────────────────── */}
-      {activeModalSensor && (
-        <ZoomedGauge
-          sensor={activeModalSensor.sensor}
-          data={activeModalSensor.data}
-          onClose={() => setActiveModalSensor(null)}
-        />
-      )}
+
     </div>
   );
 }

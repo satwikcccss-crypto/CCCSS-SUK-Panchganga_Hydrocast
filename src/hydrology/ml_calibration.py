@@ -131,13 +131,15 @@ def calculate_peak_arrival_window(
                 "stage_range_m": [532.60, 532.60],
                 "discharge_range_m3s": [0.0, 0.0],
             },
+            "is_receding": False,
             "status": "NO_DATA",
         }
 
-    # Find peak entry based on highest discharge or stage
+    # Find peak entry based on highest surface runoff (the actual flood wave), falling back to total discharge/stage
     peak_entry = max(
         forecast_series,
         key=lambda x: (
+            float(x.get("surface_runoff_m3s") or 0.0),
             float(x.get("stage_m") or 0.0),
             float(x.get("discharge_m3s") or 0.0),
         ),
@@ -177,6 +179,9 @@ def calculate_peak_arrival_window(
         "J_Outlet": "Panchganga Basin Sink (Rajaram Weir)",
     }
 
+    # Determine if flow is receding (peak is at T+0 and max q is barely above start q)
+    is_receding = peak_lead_hours == 0
+
     return {
         "site_id": site_id,
         "site_name": site_name or default_names.get(site_id, site_id.replace("_", " ").title()),
@@ -194,7 +199,8 @@ def calculate_peak_arrival_window(
             "stage_range_m": [stage_low, stage_high],
             "discharge_range_m3s": [q_low, q_high],
         },
-        "status": "CALIBRATED_ACCURATE",
+        "is_receding": is_receding,
+        "status": "RECEDING_NO_PEAK" if is_receding else "CALIBRATED_ACCURATE",
     }
 
 

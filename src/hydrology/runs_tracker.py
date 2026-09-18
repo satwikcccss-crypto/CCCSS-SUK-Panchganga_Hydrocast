@@ -309,8 +309,8 @@ def seed_historical_runs_if_needed() -> None:
                 "site": {
                     "site_id": "SHIVAJI_BRIDGE",
                     "site_name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
-                    "latitude": 16.708917,
-                    "longitude": 74.219278,
+                    "latitude": 16.707274,
+                    "longitude": 74.217482,
                     "alert_stage_m": 542.10,
                     "warning_stage_m": 542.70,
                     "danger_stage_m": 543.30,
@@ -324,8 +324,8 @@ def seed_historical_runs_if_needed() -> None:
                 "site": {
                     "site_id": "RAJARAM_BRIDGE",
                     "site_name": "Rajaram K.T. Weir (Kasba Bawada)",
-                    "latitude": 16.736167,
-                    "longitude": 74.235889,
+                    "latitude": 16.736083,
+                    "longitude": 74.235250,
                     "alert_stage_m": 541.50,
                     "warning_stage_m": 542.07,
                     "danger_stage_m": 543.30,

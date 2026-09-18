@@ -121,9 +121,15 @@ export default function DischargeDetailsCard({ siteId = "RAJARAM_BRIDGE" }: { si
           <p className="text-xs text-gray-500">Panchganga Basin Sink & Dynamic Rating Station</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center px-2.5 py-1 rounded bg-indigo-50 border border-indigo-200 text-xs font-medium text-indigo-800">
-            Peak Arrival: T+{peakLead}h (±2.0h window)
-          </span>
+          {bData?.peak_arrival?.is_receding ? (
+            <span className="inline-flex items-center px-2.5 py-1 rounded bg-slate-50 border border-slate-200 text-xs font-medium text-slate-600">
+              Flow Receding
+            </span>
+          ) : (
+            <span className="inline-flex items-center px-2.5 py-1 rounded bg-indigo-50 border border-indigo-200 text-xs font-medium text-indigo-800">
+              Peak Arrival: T+{peakLead}h (±2.0h window)
+            </span>
+          )}
         </div>
       </div>
 

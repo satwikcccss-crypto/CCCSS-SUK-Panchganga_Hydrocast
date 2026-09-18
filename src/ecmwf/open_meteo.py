@@ -391,8 +391,8 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "district": "Kolhapur",
             "authority": "Kolhapur Municipal Corporation (KMC) / WRD Maharashtra",
             "description": "Ultrasonic radar sensor on the Chhatrapati Shivaji Maharaj Bridge over the Panchganga River, Kolhapur. Monitors real-time water stage at the primary urban crossing. Sensor Mount Elevation: 549.35m MSL.",
-            "latitude": 16.708917,
-            "longitude": 74.219278,
+            "latitude": 16.707274,
+            "longitude": 74.217482,
             "sensor_elevation_msl": 549.35,
             "sensor_type": "Ultrasonic Radar Level Transmitter (ThingSpeak IoT)",
             "alert_stage_m": 542.10,
@@ -413,8 +413,8 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "district": "Kolhapur",
             "authority": "WRD Maharashtra / Kolhapur Municipal Corporation (KMC)",
             "description": "Primary Panchganga flood & water-level monitoring barrage (Kasba Bawada). Alert thresholds referenced to WRD Maharashtra MSL datum.",
-            "latitude": 16.736167,
-            "longitude": 74.235889,
+            "latitude": 16.736083,
+            "longitude": 74.235250,
             "alert_stage_m": 541.50,
             "warning_stage_m": 542.07,
             "danger_stage_m": 543.30,
@@ -474,6 +474,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
                 "peak_arrival_time": peak_arrival_shivaji["peak_arrival_time"],
                 "peak_lead_hours": peak_arrival_shivaji["peak_lead_hours"],
                 "confidence_interval": peak_arrival_shivaji["confidence_interval"],
+                "is_receding": peak_arrival_shivaji.get("is_receding", False),
                 "alert_level": shivaji_forecast[0]["alert_level"],
             },
             "rajaram": {
@@ -483,6 +484,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
                 "peak_arrival_time": peak_arrival_rajaram["peak_arrival_time"],
                 "peak_lead_hours": peak_arrival_rajaram["peak_lead_hours"],
                 "confidence_interval": peak_arrival_rajaram["confidence_interval"],
+                "is_receding": peak_arrival_rajaram.get("is_receding", False),
                 "alert_level": rajaram_forecast[0]["alert_level"],
             }
         }
