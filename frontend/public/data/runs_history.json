@@ -1,5 +1,26 @@
 [
   {
+    "cycle_id": "CYC_20260920_12z",
+    "run_date": "20 Sep 2026",
+    "cycle_time": "12z",
+    "start_time": "2026-09-20T12:00:00+00:00",
+    "duration_seconds": 4.0,
+    "peak_discharge_m3s": 2.2,
+    "lead_hours_to_peak": 89,
+    "total_volume_mcm": 0.6,
+    "total_rainfall_mm": 26.2,
+    "shivaji_peak_stage_m": 531.37,
+    "rajaram_peak_stage_m": 531.28,
+    "alert_level": "NORMAL",
+    "status": "completed",
+    "has_validation": true,
+    "spearman_rho": null,
+    "nse": null,
+    "rmse": null,
+    "lifecycle_status": "PENDING",
+    "verified_hours": 0
+  },
+  {
     "cycle_id": "CYC_20260920_06z",
     "run_date": "20 Sep 2026",
     "cycle_time": "06z",
@@ -248,7 +269,7 @@
     "spearman_rho": null,
     "nse": null,
     "rmse": null,
-    "lifecycle_status": "PENDING",
+    "lifecycle_status": "LIFECYCLE_VERIFIED",
     "verified_hours": 0
   },
   {
