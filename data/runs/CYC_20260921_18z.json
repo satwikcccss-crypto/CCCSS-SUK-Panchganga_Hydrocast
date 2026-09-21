@@ -20213,11 +20213,11 @@
         "step_number": 1,
         "step_name": "Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)",
         "status": "success",
-        "duration_seconds": 3.79
+        "duration_seconds": 3.62
       }
     ],
     "metrics": {
-      "avg_duration_s": 3.9,
+      "avg_duration_s": 4.0,
       "success_rate_pct": 100.0
     }
   },
@@ -20227,54 +20227,56 @@
       "run_id": "CYC_20260921_18z",
       "status": "completed",
       "start_time": "2026-09-21T18:00:00+00:00",
-      "end_time": "2026-09-21T19:41:25.974015+00:00",
-      "duration_seconds": 3.9,
+      "end_time": "2026-09-21T23:27:56.124238+00:00",
+      "duration_seconds": 4.0,
       "total_rainfall_mm": 28.3,
       "peak_discharge_m3s": 1.8,
       "peak_stage_m": 531.31,
-      "alert_level": "NORMAL"
+      "alert_level": "NORMAL",
+      "spearman_rho": null,
+      "nse": null
     }
   },
   "logs": [
     {
-      "t": "19:41:22",
+      "t": "23:27:52",
       "lv": "INFO",
       "msg": "Forecast cycle CYC_20260921_18z initiated across 18 Panchganga stations"
     },
     {
-      "t": "19:41:25",
+      "t": "23:27:55",
       "lv": "INFO",
       "msg": "Open-Meteo 90-hr precipitation forecast downloaded successfully"
     },
     {
-      "t": "19:41:25",
+      "t": "23:27:55",
       "lv": "INFO",
       "msg": "Dynamic subbasin selector evaluated: S1\u2192Karveer, S2\u2192Balinga, S6\u2192Gaganbawda"
     },
     {
-      "t": "19:41:25",
+      "t": "23:27:55",
       "lv": "INFO",
       "msg": "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/"
     },
     {
-      "t": "19:41:25",
+      "t": "23:27:56",
       "lv": "INFO",
       "msg": "ThingSpeak Shivaji Live Ground Truth: Distance=60.15 ft -> Water Level=531.02 m MSL"
     },
     {
-      "t": "19:41:25",
+      "t": "23:27:56",
       "lv": "INFO",
       "msg": "Hydrologic Calibration Baseline Stable: INSUFFICIENT_DATA"
     },
     {
-      "t": "19:41:25",
+      "t": "23:27:56",
       "lv": "INFO",
       "msg": "HEC-HMS 4.13 execution completed (CALIBRATED_RJKT): Peak Discharge 1.8 m\u00b3/s at T+89h in 14.8s"
     }
   ],
   "validation": {
     "cycle_id": "CYC_20260921_18z",
-    "validation_timestamp": "2026-09-21T23:03:10.808364+00:00",
+    "validation_timestamp": "2026-09-21T23:31:22.797132+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
