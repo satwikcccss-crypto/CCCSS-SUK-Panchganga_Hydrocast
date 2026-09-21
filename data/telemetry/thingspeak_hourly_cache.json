@@ -1539,7 +1539,7 @@
     "timestamp": "2026-08-17T22:00:00Z",
     "observed_stage_m": 535.36,
     "observed_distance_ft": 45.9,
-    "sample_count": 7,
+    "sample_count": 6,
     "min_stage_m": 535.35,
     "max_stage_m": 535.37
   },
@@ -7022,5 +7022,13 @@
     "sample_count": 1,
     "min_stage_m": 531.34,
     "max_stage_m": 531.34
+  },
+  "2026-09-21T01:00:00Z": {
+    "timestamp": "2026-09-21T01:00:00Z",
+    "observed_stage_m": 531.14,
+    "observed_distance_ft": 59.76,
+    "sample_count": 1,
+    "min_stage_m": 531.14,
+    "max_stage_m": 531.14
   }
 }

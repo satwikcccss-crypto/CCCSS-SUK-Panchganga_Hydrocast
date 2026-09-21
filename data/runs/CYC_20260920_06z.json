@@ -20276,7 +20276,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260920_06z",
-    "validation_timestamp": "2026-09-21T01:02:05.231104+00:00",
+    "validation_timestamp": "2026-09-21T06:10:44.376317+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20287,12 +20287,12 @@
       "travel_time_from_hms_outlet_hours": 1.5,
       "downstream_weir": "Rajaram K.T. Weir (3.8 km downstream, S0=0.002318)"
     },
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1,
     "total_forecast_hours": 90,
-    "completion_pct": 0.0,
+    "completion_pct": 1.1,
     "metrics": {
-      "sample_size_hours": 0,
+      "sample_size_hours": 1,
       "status": "INSUFFICIENT_DATA",
       "rmse_stage_m": null,
       "mae_stage_m": null,
@@ -20309,7 +20309,14 @@
       "basin_rainfall_accuracy_pct": 94.5,
       "performance_grade": "ACCUMULATING_TELEMETRY"
     },
-    "scatter_points": [],
+    "scatter_points": [
+      {
+        "actual_stage": 531.14,
+        "predicted_stage": 531.32,
+        "lead_hours": 19,
+        "actual_distance_ft": 59.76
+      }
+    ],
     "actual_observed_series": [
       {
         "lead_hours": 0,
@@ -20563,13 +20570,13 @@
         "timestamp": "2026-09-21T01:00:00+00:00",
         "predicted_stage_m": 531.32,
         "predicted_discharge_m3s": 1.9,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 531.14,
+        "observed_distance_ft": 59.76,
+        "observed_discharge_m3s": 1.0,
+        "error_delta_m": 0.18,
+        "error_delta_ft": 0.59,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 20,
