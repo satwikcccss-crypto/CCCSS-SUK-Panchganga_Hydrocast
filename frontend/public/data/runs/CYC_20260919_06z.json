@@ -20276,7 +20276,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260919_06z",
-    "validation_timestamp": "2026-09-22T17:59:25.900188+00:00",
+    "validation_timestamp": "2026-09-22T18:17:23.926628+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20288,23 +20288,23 @@
       "downstream_weir": "Rajaram K.T. Weir (3.8 km downstream, S0=0.002318)"
     },
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 9,
+    "verified_hours": 10,
     "total_forecast_hours": 90,
-    "completion_pct": 10.0,
+    "completion_pct": 11.1,
     "metrics": {
-      "sample_size_hours": 9,
-      "rmse_stage_m": 0.145,
-      "mae_stage_m": 0.098,
-      "nse_stage": 0.2732,
+      "sample_size_hours": 10,
+      "rmse_stage_m": 0.138,
+      "mae_stage_m": 0.089,
+      "nse_stage": 0.2899,
       "pbias_stage_pct": 0.01,
-      "spearman_rho": 0.4804,
-      "pearson_r2": 0.8467,
-      "rmse_q_m3s": 0.71,
-      "mae_q_m3s": 0.53,
-      "nse_discharge": 0.4278,
-      "pbias_discharge_pct": 10.05,
-      "spearman_rho_q": 0.4804,
-      "pearson_r2_q": 0.8945,
+      "spearman_rho": 0.3849,
+      "pearson_r2": 0.842,
+      "rmse_q_m3s": 0.68,
+      "mae_q_m3s": 0.49,
+      "nse_discharge": 0.4362,
+      "pbias_discharge_pct": 9.33,
+      "spearman_rho_q": 0.3849,
+      "pearson_r2_q": 0.8766,
       "basin_rainfall_accuracy_pct": 94.5,
       "performance_grade": "VERY_GOOD"
     },
@@ -20362,6 +20362,12 @@
         "predicted_stage": 531.44,
         "lead_hours": 83,
         "actual_distance_ft": 58.76
+      },
+      {
+        "actual_stage": 531.43,
+        "predicted_stage": 531.44,
+        "lead_hours": 84,
+        "actual_distance_ft": 58.78
       }
     ],
     "actual_observed_series": [
@@ -21462,13 +21468,13 @@
         "timestamp": "2026-09-22T18:00:00+00:00",
         "predicted_stage_m": 531.44,
         "predicted_discharge_m3s": 2.7,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 531.43,
+        "observed_distance_ft": 58.78,
+        "observed_discharge_m3s": 2.6,
+        "error_delta_m": 0.01,
+        "error_delta_ft": 0.03,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 85,
