@@ -20276,7 +20276,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260922_06z",
-    "validation_timestamp": "2026-09-23T18:37:55.588999+00:00",
+    "validation_timestamp": "2026-09-23T18:54:05.462548+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20294,17 +20294,17 @@
     "metrics": {
       "sample_size_hours": 31,
       "rmse_stage_m": 0.283,
-      "mae_stage_m": 0.226,
-      "nse_stage": -1.3359,
+      "mae_stage_m": 0.227,
+      "nse_stage": -1.3269,
       "pbias_stage_pct": -0.04,
-      "spearman_rho": -0.5333,
-      "pearson_r2": 0.2347,
+      "spearman_rho": -0.55,
+      "pearson_r2": 0.2381,
       "rmse_q_m3s": 1.32,
       "mae_q_m3s": 0.99,
-      "nse_discharge": -1.0708,
-      "pbias_discharge_pct": -60.33,
-      "spearman_rho_q": -0.518,
-      "pearson_r2_q": 0.1841,
+      "nse_discharge": -1.0562,
+      "pbias_discharge_pct": -60.25,
+      "spearman_rho_q": -0.5403,
+      "pearson_r2_q": 0.1906,
       "basin_rainfall_accuracy_pct": 94.5,
       "performance_grade": "SATISFACTORY"
     },
@@ -20490,10 +20490,10 @@
         "actual_distance_ft": 60.23
       },
       {
-        "actual_stage": 531.0,
+        "actual_stage": 530.99,
         "predicted_stage": 531.05,
         "lead_hours": 36,
-        "actual_distance_ft": 60.22
+        "actual_distance_ft": 60.24
       }
     ],
     "actual_observed_series": [
@@ -20970,11 +20970,11 @@
         "timestamp": "2026-09-23T18:00:00+00:00",
         "predicted_stage_m": 531.05,
         "predicted_discharge_m3s": 0.7,
-        "observed_stage_m": 531.0,
-        "observed_distance_ft": 60.22,
-        "observed_discharge_m3s": 0.6,
-        "error_delta_m": 0.05,
-        "error_delta_ft": 0.16,
+        "observed_stage_m": 530.99,
+        "observed_distance_ft": 60.24,
+        "observed_discharge_m3s": 0.5,
+        "error_delta_m": 0.06,
+        "error_delta_ft": 0.2,
         "alert_level": "NORMAL",
         "has_observation": true
       },

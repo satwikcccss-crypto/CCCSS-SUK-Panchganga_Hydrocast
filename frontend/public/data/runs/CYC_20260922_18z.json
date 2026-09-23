@@ -20274,7 +20274,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260922_18z",
-    "validation_timestamp": "2026-09-23T18:38:10.378094+00:00",
+    "validation_timestamp": "2026-09-23T18:54:17.730870+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20291,18 +20291,18 @@
     "completion_pct": 27.8,
     "metrics": {
       "sample_size_hours": 25,
-      "rmse_stage_m": 0.223,
-      "mae_stage_m": 0.188,
-      "nse_stage": -0.9763,
+      "rmse_stage_m": 0.224,
+      "mae_stage_m": 0.189,
+      "nse_stage": -0.9759,
       "pbias_stage_pct": 0.03,
-      "spearman_rho": 0.868,
-      "pearson_r2": 0.7816,
-      "rmse_q_m3s": 0.99,
+      "spearman_rho": 0.8695,
+      "pearson_r2": 0.7821,
+      "rmse_q_m3s": 1.0,
       "mae_q_m3s": 0.88,
-      "nse_discharge": -0.9075,
-      "pbias_discharge_pct": 58.96,
-      "spearman_rho_q": 0.8707,
-      "pearson_r2_q": 0.6885,
+      "nse_discharge": -0.9084,
+      "pbias_discharge_pct": 59.48,
+      "spearman_rho_q": 0.8728,
+      "pearson_r2_q": 0.6909,
       "basin_rainfall_accuracy_pct": 94.5,
       "performance_grade": "SATISFACTORY"
     },
@@ -20452,10 +20452,10 @@
         "actual_distance_ft": 60.23
       },
       {
-        "actual_stage": 531.0,
+        "actual_stage": 530.99,
         "predicted_stage": 531.32,
         "lead_hours": 24,
-        "actual_distance_ft": 60.22
+        "actual_distance_ft": 60.24
       }
     ],
     "actual_observed_series": [
@@ -20776,11 +20776,11 @@
         "timestamp": "2026-09-23T18:00:00+00:00",
         "predicted_stage_m": 531.32,
         "predicted_discharge_m3s": 1.9,
-        "observed_stage_m": 531.0,
-        "observed_distance_ft": 60.22,
-        "observed_discharge_m3s": 0.6,
-        "error_delta_m": 0.32,
-        "error_delta_ft": 1.05,
+        "observed_stage_m": 530.99,
+        "observed_distance_ft": 60.24,
+        "observed_discharge_m3s": 0.5,
+        "error_delta_m": 0.33,
+        "error_delta_ft": 1.08,
         "alert_level": "NORMAL",
         "has_observation": true
       },
