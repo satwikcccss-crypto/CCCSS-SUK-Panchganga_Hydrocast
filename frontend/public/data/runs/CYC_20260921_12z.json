@@ -20274,7 +20274,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260921_12z",
-    "validation_timestamp": "2026-09-24T07:15:21.959691+00:00",
+    "validation_timestamp": "2026-09-24T07:46:22.405730+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20291,18 +20291,18 @@
     "completion_pct": 50.0,
     "metrics": {
       "sample_size_hours": 45,
-      "rmse_stage_m": 0.248,
+      "rmse_stage_m": 0.249,
       "mae_stage_m": 0.201,
-      "nse_stage": -0.8091,
+      "nse_stage": -0.8064,
       "pbias_stage_pct": -0.02,
-      "spearman_rho": -0.8288,
-      "pearson_r2": 0.5422,
+      "spearman_rho": -0.8449,
+      "pearson_r2": 0.5471,
       "rmse_q_m3s": 1.12,
       "mae_q_m3s": 0.81,
-      "nse_discharge": -0.5932,
-      "pbias_discharge_pct": -40.32,
-      "spearman_rho_q": -0.8156,
-      "pearson_r2_q": 0.4295,
+      "nse_discharge": -0.5901,
+      "pbias_discharge_pct": -40.22,
+      "spearman_rho_q": -0.8316,
+      "pearson_r2_q": 0.4351,
       "basin_rainfall_accuracy_pct": 94.5,
       "performance_grade": "SATISFACTORY"
     },
@@ -20572,10 +20572,10 @@
         "actual_distance_ft": 60.25
       },
       {
-        "actual_stage": 531.0,
+        "actual_stage": 530.98,
         "predicted_stage": 531.18,
         "lead_hours": 67,
-        "actual_distance_ft": 60.21
+        "actual_distance_ft": 60.26
       }
     ],
     "actual_observed_series": [
@@ -21455,11 +21455,11 @@
         "timestamp": "2026-09-24T07:00:00+00:00",
         "predicted_stage_m": 531.18,
         "predicted_discharge_m3s": 1.1,
-        "observed_stage_m": 531.0,
-        "observed_distance_ft": 60.21,
-        "observed_discharge_m3s": 0.6,
-        "error_delta_m": 0.18,
-        "error_delta_ft": 0.59,
+        "observed_stage_m": 530.98,
+        "observed_distance_ft": 60.26,
+        "observed_discharge_m3s": 0.5,
+        "error_delta_m": 0.2,
+        "error_delta_ft": 0.66,
         "alert_level": "NORMAL",
         "has_observation": true
       },
