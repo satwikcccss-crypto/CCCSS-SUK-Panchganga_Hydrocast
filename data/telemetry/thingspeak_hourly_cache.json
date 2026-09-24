@@ -1969,11 +1969,11 @@
   },
   "2026-08-20T04:00:00Z": {
     "timestamp": "2026-08-20T04:00:00Z",
-    "observed_stage_m": 534.64,
-    "observed_distance_ft": 48.26,
-    "sample_count": 9,
+    "observed_stage_m": 534.63,
+    "observed_distance_ft": 48.3,
+    "sample_count": 4,
     "min_stage_m": 534.61,
-    "max_stage_m": 534.66
+    "max_stage_m": 534.64
   },
   "2026-08-20T05:00:00Z": {
     "timestamp": "2026-08-20T05:00:00Z",
@@ -7483,8 +7483,8 @@
     "timestamp": "2026-09-24T18:00:00Z",
     "observed_stage_m": 531.02,
     "observed_distance_ft": 60.15,
-    "sample_count": 2,
-    "min_stage_m": 531.01,
-    "max_stage_m": 531.02
+    "sample_count": 7,
+    "min_stage_m": 531.0,
+    "max_stage_m": 531.03
   }
 }
