@@ -20274,7 +20274,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260922_18z",
-    "validation_timestamp": "2026-09-24T13:16:40.329890+00:00",
+    "validation_timestamp": "2026-09-24T13:44:38.620382+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20291,18 +20291,18 @@
     "completion_pct": 48.9,
     "metrics": {
       "sample_size_hours": 44,
-      "rmse_stage_m": 0.275,
-      "mae_stage_m": 0.25,
-      "nse_stage": -2.5733,
+      "rmse_stage_m": 0.274,
+      "mae_stage_m": 0.249,
+      "nse_stage": -2.5722,
       "pbias_stage_pct": 0.04,
-      "spearman_rho": 0.3779,
-      "pearson_r2": 0.2631,
+      "spearman_rho": 0.4267,
+      "pearson_r2": 0.2732,
       "rmse_q_m3s": 1.18,
       "mae_q_m3s": 1.1,
-      "nse_discharge": -2.4559,
-      "pbias_discharge_pct": 108.25,
-      "spearman_rho_q": 0.4097,
-      "pearson_r2_q": 0.249,
+      "nse_discharge": -2.4536,
+      "pbias_discharge_pct": 107.75,
+      "spearman_rho_q": 0.4663,
+      "pearson_r2_q": 0.2601,
       "basin_rainfall_accuracy_pct": 94.5,
       "performance_grade": "SATISFACTORY"
     },
@@ -20566,10 +20566,10 @@
         "actual_distance_ft": 60.12
       },
       {
-        "actual_stage": 530.99,
+        "actual_stage": 531.01,
         "predicted_stage": 531.36,
         "lead_hours": 43,
-        "actual_distance_ft": 60.22
+        "actual_distance_ft": 60.18
       }
     ],
     "actual_observed_series": [
@@ -21137,11 +21137,11 @@
         "timestamp": "2026-09-24T13:00:00+00:00",
         "predicted_stage_m": 531.36,
         "predicted_discharge_m3s": 2.1,
-        "observed_stage_m": 530.99,
-        "observed_distance_ft": 60.22,
-        "observed_discharge_m3s": 0.5,
-        "error_delta_m": 0.37,
-        "error_delta_ft": 1.21,
+        "observed_stage_m": 531.01,
+        "observed_distance_ft": 60.18,
+        "observed_discharge_m3s": 0.6,
+        "error_delta_m": 0.35,
+        "error_delta_ft": 1.15,
         "alert_level": "NORMAL",
         "has_observation": true
       },

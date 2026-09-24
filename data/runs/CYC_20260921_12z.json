@@ -20274,7 +20274,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260921_12z",
-    "validation_timestamp": "2026-09-24T13:16:11.370658+00:00",
+    "validation_timestamp": "2026-09-24T13:44:09.607331+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20291,18 +20291,18 @@
     "completion_pct": 56.7,
     "metrics": {
       "sample_size_hours": 51,
-      "rmse_stage_m": 0.246,
-      "mae_stage_m": 0.204,
-      "nse_stage": -0.8424,
+      "rmse_stage_m": 0.245,
+      "mae_stage_m": 0.203,
+      "nse_stage": -0.8426,
       "pbias_stage_pct": -0.01,
-      "spearman_rho": -0.8108,
-      "pearson_r2": 0.5033,
+      "spearman_rho": -0.7942,
+      "pearson_r2": 0.4983,
       "rmse_q_m3s": 1.08,
       "mae_q_m3s": 0.8,
-      "nse_discharge": -0.567,
-      "pbias_discharge_pct": -30.68,
-      "spearman_rho_q": -0.8039,
-      "pearson_r2_q": 0.3763,
+      "nse_discharge": -0.5676,
+      "pbias_discharge_pct": -30.8,
+      "spearman_rho_q": -0.7851,
+      "pearson_r2_q": 0.3703,
       "basin_rainfall_accuracy_pct": 94.5,
       "performance_grade": "SATISFACTORY"
     },
@@ -20608,10 +20608,10 @@
         "actual_distance_ft": 60.12
       },
       {
-        "actual_stage": 530.99,
+        "actual_stage": 531.01,
         "predicted_stage": 531.24,
         "lead_hours": 73,
-        "actual_distance_ft": 60.22
+        "actual_distance_ft": 60.18
       }
     ],
     "actual_observed_series": [
@@ -21569,11 +21569,11 @@
         "timestamp": "2026-09-24T13:00:00+00:00",
         "predicted_stage_m": 531.24,
         "predicted_discharge_m3s": 1.4,
-        "observed_stage_m": 530.99,
-        "observed_distance_ft": 60.22,
-        "observed_discharge_m3s": 0.5,
-        "error_delta_m": 0.25,
-        "error_delta_ft": 0.82,
+        "observed_stage_m": 531.01,
+        "observed_distance_ft": 60.18,
+        "observed_discharge_m3s": 0.6,
+        "error_delta_m": 0.23,
+        "error_delta_ft": 0.75,
         "alert_level": "NORMAL",
         "has_observation": true
       },
