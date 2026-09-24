@@ -1971,7 +1971,7 @@
     "timestamp": "2026-08-20T04:00:00Z",
     "observed_stage_m": 534.64,
     "observed_distance_ft": 48.26,
-    "sample_count": 12,
+    "sample_count": 9,
     "min_stage_m": 534.61,
     "max_stage_m": 534.66
   },
@@ -7442,9 +7442,49 @@
   "2026-09-24T13:00:00Z": {
     "timestamp": "2026-09-24T13:00:00Z",
     "observed_stage_m": 531.01,
-    "observed_distance_ft": 60.18,
-    "sample_count": 8,
+    "observed_distance_ft": 60.16,
+    "sample_count": 12,
     "min_stage_m": 530.94,
     "max_stage_m": 531.03
+  },
+  "2026-09-24T14:00:00Z": {
+    "timestamp": "2026-09-24T14:00:00Z",
+    "observed_stage_m": 531.02,
+    "observed_distance_ft": 60.14,
+    "sample_count": 12,
+    "min_stage_m": 530.99,
+    "max_stage_m": 531.04
+  },
+  "2026-09-24T15:00:00Z": {
+    "timestamp": "2026-09-24T15:00:00Z",
+    "observed_stage_m": 531.02,
+    "observed_distance_ft": 60.14,
+    "sample_count": 11,
+    "min_stage_m": 530.98,
+    "max_stage_m": 531.08
+  },
+  "2026-09-24T16:00:00Z": {
+    "timestamp": "2026-09-24T16:00:00Z",
+    "observed_stage_m": 531.02,
+    "observed_distance_ft": 60.15,
+    "sample_count": 12,
+    "min_stage_m": 531.0,
+    "max_stage_m": 531.03
+  },
+  "2026-09-24T17:00:00Z": {
+    "timestamp": "2026-09-24T17:00:00Z",
+    "observed_stage_m": 531.01,
+    "observed_distance_ft": 60.18,
+    "sample_count": 12,
+    "min_stage_m": 530.97,
+    "max_stage_m": 531.03
+  },
+  "2026-09-24T18:00:00Z": {
+    "timestamp": "2026-09-24T18:00:00Z",
+    "observed_stage_m": 531.02,
+    "observed_distance_ft": 60.15,
+    "sample_count": 2,
+    "min_stage_m": 531.01,
+    "max_stage_m": 531.02
   }
 }
