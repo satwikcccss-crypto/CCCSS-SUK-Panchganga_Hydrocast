@@ -5,7 +5,7 @@
     "forecast_date": "24 Sep 2026",
     "cycle_time": "18z",
     "peak_discharge_m3s": 1.1,
-    "baseflow_m3s": 0.6,
+    "baseflow_m3s": 0.5,
     "lead_hours_to_peak": 89,
     "peak_time": "2026-09-28T11:00:00+00:00",
     "total_volume_mcm": 0.2,
@@ -65,17 +65,17 @@
       "outlet": {
         "site_id": "J_Outlet",
         "site_name": "Panchganga Basin Sink (Rajaram Weir)",
-        "peak_lead_hours": 87,
-        "peak_arrival_time": "2026-09-28T09:00:00+00:00",
+        "peak_lead_hours": 89,
+        "peak_arrival_time": "2026-09-28T11:00:00+00:00",
         "peak_discharge_m3s": 1.1,
         "peak_stage_m": 531.18,
         "confidence_interval": {
           "margin_hours": 2.0,
           "confidence_pct": 95,
-          "earliest_lead_hours": 85.0,
-          "latest_lead_hours": 89.0,
-          "earliest_arrival_time": "2026-09-28T07:00:00+00:00",
-          "latest_arrival_time": "2026-09-28T11:00:00+00:00",
+          "earliest_lead_hours": 87.0,
+          "latest_lead_hours": 91.0,
+          "earliest_arrival_time": "2026-09-28T09:00:00+00:00",
+          "latest_arrival_time": "2026-09-28T13:00:00+00:00",
           "stage_range_m": [
             531.06,
             531.3
@@ -92,7 +92,7 @@
     "bridges": {
       "shivaji": {
         "site_name": "Chhatrapati Shivaji Maharaj Bridge",
-        "current_stage_m": 531.01,
+        "current_stage_m": 530.98,
         "peak_stage_m": 531.18,
         "peak_arrival_time": "2026-09-28T09:00:00+00:00",
         "peak_lead_hours": 87,
@@ -117,7 +117,7 @@
       },
       "rajaram": {
         "site_name": "Rajaram K.T. Weir",
-        "current_stage_m": 530.71,
+        "current_stage_m": 530.67,
         "peak_stage_m": 530.92,
         "peak_arrival_time": "2026-09-28T09:00:00+00:00",
         "peak_lead_hours": 87,
@@ -219,22 +219,22 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.3
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 16,
@@ -249,7 +249,7 @@
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
@@ -359,7 +359,7 @@
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 41,
@@ -484,7 +484,7 @@
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -671,17 +671,17 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 15,
@@ -936,7 +936,7 @@
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -1253,7 +1253,7 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.2
       },
       {
         "hour": 39,
@@ -1530,17 +1530,17 @@
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 4,
         "timestamp": "2026-09-24T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 5,
         "timestamp": "2026-09-24T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 6,
@@ -1555,12 +1555,12 @@
       {
         "hour": 8,
         "timestamp": "2026-09-25T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 9,
         "timestamp": "2026-09-25T03:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 10,
@@ -1575,47 +1575,47 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.3
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.3
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.3
       },
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.5
       },
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 20,
         "timestamp": "2026-09-25T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 21,
@@ -1635,12 +1635,12 @@
       {
         "hour": 24,
         "timestamp": "2026-09-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 25,
         "timestamp": "2026-09-25T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 26,
@@ -1655,12 +1655,12 @@
       {
         "hour": 28,
         "timestamp": "2026-09-25T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 29,
         "timestamp": "2026-09-25T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 30,
@@ -1695,37 +1695,37 @@
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.3
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.2
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 43,
@@ -1735,7 +1735,7 @@
       {
         "hour": 44,
         "timestamp": "2026-09-26T14:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 45,
@@ -1750,12 +1750,12 @@
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 49,
@@ -1765,7 +1765,7 @@
       {
         "hour": 50,
         "timestamp": "2026-09-26T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 51,
@@ -1835,12 +1835,12 @@
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -1865,7 +1865,7 @@
       {
         "hour": 70,
         "timestamp": "2026-09-27T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 71,
@@ -1967,27 +1967,27 @@
       {
         "hour": 0,
         "timestamp": "2026-09-24T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-24T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 4,
         "timestamp": "2026-09-24T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 5,
@@ -1997,17 +1997,17 @@
       {
         "hour": 6,
         "timestamp": "2026-09-25T00:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 7,
         "timestamp": "2026-09-25T01:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 8,
         "timestamp": "2026-09-25T02:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 9,
@@ -2017,32 +2017,32 @@
       {
         "hour": 10,
         "timestamp": "2026-09-25T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 11,
         "timestamp": "2026-09-25T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 1.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.4
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 1.2
       },
       {
         "hour": 16,
@@ -2052,22 +2052,22 @@
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.8
       },
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 20,
         "timestamp": "2026-09-25T14:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 21,
@@ -2077,7 +2077,7 @@
       {
         "hour": 22,
         "timestamp": "2026-09-25T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 23,
@@ -2092,17 +2092,17 @@
       {
         "hour": 25,
         "timestamp": "2026-09-25T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 26,
         "timestamp": "2026-09-25T20:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 27,
         "timestamp": "2026-09-25T21:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 28,
@@ -2122,7 +2122,7 @@
       {
         "hour": 31,
         "timestamp": "2026-09-26T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 32,
@@ -2137,42 +2137,42 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.6
       },
       {
         "hour": 35,
         "timestamp": "2026-09-26T05:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.6
       },
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.9
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 1.1
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.4
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 42,
@@ -2182,7 +2182,7 @@
       {
         "hour": 43,
         "timestamp": "2026-09-26T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 44,
@@ -2257,7 +2257,7 @@
       {
         "hour": 58,
         "timestamp": "2026-09-27T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
@@ -2282,12 +2282,12 @@
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -2297,22 +2297,22 @@
       {
         "hour": 66,
         "timestamp": "2026-09-27T12:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
         "timestamp": "2026-09-27T14:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 69,
         "timestamp": "2026-09-27T15:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 70,
@@ -2419,22 +2419,22 @@
       {
         "hour": 0,
         "timestamp": "2026-09-24T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-24T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.6
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 4,
@@ -2444,7 +2444,7 @@
       {
         "hour": 5,
         "timestamp": "2026-09-24T23:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 6,
@@ -2469,52 +2469,52 @@
       {
         "hour": 10,
         "timestamp": "2026-09-25T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 11,
         "timestamp": "2026-09-25T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.2
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 1.2
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 1.6
+        "mm_hr": 0.6
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 1.5
+        "mm_hr": 0.6
       },
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.8
       },
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.3
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 20,
@@ -2524,12 +2524,12 @@
       {
         "hour": 21,
         "timestamp": "2026-09-25T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 22,
         "timestamp": "2026-09-25T16:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 23,
@@ -2554,7 +2554,7 @@
       {
         "hour": 27,
         "timestamp": "2026-09-25T21:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 28,
@@ -2574,12 +2574,12 @@
       {
         "hour": 31,
         "timestamp": "2026-09-26T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 32,
         "timestamp": "2026-09-26T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
@@ -2589,27 +2589,27 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.5
       },
       {
         "hour": 35,
         "timestamp": "2026-09-26T05:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.8
       },
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.6
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.5
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.6
       },
       {
         "hour": 39,
@@ -2619,52 +2619,52 @@
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.4
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.6
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.4
       },
       {
         "hour": 43,
         "timestamp": "2026-09-26T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 44,
         "timestamp": "2026-09-26T14:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.3
       },
       {
         "hour": 45,
         "timestamp": "2026-09-26T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 46,
         "timestamp": "2026-09-26T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.5
       },
       {
         "hour": 49,
         "timestamp": "2026-09-26T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 50,
@@ -2709,12 +2709,12 @@
       {
         "hour": 58,
         "timestamp": "2026-09-27T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
         "timestamp": "2026-09-27T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 60,
@@ -2739,27 +2739,27 @@
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.4
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.3
       },
       {
         "hour": 66,
         "timestamp": "2026-09-27T12:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
         "timestamp": "2026-09-27T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 69,
@@ -2871,22 +2871,22 @@
       {
         "hour": 0,
         "timestamp": "2026-09-24T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-24T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.1
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 4,
@@ -2896,7 +2896,7 @@
       {
         "hour": 5,
         "timestamp": "2026-09-24T23:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 6,
@@ -2906,7 +2906,7 @@
       {
         "hour": 7,
         "timestamp": "2026-09-25T01:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 8,
@@ -2916,7 +2916,7 @@
       {
         "hour": 9,
         "timestamp": "2026-09-25T03:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 10,
@@ -2926,37 +2926,37 @@
       {
         "hour": 11,
         "timestamp": "2026-09-25T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.9
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.8
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 2.8
+        "mm_hr": 1.6
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 1.0
       },
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 18,
@@ -2966,7 +2966,7 @@
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 20,
@@ -2976,7 +2976,7 @@
       {
         "hour": 21,
         "timestamp": "2026-09-25T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 22,
@@ -2991,7 +2991,7 @@
       {
         "hour": 24,
         "timestamp": "2026-09-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 25,
@@ -3011,7 +3011,7 @@
       {
         "hour": 28,
         "timestamp": "2026-09-25T22:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 29,
@@ -3021,17 +3021,17 @@
       {
         "hour": 30,
         "timestamp": "2026-09-26T00:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 31,
         "timestamp": "2026-09-26T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 32,
         "timestamp": "2026-09-26T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
@@ -3041,42 +3041,42 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.6
       },
       {
         "hour": 35,
         "timestamp": "2026-09-26T05:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.7
       },
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.6
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.4
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.5
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.3
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.7
       },
       {
         "hour": 42,
@@ -3096,22 +3096,22 @@
       {
         "hour": 45,
         "timestamp": "2026-09-26T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 46,
         "timestamp": "2026-09-26T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 49,
@@ -3161,12 +3161,12 @@
       {
         "hour": 58,
         "timestamp": "2026-09-27T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
         "timestamp": "2026-09-27T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 60,
@@ -3176,17 +3176,17 @@
       {
         "hour": 61,
         "timestamp": "2026-09-27T07:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 62,
         "timestamp": "2026-09-27T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.1
       },
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.2
       },
       {
         "hour": 64,
@@ -3196,7 +3196,7 @@
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.4
       },
       {
         "hour": 66,
@@ -3206,7 +3206,7 @@
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
@@ -3383,7 +3383,7 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
@@ -3513,7 +3513,7 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
@@ -3638,7 +3638,7 @@
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
@@ -3785,12 +3785,12 @@
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 4,
@@ -3840,12 +3840,12 @@
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.7
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 1.4
+        "mm_hr": 0.6
       },
       {
         "hour": 15,
@@ -3855,7 +3855,7 @@
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 17,
@@ -3865,12 +3865,12 @@
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 20,
@@ -3885,7 +3885,7 @@
       {
         "hour": 22,
         "timestamp": "2026-09-25T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 23,
@@ -3895,32 +3895,32 @@
       {
         "hour": 24,
         "timestamp": "2026-09-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 25,
         "timestamp": "2026-09-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 26,
         "timestamp": "2026-09-25T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 27,
         "timestamp": "2026-09-25T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 28,
         "timestamp": "2026-09-25T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 29,
         "timestamp": "2026-09-25T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 30,
@@ -3935,17 +3935,17 @@
       {
         "hour": 32,
         "timestamp": "2026-09-26T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
         "timestamp": "2026-09-26T03:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 35,
@@ -3955,7 +3955,7 @@
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 37,
@@ -3965,32 +3965,32 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.2
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.3
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 43,
         "timestamp": "2026-09-26T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 44,
@@ -4000,27 +4000,27 @@
       {
         "hour": 45,
         "timestamp": "2026-09-26T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 46,
         "timestamp": "2026-09-26T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 49,
         "timestamp": "2026-09-26T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 50,
@@ -4080,37 +4080,37 @@
       {
         "hour": 61,
         "timestamp": "2026-09-27T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 62,
         "timestamp": "2026-09-27T08:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 0.3
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 66,
         "timestamp": "2026-09-27T12:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
@@ -4232,7 +4232,7 @@
       "lat": 16.706369,
       "lon": 74.2481772,
       "elevation": "550m",
-      "cumulative_90h_mm": 1.6,
+      "cumulative_90h_mm": 1.3,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4246,7 +4246,7 @@
       "lat": 16.6841962,
       "lon": 74.0931627,
       "elevation": "572m",
-      "cumulative_90h_mm": 0.1,
+      "cumulative_90h_mm": 0.0,
       "is_primary": true,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4260,7 +4260,7 @@
       "lat": 16.6878443,
       "lon": 74.17031,
       "elevation": "560m",
-      "cumulative_90h_mm": 0.7,
+      "cumulative_90h_mm": 0.3,
       "is_primary": false,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4274,7 +4274,7 @@
       "lat": 16.7228087,
       "lon": 74.0564499,
       "elevation": "580m",
-      "cumulative_90h_mm": 0.1,
+      "cumulative_90h_mm": 0.0,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4288,7 +4288,7 @@
       "lat": 16.7820174,
       "lon": 74.0518705,
       "elevation": "585m",
-      "cumulative_90h_mm": 0.6,
+      "cumulative_90h_mm": 0.3,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4302,7 +4302,7 @@
       "lat": 16.8086769,
       "lon": 74.1107824,
       "elevation": "590m",
-      "cumulative_90h_mm": 0.3,
+      "cumulative_90h_mm": 0.2,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4316,7 +4316,7 @@
       "lat": 16.7446006,
       "lon": 74.115187,
       "elevation": "575m",
-      "cumulative_90h_mm": 0.6,
+      "cumulative_90h_mm": 0.3,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4330,7 +4330,7 @@
       "lat": 16.7850973,
       "lon": 73.9036487,
       "elevation": "640m",
-      "cumulative_90h_mm": 6.9,
+      "cumulative_90h_mm": 6.3,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4344,7 +4344,7 @@
       "lat": 16.701934,
       "lon": 73.843584,
       "elevation": "620m",
-      "cumulative_90h_mm": 10.9,
+      "cumulative_90h_mm": 13.0,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4358,7 +4358,7 @@
       "lat": 16.6712,
       "lon": 73.9735,
       "elevation": "595m",
-      "cumulative_90h_mm": 2.0,
+      "cumulative_90h_mm": 1.6,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4372,7 +4372,7 @@
       "lat": 16.5469926,
       "lon": 73.8346738,
       "elevation": "680m",
-      "cumulative_90h_mm": 14.0,
+      "cumulative_90h_mm": 16.6,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4386,7 +4386,7 @@
       "lat": 16.520366,
       "lon": 73.918419,
       "elevation": "610m",
-      "cumulative_90h_mm": 15.6,
+      "cumulative_90h_mm": 17.7,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4400,7 +4400,7 @@
       "lat": 16.647984,
       "lon": 74.1288964,
       "elevation": "565m",
-      "cumulative_90h_mm": 0.3,
+      "cumulative_90h_mm": 0.0,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4414,7 +4414,7 @@
       "lat": 16.6166768,
       "lon": 74.1062828,
       "elevation": "560m",
-      "cumulative_90h_mm": 0.3,
+      "cumulative_90h_mm": 0.0,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4428,7 +4428,7 @@
       "lat": 16.41021,
       "lon": 73.9971822,
       "elevation": "615m",
-      "cumulative_90h_mm": 9.7,
+      "cumulative_90h_mm": 7.4,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4442,7 +4442,7 @@
       "lat": 16.5932632,
       "lon": 74.156292,
       "elevation": "555m",
-      "cumulative_90h_mm": 1.4,
+      "cumulative_90h_mm": 0.0,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4456,7 +4456,7 @@
       "lat": 16.5475641,
       "lon": 74.1019728,
       "elevation": "570m",
-      "cumulative_90h_mm": 1.4,
+      "cumulative_90h_mm": 0.0,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4470,7 +4470,7 @@
       "lat": 16.481009,
       "lon": 74.0549812,
       "elevation": "585m",
-      "cumulative_90h_mm": 3.9,
+      "cumulative_90h_mm": 0.4,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4484,7 +4484,7 @@
       "lat": 16.4478876,
       "lon": 74.021589,
       "elevation": "595m",
-      "cumulative_90h_mm": 3.9,
+      "cumulative_90h_mm": 0.4,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4498,7 +4498,7 @@
       "lat": 16.41021,
       "lon": 73.9971822,
       "elevation": "615m",
-      "cumulative_90h_mm": 9.7,
+      "cumulative_90h_mm": 7.4,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4514,7 +4514,7 @@
       "lat": 16.706369,
       "lon": 74.2481772,
       "elevation": "550m",
-      "cumulative_90h_mm": 1.6,
+      "cumulative_90h_mm": 1.3,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4528,7 +4528,7 @@
       "lat": 16.6878443,
       "lon": 74.17031,
       "elevation": "560m",
-      "cumulative_90h_mm": 0.7,
+      "cumulative_90h_mm": 0.3,
       "is_primary": false,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4542,7 +4542,7 @@
       "lat": 16.7820174,
       "lon": 74.0518705,
       "elevation": "585m",
-      "cumulative_90h_mm": 0.6,
+      "cumulative_90h_mm": 0.3,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4556,7 +4556,7 @@
       "lat": 16.7850973,
       "lon": 73.9036487,
       "elevation": "640m",
-      "cumulative_90h_mm": 6.9,
+      "cumulative_90h_mm": 6.3,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4570,7 +4570,7 @@
       "lat": 16.701934,
       "lon": 73.843584,
       "elevation": "620m",
-      "cumulative_90h_mm": 10.9,
+      "cumulative_90h_mm": 13.0,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4584,7 +4584,7 @@
       "lat": 16.5469926,
       "lon": 73.8346738,
       "elevation": "680m",
-      "cumulative_90h_mm": 14.0,
+      "cumulative_90h_mm": 16.6,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4598,7 +4598,7 @@
       "lat": 16.520366,
       "lon": 73.918419,
       "elevation": "610m",
-      "cumulative_90h_mm": 15.6,
+      "cumulative_90h_mm": 17.7,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4612,7 +4612,7 @@
       "lat": 16.647984,
       "lon": 74.1288964,
       "elevation": "565m",
-      "cumulative_90h_mm": 0.3,
+      "cumulative_90h_mm": 0.0,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4626,7 +4626,7 @@
       "lat": 16.41021,
       "lon": 73.9971822,
       "elevation": "615m",
-      "cumulative_90h_mm": 9.7,
+      "cumulative_90h_mm": 7.4,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4699,22 +4699,22 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.3
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 16,
@@ -4729,7 +4729,7 @@
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
@@ -4839,7 +4839,7 @@
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 41,
@@ -4964,7 +4964,7 @@
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -5151,7 +5151,7 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
@@ -5603,17 +5603,17 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 15,
@@ -5868,7 +5868,7 @@
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -6055,7 +6055,7 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
@@ -6637,7 +6637,7 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.2
       },
       {
         "hour": 39,
@@ -7089,7 +7089,7 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 39,
@@ -7541,7 +7541,7 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.2
       },
       {
         "hour": 39,
@@ -7818,17 +7818,17 @@
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 4,
         "timestamp": "2026-09-24T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 5,
         "timestamp": "2026-09-24T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 6,
@@ -7843,12 +7843,12 @@
       {
         "hour": 8,
         "timestamp": "2026-09-25T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 9,
         "timestamp": "2026-09-25T03:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 10,
@@ -7863,47 +7863,47 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.3
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.3
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.3
       },
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.5
       },
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 20,
         "timestamp": "2026-09-25T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 21,
@@ -7923,12 +7923,12 @@
       {
         "hour": 24,
         "timestamp": "2026-09-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 25,
         "timestamp": "2026-09-25T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 26,
@@ -7943,12 +7943,12 @@
       {
         "hour": 28,
         "timestamp": "2026-09-25T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 29,
         "timestamp": "2026-09-25T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 30,
@@ -7983,37 +7983,37 @@
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.3
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.2
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 43,
@@ -8023,7 +8023,7 @@
       {
         "hour": 44,
         "timestamp": "2026-09-26T14:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 45,
@@ -8038,12 +8038,12 @@
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 49,
@@ -8053,7 +8053,7 @@
       {
         "hour": 50,
         "timestamp": "2026-09-26T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 51,
@@ -8123,12 +8123,12 @@
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -8153,7 +8153,7 @@
       {
         "hour": 70,
         "timestamp": "2026-09-27T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 71,
@@ -8255,27 +8255,27 @@
       {
         "hour": 0,
         "timestamp": "2026-09-24T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-24T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 4,
         "timestamp": "2026-09-24T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 5,
@@ -8285,17 +8285,17 @@
       {
         "hour": 6,
         "timestamp": "2026-09-25T00:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 7,
         "timestamp": "2026-09-25T01:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 8,
         "timestamp": "2026-09-25T02:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 9,
@@ -8305,32 +8305,32 @@
       {
         "hour": 10,
         "timestamp": "2026-09-25T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 11,
         "timestamp": "2026-09-25T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 1.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.4
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 1.2
       },
       {
         "hour": 16,
@@ -8340,22 +8340,22 @@
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.8
       },
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 20,
         "timestamp": "2026-09-25T14:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 21,
@@ -8365,7 +8365,7 @@
       {
         "hour": 22,
         "timestamp": "2026-09-25T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 23,
@@ -8380,17 +8380,17 @@
       {
         "hour": 25,
         "timestamp": "2026-09-25T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 26,
         "timestamp": "2026-09-25T20:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 27,
         "timestamp": "2026-09-25T21:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 28,
@@ -8410,7 +8410,7 @@
       {
         "hour": 31,
         "timestamp": "2026-09-26T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 32,
@@ -8425,42 +8425,42 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.6
       },
       {
         "hour": 35,
         "timestamp": "2026-09-26T05:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.6
       },
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.9
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 1.1
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.4
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 42,
@@ -8470,7 +8470,7 @@
       {
         "hour": 43,
         "timestamp": "2026-09-26T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 44,
@@ -8545,7 +8545,7 @@
       {
         "hour": 58,
         "timestamp": "2026-09-27T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
@@ -8570,12 +8570,12 @@
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -8585,22 +8585,22 @@
       {
         "hour": 66,
         "timestamp": "2026-09-27T12:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
         "timestamp": "2026-09-27T14:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 69,
         "timestamp": "2026-09-27T15:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 70,
@@ -8722,7 +8722,7 @@
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 4,
@@ -8772,27 +8772,27 @@
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 18,
@@ -8802,12 +8802,12 @@
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 20,
         "timestamp": "2026-09-25T14:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 21,
@@ -8877,12 +8877,12 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 35,
         "timestamp": "2026-09-26T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 36,
@@ -8897,12 +8897,12 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 40,
@@ -9159,22 +9159,22 @@
       {
         "hour": 0,
         "timestamp": "2026-09-24T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-24T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.6
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 4,
@@ -9184,7 +9184,7 @@
       {
         "hour": 5,
         "timestamp": "2026-09-24T23:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 6,
@@ -9209,52 +9209,52 @@
       {
         "hour": 10,
         "timestamp": "2026-09-25T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 11,
         "timestamp": "2026-09-25T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.2
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 1.2
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 1.6
+        "mm_hr": 0.6
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 1.5
+        "mm_hr": 0.6
       },
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.8
       },
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.3
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 20,
@@ -9264,12 +9264,12 @@
       {
         "hour": 21,
         "timestamp": "2026-09-25T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 22,
         "timestamp": "2026-09-25T16:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 23,
@@ -9294,7 +9294,7 @@
       {
         "hour": 27,
         "timestamp": "2026-09-25T21:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 28,
@@ -9314,12 +9314,12 @@
       {
         "hour": 31,
         "timestamp": "2026-09-26T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 32,
         "timestamp": "2026-09-26T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
@@ -9329,27 +9329,27 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.5
       },
       {
         "hour": 35,
         "timestamp": "2026-09-26T05:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.8
       },
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.6
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.5
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.6
       },
       {
         "hour": 39,
@@ -9359,52 +9359,52 @@
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.4
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.6
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.4
       },
       {
         "hour": 43,
         "timestamp": "2026-09-26T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 44,
         "timestamp": "2026-09-26T14:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.3
       },
       {
         "hour": 45,
         "timestamp": "2026-09-26T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 46,
         "timestamp": "2026-09-26T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.5
       },
       {
         "hour": 49,
         "timestamp": "2026-09-26T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 50,
@@ -9449,12 +9449,12 @@
       {
         "hour": 58,
         "timestamp": "2026-09-27T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
         "timestamp": "2026-09-27T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 60,
@@ -9479,27 +9479,27 @@
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.4
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.3
       },
       {
         "hour": 66,
         "timestamp": "2026-09-27T12:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
         "timestamp": "2026-09-27T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 69,
@@ -9611,22 +9611,22 @@
       {
         "hour": 0,
         "timestamp": "2026-09-24T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-24T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.1
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 4,
@@ -9636,7 +9636,7 @@
       {
         "hour": 5,
         "timestamp": "2026-09-24T23:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 6,
@@ -9646,7 +9646,7 @@
       {
         "hour": 7,
         "timestamp": "2026-09-25T01:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 8,
@@ -9656,7 +9656,7 @@
       {
         "hour": 9,
         "timestamp": "2026-09-25T03:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 10,
@@ -9666,37 +9666,37 @@
       {
         "hour": 11,
         "timestamp": "2026-09-25T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.9
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.8
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 2.8
+        "mm_hr": 1.6
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 1.0
       },
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 18,
@@ -9706,7 +9706,7 @@
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 20,
@@ -9716,7 +9716,7 @@
       {
         "hour": 21,
         "timestamp": "2026-09-25T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 22,
@@ -9731,7 +9731,7 @@
       {
         "hour": 24,
         "timestamp": "2026-09-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 25,
@@ -9751,7 +9751,7 @@
       {
         "hour": 28,
         "timestamp": "2026-09-25T22:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 29,
@@ -9761,17 +9761,17 @@
       {
         "hour": 30,
         "timestamp": "2026-09-26T00:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 31,
         "timestamp": "2026-09-26T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 32,
         "timestamp": "2026-09-26T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
@@ -9781,42 +9781,42 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.6
       },
       {
         "hour": 35,
         "timestamp": "2026-09-26T05:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.7
       },
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.6
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.4
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.5
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.3
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.7
       },
       {
         "hour": 42,
@@ -9836,22 +9836,22 @@
       {
         "hour": 45,
         "timestamp": "2026-09-26T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 46,
         "timestamp": "2026-09-26T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 49,
@@ -9901,12 +9901,12 @@
       {
         "hour": 58,
         "timestamp": "2026-09-27T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
         "timestamp": "2026-09-27T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 60,
@@ -9916,17 +9916,17 @@
       {
         "hour": 61,
         "timestamp": "2026-09-27T07:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 62,
         "timestamp": "2026-09-27T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.1
       },
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.2
       },
       {
         "hour": 64,
@@ -9936,7 +9936,7 @@
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.4
       },
       {
         "hour": 66,
@@ -9946,7 +9946,7 @@
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
@@ -10123,7 +10123,7 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
@@ -10253,7 +10253,7 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
@@ -10378,7 +10378,7 @@
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
@@ -10575,7 +10575,7 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
@@ -10705,7 +10705,7 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
@@ -10830,7 +10830,7 @@
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
@@ -10977,12 +10977,12 @@
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 4,
@@ -11032,12 +11032,12 @@
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.7
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 1.4
+        "mm_hr": 0.6
       },
       {
         "hour": 15,
@@ -11047,7 +11047,7 @@
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 17,
@@ -11057,12 +11057,12 @@
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 20,
@@ -11077,7 +11077,7 @@
       {
         "hour": 22,
         "timestamp": "2026-09-25T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 23,
@@ -11087,32 +11087,32 @@
       {
         "hour": 24,
         "timestamp": "2026-09-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 25,
         "timestamp": "2026-09-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 26,
         "timestamp": "2026-09-25T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 27,
         "timestamp": "2026-09-25T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 28,
         "timestamp": "2026-09-25T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 29,
         "timestamp": "2026-09-25T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 30,
@@ -11127,17 +11127,17 @@
       {
         "hour": 32,
         "timestamp": "2026-09-26T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
         "timestamp": "2026-09-26T03:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 35,
@@ -11147,7 +11147,7 @@
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 37,
@@ -11157,32 +11157,32 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.2
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.3
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 43,
         "timestamp": "2026-09-26T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 44,
@@ -11192,27 +11192,27 @@
       {
         "hour": 45,
         "timestamp": "2026-09-26T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 46,
         "timestamp": "2026-09-26T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 49,
         "timestamp": "2026-09-26T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 50,
@@ -11272,37 +11272,37 @@
       {
         "hour": 61,
         "timestamp": "2026-09-27T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 62,
         "timestamp": "2026-09-27T08:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 0.3
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 66,
         "timestamp": "2026-09-27T12:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
@@ -11604,7 +11604,7 @@
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
@@ -11614,7 +11614,7 @@
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
@@ -11624,7 +11624,7 @@
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 42,
@@ -11729,22 +11729,22 @@
       {
         "hour": 62,
         "timestamp": "2026-09-27T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -12056,7 +12056,7 @@
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
@@ -12066,7 +12066,7 @@
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
@@ -12076,7 +12076,7 @@
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 42,
@@ -12181,22 +12181,22 @@
       {
         "hour": 62,
         "timestamp": "2026-09-27T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -12388,12 +12388,12 @@
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
@@ -12403,7 +12403,7 @@
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
@@ -12493,7 +12493,7 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 35,
@@ -12508,32 +12508,32 @@
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 43,
@@ -12558,7 +12558,7 @@
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 48,
@@ -12633,22 +12633,22 @@
       {
         "hour": 62,
         "timestamp": "2026-09-27T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -12840,12 +12840,12 @@
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
@@ -12855,7 +12855,7 @@
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
@@ -12945,7 +12945,7 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 35,
@@ -12960,32 +12960,32 @@
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 43,
@@ -13010,7 +13010,7 @@
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 48,
@@ -13085,22 +13085,22 @@
       {
         "hour": 62,
         "timestamp": "2026-09-27T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -13237,12 +13237,12 @@
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 4,
@@ -13292,12 +13292,12 @@
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.7
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 1.4
+        "mm_hr": 0.6
       },
       {
         "hour": 15,
@@ -13307,7 +13307,7 @@
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 17,
@@ -13317,12 +13317,12 @@
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 20,
@@ -13337,7 +13337,7 @@
       {
         "hour": 22,
         "timestamp": "2026-09-25T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 23,
@@ -13347,32 +13347,32 @@
       {
         "hour": 24,
         "timestamp": "2026-09-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 25,
         "timestamp": "2026-09-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 26,
         "timestamp": "2026-09-25T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 27,
         "timestamp": "2026-09-25T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 28,
         "timestamp": "2026-09-25T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 29,
         "timestamp": "2026-09-25T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 30,
@@ -13387,17 +13387,17 @@
       {
         "hour": 32,
         "timestamp": "2026-09-26T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
         "timestamp": "2026-09-26T03:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 35,
@@ -13407,7 +13407,7 @@
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 37,
@@ -13417,32 +13417,32 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.2
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.3
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 43,
         "timestamp": "2026-09-26T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 44,
@@ -13452,27 +13452,27 @@
       {
         "hour": 45,
         "timestamp": "2026-09-26T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 46,
         "timestamp": "2026-09-26T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 49,
         "timestamp": "2026-09-26T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 50,
@@ -13532,37 +13532,37 @@
       {
         "hour": 61,
         "timestamp": "2026-09-27T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 62,
         "timestamp": "2026-09-27T08:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 0.3
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 66,
         "timestamp": "2026-09-27T12:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
@@ -13739,22 +13739,22 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.3
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 16,
@@ -13769,7 +13769,7 @@
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
@@ -13879,7 +13879,7 @@
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 41,
@@ -14004,7 +14004,7 @@
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -14191,17 +14191,17 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 15,
@@ -14456,7 +14456,7 @@
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -14773,7 +14773,7 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.2
       },
       {
         "hour": 39,
@@ -15050,17 +15050,17 @@
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 4,
         "timestamp": "2026-09-24T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 5,
         "timestamp": "2026-09-24T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 6,
@@ -15075,12 +15075,12 @@
       {
         "hour": 8,
         "timestamp": "2026-09-25T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 9,
         "timestamp": "2026-09-25T03:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 10,
@@ -15095,47 +15095,47 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.3
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.3
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.3
       },
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.5
       },
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 20,
         "timestamp": "2026-09-25T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 21,
@@ -15155,12 +15155,12 @@
       {
         "hour": 24,
         "timestamp": "2026-09-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 25,
         "timestamp": "2026-09-25T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 26,
@@ -15175,12 +15175,12 @@
       {
         "hour": 28,
         "timestamp": "2026-09-25T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 29,
         "timestamp": "2026-09-25T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 30,
@@ -15215,37 +15215,37 @@
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.3
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.2
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 43,
@@ -15255,7 +15255,7 @@
       {
         "hour": 44,
         "timestamp": "2026-09-26T14:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 45,
@@ -15270,12 +15270,12 @@
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 49,
@@ -15285,7 +15285,7 @@
       {
         "hour": 50,
         "timestamp": "2026-09-26T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 51,
@@ -15355,12 +15355,12 @@
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -15385,7 +15385,7 @@
       {
         "hour": 70,
         "timestamp": "2026-09-27T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 71,
@@ -15487,27 +15487,27 @@
       {
         "hour": 0,
         "timestamp": "2026-09-24T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-24T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 4,
         "timestamp": "2026-09-24T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 5,
@@ -15517,17 +15517,17 @@
       {
         "hour": 6,
         "timestamp": "2026-09-25T00:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 7,
         "timestamp": "2026-09-25T01:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 8,
         "timestamp": "2026-09-25T02:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 9,
@@ -15537,32 +15537,32 @@
       {
         "hour": 10,
         "timestamp": "2026-09-25T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 11,
         "timestamp": "2026-09-25T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 1.1
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.4
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 1.2
       },
       {
         "hour": 16,
@@ -15572,22 +15572,22 @@
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.8
       },
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 20,
         "timestamp": "2026-09-25T14:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 21,
@@ -15597,7 +15597,7 @@
       {
         "hour": 22,
         "timestamp": "2026-09-25T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 23,
@@ -15612,17 +15612,17 @@
       {
         "hour": 25,
         "timestamp": "2026-09-25T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 26,
         "timestamp": "2026-09-25T20:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 27,
         "timestamp": "2026-09-25T21:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 28,
@@ -15642,7 +15642,7 @@
       {
         "hour": 31,
         "timestamp": "2026-09-26T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 32,
@@ -15657,42 +15657,42 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.6
       },
       {
         "hour": 35,
         "timestamp": "2026-09-26T05:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.6
       },
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.9
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 1.1
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.4
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 42,
@@ -15702,7 +15702,7 @@
       {
         "hour": 43,
         "timestamp": "2026-09-26T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 44,
@@ -15777,7 +15777,7 @@
       {
         "hour": 58,
         "timestamp": "2026-09-27T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
@@ -15802,12 +15802,12 @@
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -15817,22 +15817,22 @@
       {
         "hour": 66,
         "timestamp": "2026-09-27T12:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
         "timestamp": "2026-09-27T14:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 69,
         "timestamp": "2026-09-27T15:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 70,
@@ -15939,22 +15939,22 @@
       {
         "hour": 0,
         "timestamp": "2026-09-24T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-24T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.4
       },
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.6
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 4,
@@ -15964,7 +15964,7 @@
       {
         "hour": 5,
         "timestamp": "2026-09-24T23:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 6,
@@ -15989,52 +15989,52 @@
       {
         "hour": 10,
         "timestamp": "2026-09-25T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 11,
         "timestamp": "2026-09-25T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.2
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 1.2
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 1.6
+        "mm_hr": 0.6
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 1.5
+        "mm_hr": 0.6
       },
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.8
       },
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.3
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 20,
@@ -16044,12 +16044,12 @@
       {
         "hour": 21,
         "timestamp": "2026-09-25T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 22,
         "timestamp": "2026-09-25T16:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 23,
@@ -16074,7 +16074,7 @@
       {
         "hour": 27,
         "timestamp": "2026-09-25T21:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 28,
@@ -16094,12 +16094,12 @@
       {
         "hour": 31,
         "timestamp": "2026-09-26T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 32,
         "timestamp": "2026-09-26T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
@@ -16109,27 +16109,27 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.5
       },
       {
         "hour": 35,
         "timestamp": "2026-09-26T05:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.8
       },
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.6
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.5
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.6
       },
       {
         "hour": 39,
@@ -16139,52 +16139,52 @@
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.4
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.6
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.4
       },
       {
         "hour": 43,
         "timestamp": "2026-09-26T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 44,
         "timestamp": "2026-09-26T14:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.3
       },
       {
         "hour": 45,
         "timestamp": "2026-09-26T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 46,
         "timestamp": "2026-09-26T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.5
       },
       {
         "hour": 49,
         "timestamp": "2026-09-26T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 50,
@@ -16229,12 +16229,12 @@
       {
         "hour": 58,
         "timestamp": "2026-09-27T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
         "timestamp": "2026-09-27T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 60,
@@ -16259,27 +16259,27 @@
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.4
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.3
       },
       {
         "hour": 66,
         "timestamp": "2026-09-27T12:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
         "timestamp": "2026-09-27T14:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 69,
@@ -16391,22 +16391,22 @@
       {
         "hour": 0,
         "timestamp": "2026-09-24T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-09-24T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 1.1
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.3
       },
       {
         "hour": 4,
@@ -16416,7 +16416,7 @@
       {
         "hour": 5,
         "timestamp": "2026-09-24T23:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 6,
@@ -16426,7 +16426,7 @@
       {
         "hour": 7,
         "timestamp": "2026-09-25T01:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 8,
@@ -16436,7 +16436,7 @@
       {
         "hour": 9,
         "timestamp": "2026-09-25T03:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 10,
@@ -16446,37 +16446,37 @@
       {
         "hour": 11,
         "timestamp": "2026-09-25T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.7
+        "mm_hr": 0.9
       },
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.8
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 2.8
+        "mm_hr": 1.6
       },
       {
         "hour": 15,
         "timestamp": "2026-09-25T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 1.0
       },
       {
         "hour": 17,
         "timestamp": "2026-09-25T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 18,
@@ -16486,7 +16486,7 @@
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 20,
@@ -16496,7 +16496,7 @@
       {
         "hour": 21,
         "timestamp": "2026-09-25T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 22,
@@ -16511,7 +16511,7 @@
       {
         "hour": 24,
         "timestamp": "2026-09-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 25,
@@ -16531,7 +16531,7 @@
       {
         "hour": 28,
         "timestamp": "2026-09-25T22:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 29,
@@ -16541,17 +16541,17 @@
       {
         "hour": 30,
         "timestamp": "2026-09-26T00:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 31,
         "timestamp": "2026-09-26T01:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 32,
         "timestamp": "2026-09-26T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
@@ -16561,42 +16561,42 @@
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.6
       },
       {
         "hour": 35,
         "timestamp": "2026-09-26T05:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.7
       },
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.6
       },
       {
         "hour": 37,
         "timestamp": "2026-09-26T07:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.4
       },
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.5
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.3
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.7
       },
       {
         "hour": 42,
@@ -16616,22 +16616,22 @@
       {
         "hour": 45,
         "timestamp": "2026-09-26T15:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 46,
         "timestamp": "2026-09-26T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 49,
@@ -16681,12 +16681,12 @@
       {
         "hour": 58,
         "timestamp": "2026-09-27T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 59,
         "timestamp": "2026-09-27T05:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 60,
@@ -16696,17 +16696,17 @@
       {
         "hour": 61,
         "timestamp": "2026-09-27T07:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.0
       },
       {
         "hour": 62,
         "timestamp": "2026-09-27T08:00:00+00:00",
-        "mm_hr": 0.6
+        "mm_hr": 0.1
       },
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.2
       },
       {
         "hour": 64,
@@ -16716,7 +16716,7 @@
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.4
       },
       {
         "hour": 66,
@@ -16726,7 +16726,7 @@
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
@@ -16903,7 +16903,7 @@
       {
         "hour": 12,
         "timestamp": "2026-09-25T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
@@ -17033,7 +17033,7 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
@@ -17158,7 +17158,7 @@
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
@@ -17305,12 +17305,12 @@
       {
         "hour": 2,
         "timestamp": "2026-09-24T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 3,
         "timestamp": "2026-09-24T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 4,
@@ -17360,12 +17360,12 @@
       {
         "hour": 13,
         "timestamp": "2026-09-25T07:00:00+00:00",
-        "mm_hr": 0.8
+        "mm_hr": 0.7
       },
       {
         "hour": 14,
         "timestamp": "2026-09-25T08:00:00+00:00",
-        "mm_hr": 1.4
+        "mm_hr": 0.6
       },
       {
         "hour": 15,
@@ -17375,7 +17375,7 @@
       {
         "hour": 16,
         "timestamp": "2026-09-25T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.2
       },
       {
         "hour": 17,
@@ -17385,12 +17385,12 @@
       {
         "hour": 18,
         "timestamp": "2026-09-25T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 19,
         "timestamp": "2026-09-25T13:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 20,
@@ -17405,7 +17405,7 @@
       {
         "hour": 22,
         "timestamp": "2026-09-25T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 23,
@@ -17415,32 +17415,32 @@
       {
         "hour": 24,
         "timestamp": "2026-09-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 25,
         "timestamp": "2026-09-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 26,
         "timestamp": "2026-09-25T20:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 27,
         "timestamp": "2026-09-25T21:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 28,
         "timestamp": "2026-09-25T22:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 29,
         "timestamp": "2026-09-25T23:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 30,
@@ -17455,17 +17455,17 @@
       {
         "hour": 32,
         "timestamp": "2026-09-26T02:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 33,
         "timestamp": "2026-09-26T03:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 34,
         "timestamp": "2026-09-26T04:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.3
       },
       {
         "hour": 35,
@@ -17475,7 +17475,7 @@
       {
         "hour": 36,
         "timestamp": "2026-09-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 37,
@@ -17485,32 +17485,32 @@
       {
         "hour": 38,
         "timestamp": "2026-09-26T08:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.2
       },
       {
         "hour": 39,
         "timestamp": "2026-09-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 40,
         "timestamp": "2026-09-26T10:00:00+00:00",
-        "mm_hr": 1.0
+        "mm_hr": 0.3
       },
       {
         "hour": 41,
         "timestamp": "2026-09-26T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.4
       },
       {
         "hour": 42,
         "timestamp": "2026-09-26T12:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 43,
         "timestamp": "2026-09-26T13:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 44,
@@ -17520,27 +17520,27 @@
       {
         "hour": 45,
         "timestamp": "2026-09-26T15:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 46,
         "timestamp": "2026-09-26T16:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 47,
         "timestamp": "2026-09-26T17:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 48,
         "timestamp": "2026-09-26T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 49,
         "timestamp": "2026-09-26T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 50,
@@ -17600,37 +17600,37 @@
       {
         "hour": 61,
         "timestamp": "2026-09-27T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 62,
         "timestamp": "2026-09-27T08:00:00+00:00",
-        "mm_hr": 0.9
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-09-27T09:00:00+00:00",
-        "mm_hr": 0.5
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-09-27T10:00:00+00:00",
-        "mm_hr": 1.2
+        "mm_hr": 0.3
       },
       {
         "hour": 65,
         "timestamp": "2026-09-27T11:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 66,
         "timestamp": "2026-09-27T12:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 67,
         "timestamp": "2026-09-27T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
@@ -17749,480 +17749,480 @@
       "hour": 0,
       "timestamp": "2026-09-24T18:00:00+00:00",
       "lead_hours": 0,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 1,
       "timestamp": "2026-09-24T19:00:00+00:00",
       "lead_hours": 1,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 2,
       "timestamp": "2026-09-24T20:00:00+00:00",
       "lead_hours": 2,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 3,
       "timestamp": "2026-09-24T21:00:00+00:00",
       "lead_hours": 3,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 4,
       "timestamp": "2026-09-24T22:00:00+00:00",
       "lead_hours": 4,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 5,
       "timestamp": "2026-09-24T23:00:00+00:00",
       "lead_hours": 5,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 6,
       "timestamp": "2026-09-25T00:00:00+00:00",
       "lead_hours": 6,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 7,
       "timestamp": "2026-09-25T01:00:00+00:00",
       "lead_hours": 7,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 8,
       "timestamp": "2026-09-25T02:00:00+00:00",
       "lead_hours": 8,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 9,
       "timestamp": "2026-09-25T03:00:00+00:00",
       "lead_hours": 9,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 10,
       "timestamp": "2026-09-25T04:00:00+00:00",
       "lead_hours": 10,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 11,
       "timestamp": "2026-09-25T05:00:00+00:00",
       "lead_hours": 11,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 12,
       "timestamp": "2026-09-25T06:00:00+00:00",
       "lead_hours": 12,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 13,
       "timestamp": "2026-09-25T07:00:00+00:00",
       "lead_hours": 13,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 14,
       "timestamp": "2026-09-25T08:00:00+00:00",
       "lead_hours": 14,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 15,
       "timestamp": "2026-09-25T09:00:00+00:00",
       "lead_hours": 15,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 16,
       "timestamp": "2026-09-25T10:00:00+00:00",
       "lead_hours": 16,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 17,
       "timestamp": "2026-09-25T11:00:00+00:00",
       "lead_hours": 17,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 18,
       "timestamp": "2026-09-25T12:00:00+00:00",
       "lead_hours": 18,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 19,
       "timestamp": "2026-09-25T13:00:00+00:00",
       "lead_hours": 19,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 20,
       "timestamp": "2026-09-25T14:00:00+00:00",
       "lead_hours": 20,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 21,
       "timestamp": "2026-09-25T15:00:00+00:00",
       "lead_hours": 21,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 22,
       "timestamp": "2026-09-25T16:00:00+00:00",
       "lead_hours": 22,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 23,
       "timestamp": "2026-09-25T17:00:00+00:00",
       "lead_hours": 23,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 24,
       "timestamp": "2026-09-25T18:00:00+00:00",
       "lead_hours": 24,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 25,
       "timestamp": "2026-09-25T19:00:00+00:00",
       "lead_hours": 25,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 26,
       "timestamp": "2026-09-25T20:00:00+00:00",
       "lead_hours": 26,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 27,
       "timestamp": "2026-09-25T21:00:00+00:00",
       "lead_hours": 27,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 28,
       "timestamp": "2026-09-25T22:00:00+00:00",
       "lead_hours": 28,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 29,
       "timestamp": "2026-09-25T23:00:00+00:00",
       "lead_hours": 29,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 30,
       "timestamp": "2026-09-26T00:00:00+00:00",
       "lead_hours": 30,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 31,
       "timestamp": "2026-09-26T01:00:00+00:00",
       "lead_hours": 31,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 32,
       "timestamp": "2026-09-26T02:00:00+00:00",
       "lead_hours": 32,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 33,
       "timestamp": "2026-09-26T03:00:00+00:00",
       "lead_hours": 33,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 34,
       "timestamp": "2026-09-26T04:00:00+00:00",
       "lead_hours": 34,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 35,
       "timestamp": "2026-09-26T05:00:00+00:00",
       "lead_hours": 35,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 36,
       "timestamp": "2026-09-26T06:00:00+00:00",
       "lead_hours": 36,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 37,
       "timestamp": "2026-09-26T07:00:00+00:00",
       "lead_hours": 37,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 38,
       "timestamp": "2026-09-26T08:00:00+00:00",
       "lead_hours": 38,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 39,
       "timestamp": "2026-09-26T09:00:00+00:00",
       "lead_hours": 39,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 40,
       "timestamp": "2026-09-26T10:00:00+00:00",
       "lead_hours": 40,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 41,
       "timestamp": "2026-09-26T11:00:00+00:00",
       "lead_hours": 41,
-      "discharge_m3s": 0.6,
-      "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "discharge_m3s": 0.5,
+      "surface_runoff_m3s": 0.1,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 42,
       "timestamp": "2026-09-26T12:00:00+00:00",
       "lead_hours": 42,
-      "discharge_m3s": 0.6,
-      "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "discharge_m3s": 0.5,
+      "surface_runoff_m3s": 0.1,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 43,
       "timestamp": "2026-09-26T13:00:00+00:00",
       "lead_hours": 43,
-      "discharge_m3s": 0.6,
-      "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "discharge_m3s": 0.5,
+      "surface_runoff_m3s": 0.1,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 44,
       "timestamp": "2026-09-26T14:00:00+00:00",
       "lead_hours": 44,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 45,
       "timestamp": "2026-09-26T15:00:00+00:00",
       "lead_hours": 45,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 46,
       "timestamp": "2026-09-26T16:00:00+00:00",
       "lead_hours": 46,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
       "hour": 47,
       "timestamp": "2026-09-26T17:00:00+00:00",
       "lead_hours": 47,
-      "discharge_m3s": 0.6,
+      "discharge_m3s": 0.5,
       "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.01,
+      "baseflow_m3s": 0.5,
+      "stage_m": 530.98,
       "is_peak": false
     },
     {
@@ -18231,7 +18231,7 @@
       "lead_hours": 48,
       "discharge_m3s": 0.6,
       "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.01,
       "is_peak": false
     },
@@ -18241,7 +18241,7 @@
       "lead_hours": 49,
       "discharge_m3s": 0.6,
       "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.01,
       "is_peak": false
     },
@@ -18251,7 +18251,7 @@
       "lead_hours": 50,
       "discharge_m3s": 0.6,
       "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.01,
       "is_peak": false
     },
@@ -18261,7 +18261,7 @@
       "lead_hours": 51,
       "discharge_m3s": 0.6,
       "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.01,
       "is_peak": false
     },
@@ -18271,7 +18271,7 @@
       "lead_hours": 52,
       "discharge_m3s": 0.6,
       "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.01,
       "is_peak": false
     },
@@ -18281,7 +18281,7 @@
       "lead_hours": 53,
       "discharge_m3s": 0.6,
       "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.01,
       "is_peak": false
     },
@@ -18289,50 +18289,50 @@
       "hour": 54,
       "timestamp": "2026-09-27T00:00:00+00:00",
       "lead_hours": 54,
-      "discharge_m3s": 0.7,
-      "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.05,
+      "discharge_m3s": 0.6,
+      "surface_runoff_m3s": 0.2,
+      "baseflow_m3s": 0.5,
+      "stage_m": 531.01,
       "is_peak": false
     },
     {
       "hour": 55,
       "timestamp": "2026-09-27T01:00:00+00:00",
       "lead_hours": 55,
-      "discharge_m3s": 0.7,
-      "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.05,
+      "discharge_m3s": 0.6,
+      "surface_runoff_m3s": 0.2,
+      "baseflow_m3s": 0.5,
+      "stage_m": 531.01,
       "is_peak": false
     },
     {
       "hour": 56,
       "timestamp": "2026-09-27T02:00:00+00:00",
       "lead_hours": 56,
-      "discharge_m3s": 0.7,
-      "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.05,
+      "discharge_m3s": 0.6,
+      "surface_runoff_m3s": 0.2,
+      "baseflow_m3s": 0.5,
+      "stage_m": 531.01,
       "is_peak": false
     },
     {
       "hour": 57,
       "timestamp": "2026-09-27T03:00:00+00:00",
       "lead_hours": 57,
-      "discharge_m3s": 0.7,
-      "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.05,
+      "discharge_m3s": 0.6,
+      "surface_runoff_m3s": 0.2,
+      "baseflow_m3s": 0.5,
+      "stage_m": 531.01,
       "is_peak": false
     },
     {
       "hour": 58,
       "timestamp": "2026-09-27T04:00:00+00:00",
       "lead_hours": 58,
-      "discharge_m3s": 0.7,
-      "surface_runoff_m3s": 0.1,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.05,
+      "discharge_m3s": 0.6,
+      "surface_runoff_m3s": 0.2,
+      "baseflow_m3s": 0.5,
+      "stage_m": 531.01,
       "is_peak": false
     },
     {
@@ -18341,7 +18341,7 @@
       "lead_hours": 59,
       "discharge_m3s": 0.7,
       "surface_runoff_m3s": 0.2,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.05,
       "is_peak": false
     },
@@ -18351,7 +18351,7 @@
       "lead_hours": 60,
       "discharge_m3s": 0.7,
       "surface_runoff_m3s": 0.2,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.05,
       "is_peak": false
     },
@@ -18361,7 +18361,7 @@
       "lead_hours": 61,
       "discharge_m3s": 0.7,
       "surface_runoff_m3s": 0.2,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.05,
       "is_peak": false
     },
@@ -18371,7 +18371,7 @@
       "lead_hours": 62,
       "discharge_m3s": 0.7,
       "surface_runoff_m3s": 0.2,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.05,
       "is_peak": false
     },
@@ -18380,8 +18380,8 @@
       "timestamp": "2026-09-27T09:00:00+00:00",
       "lead_hours": 63,
       "discharge_m3s": 0.7,
-      "surface_runoff_m3s": 0.2,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.3,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.05,
       "is_peak": false
     },
@@ -18390,8 +18390,8 @@
       "timestamp": "2026-09-27T10:00:00+00:00",
       "lead_hours": 64,
       "discharge_m3s": 0.7,
-      "surface_runoff_m3s": 0.2,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.3,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.05,
       "is_peak": false
     },
@@ -18399,20 +18399,20 @@
       "hour": 65,
       "timestamp": "2026-09-27T11:00:00+00:00",
       "lead_hours": 65,
-      "discharge_m3s": 0.8,
-      "surface_runoff_m3s": 0.2,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.09,
+      "discharge_m3s": 0.7,
+      "surface_runoff_m3s": 0.3,
+      "baseflow_m3s": 0.5,
+      "stage_m": 531.05,
       "is_peak": false
     },
     {
       "hour": 66,
       "timestamp": "2026-09-27T12:00:00+00:00",
       "lead_hours": 66,
-      "discharge_m3s": 0.8,
-      "surface_runoff_m3s": 0.2,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.09,
+      "discharge_m3s": 0.7,
+      "surface_runoff_m3s": 0.3,
+      "baseflow_m3s": 0.5,
+      "stage_m": 531.05,
       "is_peak": false
     },
     {
@@ -18420,8 +18420,8 @@
       "timestamp": "2026-09-27T13:00:00+00:00",
       "lead_hours": 67,
       "discharge_m3s": 0.8,
-      "surface_runoff_m3s": 0.2,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.3,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.09,
       "is_peak": false
     },
@@ -18431,7 +18431,7 @@
       "lead_hours": 68,
       "discharge_m3s": 0.8,
       "surface_runoff_m3s": 0.3,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.09,
       "is_peak": false
     },
@@ -18441,7 +18441,7 @@
       "lead_hours": 69,
       "discharge_m3s": 0.8,
       "surface_runoff_m3s": 0.3,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.09,
       "is_peak": false
     },
@@ -18450,8 +18450,8 @@
       "timestamp": "2026-09-27T16:00:00+00:00",
       "lead_hours": 70,
       "discharge_m3s": 0.8,
-      "surface_runoff_m3s": 0.3,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.4,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.09,
       "is_peak": false
     },
@@ -18460,8 +18460,8 @@
       "timestamp": "2026-09-27T17:00:00+00:00",
       "lead_hours": 71,
       "discharge_m3s": 0.8,
-      "surface_runoff_m3s": 0.3,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.4,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.09,
       "is_peak": false
     },
@@ -18470,8 +18470,8 @@
       "timestamp": "2026-09-27T18:00:00+00:00",
       "lead_hours": 72,
       "discharge_m3s": 0.8,
-      "surface_runoff_m3s": 0.3,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.4,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.09,
       "is_peak": false
     },
@@ -18479,10 +18479,10 @@
       "hour": 73,
       "timestamp": "2026-09-27T19:00:00+00:00",
       "lead_hours": 73,
-      "discharge_m3s": 0.9,
-      "surface_runoff_m3s": 0.3,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.13,
+      "discharge_m3s": 0.8,
+      "surface_runoff_m3s": 0.4,
+      "baseflow_m3s": 0.5,
+      "stage_m": 531.09,
       "is_peak": false
     },
     {
@@ -18490,8 +18490,8 @@
       "timestamp": "2026-09-27T20:00:00+00:00",
       "lead_hours": 74,
       "discharge_m3s": 0.9,
-      "surface_runoff_m3s": 0.3,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.4,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.13,
       "is_peak": false
     },
@@ -18501,7 +18501,7 @@
       "lead_hours": 75,
       "discharge_m3s": 0.9,
       "surface_runoff_m3s": 0.4,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.13,
       "is_peak": false
     },
@@ -18510,8 +18510,8 @@
       "timestamp": "2026-09-27T22:00:00+00:00",
       "lead_hours": 76,
       "discharge_m3s": 0.9,
-      "surface_runoff_m3s": 0.4,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.5,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.13,
       "is_peak": false
     },
@@ -18520,8 +18520,8 @@
       "timestamp": "2026-09-27T23:00:00+00:00",
       "lead_hours": 77,
       "discharge_m3s": 0.9,
-      "surface_runoff_m3s": 0.4,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.5,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.13,
       "is_peak": false
     },
@@ -18530,8 +18530,8 @@
       "timestamp": "2026-09-28T00:00:00+00:00",
       "lead_hours": 78,
       "discharge_m3s": 0.9,
-      "surface_runoff_m3s": 0.4,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.5,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.13,
       "is_peak": false
     },
@@ -18540,8 +18540,8 @@
       "timestamp": "2026-09-28T01:00:00+00:00",
       "lead_hours": 79,
       "discharge_m3s": 0.9,
-      "surface_runoff_m3s": 0.4,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.5,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.13,
       "is_peak": false
     },
@@ -18549,10 +18549,10 @@
       "hour": 80,
       "timestamp": "2026-09-28T02:00:00+00:00",
       "lead_hours": 80,
-      "discharge_m3s": 1.0,
-      "surface_runoff_m3s": 0.4,
-      "baseflow_m3s": 0.6,
-      "stage_m": 531.15,
+      "discharge_m3s": 0.9,
+      "surface_runoff_m3s": 0.5,
+      "baseflow_m3s": 0.5,
+      "stage_m": 531.13,
       "is_peak": false
     },
     {
@@ -18561,7 +18561,7 @@
       "lead_hours": 81,
       "discharge_m3s": 1.0,
       "surface_runoff_m3s": 0.5,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.15,
       "is_peak": false
     },
@@ -18570,8 +18570,8 @@
       "timestamp": "2026-09-28T04:00:00+00:00",
       "lead_hours": 82,
       "discharge_m3s": 1.0,
-      "surface_runoff_m3s": 0.5,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.15,
       "is_peak": false
     },
@@ -18580,8 +18580,8 @@
       "timestamp": "2026-09-28T05:00:00+00:00",
       "lead_hours": 83,
       "discharge_m3s": 1.0,
-      "surface_runoff_m3s": 0.5,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.15,
       "is_peak": false
     },
@@ -18590,8 +18590,8 @@
       "timestamp": "2026-09-28T06:00:00+00:00",
       "lead_hours": 84,
       "discharge_m3s": 1.0,
-      "surface_runoff_m3s": 0.5,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.15,
       "is_peak": false
     },
@@ -18600,8 +18600,8 @@
       "timestamp": "2026-09-28T07:00:00+00:00",
       "lead_hours": 85,
       "discharge_m3s": 1.0,
-      "surface_runoff_m3s": 0.5,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.15,
       "is_peak": false
     },
@@ -18610,8 +18610,8 @@
       "timestamp": "2026-09-28T08:00:00+00:00",
       "lead_hours": 86,
       "discharge_m3s": 1.0,
-      "surface_runoff_m3s": 0.5,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.15,
       "is_peak": false
     },
@@ -18621,7 +18621,7 @@
       "lead_hours": 87,
       "discharge_m3s": 1.1,
       "surface_runoff_m3s": 0.6,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.18,
       "is_peak": false
     },
@@ -18631,7 +18631,7 @@
       "lead_hours": 88,
       "discharge_m3s": 1.1,
       "surface_runoff_m3s": 0.6,
-      "baseflow_m3s": 0.6,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.18,
       "is_peak": false
     },
@@ -18640,8 +18640,8 @@
       "timestamp": "2026-09-28T11:00:00+00:00",
       "lead_hours": 89,
       "discharge_m3s": 1.1,
-      "surface_runoff_m3s": 0.6,
-      "baseflow_m3s": 0.6,
+      "surface_runoff_m3s": 0.7,
+      "baseflow_m3s": 0.5,
       "stage_m": 531.18,
       "is_peak": true
     }
@@ -18668,384 +18668,384 @@
       {
         "forecast_time": "2026-09-24T18:00:00+00:00",
         "lead_hours": 0,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-24T19:00:00+00:00",
         "lead_hours": 1,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-24T20:00:00+00:00",
         "lead_hours": 2,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-24T21:00:00+00:00",
         "lead_hours": 3,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-24T22:00:00+00:00",
         "lead_hours": 4,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-24T23:00:00+00:00",
         "lead_hours": 5,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T00:00:00+00:00",
         "lead_hours": 6,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T01:00:00+00:00",
         "lead_hours": 7,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T02:00:00+00:00",
         "lead_hours": 8,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T03:00:00+00:00",
         "lead_hours": 9,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T04:00:00+00:00",
         "lead_hours": 10,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T05:00:00+00:00",
         "lead_hours": 11,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T06:00:00+00:00",
         "lead_hours": 12,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T07:00:00+00:00",
         "lead_hours": 13,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T08:00:00+00:00",
         "lead_hours": 14,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T09:00:00+00:00",
         "lead_hours": 15,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T10:00:00+00:00",
         "lead_hours": 16,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T11:00:00+00:00",
         "lead_hours": 17,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T12:00:00+00:00",
         "lead_hours": 18,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T13:00:00+00:00",
         "lead_hours": 19,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T14:00:00+00:00",
         "lead_hours": 20,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T15:00:00+00:00",
         "lead_hours": 21,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T16:00:00+00:00",
         "lead_hours": 22,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T17:00:00+00:00",
         "lead_hours": 23,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T18:00:00+00:00",
         "lead_hours": 24,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T19:00:00+00:00",
         "lead_hours": 25,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T20:00:00+00:00",
         "lead_hours": 26,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T21:00:00+00:00",
         "lead_hours": 27,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T22:00:00+00:00",
         "lead_hours": 28,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T23:00:00+00:00",
         "lead_hours": 29,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T00:00:00+00:00",
         "lead_hours": 30,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T01:00:00+00:00",
         "lead_hours": 31,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T02:00:00+00:00",
         "lead_hours": 32,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T03:00:00+00:00",
         "lead_hours": 33,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T04:00:00+00:00",
         "lead_hours": 34,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T05:00:00+00:00",
         "lead_hours": 35,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T06:00:00+00:00",
         "lead_hours": 36,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T07:00:00+00:00",
         "lead_hours": 37,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T08:00:00+00:00",
         "lead_hours": 38,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T09:00:00+00:00",
         "lead_hours": 39,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T10:00:00+00:00",
         "lead_hours": 40,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T11:00:00+00:00",
         "lead_hours": 41,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T12:00:00+00:00",
         "lead_hours": 42,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T13:00:00+00:00",
         "lead_hours": 43,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T14:00:00+00:00",
         "lead_hours": 44,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T15:00:00+00:00",
         "lead_hours": 45,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T16:00:00+00:00",
         "lead_hours": 46,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T17:00:00+00:00",
         "lead_hours": 47,
-        "stage_m": 531.01,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.98,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -19100,40 +19100,40 @@
       {
         "forecast_time": "2026-09-27T00:00:00+00:00",
         "lead_hours": 54,
-        "stage_m": 531.05,
-        "discharge_m3s": 0.7,
+        "stage_m": 531.01,
+        "discharge_m3s": 0.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-27T01:00:00+00:00",
         "lead_hours": 55,
-        "stage_m": 531.05,
-        "discharge_m3s": 0.7,
+        "stage_m": 531.01,
+        "discharge_m3s": 0.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-27T02:00:00+00:00",
         "lead_hours": 56,
-        "stage_m": 531.05,
-        "discharge_m3s": 0.7,
+        "stage_m": 531.01,
+        "discharge_m3s": 0.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-27T03:00:00+00:00",
         "lead_hours": 57,
-        "stage_m": 531.05,
-        "discharge_m3s": 0.7,
+        "stage_m": 531.01,
+        "discharge_m3s": 0.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-27T04:00:00+00:00",
         "lead_hours": 58,
-        "stage_m": 531.05,
-        "discharge_m3s": 0.7,
+        "stage_m": 531.01,
+        "discharge_m3s": 0.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -19188,16 +19188,16 @@
       {
         "forecast_time": "2026-09-27T11:00:00+00:00",
         "lead_hours": 65,
-        "stage_m": 531.09,
-        "discharge_m3s": 0.8,
+        "stage_m": 531.05,
+        "discharge_m3s": 0.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-27T12:00:00+00:00",
         "lead_hours": 66,
-        "stage_m": 531.09,
-        "discharge_m3s": 0.8,
+        "stage_m": 531.05,
+        "discharge_m3s": 0.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -19252,8 +19252,8 @@
       {
         "forecast_time": "2026-09-27T19:00:00+00:00",
         "lead_hours": 73,
-        "stage_m": 531.13,
-        "discharge_m3s": 0.9,
+        "stage_m": 531.09,
+        "discharge_m3s": 0.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -19308,8 +19308,8 @@
       {
         "forecast_time": "2026-09-28T02:00:00+00:00",
         "lead_hours": 80,
-        "stage_m": 531.15,
-        "discharge_m3s": 1.0,
+        "stage_m": 531.13,
+        "discharge_m3s": 0.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -19389,11 +19389,11 @@
     "live_sensor": {
       "status": "SUCCESS",
       "channel_id": "3424513",
-      "timestamp": "2026-09-24T18:35:49Z",
-      "entry_id": 11618,
-      "raw_feet": 60.19,
+      "timestamp": "2026-09-24T23:12:43Z",
+      "entry_id": 11672,
+      "raw_feet": 60.26,
       "sensor_datum_msl": 549.35,
-      "stage_m": 531.0
+      "stage_m": 530.98
     },
     "peak_arrival": {
       "site_id": "SHIVAJI_BRIDGE",
@@ -19442,384 +19442,384 @@
       {
         "forecast_time": "2026-09-24T18:00:00+00:00",
         "lead_hours": 0,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-24T19:00:00+00:00",
         "lead_hours": 1,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-24T20:00:00+00:00",
         "lead_hours": 2,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-24T21:00:00+00:00",
         "lead_hours": 3,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-24T22:00:00+00:00",
         "lead_hours": 4,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-24T23:00:00+00:00",
         "lead_hours": 5,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T00:00:00+00:00",
         "lead_hours": 6,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T01:00:00+00:00",
         "lead_hours": 7,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T02:00:00+00:00",
         "lead_hours": 8,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T03:00:00+00:00",
         "lead_hours": 9,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T04:00:00+00:00",
         "lead_hours": 10,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T05:00:00+00:00",
         "lead_hours": 11,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T06:00:00+00:00",
         "lead_hours": 12,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T07:00:00+00:00",
         "lead_hours": 13,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T08:00:00+00:00",
         "lead_hours": 14,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T09:00:00+00:00",
         "lead_hours": 15,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T10:00:00+00:00",
         "lead_hours": 16,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T11:00:00+00:00",
         "lead_hours": 17,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T12:00:00+00:00",
         "lead_hours": 18,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T13:00:00+00:00",
         "lead_hours": 19,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T14:00:00+00:00",
         "lead_hours": 20,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T15:00:00+00:00",
         "lead_hours": 21,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T16:00:00+00:00",
         "lead_hours": 22,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T17:00:00+00:00",
         "lead_hours": 23,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T18:00:00+00:00",
         "lead_hours": 24,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T19:00:00+00:00",
         "lead_hours": 25,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T20:00:00+00:00",
         "lead_hours": 26,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T21:00:00+00:00",
         "lead_hours": 27,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T22:00:00+00:00",
         "lead_hours": 28,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-25T23:00:00+00:00",
         "lead_hours": 29,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T00:00:00+00:00",
         "lead_hours": 30,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T01:00:00+00:00",
         "lead_hours": 31,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T02:00:00+00:00",
         "lead_hours": 32,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T03:00:00+00:00",
         "lead_hours": 33,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T04:00:00+00:00",
         "lead_hours": 34,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T05:00:00+00:00",
         "lead_hours": 35,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T06:00:00+00:00",
         "lead_hours": 36,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T07:00:00+00:00",
         "lead_hours": 37,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T08:00:00+00:00",
         "lead_hours": 38,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T09:00:00+00:00",
         "lead_hours": 39,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T10:00:00+00:00",
         "lead_hours": 40,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T11:00:00+00:00",
         "lead_hours": 41,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T12:00:00+00:00",
         "lead_hours": 42,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T13:00:00+00:00",
         "lead_hours": 43,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T14:00:00+00:00",
         "lead_hours": 44,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T15:00:00+00:00",
         "lead_hours": 45,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T16:00:00+00:00",
         "lead_hours": 46,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-26T17:00:00+00:00",
         "lead_hours": 47,
-        "stage_m": 530.71,
-        "discharge_m3s": 0.6,
+        "stage_m": 530.67,
+        "discharge_m3s": 0.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -19874,40 +19874,40 @@
       {
         "forecast_time": "2026-09-27T00:00:00+00:00",
         "lead_hours": 54,
-        "stage_m": 530.76,
-        "discharge_m3s": 0.7,
+        "stage_m": 530.71,
+        "discharge_m3s": 0.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-27T01:00:00+00:00",
         "lead_hours": 55,
-        "stage_m": 530.76,
-        "discharge_m3s": 0.7,
+        "stage_m": 530.71,
+        "discharge_m3s": 0.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-27T02:00:00+00:00",
         "lead_hours": 56,
-        "stage_m": 530.76,
-        "discharge_m3s": 0.7,
+        "stage_m": 530.71,
+        "discharge_m3s": 0.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-27T03:00:00+00:00",
         "lead_hours": 57,
-        "stage_m": 530.76,
-        "discharge_m3s": 0.7,
+        "stage_m": 530.71,
+        "discharge_m3s": 0.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-27T04:00:00+00:00",
         "lead_hours": 58,
-        "stage_m": 530.76,
-        "discharge_m3s": 0.7,
+        "stage_m": 530.71,
+        "discharge_m3s": 0.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -19962,16 +19962,16 @@
       {
         "forecast_time": "2026-09-27T11:00:00+00:00",
         "lead_hours": 65,
-        "stage_m": 530.8,
-        "discharge_m3s": 0.8,
+        "stage_m": 530.76,
+        "discharge_m3s": 0.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-09-27T12:00:00+00:00",
         "lead_hours": 66,
-        "stage_m": 530.8,
-        "discharge_m3s": 0.8,
+        "stage_m": 530.76,
+        "discharge_m3s": 0.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -20026,8 +20026,8 @@
       {
         "forecast_time": "2026-09-27T19:00:00+00:00",
         "lead_hours": 73,
-        "stage_m": 530.84,
-        "discharge_m3s": 0.9,
+        "stage_m": 530.8,
+        "discharge_m3s": 0.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -20082,8 +20082,8 @@
       {
         "forecast_time": "2026-09-28T02:00:00+00:00",
         "lead_hours": 80,
-        "stage_m": 530.88,
-        "discharge_m3s": 1.0,
+        "stage_m": 530.84,
+        "discharge_m3s": 0.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -20213,11 +20213,11 @@
         "step_number": 1,
         "step_name": "Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)",
         "status": "success",
-        "duration_seconds": 2.31
+        "duration_seconds": 3.32
       }
     ],
     "metrics": {
-      "avg_duration_s": 2.6,
+      "avg_duration_s": 3.7,
       "success_rate_pct": 100.0
     }
   },
@@ -20227,9 +20227,9 @@
       "run_id": "CYC_20260924_18z",
       "status": "completed",
       "start_time": "2026-09-24T18:00:00+00:00",
-      "end_time": "2026-09-24T18:37:30.048106+00:00",
-      "duration_seconds": 2.6,
-      "total_rainfall_mm": 15.6,
+      "end_time": "2026-09-24T23:17:48.968726+00:00",
+      "duration_seconds": 3.7,
+      "total_rainfall_mm": 17.7,
       "peak_discharge_m3s": 1.1,
       "peak_stage_m": 531.18,
       "alert_level": "NORMAL"
@@ -20237,37 +20237,37 @@
   },
   "logs": [
     {
-      "t": "18:37:27",
+      "t": "23:17:45",
       "lv": "INFO",
       "msg": "Forecast cycle CYC_20260924_18z initiated across 18 Panchganga stations"
     },
     {
-      "t": "18:37:29",
+      "t": "23:17:48",
       "lv": "INFO",
       "msg": "Open-Meteo 90-hr precipitation forecast downloaded successfully"
     },
     {
-      "t": "18:37:29",
+      "t": "23:17:48",
       "lv": "INFO",
       "msg": "Dynamic subbasin selector evaluated: S1\u2192Karveer, S2\u2192Balinga, S6\u2192Gaganbawda"
     },
     {
-      "t": "18:37:29",
+      "t": "23:17:48",
       "lv": "INFO",
       "msg": "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/"
     },
     {
-      "t": "18:37:29",
+      "t": "23:17:48",
       "lv": "INFO",
-      "msg": "ThingSpeak Shivaji Live Ground Truth: Distance=60.19 ft -> Water Level=531.00 m MSL"
+      "msg": "ThingSpeak Shivaji Live Ground Truth: Distance=60.26 ft -> Water Level=530.98 m MSL"
     },
     {
-      "t": "18:37:29",
+      "t": "23:17:48",
       "lv": "INFO",
       "msg": "Hydrologic Calibration Baseline Stable: INSUFFICIENT_DATA"
     },
     {
-      "t": "18:37:30",
+      "t": "23:17:48",
       "lv": "INFO",
       "msg": "HEC-HMS 4.13 execution completed (CALIBRATED_RJKT): Peak Discharge 1.1 m\u00b3/s at T+89h in 14.8s"
     }
@@ -20278,11 +20278,11 @@
       "run_date": "24 Sep 2026",
       "cycle_time": "18z",
       "start_time": "2026-09-24T18:00:00+00:00",
-      "duration_seconds": 2.6,
+      "duration_seconds": 3.7,
       "peak_discharge_m3s": 1.1,
       "lead_hours_to_peak": 89,
       "total_volume_mcm": 0.2,
-      "total_rainfall_mm": 15.6,
+      "total_rainfall_mm": 17.7,
       "shivaji_peak_stage_m": 531.18,
       "rajaram_peak_stage_m": 530.92,
       "alert_level": "NORMAL",
@@ -20310,10 +20310,10 @@
       "status": "completed",
       "has_validation": false,
       "spearman_rho": 0.0,
-      "nse": -52.9,
-      "rmse": 0.033,
+      "nse": -25.7857,
+      "rmse": 0.039,
       "lifecycle_status": "IN_PROGRESS",
-      "verified_hours": 7
+      "verified_hours": 10
     },
     {
       "cycle_id": "CYC_20260924_06z",
@@ -20331,10 +20331,10 @@
       "status": "completed",
       "has_validation": false,
       "spearman_rho": 0.0,
-      "nse": -2.6947,
-      "rmse": 0.029,
+      "nse": -3.2523,
+      "rmse": 0.027,
       "lifecycle_status": "IN_PROGRESS",
-      "verified_hours": 13
+      "verified_hours": 16
     },
     {
       "cycle_id": "CYC_20260923_18z",
@@ -20352,10 +20352,10 @@
       "status": "completed",
       "has_validation": false,
       "spearman_rho": 0.0,
-      "nse": -0.2144,
+      "nse": -0.2796,
       "rmse": 0.015,
       "lifecycle_status": "IN_PROGRESS",
-      "verified_hours": 25
+      "verified_hours": 28
     },
     {
       "cycle_id": "CYC_20260923_12z",
@@ -20372,11 +20372,11 @@
       "alert_level": "NORMAL",
       "status": "completed",
       "has_validation": false,
-      "spearman_rho": 0.4577,
-      "nse": -1.4016,
-      "rmse": 0.021,
+      "spearman_rho": 0.3645,
+      "nse": -1.5029,
+      "rmse": 0.02,
       "lifecycle_status": "IN_PROGRESS",
-      "verified_hours": 31
+      "verified_hours": 34
     },
     {
       "cycle_id": "CYC_20260923_06z",
@@ -20393,11 +20393,11 @@
       "alert_level": "NORMAL",
       "status": "completed",
       "has_validation": false,
-      "spearman_rho": 0.1654,
-      "nse": -7.6761,
-      "rmse": 0.099,
+      "spearman_rho": 0.1132,
+      "nse": -9.6878,
+      "rmse": 0.106,
       "lifecycle_status": "IN_PROGRESS",
-      "verified_hours": 37
+      "verified_hours": 40
     },
     {
       "cycle_id": "CYC_20260922_18z",
@@ -20414,11 +20414,11 @@
       "alert_level": "NORMAL",
       "status": "completed",
       "has_validation": false,
-      "spearman_rho": 0.3741,
-      "nse": -3.0957,
-      "rmse": 0.282,
+      "spearman_rho": 0.271,
+      "nse": -3.4297,
+      "rmse": 0.288,
       "lifecycle_status": "IN_PROGRESS",
-      "verified_hours": 49
+      "verified_hours": 52
     },
     {
       "cycle_id": "CYC_20260922_12z",
@@ -20435,11 +20435,11 @@
       "alert_level": "NORMAL",
       "status": "completed",
       "has_validation": false,
-      "spearman_rho": 0.8241,
-      "nse": -3.8804,
-      "rmse": 0.39,
+      "spearman_rho": 0.7582,
+      "nse": -4.1511,
+      "rmse": 0.396,
       "lifecycle_status": "IN_PROGRESS",
-      "verified_hours": 55
+      "verified_hours": 58
     },
     {
       "cycle_id": "CYC_20260922_06z",
@@ -20456,11 +20456,11 @@
       "alert_level": "NORMAL",
       "status": "completed",
       "has_validation": true,
-      "spearman_rho": -0.6192,
-      "nse": -0.6997,
+      "spearman_rho": -0.6102,
+      "nse": -0.7482,
       "rmse": 0.23,
       "lifecycle_status": "IN_PROGRESS",
-      "verified_hours": 55
+      "verified_hours": 58
     },
     {
       "cycle_id": "CYC_20260921_18z",
@@ -20477,11 +20477,11 @@
       "alert_level": "NORMAL",
       "status": "completed",
       "has_validation": true,
-      "spearman_rho": -0.5455,
-      "nse": -0.6368,
-      "rmse": 0.226,
+      "spearman_rho": -0.5419,
+      "nse": -0.6716,
+      "rmse": 0.225,
       "lifecycle_status": "IN_PROGRESS",
-      "verified_hours": 55
+      "verified_hours": 58
     },
     {
       "cycle_id": "CYC_20260921_12z",
@@ -20498,11 +20498,11 @@
       "alert_level": "NORMAL",
       "status": "completed",
       "has_validation": false,
-      "spearman_rho": -0.7026,
-      "nse": -0.9397,
-      "rmse": 0.245,
+      "spearman_rho": -0.6887,
+      "nse": -1.03,
+      "rmse": 0.247,
       "lifecycle_status": "IN_PROGRESS",
-      "verified_hours": 56
+      "verified_hours": 59
     },
     {
       "cycle_id": "CYC_20260921_06z",
@@ -20519,11 +20519,11 @@
       "alert_level": "NORMAL",
       "status": "completed",
       "has_validation": false,
-      "spearman_rho": -0.7179,
-      "nse": -0.871,
-      "rmse": 0.238,
+      "spearman_rho": -0.7032,
+      "nse": -1.0419,
+      "rmse": 0.246,
       "lifecycle_status": "IN_PROGRESS",
-      "verified_hours": 57
+      "verified_hours": 60
     },
     {
       "cycle_id": "CYC_20260920_18z",
