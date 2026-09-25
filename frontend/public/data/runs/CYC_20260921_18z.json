@@ -20276,7 +20276,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260921_18z",
-    "validation_timestamp": "2026-09-25T11:13:41.427542+00:00",
+    "validation_timestamp": "2026-09-25T14:06:22.534087+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20739,7 +20739,7 @@
         "actual_stage": 530.9,
         "predicted_stage": 531.31,
         "lead_hours": 89,
-        "actual_distance_ft": 60.53
+        "actual_distance_ft": 60.54
       }
     ],
     "actual_observed_series": [
@@ -21906,7 +21906,7 @@
         "predicted_stage_m": 531.31,
         "predicted_discharge_m3s": 1.8,
         "observed_stage_m": 530.9,
-        "observed_distance_ft": 60.53,
+        "observed_distance_ft": 60.54,
         "observed_discharge_m3s": 0.3,
         "error_delta_m": 0.41,
         "error_delta_ft": 1.35,
