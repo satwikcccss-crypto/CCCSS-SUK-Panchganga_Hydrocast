@@ -20274,7 +20274,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260922_18z",
-    "validation_timestamp": "2026-09-25T05:52:47.570336+00:00",
+    "validation_timestamp": "2026-09-25T08:04:24.252772+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20286,23 +20286,23 @@
       "downstream_weir": "Rajaram K.T. Weir (3.8 km downstream, S0=0.002318)"
     },
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 60,
+    "verified_hours": 62,
     "total_forecast_hours": 90,
-    "completion_pct": 66.7,
+    "completion_pct": 68.9,
     "metrics": {
-      "sample_size_hours": 60,
-      "rmse_stage_m": 0.313,
-      "mae_stage_m": 0.289,
-      "nse_stage": -4.3099,
+      "sample_size_hours": 62,
+      "rmse_stage_m": 0.322,
+      "mae_stage_m": 0.296,
+      "nse_stage": -4.4971,
       "pbias_stage_pct": 0.05,
-      "spearman_rho": -0.1011,
-      "pearson_r2": 0.0336,
-      "rmse_q_m3s": 1.35,
-      "mae_q_m3s": 1.26,
-      "nse_discharge": -4.4524,
-      "pbias_discharge_pct": 145.16,
-      "spearman_rho_q": -0.081,
-      "pearson_r2_q": 0.0258,
+      "spearman_rho": -0.1896,
+      "pearson_r2": 0.0656,
+      "rmse_q_m3s": 1.38,
+      "mae_q_m3s": 1.29,
+      "nse_discharge": -4.7594,
+      "pbias_discharge_pct": 151.99,
+      "spearman_rho_q": -0.1741,
+      "pearson_r2_q": 0.0461,
       "basin_rainfall_accuracy_pct": 94.5,
       "performance_grade": "MODERATE_BIAS"
     },
@@ -20662,10 +20662,22 @@
         "actual_distance_ft": 60.53
       },
       {
-        "actual_stage": 530.88,
+        "actual_stage": 530.89,
         "predicted_stage": 531.4,
         "lead_hours": 59,
         "actual_distance_ft": 60.58
+      },
+      {
+        "actual_stage": 530.9,
+        "predicted_stage": 531.4,
+        "lead_hours": 60,
+        "actual_distance_ft": 60.53
+      },
+      {
+        "actual_stage": 530.87,
+        "predicted_stage": 531.41,
+        "lead_hours": 61,
+        "actual_distance_ft": 60.63
       }
     ],
     "actual_observed_series": [
@@ -21441,11 +21453,11 @@
         "timestamp": "2026-09-25T05:00:00+00:00",
         "predicted_stage_m": 531.4,
         "predicted_discharge_m3s": 2.4,
-        "observed_stage_m": 530.88,
+        "observed_stage_m": 530.89,
         "observed_distance_ft": 60.58,
         "observed_discharge_m3s": 0.3,
-        "error_delta_m": 0.52,
-        "error_delta_ft": 1.71,
+        "error_delta_m": 0.51,
+        "error_delta_ft": 1.67,
         "alert_level": "NORMAL",
         "has_observation": true
       },
@@ -21454,26 +21466,26 @@
         "timestamp": "2026-09-25T06:00:00+00:00",
         "predicted_stage_m": 531.4,
         "predicted_discharge_m3s": 2.4,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 530.9,
+        "observed_distance_ft": 60.53,
+        "observed_discharge_m3s": 0.3,
+        "error_delta_m": 0.5,
+        "error_delta_ft": 1.64,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 61,
         "timestamp": "2026-09-25T07:00:00+00:00",
         "predicted_stage_m": 531.41,
         "predicted_discharge_m3s": 2.5,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 530.87,
+        "observed_distance_ft": 60.63,
+        "observed_discharge_m3s": 0.3,
+        "error_delta_m": 0.54,
+        "error_delta_ft": 1.77,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 62,
