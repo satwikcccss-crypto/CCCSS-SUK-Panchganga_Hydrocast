@@ -34,7 +34,7 @@ from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_
 from src.hms.runner import execute_hec_hms
 from src.sensors.thingspeak_gauge import fetch_shivaji_live_telemetry
 from src.hydrology.stage_converter import convert_discharge_to_stage_manning
-from src.hydrology.runs_tracker import save_computation_run, list_computation_runs
+from src.hydrology.runs_tracker import save_computation_run, list_computation_runs, get_computation_run
 from src.hydrology.validation_metrics import evaluate_forecast_accuracy
 from src.hydrology.ml_calibration import calibrator, calculate_peak_arrival_window
 from src.hydrology.realtime_telemetry_validator import load_telemetry_cache
@@ -208,7 +208,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     ecmwf_hyetographs: Dict[str, list] = {}
     station_data_sources: Dict[str, str] = {}  # provenance tracking
 
-    s1 = _start_step("Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)")
+    s1 = _start_step("01. Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)")
     for st in STATION_REGISTRY:
         try:
             series = fetch_point_forecast(st.lat, st.lon, start_dt)
@@ -225,7 +225,8 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
 
     record_log("INFO", "Open-Meteo 90-hr precipitation forecast downloaded successfully")
 
-    # Dynamic subbasin selection
+    # 02. Dynamic Subbasin Station Selection
+    s2 = _start_step("02. Dynamic Subbasin Station Selection")
     governing_subbasin_gages = select_active_subbasin_gages(station_cumulatives)
     record_log("INFO", f"Dynamic subbasin selector evaluated: S1→{governing_subbasin_gages.get('S1', {}).get('station_name')}, S2→{governing_subbasin_gages.get('S2', {}).get('station_name')}, S6→{governing_subbasin_gages.get('S6', {}).get('station_name')}")
 
@@ -286,14 +287,20 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         gauge_hyetographs[sub] = hyeto
 
     record_log("INFO", "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/")
+    _end_step(s2)
 
+    s3 = _start_step("03. Live Telemetry Fetch & IoT Sync")
     # Fetch live ThingSpeak IoT telemetry for Shivaji Bridge (Ground Truth Observed Water Level)
     shivaji_telemetry = fetch_shivaji_live_telemetry()
     live_stage = shivaji_telemetry.get("stage_m", 532.60)
     record_log("INFO", f"ThingSpeak Shivaji Live Ground Truth: Distance={shivaji_telemetry.get('raw_feet', 54.83):.2f} ft -> Water Level={live_stage:.2f} m MSL")
+    _end_step(s3)
 
+    s4 = _start_step("04. Real-Time ML Recalibration Assessment")
     # Real-Time ML Recalibration Check against Live Telemetry
-    obs_cache = load_telemetry_cache()
+    from src.hydrology.realtime_telemetry_validator import get_all_available_observations
+    obs_cache = get_all_available_observations(fetch_remote=True)
+    
     if shivaji_telemetry and shivaji_telemetry.get("stage_m"):
         now_hour_key = start_dt.strftime("%Y-%m-%dT%H:00:00Z")
         obs_cache[now_hour_key] = {
@@ -302,7 +309,11 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         }
 
     recent_runs = list_computation_runs(limit=1)
-    prev_forecast = recent_runs[0].get("bridgeShivaji", {}).get("forecast", []) if recent_runs else []
+    prev_forecast = []
+    if recent_runs:
+        last_run_data = get_computation_run(recent_runs[0].get("cycle_id"))
+        if last_run_data:
+            prev_forecast = last_run_data.get("bridgeShivaji", {}).get("forecast", [])
 
     warranted, delta_t, max_err, trigger_reason = calibrator.detect_timing_and_stage_discrepancy(
         prev_forecast, obs_cache
@@ -320,9 +331,12 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         record_log("INFO", f"HEC-HMS & Emulator Synchronized: α_K={cal_params['alpha_k']}, α_lag={cal_params['alpha_lag']}, ΔCN={cal_params['delta_cn']}, X={cal_params['muskingum_x']}")
     else:
         record_log("INFO", f"Hydrologic Calibration Baseline Stable: {trigger_reason}")
+    _end_step(s4)
 
+    s5 = _start_step("05. HEC-HMS 4.13 Hydrologic Simulation")
     # Real HEC-HMS 4.13 Simulation Run with Dynamic Basin Hyetographs & Observed Stage Baseline
     hms_result = execute_hec_hms(start_dt, subbasin_arrays, live_stage_m=live_stage, parameter_overrides=cal_params)
+
     peak_h = hms_result["lead_hours_to_peak"]
     peak_q = hms_result["peak_discharge_m3s"]
     baseflow = float(hms_result["hydrograph"][0]["baseflow_m3s"])
@@ -383,6 +397,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         })
 
     record_log("INFO", f"HEC-HMS 4.13 execution completed ({hms_result['status']}): Peak Discharge {peak_q} m³/s at T+{peak_h}h in {hms_result['runtime_seconds']}s")
+    _end_step(s5)
 
     bridge_shivaji = {
         "site": {

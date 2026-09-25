@@ -224,6 +224,7 @@ class AdaptiveHydrologicCalibrator:
                 log.warning("Failed to load calibration state: %s", e)
         return {
             "last_calibrated_at": None,
+            "is_recalibrated": False,
             "trigger_reason": "INITIAL_BASELINE",
             "timing_offset_hours": 0.0,
             "stage_discrepancy_m": 0.0,

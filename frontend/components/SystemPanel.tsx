@@ -255,7 +255,7 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
                     </span>
                     <div>
                       <span className="font-mono-code font-bold text-slate-900">
-                        {String(step.step_number).padStart(2, "0")}. {step.step_name}
+                        {step.step_name}
                       </span>
                     </div>
                   </div>

@@ -957,16 +957,26 @@ def get_rajaram_rating_curve() -> pd.DataFrame:
 
 
 def build_all_rating_curves():
-    """Builds and returns rating curves for both bridge sites."""
+    """Builds and returns rating curves for both bridge sites.
+    NOTE: This uses the SAME canonical slopes as get_shivaji_rating_curve()
+    and get_rajaram_rating_curve() to ensure DB sync produces identical curves
+    to what the runtime pipeline uses.
+    """
     cs_s = load_cross_section_array("SHIVAJI_BRIDGE", SHIVAJI_SURVEY, {
         "name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
-        "latitude": 16.707274, "longitude": 74.217482, "slope": 0.005858, "n_main": 0.035,
-        "alert_stage_m": 542.10, "warning_stage_m": 542.70, "danger_stage_m": 543.30, "hfl_m": 545.33,
+        "latitude": 16.707274, "longitude": 74.217482,
+        "slope": 0.000201,  # Calibrated (Jayanti Nalla adjusted) — MUST match get_shivaji_rating_curve()
+        "n_main": 0.035,
+        "alert_stage_m": 542.10, "warning_stage_m": 542.70, "danger_stage_m": 543.30,
+        "extreme_stage_m": 544.00, "hfl_m": 545.33,
     })
     cs_r = load_cross_section_array("RAJARAM_BRIDGE", SHIVAJI_SURVEY, {
         "name": "Rajaram K.T. Weir (Kasba Bawada)",
-        "latitude": 16.736083, "longitude": 74.235250, "slope": 0.002318, "n_main": 0.035,
-        "alert_stage_m": 541.50, "warning_stage_m": 542.07, "danger_stage_m": 543.30, "hfl_m": 545.33,
+        "latitude": 16.736083, "longitude": 74.235250,
+        "slope": 0.000250,  # Calibrated — MUST match get_rajaram_rating_curve()
+        "n_main": 0.035,
+        "alert_stage_m": 541.50, "warning_stage_m": 542.07, "danger_stage_m": 543.30,
+        "extreme_stage_m": 544.00, "hfl_m": 545.33,
     })
     return {
         "SHIVAJI_BRIDGE": (cs_s, get_shivaji_rating_curve()),

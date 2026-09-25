@@ -354,10 +354,18 @@ def execute_hec_hms(
     q_surface = out_r1 + sub_q_direct["S1"]
     q_total = q_surface + baseflow_array
 
-    # Determine peak lead time and discharge based on the surface runoff wave, not the receding baseflow
-    peak_idx = int(np.argmax(q_surface))
-    # If there is absolutely no surface runoff, default to 0
-    if float(q_surface[peak_idx]) < 0.1:
+    # Determine peak lead time based on the full total discharge
+    # Do NOT use q_surface alone — it can be all-zeros in dry/low-flow runs,
+    # causing np.argmax to return the LAST zero index (T+89), not T+0.
+    peak_idx = int(np.argmax(q_total))
+    # Physical flood wave significance check:
+    # A real flood event should produce peak surface runoff that exceeds the initial baseflow
+    # by at least 2x. Below this threshold, the basin is in baseflow-only / low-yield mode.
+    # In these conditions, there is no meaningful "peak arrival time" — declare T+0 (receding).
+    peak_surface_q = float(q_surface[peak_idx])
+    initial_baseflow = float(baseflow_array[0])
+    is_significant_event = peak_surface_q > max(0.5, initial_baseflow * 2.0)
+    if not is_significant_event:
         peak_idx = 0
     
     peak_q = round(float(q_total[peak_idx]), 1)
