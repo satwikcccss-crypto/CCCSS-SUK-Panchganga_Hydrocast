@@ -20276,7 +20276,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260922_06z",
-    "validation_timestamp": "2026-09-25T23:52:59.312840+00:00",
+    "validation_timestamp": "2026-09-26T03:38:05.486113+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20295,16 +20295,16 @@
       "sample_size_hours": 84,
       "rmse_stage_m": 0.295,
       "mae_stage_m": 0.25,
-      "nse_stage": -2.0018,
+      "nse_stage": -2.0048,
       "pbias_stage_pct": 0.02,
-      "spearman_rho": -0.6907,
-      "pearson_r2": 0.3925,
+      "spearman_rho": -0.6914,
+      "pearson_r2": 0.3941,
       "rmse_q_m3s": 1.23,
-      "mae_q_m3s": 0.98,
-      "nse_discharge": -1.6169,
-      "pbias_discharge_pct": 31.09,
-      "spearman_rho_q": -0.6758,
-      "pearson_r2_q": 0.2443,
+      "mae_q_m3s": 0.99,
+      "nse_discharge": -1.6227,
+      "pbias_discharge_pct": 31.27,
+      "spearman_rho_q": -0.6787,
+      "pearson_r2_q": 0.2475,
       "basin_rainfall_accuracy_pct": 94.5,
       "performance_grade": "MODERATE_BIAS"
     },
@@ -20808,10 +20808,10 @@
         "actual_distance_ft": 60.07
       },
       {
-        "actual_stage": 531.08,
+        "actual_stage": 531.07,
         "predicted_stage": 531.41,
         "lead_hours": 89,
-        "actual_distance_ft": 59.95
+        "actual_distance_ft": 59.96
       }
     ],
     "actual_observed_series": [
@@ -21977,11 +21977,11 @@
         "timestamp": "2026-09-25T23:00:00+00:00",
         "predicted_stage_m": 531.41,
         "predicted_discharge_m3s": 2.5,
-        "observed_stage_m": 531.08,
-        "observed_distance_ft": 59.95,
-        "observed_discharge_m3s": 0.8,
-        "error_delta_m": 0.33,
-        "error_delta_ft": 1.08,
+        "observed_stage_m": 531.07,
+        "observed_distance_ft": 59.96,
+        "observed_discharge_m3s": 0.7,
+        "error_delta_m": 0.34,
+        "error_delta_ft": 1.12,
         "alert_level": "NORMAL",
         "has_observation": true
       }
