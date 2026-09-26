@@ -1,12 +1,17 @@
 // ==============================================================================
-// HYDROCAST BASIN INTELLIGENCE & HYDRAULIC VISUALIZATION ENGINE
-// Pure Vanilla JavaScript (ES6+) — Zero External Hydration Latency
+// USACE HEC-HMS STYLE DOCUMENTATION & HYDRAULIC INTELLIGENCE ENGINE
+// Clean White Theme & Simple Engineering Explanations
 // ==============================================================================
 
 (function() {
   "use strict";
 
   const DATA = window.HYDROCAST_DATA || {
+    team: {},
+    stations: [],
+    river_gauges: [],
+    subbasins_geojson: null,
+    rivers_geojson: null,
     cross_sections: {},
     bed_profile: { segments: [], landmarks: [] },
     wrd_benchmarks: [],
@@ -15,9 +20,8 @@
     documents: {}
   };
 
-  // State Management
   const state = {
-    activeTab: "cross_section",
+    activeView: "overview",
     activeSite: "SHIVAJI_BRIDGE",
     waterStage: 536.00,
     rainfall: 120.0,
@@ -25,47 +29,291 @@
     lagHr: 48.0,
     deltaT: -1.2,
     deltaH: 0.35,
-    selectedDoc: "HMS.md"
+    selectedDoc: "HMS.md",
+    mapInitialized: false,
+    leafletMap: null,
+    subbasinLayer: null,
+    riverLayer: null,
+    stationLayer: null,
+    gaugeLayer: null
   };
 
-  // DOM Elements
-  const tabs = document.querySelectorAll(".tab-btn");
-  const tabPanes = document.querySelectorAll(".tab-content");
-
-  // Tab Switching
-  tabs.forEach(btn => {
-    btn.addEventListener("click", () => {
-      tabs.forEach(b => b.classList.remove("active"));
-      tabPanes.forEach(p => p.classList.remove("active"));
-      btn.classList.add("active");
-      const targetId = btn.getAttribute("data-tab");
-      const targetPane = document.getElementById(targetId);
-      if (targetPane) {
-        targetPane.classList.add("active");
-        state.activeTab = targetId;
-        renderActiveView();
-      }
+  // Menu navigation routing
+  function setupNavigation() {
+    const navButtons = document.querySelectorAll(".menu-item-btn, .nav-link");
+    navButtons.forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const targetView = btn.getAttribute("data-view");
+        if (targetView) {
+          switchView(targetView);
+        }
+      });
     });
-  });
 
-  function renderActiveView() {
-    if (state.activeTab === "cross_section") {
+    // Header search
+    const searchInput = document.getElementById("header-search");
+    if (searchInput) {
+      searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          const q = searchInput.value.trim().toLowerCase();
+          if (q) {
+            switchView("documentation");
+            filterDocs(q);
+          }
+        }
+      });
+    }
+  }
+
+  function switchView(viewId) {
+    state.activeView = viewId;
+
+    // Update active states
+    document.querySelectorAll(".menu-item-btn").forEach(b => {
+      if (b.getAttribute("data-view") === viewId) b.classList.add("active");
+      else b.classList.remove("active");
+    });
+
+    document.querySelectorAll(".nav-link").forEach(b => {
+      if (b.getAttribute("data-view") === viewId) b.classList.add("active");
+      else b.classList.remove("active");
+    });
+
+    // Show panel
+    document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+    const targetPanel = document.getElementById(`panel-${viewId}`);
+    if (targetPanel) {
+      targetPanel.classList.add("active");
+    }
+
+    // Update breadcrumb
+    const breadcrumbCurrent = document.getElementById("breadcrumb-current");
+    if (breadcrumbCurrent) {
+      const titles = {
+        overview: "OVERVIEW & LEADERSHIP",
+        gis_map: "WATERSHED GIS MAP & GEOJSON",
+        cross_section: "2D RIVER HYDRAULICS & CROSS-SECTIONS",
+        l_section: "L-SECTION RIVER BED PROFILE",
+        hydrology: "SCS-CN & UNIT HYDROGRAPH SIMULATION",
+        rating_curve: "RATING CURVES & WRD BENCHMARKS",
+        ml_calibration: "ADAPTIVE ML RECALIBRATOR",
+        documentation: "HEC-HMS TECHNICAL REFERENCE MANUAL",
+        downloads: "DOWNLOADS (GEOJSON & MODELS)"
+      };
+      breadcrumbCurrent.innerText = titles[viewId] || viewId.toUpperCase();
+    }
+
+    // Trigger view-specific renderers
+    if (viewId === "gis_map") {
+      initOrResizeMap();
+    } else if (viewId === "cross_section") {
       renderCrossSection();
-    } else if (state.activeTab === "l_section") {
+    } else if (viewId === "l_section") {
       renderLSection();
-    } else if (state.activeTab === "hydrology") {
+    } else if (viewId === "hydrology") {
       renderHydrology();
-    } else if (state.activeTab === "rating_curve") {
+    } else if (viewId === "rating_curve") {
       renderRatingCurve();
-    } else if (state.activeTab === "ml_calibration") {
+    } else if (viewId === "ml_calibration") {
       renderMLPlayground();
-    } else if (state.activeTab === "docs_library") {
+    } else if (viewId === "documentation") {
       renderDocsLibrary();
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ============================================================================
+  // MODULE 1: INTERACTIVE WATERSHED GIS MAP (LEAFLET + GEOJSON)
+  // ============================================================================
+  function initOrResizeMap() {
+    if (!state.mapInitialized) {
+      initLeafletMap();
+    } else if (state.leafletMap) {
+      setTimeout(() => {
+        state.leafletMap.invalidateSize();
+      }, 200);
+    }
+  }
+
+  function initLeafletMap() {
+    const mapContainer = document.getElementById("gis-leaflet-map");
+    if (!mapContainer || typeof L === "undefined") return;
+
+    // Centered on Panchganga River Basin (Kolhapur)
+    const map = L.map("gis-leaflet-map", {
+      center: [16.65, 74.15],
+      zoom: 10,
+      zoomControl: true
+    });
+
+    // Crisp OpenStreetMap Topo / Standard TileLayer
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 18
+    }).addTo(map);
+
+    state.leafletMap = map;
+    state.mapInitialized = true;
+
+    // 1. Add Subbasin Polygons (GeoJSON)
+    if (DATA.subbasins_geojson) {
+      const colors = [
+        "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6",
+        "#ec4899", "#06b6d4", "#84cc16", "#f97316", "#6366f1"
+      ];
+
+      state.subbasinLayer = L.geoJSON(DATA.subbasins_geojson, {
+        style: function(feature) {
+          const id = feature.properties.name || "S1";
+          const idx = parseInt(id.replace(/\D/g, "")) || 0;
+          return {
+            fillColor: colors[idx % colors.length],
+            weight: 2,
+            opacity: 1,
+            color: "#1e3a8a",
+            dashArray: "3",
+            fillOpacity: 0.25
+          };
+        },
+        onEachFeature: function(feature, layer) {
+          const p = feature.properties;
+          const popupContent = `
+            <div style="font-family: sans-serif; font-size: 13px; line-height: 1.5;">
+              <strong style="color: #c00000; font-size: 14px;">Subbasin: ${p.name || "Panchganga"}</strong><br>
+              <strong>Longest Flow Path:</strong> ${p.long_len ? p.long_len.toFixed(2) + " km" : "N/A"}<br>
+              <strong>Basin Relief:</strong> ${p.basin_rel ? p.basin_rel.toFixed(1) + " m" : "N/A"}<br>
+              <strong>Elongation Ratio:</strong> ${p.elong_ra ? p.elong_ra.toFixed(3) : "N/A"}<br>
+              <strong>Drainage Density:</strong> ${p.drain_den ? p.drain_den.toFixed(2) : "N/A"}<br>
+              <em style="color: #64748b;">Source: HEC-HMS Spatial Vector Delineation</em>
+            </div>
+          `;
+          layer.bindPopup(popupContent);
+          layer.on({
+            mouseover: function(e) {
+              const l = e.target;
+              l.setStyle({ fillOpacity: 0.5, weight: 3 });
+            },
+            mouseout: function(e) {
+              state.subbasinLayer.resetStyle(e.target);
+            }
+          });
+        }
+      }).addTo(map);
+
+      // Fit map bounds to subbasins
+      try {
+        map.fitBounds(state.subbasinLayer.getBounds());
+      } catch (err) {}
+    }
+
+    // 2. Add River Network (GeoJSON)
+    if (DATA.rivers_geojson) {
+      state.riverLayer = L.geoJSON(DATA.rivers_geojson, {
+        style: {
+          color: "#0284c7",
+          weight: 3.5,
+          opacity: 0.85
+        },
+        onEachFeature: function(feature, layer) {
+          const p = feature.properties;
+          const popup = `
+            <div style="font-family: sans-serif; font-size: 13px;">
+              <strong style="color: #0284c7;">River Reach: ${p.name || p.subbasin || "Reach"}</strong><br>
+              <strong>Reach Length:</strong> ${p.reach_len ? p.reach_len.toFixed(2) + " km" : "N/A"}<br>
+              <strong>Channel Slope:</strong> ${p.reach_slo ? p.reach_slo.toFixed(4) : "N/A"}<br>
+              <strong>Sinuosity:</strong> ${p.reach_sin ? p.reach_sin.toFixed(2) : "N/A"}
+            </div>
+          `;
+          layer.bindPopup(popup);
+        }
+      }).addTo(map);
+    }
+
+    // 3. Add 20 Rain Gauge Stations
+    const stationMarkers = [];
+    DATA.stations.forEach(st => {
+      const marker = L.circleMarker([st.lat, st.lon], {
+        radius: 6,
+        fillColor: st.role.includes("Primary") ? "#dc2626" : "#2563eb",
+        color: "#ffffff",
+        weight: 1.5,
+        opacity: 1,
+        fillOpacity: 0.9
+      });
+      marker.bindPopup(`
+        <div style="font-family: sans-serif; font-size: 12.5px;">
+          <strong style="font-size: 13.5px; color: #111827;">${st.name} Raingauge</strong><br>
+          <strong>Subbasin:</strong> ${st.subbasin}<br>
+          <strong>Elevation:</strong> ${st.elev} m MSL<br>
+          <strong>Role:</strong> ${st.role}<br>
+          <strong>Coordinates:</strong> ${st.lat.toFixed(4)}°N, ${st.lon.toFixed(4)}°E
+        </div>
+      `);
+      stationMarkers.push(marker);
+    });
+    state.stationLayer = L.layerGroup(stationMarkers).addTo(map);
+
+    // 4. Add River Bridges & Weirs
+    const gaugeMarkers = [];
+    DATA.river_gauges.forEach(rg => {
+      const marker = L.marker([rg.lat, rg.lon]);
+      marker.bindPopup(`
+        <div style="font-family: sans-serif; font-size: 13px;">
+          <strong style="color: #c00000; font-size: 14px;">${rg.name}</strong><br>
+          <strong>Type:</strong> ${rg.type}<br>
+          <strong>Chainage:</strong> ${rg.chainage}<br>
+          <strong>Thalweg Elevation:</strong> ${rg.thalweg} m MSL<br>
+          ${rg.crest ? `<strong>Weir Crest RL:</strong> ${rg.crest} m MSL<br>` : ""}
+          ${rg.datum ? `<strong>Sensor Datum RL:</strong> ${rg.datum} m MSL<br>` : ""}
+        </div>
+      `);
+      gaugeMarkers.push(marker);
+    });
+    state.gaugeLayer = L.layerGroup(gaugeMarkers).addTo(map);
+
+    // Setup Layer Checkboxes
+    setupMapToggles();
+  }
+
+  function setupMapToggles() {
+    const chkSubbasins = document.getElementById("toggle-subbasins");
+    const chkRivers = document.getElementById("toggle-rivers");
+    const chkStations = document.getElementById("toggle-stations");
+    const chkGauges = document.getElementById("toggle-gauges");
+
+    if (chkSubbasins) {
+      chkSubbasins.addEventListener("change", (e) => {
+        if (!state.leafletMap || !state.subbasinLayer) return;
+        if (e.target.checked) state.leafletMap.addLayer(state.subbasinLayer);
+        else state.leafletMap.removeLayer(state.subbasinLayer);
+      });
+    }
+    if (chkRivers) {
+      chkRivers.addEventListener("change", (e) => {
+        if (!state.leafletMap || !state.riverLayer) return;
+        if (e.target.checked) state.leafletMap.addLayer(state.riverLayer);
+        else state.leafletMap.removeLayer(state.riverLayer);
+      });
+    }
+    if (chkStations) {
+      chkStations.addEventListener("change", (e) => {
+        if (!state.leafletMap || !state.stationLayer) return;
+        if (e.target.checked) state.leafletMap.addLayer(state.stationLayer);
+        else state.leafletMap.removeLayer(state.stationLayer);
+      });
+    }
+    if (chkGauges) {
+      chkGauges.addEventListener("change", (e) => {
+        if (!state.leafletMap || !state.gaugeLayer) return;
+        if (e.target.checked) state.leafletMap.addLayer(state.gaugeLayer);
+        else state.leafletMap.removeLayer(state.gaugeLayer);
+      });
     }
   }
 
   // ============================================================================
-  // MODULE 1: 2D RIVER CROSS-SECTION HYDRAULIC PROFILER
+  // MODULE 2: 2D RIVER CROSS-SECTION HYDRAULICS (WHITE THEME)
   // ============================================================================
   function setupCrossSectionControls() {
     const siteSelectBtns = document.querySelectorAll(".site-select-btn");
@@ -134,27 +382,23 @@
     const scaleX = (x) => padX + ((x - minX) / (maxX - minX)) * (width - 2 * padX);
     const scaleY = (y) => height - padY - ((y - minY) / (maxY - minY)) * (height - 2 * padY);
 
-    // Build Ground Polyline Points
     let groundPoints = "";
     for (let i = 0; i < stations.length; i++) {
       groundPoints += `${scaleX(stations[i])},${scaleY(elevations[i])} `;
     }
 
-    // Build Subdivided Channel Trapezoidal Segments
     let totalMainArea = 0;
     let totalMainWp = 0;
     let totalFloodArea = 0;
     let totalFloodWp = 0;
 
-    let waterPolygonPoints = [];
     const wse = state.waterStage;
 
-    // Numerical integration across 146+ surveyed points
     for (let i = 0; i < stations.length - 1; i++) {
       const x1 = stations[i], y1 = elevations[i];
       const x2 = stations[i + 1], y2 = elevations[i + 1];
 
-      if (y1 > wse && y2 > wse) continue; // Entire segment above water
+      if (y1 > wse && y2 > wse) continue;
 
       const isOverbank = (y1 >= cs.bankfull || y2 >= cs.bankfull);
       const sub_y1 = Math.max(0, wse - y1);
@@ -187,7 +431,7 @@
     const meanVelocity = totalArea > 0 ? (totalQ / totalArea) : 0;
     const depth = Math.max(0, wse - cs.thalweg);
 
-    // Update UI Readouts
+    // Update UI numbers
     const elStage = document.getElementById("metric-stage");
     const elDepth = document.getElementById("metric-depth");
     const elDischarge = document.getElementById("metric-q");
@@ -195,7 +439,6 @@
     const elMainArea = document.getElementById("metric-main-area");
     const elFloodArea = document.getElementById("metric-flood-area");
     const elVelocity = document.getElementById("metric-velocity");
-    const elAlertTag = document.getElementById("metric-alert-badge");
 
     if (elStage) elStage.innerText = wse.toFixed(2);
     if (elDepth) elDepth.innerText = depth.toFixed(2);
@@ -205,89 +448,62 @@
     if (elFloodArea) elFloodArea.innerText = totalFloodArea.toFixed(1);
     if (elVelocity) elVelocity.innerText = meanVelocity.toFixed(2);
 
-    if (elAlertTag) {
-      if (wse >= cs.hfl) {
-        elAlertTag.className = "badge-alert badge-hfl";
-        elAlertTag.innerText = "HISTORIC HFL (2019)";
-      } else if (wse >= cs.danger) {
-        elAlertTag.className = "badge-alert badge-danger";
-        elAlertTag.innerText = "DANGER MARK";
-      } else if (wse >= cs.warning) {
-        elAlertTag.className = "badge-alert badge-warning";
-        elAlertTag.innerText = "WARNING MARK";
-      } else if (wse >= cs.alert) {
-        elAlertTag.className = "badge-alert badge-warning";
-        elAlertTag.innerText = "ALERT LEVEL";
-      } else if (wse >= cs.bankfull) {
-        elAlertTag.className = "badge-alert badge-baseflow";
-        elAlertTag.innerText = "BANKFULL / CROPLAND INUNDATION";
-      } else {
-        elAlertTag.className = "badge-alert badge-baseflow";
-        elAlertTag.innerText = "NORMAL BASEFLOW";
-      }
-    }
-
-    // Build SVG Elements
+    // SVG elements (White Theme)
     const waterY = scaleY(wse);
     const bankfullY = scaleY(cs.bankfull);
-    const alertY = scaleY(cs.alert);
     const warningY = scaleY(cs.warning);
     const dangerY = scaleY(cs.danger);
     const hflY = scaleY(cs.hfl);
 
     let html = `
       <defs>
-        <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.8"/>
-          <stop offset="100%" stop-color="#1e3a8a" stop-opacity="0.95"/>
-        </linearGradient>
-        <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#1e293b" stop-opacity="1"/>
-          <stop offset="100%" stop-color="#0f172a" stop-opacity="1"/>
+        <linearGradient id="waterGradLight" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#bae6fd" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#0284c7" stop-opacity="0.95"/>
         </linearGradient>
       </defs>
 
-      <!-- Background Grid -->
-      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
-      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+      <!-- Clean Grid -->
+      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="#94a3b8" stroke-width="1.5"/>
 
-      <!-- Water Surface Clip Path Fill -->
-      <rect x="${padX}" y="${waterY}" width="${width - 2 * padX}" height="${Math.max(0, height - padY - waterY)}" fill="url(#waterGrad)" opacity="0.85"/>
+      <!-- Water Inundation Fill -->
+      <rect x="${padX}" y="${waterY}" width="${width - 2 * padX}" height="${Math.max(0, height - padY - waterY)}" fill="url(#waterGradLight)"/>
 
-      <!-- Ground River Bed Line -->
-      <polyline points="${groundPoints}" fill="none" stroke="#64748b" stroke-width="3" stroke-linejoin="round"/>
-      <polygon points="${scaleX(stations[0])},${height - padY} ${groundPoints} ${scaleX(stations[stations.length - 1])},${height - padY}" fill="url(#groundGrad)"/>
+      <!-- Ground River Bed -->
+      <polyline points="${groundPoints}" fill="none" stroke="#334155" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="${scaleX(stations[0])},${height - padY} ${groundPoints} ${scaleX(stations[stations.length - 1])},${height - padY}" fill="#e2e8f0"/>
 
-      <!-- Bankfull Indicator (Sugarcane Boundary) -->
-      <line x1="${padX}" y1="${bankfullY}" x2="${width - padX}" y2="${bankfullY}" stroke="#eab308" stroke-dasharray="6,4" stroke-width="1.5"/>
-      <text x="${width - padX - 8}" y="${bankfullY - 6}" fill="#eab308" font-size="11" font-family="'JetBrains Mono'" text-anchor="end">Bankfull ${cs.bankfull.toFixed(2)}m (Sugarcane Floodplain n=0.070)</text>
+      <!-- Bankfull Sugarcane Line -->
+      <line x1="${padX}" y1="${bankfullY}" x2="${width - padX}" y2="${bankfullY}" stroke="#d97706" stroke-dasharray="6,4" stroke-width="1.5"/>
+      <text x="${width - padX - 8}" y="${bankfullY - 6}" fill="#d97706" font-size="11" font-weight="700" font-family="'JetBrains Mono'" text-anchor="end">Bankfull ${cs.bankfull.toFixed(2)}m (Sugarcane Floodplain n=0.070)</text>
 
       <!-- Warning Mark -->
-      <line x1="${padX}" y1="${warningY}" x2="${width - padX}" y2="${warningY}" stroke="#f97316" stroke-dasharray="4,4" stroke-width="1.2"/>
-      <text x="${padX + 8}" y="${warningY - 5}" fill="#f97316" font-size="11" font-family="'JetBrains Mono'">Warning ${cs.warning.toFixed(2)}m</text>
+      <line x1="${padX}" y1="${warningY}" x2="${width - padX}" y2="${warningY}" stroke="#ea580c" stroke-dasharray="4,4" stroke-width="1.2"/>
+      <text x="${padX + 8}" y="${warningY - 5}" fill="#ea580c" font-weight="700" font-size="11" font-family="'JetBrains Mono'">Warning: ${cs.warning.toFixed(2)}m</text>
 
       <!-- Danger Mark -->
-      <line x1="${padX}" y1="${dangerY}" x2="${width - padX}" y2="${dangerY}" stroke="#ef4444" stroke-dasharray="4,4" stroke-width="1.5"/>
-      <text x="${padX + 8}" y="${dangerY - 5}" fill="#ef4444" font-size="11" font-family="'JetBrains Mono'">Danger ${cs.danger.toFixed(2)}m</text>
+      <line x1="${padX}" y1="${dangerY}" x2="${width - padX}" y2="${dangerY}" stroke="#dc2626" stroke-dasharray="4,4" stroke-width="1.5"/>
+      <text x="${padX + 8}" y="${dangerY - 5}" fill="#dc2626" font-weight="700" font-size="11" font-family="'JetBrains Mono'">Danger: ${cs.danger.toFixed(2)}m</text>
 
-      <!-- 2019 HFL -->
-      <line x1="${padX}" y1="${hflY}" x2="${width - padX}" y2="${hflY}" stroke="#a855f7" stroke-dasharray="5,3" stroke-width="1.8"/>
-      <text x="${width - padX - 8}" y="${hflY - 6}" fill="#a855f7" font-size="11" font-family="'JetBrains Mono'" text-anchor="end">2019 HFL ${cs.hfl.toFixed(2)}m</text>
+      <!-- 2019 HFL Mark -->
+      <line x1="${padX}" y1="${hflY}" x2="${width - padX}" y2="${hflY}" stroke="#7c3aed" stroke-dasharray="5,3" stroke-width="1.8"/>
+      <text x="${width - padX - 8}" y="${hflY - 6}" fill="#7c3aed" font-weight="700" font-size="11" font-family="'JetBrains Mono'" text-anchor="end">2019 HFL: ${cs.hfl.toFixed(2)}m</text>
 
-      <!-- Live Water Surface Line -->
-      <line x1="${padX}" y1="${waterY}" x2="${width - padX}" y2="${waterY}" stroke="#22d3ee" stroke-width="2.5"/>
-      <circle cx="${scaleX(maxX * 0.5)}" cy="${waterY}" r="5" fill="#22d3ee"/>
-      <text x="${scaleX(maxX * 0.5) + 10}" y="${waterY - 8}" fill="#22d3ee" font-weight="700" font-size="13" font-family="'JetBrains Mono'">Water Level: ${wse.toFixed(2)} m MSL</text>
+      <!-- Water Surface Line -->
+      <line x1="${padX}" y1="${waterY}" x2="${width - padX}" y2="${waterY}" stroke="#0369a1" stroke-width="2.5"/>
+      <circle cx="${scaleX(maxX * 0.5)}" cy="${waterY}" r="5" fill="#0369a1"/>
+      <text x="${scaleX(maxX * 0.5) + 10}" y="${waterY - 8}" fill="#0369a1" font-weight="700" font-size="13" font-family="'JetBrains Mono'">Water Surface: ${wse.toFixed(2)} m MSL</text>
 
-      <!-- Thalweg Tag -->
-      <text x="${scaleX(maxX * 0.48)}" y="${scaleY(cs.thalweg) + 20}" fill="#94a3b8" font-size="11" font-family="'JetBrains Mono'" text-anchor="middle">Thalweg: ${cs.thalweg.toFixed(3)} m</text>
+      <!-- Thalweg -->
+      <text x="${scaleX(maxX * 0.48)}" y="${scaleY(cs.thalweg) + 20}" fill="#475569" font-weight="600" font-size="11" font-family="'JetBrains Mono'" text-anchor="middle">Thalweg: ${cs.thalweg.toFixed(3)} m MSL</text>
     `;
 
     svg.innerHTML = html;
   }
 
   // ============================================================================
-  // MODULE 2: LONGITUDINAL L-SECTION BED PROFILE
+  // MODULE 3: L-SECTION BED PROFILE (WHITE THEME)
   // ============================================================================
   function renderLSection() {
     const svg = document.getElementById("l-svg");
@@ -299,7 +515,6 @@
     const padX = 80;
     const padY = 50;
 
-    const minKm = 0;
     const maxKm = 100;
     const minElev = 515;
     const maxElev = 560;
@@ -308,42 +523,32 @@
     const scaleY = (el) => height - padY - ((el - minElev) / (maxElev - minElev)) * (height - 2 * padY);
 
     let html = `
-      <defs>
-        <linearGradient id="bedGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3"/>
-          <stop offset="100%" stop-color="#0f172a" stop-opacity="0.8"/>
-        </linearGradient>
-      </defs>
-
-      <!-- Grid Axis -->
-      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="#94a3b8" stroke-width="1.5"/>
     `;
 
-    // Draw 3 Bed Slope Segments
     bp.segments.forEach((seg, idx) => {
       const x1 = scaleX(seg.start_km);
       const y1 = scaleY(seg.start_elevation);
       const x2 = scaleX(seg.end_km);
       const y2 = scaleY(seg.end_elevation);
-      const colors = ["#06b6d4", "#3b82f6", "#8b5cf6"];
+      const colors = ["#0284c7", "#2563eb", "#7c3aed"];
 
       html += `
         <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${colors[idx]}" stroke-width="3.5"/>
         <text x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 - 14}" fill="${colors[idx]}" font-weight="700" font-size="12" font-family="'JetBrains Mono'" text-anchor="middle">Slope ${seg.slope} (S0=${seg.s0})</text>
-        <text x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 + 6}" fill="#94a3b8" font-size="10.5" font-family="'Inter'" text-anchor="middle">${seg.name}</text>
+        <text x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 + 6}" fill="#475569" font-weight="600" font-size="11" font-family="'Roboto'" text-anchor="middle">${seg.name}</text>
       `;
     });
 
-    // Draw Landmarks
     bp.landmarks.forEach(lm => {
       const cx = scaleX(lm.km);
       const cy = scaleY(lm.elevation);
       html += `
-        <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${height - padY}" stroke="rgba(255,255,255,0.15)" stroke-dasharray="3,3"/>
-        <circle cx="${cx}" cy="${cy}" r="6" fill="#f59e0b" stroke="#fff" stroke-width="2"/>
-        <text x="${cx}" y="${cy - 12}" fill="#f8fafc" font-weight="600" font-size="11" font-family="'Inter'" text-anchor="middle">${lm.name}</text>
-        <text x="${cx}" y="${cy + 18}" fill="#94a3b8" font-size="10" font-family="'JetBrains Mono'" text-anchor="middle">${lm.elevation.toFixed(1)}m | ${lm.km}km</text>
+        <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${height - padY}" stroke="#cbd5e1" stroke-dasharray="3,3"/>
+        <circle cx="${cx}" cy="${cy}" r="6" fill="#c00000" stroke="#ffffff" stroke-width="2"/>
+        <text x="${cx}" y="${cy - 12}" fill="#111827" font-weight="700" font-size="11" font-family="'Roboto'" text-anchor="middle">${lm.name}</text>
+        <text x="${cx}" y="${cy + 18}" fill="#64748b" font-weight="600" font-size="10" font-family="'JetBrains Mono'" text-anchor="middle">${lm.elevation.toFixed(1)}m | ${lm.km}km</text>
       `;
     });
 
@@ -351,31 +556,16 @@
   }
 
   // ============================================================================
-  // MODULE 3: SCS-CN LOSS & UNIT HYDROGRAPH SIMULATOR
+  // MODULE 4: SCS-CN & SCS DIMENSIONLESS UH (WHITE THEME)
   // ============================================================================
   function setupHydrologyControls() {
     const rainSlider = document.getElementById("hydro-rain-slider");
     const cnSlider = document.getElementById("hydro-cn-slider");
     const lagSlider = document.getElementById("hydro-lag-slider");
 
-    if (rainSlider) {
-      rainSlider.addEventListener("input", (e) => {
-        state.rainfall = parseFloat(e.target.value);
-        renderHydrology();
-      });
-    }
-    if (cnSlider) {
-      cnSlider.addEventListener("input", (e) => {
-        state.cn = parseFloat(e.target.value);
-        renderHydrology();
-      });
-    }
-    if (lagSlider) {
-      lagSlider.addEventListener("input", (e) => {
-        state.lagHr = parseFloat(e.target.value);
-        renderHydrology();
-      });
-    }
+    if (rainSlider) rainSlider.addEventListener("input", (e) => { state.rainfall = parseFloat(e.target.value); renderHydrology(); });
+    if (cnSlider) cnSlider.addEventListener("input", (e) => { state.cn = parseFloat(e.target.value); renderHydrology(); });
+    if (lagSlider) lagSlider.addEventListener("input", (e) => { state.lagHr = parseFloat(e.target.value); renderHydrology(); });
   }
 
   function renderHydrology() {
@@ -383,7 +573,6 @@
     const baseCN = state.cn;
     const lagHr = state.lagHr;
 
-    // Dynamic AMC-II vs AMC-III threshold logic at 65 mm / 90 hours
     const isAMC3 = P >= 65.0;
     let actualCN = baseCN;
     let iaCoeff = 0.15;
@@ -405,7 +594,6 @@
     const runoffCoeff = P > 0 ? (directRunoffMm / P) : 0;
     const tp = 0.5 + lagHr;
 
-    // Update Metrics
     const elRain = document.getElementById("hydro-rain-val");
     const elCN = document.getElementById("hydro-cn-val");
     const elLag = document.getElementById("hydro-lag-val");
@@ -422,8 +610,8 @@
     const elTp = document.getElementById("metric-tp");
 
     if (elAMC) {
-      elAMC.innerText = isAMC3 ? "AMC-III (Saturated Monsoon)" : "AMC-II (Normal Moisture)";
-      elAMC.className = isAMC3 ? "badge-alert badge-danger" : "badge-alert badge-baseflow";
+      elAMC.innerText = isAMC3 ? "AMC-III (Saturated Soil)" : "AMC-II (Normal Soil)";
+      elAMC.style.color = isAMC3 ? "#c00000" : "#059669";
     }
     if (elS) elS.innerText = S.toFixed(1) + " mm";
     if (elIa) elIa.innerText = Ia.toFixed(1) + " mm";
@@ -431,7 +619,6 @@
     if (elCoeff) elCoeff.innerText = (runoffCoeff * 100).toFixed(1) + "%";
     if (elTp) elTp.innerText = tp.toFixed(1) + " h";
 
-    // Plot Curvilinear SCS-UH
     const svg = document.getElementById("hydro-svg");
     if (!svg) return;
 
@@ -464,37 +651,33 @@
 
     let html = `
       <defs>
-        <linearGradient id="uhGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.5"/>
-          <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.0"/>
+        <linearGradient id="uhGradLight" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#bae6fd" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#bae6fd" stop-opacity="0.0"/>
         </linearGradient>
       </defs>
 
-      <!-- Axes -->
-      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="#94a3b8" stroke-width="1.5"/>
 
-      <!-- UH Curve Area -->
-      <polygon points="${scaleX(0)},${height - padY} ${polyPoints} ${scaleX(90)},${height - padY}" fill="url(#uhGrad)"/>
-      <polyline points="${polyPoints}" fill="none" stroke="#06b6d4" stroke-width="3"/>
+      <polygon points="${scaleX(0)},${height - padY} ${polyPoints} ${scaleX(90)},${height - padY}" fill="url(#uhGradLight)"/>
+      <polyline points="${polyPoints}" fill="none" stroke="#0284c7" stroke-width="3"/>
 
-      <!-- Peak Marker -->
-      <circle cx="${scaleX(tp)}" cy="${scaleY(maxUH)}" r="6" fill="#f59e0b" stroke="#fff" stroke-width="2"/>
-      <text x="${scaleX(tp)}" y="${scaleY(maxUH) - 12}" fill="#f59e0b" font-weight="700" font-size="12" font-family="'JetBrains Mono'" text-anchor="middle">Peak tp: ${tp.toFixed(1)}h</text>
-      <line x1="${scaleX(tp)}" y1="${scaleY(maxUH)}" x2="${scaleX(tp)}" y2="${height - padY}" stroke="#f59e0b" stroke-dasharray="3,3"/>
+      <circle cx="${scaleX(tp)}" cy="${scaleY(maxUH)}" r="6" fill="#c00000" stroke="#fff" stroke-width="2"/>
+      <text x="${scaleX(tp)}" y="${scaleY(maxUH) - 12}" fill="#c00000" font-weight="700" font-size="12" font-family="'JetBrains Mono'" text-anchor="middle">Peak tp: ${tp.toFixed(1)}h</text>
+      <line x1="${scaleX(tp)}" y1="${scaleY(maxUH)}" x2="${scaleX(tp)}" y2="${height - padY}" stroke="#c00000" stroke-dasharray="3,3"/>
 
-      <!-- Time Axis Labels -->
-      <text x="${scaleX(0)}" y="${height - padY + 20}" fill="#94a3b8" font-size="11" font-family="'JetBrains Mono'">T+0h</text>
-      <text x="${scaleX(30)}" y="${height - padY + 20}" fill="#94a3b8" font-size="11" font-family="'JetBrains Mono'">T+30h</text>
-      <text x="${scaleX(60)}" y="${height - padY + 20}" fill="#94a3b8" font-size="11" font-family="'JetBrains Mono'">T+60h</text>
-      <text x="${scaleX(90)}" y="${height - padY + 20}" fill="#94a3b8" font-size="11" font-family="'JetBrains Mono'">T+90h</text>
+      <text x="${scaleX(0)}" y="${height - padY + 20}" fill="#64748b" font-size="11" font-family="'JetBrains Mono'">T+0h</text>
+      <text x="${scaleX(30)}" y="${height - padY + 20}" fill="#64748b" font-size="11" font-family="'JetBrains Mono'">T+30h</text>
+      <text x="${scaleX(60)}" y="${height - padY + 20}" fill="#64748b" font-size="11" font-family="'JetBrains Mono'">T+60h</text>
+      <text x="${scaleX(90)}" y="${height - padY + 20}" fill="#64748b" font-size="11" font-family="'JetBrains Mono'">T+90h</text>
     `;
 
     svg.innerHTML = html;
   }
 
   // ============================================================================
-  // MODULE 4: RATING CURVE & WRD HISTORICAL BENCHMARKS
+  // MODULE 5: RATING CURVE & WRD BENCHMARKS (WHITE THEME)
   // ============================================================================
   function renderRatingCurve() {
     const svg = document.getElementById("rc-svg");
@@ -511,7 +694,6 @@
     const padX = 80;
     const padY = 50;
 
-    const minQ = 0;
     const maxQ = 4500;
     const minH = cs.thalweg;
     const maxH = cs.hfl + 1.5;
@@ -525,31 +707,17 @@
     });
 
     let html = `
-      <!-- Grid -->
-      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-
-      <!-- Continuous Rating Curve Line -->
-      <polyline points="${rcPoints}" fill="none" stroke="#06b6d4" stroke-width="3.5"/>
+      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="#94a3b8" stroke-width="1.5"/>
+      <polyline points="${rcPoints}" fill="none" stroke="#0284c7" stroke-width="3"/>
     `;
 
-    // Plot WRD Benchmark Points
     wrd.forEach(b => {
       const cx = scaleX(b.q_m3s);
       const cy = scaleY(b.stage_m);
-      const colors = {
-        baseflow: "#10b981",
-        normal: "#38bdf8",
-        alert: "#facc15",
-        warning: "#f97316",
-        danger: "#ef4444",
-        hfl: "#c084fc"
-      };
-      const col = colors[b.category] || "#fff";
-
       html += `
-        <circle cx="${cx}" cy="${cy}" r="6.5" fill="${col}" stroke="#fff" stroke-width="2"/>
-        <text x="${cx + 10}" y="${cy - 4}" fill="${col}" font-weight="700" font-size="11" font-family="'JetBrains Mono'">${b.label} (${b.q_m3s} m³/s)</text>
+        <circle cx="${cx}" cy="${cy}" r="6" fill="#c00000" stroke="#fff" stroke-width="2"/>
+        <text x="${cx + 8}" y="${cy - 4}" fill="#111827" font-weight="700" font-size="11" font-family="'JetBrains Mono'">${b.label} (${b.q_m3s} m³/s)</text>
       `;
     });
 
@@ -557,24 +725,14 @@
   }
 
   // ============================================================================
-  // MODULE 5: REAL-TIME ADAPTIVE ML RECALIBRATION PLAYGROUND
+  // MODULE 6: REAL-TIME ML RECALIBRATION (WHITE THEME)
   // ============================================================================
   function setupMLControls() {
     const dtSlider = document.getElementById("ml-dt-slider");
     const dhSlider = document.getElementById("ml-dh-slider");
 
-    if (dtSlider) {
-      dtSlider.addEventListener("input", (e) => {
-        state.deltaT = parseFloat(e.target.value);
-        renderMLPlayground();
-      });
-    }
-    if (dhSlider) {
-      dhSlider.addEventListener("input", (e) => {
-        state.deltaH = parseFloat(e.target.value);
-        renderMLPlayground();
-      });
-    }
+    if (dtSlider) dtSlider.addEventListener("input", (e) => { state.deltaT = parseFloat(e.target.value); renderMLPlayground(); });
+    if (dhSlider) dhSlider.addEventListener("input", (e) => { state.deltaH = parseFloat(e.target.value); renderMLPlayground(); });
   }
 
   function renderMLPlayground() {
@@ -586,7 +744,6 @@
     if (elDtVal) elDtVal.innerText = (dt > 0 ? "+" : "") + dt.toFixed(1) + " h";
     if (elDhVal) elDhVal.innerText = (dh > 0 ? "+" : "") + dh.toFixed(2) + " m";
 
-    // L-BFGS-B closed-form calibration optimization logic
     const isTriggered = Math.abs(dt) >= 1.0 || Math.abs(dh) >= 0.25;
     let alpha_k = 1.0;
     let alpha_lag = 1.0;
@@ -600,8 +757,6 @@
       x_param = Math.max(0.15, Math.min(0.40, 0.25 - dt * 0.02));
     }
 
-    const cost = isTriggered ? (0.05 * Math.pow(alpha_k - 1, 2) + 0.1 * Math.pow(delta_cn, 2)).toFixed(4) : "0.0000";
-
     const elAk = document.getElementById("metric-alpha-k");
     const elAlag = document.getElementById("metric-alpha-lag");
     const elDcn = document.getElementById("metric-delta-cn");
@@ -613,11 +768,10 @@
     if (elDcn) elDcn.innerText = (delta_cn > 0 ? "+" : "") + delta_cn.toFixed(2);
     if (elX) elX.innerText = x_param.toFixed(3);
     if (elTrigger) {
-      elTrigger.innerText = isTriggered ? "AUTO-RECALIBRATION ACTIVE" : "WITHIN TOLERANCE (BASELINE)";
-      elTrigger.className = isTriggered ? "badge-alert badge-warning" : "badge-alert badge-baseflow";
+      elTrigger.innerText = isTriggered ? "AUTO-RECALIBRATION ACTIVE" : "TOLERANCE NORMAL";
+      elTrigger.style.color = isTriggered ? "#c00000" : "#059669";
     }
 
-    // Live ML Comparison Hydrograph Plot
     const svg = document.getElementById("ml-svg");
     if (!svg) return;
 
@@ -647,46 +801,40 @@
     }
 
     let html = `
-      <!-- Axes -->
-      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+      <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="#94a3b8" stroke-width="1.5"/>
 
       <!-- Baseline Hydrograph -->
-      <polyline points="${ptsBase}" fill="none" stroke="#64748b" stroke-width="2.5" stroke-dasharray="6,4"/>
+      <polyline points="${ptsBase}" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="6,4"/>
 
-      <!-- ML-Calibrated Hydrograph -->
-      <polyline points="${ptsCalib}" fill="none" stroke="#10b981" stroke-width="3.5"/>
+      <!-- ML Calibrated Hydrograph -->
+      <polyline points="${ptsCalib}" fill="none" stroke="#059669" stroke-width="3"/>
 
       <!-- Legend -->
-      <rect x="${padX + 20}" y="${padY + 20}" width="20" height="4" fill="#64748b"/>
-      <text x="${padX + 50}" y="${padY + 25}" fill="#94a3b8" font-size="12" font-family="'JetBrains Mono'">Uncalibrated Model Hydrograph</text>
+      <line x1="${padX + 20}" y1="${padY + 20}" x2="${padX + 45}" y2="${padY + 20}" stroke="#64748b" stroke-width="2" stroke-dasharray="4,4"/>
+      <text x="${padX + 55}" y="${padY + 24}" fill="#475569" font-size="12" font-family="'JetBrains Mono'">Uncalibrated Model Hydrograph</text>
 
-      <rect x="${padX + 20}" y="${padY + 45}" width="20" height="4" fill="#10b981"/>
-      <text x="${padX + 50}" y="${padY + 50}" fill="#10b981" font-weight="700" font-size="12" font-family="'JetBrains Mono'">Live ML Recalibrated Hydrograph (α_K=${alpha_k.toFixed(2)}, ΔCN=${delta_cn.toFixed(1)})</text>
+      <line x1="${padX + 20}" y1="${padY + 40}" x2="${padX + 45}" y2="${padY + 40}" stroke="#059669" stroke-width="3"/>
+      <text x="${padX + 55}" y="${padY + 44}" fill="#059669" font-weight="700" font-size="12" font-family="'JetBrains Mono'">Live ML Recalibrated Hydrograph</text>
     `;
 
     svg.innerHTML = html;
   }
 
   // ============================================================================
-  // MODULE 6: TECHNICAL DOCUMENTATION EXPLORER
+  // MODULE 7: TECHNICAL DOCUMENTATION EXPLORER (WHITE THEME)
   // ============================================================================
-  function setupDocsControls() {
-    const searchInput = document.getElementById("docs-search");
-    if (searchInput) {
-      searchInput.addEventListener("input", (e) => {
-        renderDocsFileList(e.target.value.toLowerCase());
-      });
-    }
-  }
-
   function renderDocsLibrary() {
-    renderDocsFileList("");
-    displaySelectedDoc();
+    renderDocsList("");
+    showDocContent(state.selectedDoc);
   }
 
-  function renderDocsFileList(filter) {
-    const listEl = document.getElementById("docs-file-list");
+  function filterDocs(filter) {
+    renderDocsList(filter);
+  }
+
+  function renderDocsList(filter) {
+    const listEl = document.getElementById("docs-tree-list");
     if (!listEl) return;
 
     listEl.innerHTML = "";
@@ -699,33 +847,31 @@
       }
 
       const btn = document.createElement("button");
-      btn.className = `doc-item-btn ${state.selectedDoc === filename ? "active" : ""}`;
+      btn.className = `doc-tree-btn ${state.selectedDoc === filename ? "active" : ""}`;
       btn.innerHTML = `<span>${doc.title}</span><span style="font-size: 0.7rem; color: #64748b;">${doc.lines}L</span>`;
       btn.addEventListener("click", () => {
         state.selectedDoc = filename;
-        renderDocsFileList(filter);
-        displaySelectedDoc();
+        renderDocsList(filter);
+        showDocContent(filename);
       });
       listEl.appendChild(btn);
     });
   }
 
-  function displaySelectedDoc() {
-    const viewer = document.getElementById("docs-viewer-body");
+  function showDocContent(filename) {
+    const viewer = document.getElementById("docs-reader-body");
     if (!viewer) return;
 
-    const doc = DATA.documents[state.selectedDoc];
+    const doc = DATA.documents[filename];
     if (!doc) {
-      viewer.innerHTML = "<p>Select a document from the left sidebar to view its full technical contents.</p>";
+      viewer.innerHTML = "<p>Select a technical document from the list on the left.</p>";
       return;
     }
 
-    // Markdown Parser (Vanilla Javascript lightweight renderer)
     viewer.innerHTML = simpleMarkdownRender(doc.markdown);
   }
 
   function simpleMarkdownRender(md) {
-    // Escape HTML tags
     let html = md
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -745,10 +891,9 @@
     html = html.replace(/\|(.+)\|/g, (match) => {
       const cells = match.split("|").filter((c, i, arr) => i > 0 && i < arr.length - 1);
       if (cells.every(c => c.trim().match(/^-+$/))) {
-        return ""; // separator
+        return "";
       }
-      const tdType = "td";
-      return `<tr>${cells.map(c => `<${tdType}>${c.trim()}</${tdType}>`).join("")}</tr>`;
+      return `<tr>${cells.map(c => `<td>${c.trim()}</td>`).join("")}</tr>`;
     });
     html = html.replace(/(<tr>[\s\S]*?<\/tr>)+/g, "<table><tbody>$&</tbody></table>");
 
@@ -757,7 +902,7 @@
     html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
     html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
 
-    // Paragraphs & Line Breaks
+    // Paragraphs
     html = html.split("\n\n").map(p => {
       if (p.startsWith("<pre>") || p.startsWith("<table>") || p.startsWith("<h1>") || p.startsWith("<h2>") || p.startsWith("<h3>")) {
         return p;
@@ -768,13 +913,13 @@
     return html;
   }
 
-  // Initialization
+  // Window Initialization
   window.addEventListener("DOMContentLoaded", () => {
+    setupNavigation();
     setupCrossSectionControls();
     setupHydrologyControls();
     setupMLControls();
-    setupDocsControls();
-    renderActiveView();
+    switchView("overview");
   });
 
 })();
