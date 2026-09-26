@@ -128,9 +128,9 @@ The system leverages multiple high-accuracy datasets to perform real-time hydrol
 <br><hr><br>
 
 
-# Frontend
+## Frontend
 
-## HydroCast Frontend Architecture & Design System
+### HydroCast Frontend Architecture & Design System
 
 ```
 ========================================================================================
@@ -162,7 +162,7 @@ Odometer Count Isohyetals     Rating curves  WRD benchmarks Archival/Bot  Flashi
 
 ---
 
-### 1. Technology Stack & Key Libraries
+#### 1. Technology Stack & Key Libraries
 
 - **Framework:** Next.js 14.2.5 (App Router, TypeScript, React 18)
 - **Styling:** Vanilla Tailwind CSS with custom color palette (no external unconfigured CSS libraries)
@@ -174,7 +174,7 @@ Odometer Count Isohyetals     Rating curves  WRD benchmarks Archival/Bot  Flashi
 
 ---
 
-### 2. Component Hierarchy & Navigation Flow
+#### 2. Component Hierarchy & Navigation Flow
 
 The user interface is organized into five segregated operational workspaces accessible via the responsive sidebar:
 
@@ -190,7 +190,7 @@ app/
                 └── route.ts        # Next.js API proxy serving pipeline JSON & runs
 ```
 
-#### 2.1 Workspace Panel Breakdown
+##### 2.1 Workspace Panel Breakdown
 
 ```
 +-------------------+-------------------------------------------------------------------+
@@ -206,11 +206,11 @@ app/
 
 ---
 
-### 3. Data Visualization Architecture (Chart.js Engine)
+#### 3. Data Visualization Architecture (Chart.js Engine)
 
 All charts are engineered with strict hydrologic conventions, high-DPI canvas rendering, and custom tooltip formatting.
 
-#### 3.1 Dual-Axis Stage vs Discharge Hydrograph (`RunoffPanel` & `AccuracyPanel`)
+##### 3.1 Dual-Axis Stage vs Discharge Hydrograph (`RunoffPanel` & `AccuracyPanel`)
 - **Left Y-Axis ($y_{stage}$):** River stage in meters MSL ($530.0 - 546.0\text{m}$).
 - **Right Y-Axis ($y_Q$):** River discharge in $m^3/s$ ($0 - 4,000\text{ m}^3/s$).
 - **Threshold Annotations:**
@@ -219,10 +219,10 @@ All charts are engineered with strict hydrologic conventions, high-DPI canvas re
   - **Danger Level:** $543.30\text{ m}$ (Red dashed horizontal line)
   - **HFL:** $545.33\text{ m}$ (Purple dashed horizontal line)
 
-#### 3.2 Inverted Meteorological Hyetographs (`RainfallPanel`)
+##### 3.2 Inverted Meteorological Hyetographs (`RainfallPanel`)
 - Rainfall bars are plotted with an inverted vertical axis ($0\text{ mm}$ at the top, increasing downward) adhering to standard international civil engineering hydrologic conventions.
 
-#### 3.3 Spearman Correlation Scatter Plot & Target Accuracy Panel (`AccuracyPanel.tsx`)
+##### 3.3 Spearman Correlation Scatter Plot & Target Accuracy Panel (`AccuracyPanel.tsx`)
 - **Filtered Coordinate Array (`validPts`):** Coordinates are sanitized to ensure both $x$ and $y$ are finite numbers, preventing `NaN` from disrupting Chart.js canvas layout.
 - **Plots the theoretical $1:1$ ideal agreement line ($Y = X$) in dashed slate.**
 - **Live Empirical Badges:** Displays actual Spearman rank coefficient ($\rho$) and Pearson $R^2$ with safe null-fallback (`—`).
@@ -255,7 +255,7 @@ All charts are engineered with strict hydrologic conventions, high-DPI canvas re
 
 ---
 
-### 4. 2D River Cross-Section SVG Renderer (`CrossSectionViewer.tsx`)
+#### 4. 2D River Cross-Section SVG Renderer (`CrossSectionViewer.tsx`)
 
 The cross-section viewer renders a direct 2D geometric elevation slice of the Panchganga river channel using native scalable vector graphics:
 
@@ -270,7 +270,7 @@ The cross-section viewer renders a direct 2D geometric elevation slice of the Pa
                        Main Channel Bed Invert (530.18m MSL)
 ```
 
-#### Key Interactive Features:
+##### Key Interactive Features:
 1. **Dynamic Water Level Slider:** Allows hydraulic engineers to manually scrub the water surface elevation from $530.18\text{m}$ to $546.00\text{m}$ to observe simulated floodplain inundation in real time.
 2. **Instant Hydraulic Readouts:** Automatically recalculates and displays:
    - Wetted Flow Area $A$ ($m^2$)
@@ -281,7 +281,7 @@ The cross-section viewer renders a direct 2D geometric elevation slice of the Pa
 
 ---
 
-### 5. State Synchronization, SWR & Vercel Serverless Architecture
+#### 5. State Synchronization, SWR & Vercel Serverless Architecture
 
 Data fetching is wrapped through the client abstraction [`lib/api.ts`](file:///e:/hydrocast_complete/frontend/lib/api.ts):
 
@@ -297,12 +297,12 @@ export async function fetchDashboardData(runId?: string) {
 }
 ```
 
-#### 5.1 Vercel Serverless Edge Bundling
+##### 5.1 Vercel Serverless Edge Bundling
 On Vercel, serverless function workers execute isolated from external project folders (`../data/runs/` is not packaged). To guarantee 100% production reliability:
 - All historical computation runs (`CYC_*.json`) and `runs_index.json` are mirrored into [`frontend/public/data/runs/`](file:///e:/hydrocast_complete/frontend/public/data/runs/).
 - When `/api/v1/dashboard?run_id=...` is called, the serverless handler resolves `path.join(process.cwd(), "public", "data", "runs", `${requestedRunId}.json`)`, instantly serving the archived run without 404s or empty metrics.
 
-#### 5.2 Hydration Exception Hardening
+##### 5.2 Hydration Exception Hardening
 All metric formatters in [`AccuracyPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/AccuracyPanel.tsx) and [`SystemPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/SystemPanel.tsx) are safely guarded:
 ```tsx
 ρ = {spearmanRho != null ? spearmanRho.toFixed(3) : "—"} · R² = {pearsonR2 != null ? pearsonR2.toFixed(3) : "—"}
@@ -311,7 +311,7 @@ This prevents `TypeError: Cannot read properties of null (reading 'toFixed')` du
 
 ---
 
-### 6. Peak Flood Strike Horizon & Permissible Uncertainty Window UI
+#### 6. Peak Flood Strike Horizon & Permissible Uncertainty Window UI
 
 To provide municipal emergency coordinators with actionable disaster timelines rather than ambiguous single-point predictions, [`DischargeDetailsCard.tsx`](file:///e:/hydrocast_complete/frontend/components/DischargeDetailsCard.tsx) and [`OverviewPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/OverviewPanel.tsx) render a dedicated early warning card:
 
@@ -337,18 +337,18 @@ To provide municipal emergency coordinators with actionable disaster timelines r
 
 ---
 
-### 7. Containerized Standalone Production Deployment (`frontend/Dockerfile`)
+#### 7. Containerized Standalone Production Deployment (`frontend/Dockerfile`)
 
 The frontend is containerized using a multi-stage Docker build leveraging Next.js standalone output:
 
 ```dockerfile
-## Stage 1: Dependency Installation
+### Stage 1: Dependency Installation
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-## Stage 2: Production Build
+### Stage 2: Production Build
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -356,7 +356,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
 
-## Stage 3: Minimal Production Runner
+### Stage 3: Minimal Production Runner
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV production
@@ -373,7 +373,7 @@ This reduces the final container image footprint to $< 180\text{ MB}$ and ensure
 
 ---
 
-### 8. Interactive Telegram Bot Serverless Webhook (`/api/telegram/webhook`)
+#### 8. Interactive Telegram Bot Serverless Webhook (`/api/telegram/webhook`)
 
 HydroCast integrates an edge-ready serverless Next.js API route (`frontend/app/api/telegram/webhook/route.ts`) providing direct two-way disaster intelligence to citizens and emergency authorities:
 - `/start` or `/help`: Command documentation
@@ -384,7 +384,7 @@ HydroCast integrates an edge-ready serverless Next.js API route (`frontend/app/a
 
 ---
 
-### 9. Adaptive ML Recalibration Dashboard (`AccuracyPanel.tsx`)
+#### 9. Adaptive ML Recalibration Dashboard (`AccuracyPanel.tsx`)
 
 The **Model Accuracy & Validation** workspace features an interactive **Adaptive ML Recalibration** tab displaying:
 - Live parameter scaling factors ($lpha_K, lpha_{	ext{lag}}, \Delta CN, X$)
@@ -394,13 +394,13 @@ The **Model Accuracy & Validation** workspace features an interactive **Adaptive
 
 ---
 
-### 10. Animated Visitor Odometer Counter (`OdometerCounter.tsx`)
+#### 10. Animated Visitor Odometer Counter (`OdometerCounter.tsx`)
 
 The dashboard header incorporates an animated odometer counter rendering smooth mechanical digit transitions using CSS transform perspective, displaying total platform forecast hours and user access sessions.
 
 ---
 
-### 11. Interactive GIS Leaflet Map (`MapComponent.tsx`)
+#### 11. Interactive GIS Leaflet Map (`MapComponent.tsx`)
 
 The central **Overview Panel** features a fully interactive spatial mapping engine built using Leaflet.js and `react-leaflet`. It visualizes the spatial distribution of the flood model:
 - **Subbasin Catchments:** Renders high-resolution GeoJSON polygons representing the 9 hydrological subbasins (e.g., Warna, Kasari, Kumbhi, Tulsi).
@@ -412,9 +412,9 @@ The central **Overview Panel** features a fully interactive spatial mapping engi
 <br><hr><br>
 
 
-# Backend
+## Backend
 
-## HydroCast Backend API & Orchestration Architecture
+### HydroCast Backend API & Orchestration Architecture
 
 ```
 ========================================================================================
@@ -448,7 +448,7 @@ The central **Overview Panel** features a fully interactive spatial mapping engi
 
 ---
 
-### 1. Technology Stack & Framework
+#### 1. Technology Stack & Framework
 
 ```
 ====================================================================================================
@@ -507,7 +507,7 @@ The central **Overview Panel** features a fully interactive spatial mapping engi
 
 ---
 
-### 2. Dual-Mode Storage Architecture
+#### 2. Dual-Mode Storage Architecture
 
 The backend is engineered for zero-dependency resilience:
 
@@ -521,7 +521,7 @@ The backend is engineered for zero-dependency resilience:
 
 ---
 
-### 3. Complete REST API Endpoint Specification
+#### 3. Complete REST API Endpoint Specification
 
 ```
 +--------+-------------------------------+-------------------------------------------------------+
@@ -555,15 +555,15 @@ The backend is engineered for zero-dependency resilience:
 
 ---
 
-### 4. API Security, JWT Authentication & Rate Limiting
+#### 4. API Security, JWT Authentication & Rate Limiting
 
 Implemented in [`src/api/security.py`](file:///e:/hydrocast_complete/src/api/security.py) and [`src/api/admin.py`](file:///e:/hydrocast_complete/src/api/admin.py):
 
-#### 4.1 Public Rate Limiting (`slowapi`)
+##### 4.1 Public Rate Limiting (`slowapi`)
 - All public read endpoints (`/api/v1/runoff/*`, `/api/v1/rainfall/*`, `/api/v1/alerts`) are protected by a rate limiter configured to **100 requests/minute** per client IP.
 - Prevents scraping bots and aggressive polling from exhausting system resources.
 
-#### 4.2 Dual-Mode Administrative Security
+##### 4.2 Dual-Mode Administrative Security
 Administrative endpoints (`/api/v1/admin/*`) require authentication via one of two modes:
 1. **Signed JWT Bearer Token:**
    - Generated via `POST /api/v1/admin/auth/token` with valid credentials (`ADMIN_USERNAME`, `ADMIN_PASSWORD`).
@@ -588,11 +588,11 @@ async def verify_admin_auth(
 
 ---
 
-### 5. Administrative Endpoints & Background Orchestration
+#### 5. Administrative Endpoints & Background Orchestration
 
 The administrative router ([`src/api/admin.py`](file:///e:/hydrocast_complete/src/api/admin.py)) provides operational control:
 
-#### 5.1 Manual Cycle Trigger (`POST /api/v1/admin/trigger-run`)
+##### 5.1 Manual Cycle Trigger (`POST /api/v1/admin/trigger-run`)
 Allows emergency operations directors to manually trigger an immediate forecast cycle:
 - **Request Body:**
   ```json
@@ -604,7 +604,7 @@ Allows emergency operations directors to manually trigger an immediate forecast 
   ```
 - If `async_mode` is `true`, the run is dispatched to FastAPI `BackgroundTasks` so the HTTP request returns immediately with a `queued` status.
 
-#### 5.2 Cold Storage Parquet Archival (`POST /api/v1/admin/archive`)
+##### 5.2 Cold Storage Parquet Archival (`POST /api/v1/admin/archive`)
 Triggers cold storage data pruning:
 - **Request Body:**
   ```json
@@ -615,7 +615,7 @@ Triggers cold storage data pruning:
   ```
 - Exports rows older than cutoff from `hydrograph_results`, `bridge_stage_forecast`, `rainfall_data`, `station_rainfall_telemetry` to Snappy-compressed Parquet files, then prunes PostgreSQL.
 
-#### 5.3 On-Demand ML Recalibration (`POST /api/v1/admin/recalibrate`)
+##### 5.3 On-Demand ML Recalibration (`POST /api/v1/admin/recalibrate`)
 Forces dynamic hydrologic recalibration:
 - **Request Body:**
   ```json
@@ -629,9 +629,9 @@ Forces dynamic hydrologic recalibration:
 
 ---
 
-### 6. Real-Time Runoff Calibration & Peak Horizon Payloads
+#### 6. Real-Time Runoff Calibration & Peak Horizon Payloads
 
-#### 6.1 `GET /api/v1/runoff/summary` Response
+##### 6.1 `GET /api/v1/runoff/summary` Response
 Now includes the high-precision peak strike horizon and permissible confidence interval ($\pm 2.0\text{h}$):
 
 ```json
@@ -673,7 +673,7 @@ Now includes the high-precision peak strike horizon and permissible confidence i
 
 ---
 
-### 7. WebSocket Event Manager & Real-Time Push
+#### 7. WebSocket Event Manager & Real-Time Push
 
 The WebSocket hub (`/ws/live`) pushes immediate updates to connected emergency operations centers (EOC) screens:
 - Eliminates constant client polling.
@@ -682,7 +682,7 @@ The WebSocket hub (`/ws/live`) pushes immediate updates to connected emergency o
 
 ---
 
-### 8. Telegram Bot Disaster Management Dispatcher (`src/alerts/telegram_bot.py`)
+#### 8. Telegram Bot Disaster Management Dispatcher (`src/alerts/telegram_bot.py`)
 
 HydroCast integrates an automated Telegram flood bulletin dispatcher formatting official Central Water Commission (CWC) and District Disaster Management Authority (DDMA) emergency alert cards whenever river levels exceed Alert, Warning, Danger, or HFL marks:
 
@@ -708,7 +708,7 @@ Evacuate low-lying ghat settlements. Deploy NDRF / SDRF units to Panchganga Ghat
 
 ---
 
-### 9. Apache Parquet Cold Storage Archival Engine (`src/db/archive_runs.py`)
+#### 9. Apache Parquet Cold Storage Archival Engine (`src/db/archive_runs.py`)
 
 - **Retention Threshold:** Default 90 days (`ARCHIVE_RETENTION_DAYS`), configurable.
 - **Archival Targets:** `hydrograph_results`, `bridge_stage_forecast`, `rainfall_data`, `station_rainfall_telemetry`, `subbasin_rainfall_ts`.
@@ -718,7 +718,7 @@ Evacuate low-lying ghat settlements. Deploy NDRF / SDRF units to Panchganga Ghat
 
 <br><hr><br>
 
-## Database Architecture & Supabase / PostgreSQL Persistence Schema
+### Database Architecture & Supabase / PostgreSQL Persistence Schema
 
 ```
 ========================================================================================================================
@@ -739,7 +739,7 @@ Evacuate low-lying ghat settlements. Deploy NDRF / SDRF units to Panchganga Ghat
 
 ---
 
-### 1. Database Architecture & Design Strategy
+#### 1. Database Architecture & Design Strategy
 
 The persistence layer supports both **PostgreSQL / Supabase** for multi-user querying and a **file-based immutable JSON ledger** for standalone edge resilience.
 
@@ -800,9 +800,9 @@ The persistence layer supports both **PostgreSQL / Supabase** for multi-user que
                                +-------------------------------+
 ```
 
-### 2. Relational Table Definitions
+#### 2. Relational Table Definitions
 
-#### 2.1 Table: `simulation_runs`
+##### 2.1 Table: `simulation_runs`
 Stores metadata and executive metrics for every 90-hour forecast cycle executed by the pipeline:
 
 ```sql
@@ -827,7 +827,7 @@ CREATE TABLE IF NOT EXISTS simulation_runs (
 );
 ```
 
-#### 2.2 Table: `forecast_validation_metrics` (Statistical Accuracy Matrices)
+##### 2.2 Table: `forecast_validation_metrics` (Statistical Accuracy Matrices)
 Persists the quantitative evaluation scores comparing simulated hydrographs against live ultrasonic radar sensor ground truth:
 
 ```sql
@@ -853,7 +853,7 @@ CREATE TABLE IF NOT EXISTS forecast_validation_metrics (
 );
 ```
 
-#### 2.3 Table: `subbasins`
+##### 2.3 Table: `subbasins`
 Persists the official GIS subbasin delineations and drainage areas:
 
 ```sql
@@ -869,7 +869,7 @@ CREATE TABLE IF NOT EXISTS subbasins (
 );
 ```
 
-#### 2.4 Table: `station_rainfall_telemetry`
+##### 2.4 Table: `station_rainfall_telemetry`
 Audits the input rainfall volumes across all 20 primary and alternate rain gauge stations for each simulation run:
 
 ```sql
@@ -892,7 +892,7 @@ CREATE TABLE IF NOT EXISTS station_rainfall_telemetry (
 );
 ```
 
-#### 2.5 Table: `bridge_stage_forecast`
+##### 2.5 Table: `bridge_stage_forecast`
 Contains 90 hourly stage and flow predictions for Shivaji Bridge and Rajaram Weir:
 
 ```sql
@@ -911,7 +911,7 @@ CREATE TABLE IF NOT EXISTS bridge_stage_forecast (
 );
 ```
 
-#### 2.6 Table: `wrd_field_benchmarks`
+##### 2.6 Table: `wrd_field_benchmarks`
 Stores the 19 official Maharashtra Government Water Resources Department (WRD) high-flood gauging records:
 
 ```sql
@@ -927,7 +927,7 @@ CREATE TABLE IF NOT EXISTS wrd_field_benchmarks (
 );
 ```
 
-#### 2.7 Table: `pipeline_step_log`
+##### 2.7 Table: `pipeline_step_log`
 Tracks granular step-level execution times, durations, details, and errors across the 12-step cycle:
 
 ```sql
@@ -949,9 +949,9 @@ CREATE INDEX IF NOT EXISTS idx_psl_cycle ON pipeline_step_log (cycle_id);
 
 ---
 
-### 3. High-Performance SQL Views
+#### 3. High-Performance SQL Views
 
-#### View 1: `v_model_accuracy_summary`
+##### View 1: `v_model_accuracy_summary`
 Aggregates accuracy KPIs (Spearman $\rho$, NSE, RMSE, MAE, PBIAS) across all historical simulation cycles:
 
 ```sql
@@ -978,7 +978,7 @@ JOIN forecast_validation_metrics m ON m.run_id = r.run_id
 ORDER BY r.cycle_date DESC, r.start_time DESC;
 ```
 
-#### View 2: `v_historical_runs_ledger`
+##### View 2: `v_historical_runs_ledger`
 Serves pre-formatted historical run rows to the Next.js frontend table:
 
 ```sql
@@ -1005,7 +1005,7 @@ ORDER BY r.cycle_date DESC, r.start_time DESC;
 
 ---
 
-### 4. Standalone JSON Ledger Schema (`data/runs/`)
+#### 4. Standalone JSON Ledger Schema (`data/runs/`)
 
 When operating in zero-dependency edge mode, each computation cycle is archived to `data/runs/{cycle_id}.json` with full input, simulation, and accuracy matrices:
 
@@ -1041,21 +1041,21 @@ When operating in zero-dependency edge mode, each computation cycle is archived 
 
 ---
 
-### 5. Cold Storage & Parquet Columnar Archival Strategy
+#### 5. Cold Storage & Parquet Columnar Archival Strategy
 
 Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/archive_runs.py):
 
-#### 5.1 Motivation & Retention Window
+##### 5.1 Motivation & Retention Window
 In active operational deployment, 6-hourly cycles produce millions of time-series rows per season. Unchecked growth degrades B-Tree index scan efficiency and query latency. HydroCast enforces a **90-day retention window** (`ARCHIVE_RETENTION_DAYS=90`).
 
-#### 5.2 Target Time-Series Tables
+##### 5.2 Target Time-Series Tables
 - `hydrograph_results` (partition column: `timestamp`)
 - `bridge_stage_forecast` (partition column: `forecast_time`)
 - `rainfall_data` (partition column: `timestamp`)
 - `station_rainfall_telemetry` (partition column: `created_at`)
 - `subbasin_rainfall_ts` (partition column: `valid_time`)
 
-#### 5.3 Columnar Parquet Partitioning
+##### 5.3 Columnar Parquet Partitioning
 Pruned rows are streamed into Apache Parquet format using PyArrow with Snappy compression, partitioned by year and month:
 ```
 data/archives/
@@ -1069,13 +1069,13 @@ data/archives/
                 └── bridge_stage_forecast_202606_20260910_120000.parquet
 ```
 
-#### 5.4 Relational Integrity & Performance Preservation
+##### 5.4 Relational Integrity & Performance Preservation
 - Once the Parquet file is verified on disk, pruned rows are deleted in PostgreSQL inside a safe database transaction.
 - Master simulation cycle records in `simulation_runs` and accuracy summaries in `forecast_validation_metrics` are **never deleted**, ensuring that historical performance audits and executive reports remain instantly accessible.
 
 ---
 
-### 6. Local PostgreSQL / PostGIS Container (`docker-compose.yml`)
+#### 6. Local PostgreSQL / PostGIS Container (`docker-compose.yml`)
 
 For on-premise deployments or air-gapped workstations without Supabase cloud access, HydroCast includes a dedicated PostGIS container:
 ```yaml
@@ -1098,7 +1098,7 @@ Upon first launch (`docker-compose up -d`), PostgreSQL boots, mounts `database/s
 
 <br><hr><br>
 
-## Production Deployment, Operations & Automation Manual
+### Production Deployment, Operations & Automation Manual
 
 ```
 ========================================================================================
@@ -1125,11 +1125,11 @@ Upon first launch (`docker-compose up -d`), PostgreSQL boots, mounts `database/s
 
 ---
 
-### 1. Unified Container Deployment (Docker & Docker Compose)
+#### 1. Unified Container Deployment (Docker & Docker Compose)
 
 HydroCast is fully containerized for reproducible 1-command deployment across cloud virtual machines (AWS EC2, GCP Compute Engine, Azure VM, DigitalOcean) and on-premise workstations:
 
-#### 1.1 Architecture & Services (`docker-compose.yml`)
+##### 1.1 Architecture & Services (`docker-compose.yml`)
 
 ```yaml
 version: "3.8"
@@ -1204,24 +1204,24 @@ services:
       retries: 3
 ```
 
-#### 1.2 Startup & Management Commands
+##### 1.2 Startup & Management Commands
 ```bash
-## Build images and start all services in detached mode
+### Build images and start all services in detached mode
 docker-compose up -d --build
 
-## Inspect container health and port bindings
+### Inspect container health and port bindings
 docker-compose ps
 
-## Stream unified application logs
+### Stream unified application logs
 docker-compose logs -f
 
-## Stop and gracefully shut down services
+### Stop and gracefully shut down services
 docker-compose down
 ```
 
 ---
 
-### 2. Automated Cron Scheduling (ECMWF Operational Cycles)
+#### 2. Automated Cron Scheduling (ECMWF Operational Cycles)
 
 The European Centre for Medium-Range Weather Forecasts releases operational IFS runs four times daily. HydroCast triggers automated forecast cycles 45 minutes after official model availability to allow for global numerical assimilation:
 
@@ -1236,23 +1236,23 @@ The European Centre for Medium-Range Weather Forecasts releases operational IFS 
 +---------------+---------------------+---------------------+-------------------------+
 ```
 
-#### Linux Crontab Configuration:
+##### Linux Crontab Configuration:
 ```cron
-## Edit with: crontab -e
-## 6-Hourly Forecast Pipeline Execution
+### Edit with: crontab -e
+### 6-Hourly Forecast Pipeline Execution
 15 1,7,13,19 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python -m src.ecmwf.open_meteo >> data/logs/cron_forecast.log 2>&1
 
-## Weekly Cold Storage Parquet Archival (Sunday 02:00 UTC)
+### Weekly Cold Storage Parquet Archival (Sunday 02:00 UTC)
 0 2 * * 0 cd /opt/hydrocast && /opt/hydrocast/venv/bin/python -m src.db.archive_runs --retention-days 90 >> data/logs/cron_archive.log 2>&1
 ```
 
 ---
 
-### 3. Multi-Channel Emergency Alerting Setup (DDMA & SDRF)
+#### 3. Multi-Channel Emergency Alerting Setup (DDMA & SDRF)
 
 HydroCast integrates an automated Telegram alert bot and webhook dispatcher ([`src/alerts/telegram_bot.py`](file:///e:/hydrocast_complete/src/alerts/telegram_bot.py)):
 
-#### 3.1 Telegram Bot Configuration
+##### 3.1 Telegram Bot Configuration
 1. Create a bot via `@BotFather` on Telegram to obtain `TELEGRAM_BOT_TOKEN`.
 2. Add the bot to your District Disaster Management Authority (DDMA) channel, District Collectorate channel, and Emergency Operations Center (EOC) groups.
 3. Configure target chat IDs in `.env`:
@@ -1262,7 +1262,7 @@ HydroCast integrates an automated Telegram alert bot and webhook dispatcher ([`s
    DDMA_TELEGRAM_CHATS=-1001234567890,-1009876543210
    ```
 
-#### 3.2 Agency Webhook Endpoints
+##### 3.2 Agency Webhook Endpoints
 To automatically push flood alerts to state disaster management agency dispatch APIs:
 ```ini
 DISASTER_MANAGEMENT_WEBHOOKS=https://alert-dispatch.district.gov.in/api/v1/cwc-hook,https://sdrf.maharashtra.gov.in/api/v1/flood
@@ -1271,7 +1271,7 @@ Whenever river stage breaches the CWC **Warning** ($542.70\text{ m}$) or **Dange
 
 ---
 
-### 4. Cold Storage & Telemetry Archival Automation
+#### 4. Cold Storage & Telemetry Archival Automation
 
 Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/archive_runs.py):
 - **Objective:** Prevent high-frequency time-series tables (`hydrograph_results`, `bridge_stage_forecast`, `rainfall_data`, `station_rainfall_telemetry`, `subbasin_rainfall_ts`) from bloating PostgreSQL storage and degrading query speed.
@@ -1288,11 +1288,11 @@ Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/a
 
 ---
 
-### 5. API Security, JWT Authentication & Rate Limiting
+#### 5. API Security, JWT Authentication & Rate Limiting
 
-#### 5.1 Environment Security Variables (`.env`)
+##### 5.1 Environment Security Variables (`.env`)
 ```ini
-## Enterprise Security & Authentication
+### Enterprise Security & Authentication
 API_KEY=Hydrocast_PCH
 INTERNAL_KEY=your_internal_broadcast_key_min_32_chars
 JWT_SECRET=your_jwt_secret_key_minimum_32_characters_random
@@ -1301,11 +1301,11 @@ JWT_EXPIRATION_MINUTES=1440
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=your_strong_admin_password
 
-## Rate Limiting
+### Rate Limiting
 RATE_LIMIT_PUBLIC=100/minute
 ```
 
-#### 5.2 Obtaining an Admin JWT Bearer Token
+##### 5.2 Obtaining an Admin JWT Bearer Token
 ```bash
 curl -X POST http://localhost:8000/api/v1/admin/auth/token \
   -H "Content-Type: application/json" \
@@ -1322,11 +1322,11 @@ Response:
 
 ---
 
-### 6. Process Management without Docker (Systemd & PM2)
+#### 6. Process Management without Docker (Systemd & PM2)
 
 For hosts where Docker is not available:
 
-#### 6.1 Backend Systemd Unit (`/etc/systemd/system/hydrocast-api.service`)
+##### 6.1 Backend Systemd Unit (`/etc/systemd/system/hydrocast-api.service`)
 ```ini
 [Unit]
 Description=HydroCast FastAPI Backend & WebSocket Service
@@ -1345,7 +1345,7 @@ EnvironmentFile=/opt/hydrocast/.env
 WantedBy=multi-user.target
 ```
 
-#### 6.2 Frontend PM2 Process
+##### 6.2 Frontend PM2 Process
 ```bash
 cd /opt/hydrocast/frontend
 npm run build
@@ -1356,7 +1356,7 @@ pm2 startup
 
 ---
 
-### 7. Continuous 1-Hour Telemetry Validation (GitHub Actions)
+#### 7. Continuous 1-Hour Telemetry Validation (GitHub Actions)
 
 Autonomous physical verification runs via [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
 - **Interval:** Every hour at minute 0 (`cron: "0 * * * *"`).
@@ -1370,9 +1370,9 @@ Autonomous physical verification runs via [`.github/workflows/telemetry_validati
 <br><hr><br>
 
 
-# Hydrology
+## Hydrology
 
-## Mathematical Runoff Computation & Hydrograph Routing
+### Mathematical Runoff Computation & Hydrograph Routing
 
 ```
 ========================================================================================
@@ -1400,7 +1400,7 @@ Autonomous physical verification runs via [`.github/workflows/telemetry_validati
 
 ---
 
-### 1. Physical Governing Principles
+#### 1. Physical Governing Principles
 
 ```
 ====================================================================================================
@@ -1460,7 +1460,7 @@ This involves two consecutive transformations:
 
 ---
 
-### 2. The Non-Linear SCS-CN Infiltration Equation
+#### 2. The Non-Linear SCS-CN Infiltration Equation
 
 The United States Natural Resources Conservation Service (NRCS) empirical formulation states that the ratio of actual surface retention to potential maximum retention equals the ratio of surface runoff to total rainfall minus initial abstraction:
 
@@ -1479,14 +1479,14 @@ Where:
 - $S_{ret} = \frac{25,400}{CN} - 254$ = Potential maximum retention capacity ($mm$)
 - $I_a = 0.2 \cdot S_{ret}$ = Initial abstraction ($mm$)
 
-#### 2.1 Incremental Excess Runoff Generation
+##### 2.1 Incremental Excess Runoff Generation
 The volumetric excess depth generated in each 1-hour time slice $[h, h+1]$ is computed by backward difference:
 
 $$\Delta P_e[h] = Q_{cum}[h] - Q_{cum}[h-1]$$
 
 ---
 
-### 3. Discrete Unit Hydrograph Convolution
+#### 3. Discrete Unit Hydrograph Convolution
 
 Given an incremental excess hyetograph $\Delta P_e[1], \dots, \Delta P_e[M]$ and a discrete 1-hour Unit Hydrograph $U[1], \dots, U[K]$ representing the subbasin response to $1\text{ mm}$ of uniform excess rain:
 
@@ -1502,7 +1502,7 @@ $$\frac{1,000\text{ m}^3}{3,600\text{ s}} = 0.2778\text{ m}^3/s$$
 
 ---
 
-### 4. Muskingum River Reach Wave Routing
+#### 4. Muskingum River Reach Wave Routing
 
 As the flood wave travels along the $42.6\text{ km}$ Panchganga main stem between Prayag Chikhali and Kolhapur city, peak discharge is attenuated and delayed by channel storage.
 
@@ -1530,35 +1530,35 @@ $$\text{Conservation of Mass Check: } C_0 + C_1 + C_2 \equiv 1.000$$
 
 ---
 
-### 5. Vectorized Python Implementation (`runner.py`)
+#### 5. Vectorized Python Implementation (`runner.py`)
 
 In [`runner.py`](file:///e:/hydrocast_complete/src/hms/runner.py), the entire runoff continuum executes in $< 15\text{ milliseconds}$ via vectorized NumPy operations:
 
 ```python
-## 1. Potential soil retention
+### 1. Potential soil retention
 s_ret = (25400.0 / cn) - 254.0
 ia = 0.2 * s_ret
 
-## 2. Cumulative runoff calculation
+### 2. Cumulative runoff calculation
 cum_p = np.cumsum(p_basin)
 cum_q = np.zeros(90, dtype=np.float32)
 for h in range(90):
     if cum_p[h] > ia:
         cum_q[h] = ((cum_p[h] - ia) ** 2) / (cum_p[h] + 0.8 * s_ret)
 
-## 3. Incremental excess hyetograph
+### 3. Incremental excess hyetograph
 excess_p = np.diff(np.insert(cum_q, 0, 0.0))
 
-## 4. Convolution with SCS Unit Hydrograph kernel
+### 4. Convolution with SCS Unit Hydrograph kernel
 surface_runoff = np.convolve(excess_p, unit_hydrograph)[:90] * (area_km2 / 3.6)
 
-## 5. Superposition of live baseflow
+### 5. Superposition of live baseflow
 total_discharge = baseflow + surface_runoff
 ```
 
 ---
 
-### 6. Adaptive Closed-Loop Parameter Scaling Formulation
+#### 6. Adaptive Closed-Loop Parameter Scaling Formulation
 
 In production, soil infiltration and watershed lag vary dynamically between antecedent dry spells and saturated torrential downpours. Rather than using fixed parameters, the computation engine scales parameters dynamically via real-time calibration:
 
@@ -1574,7 +1574,7 @@ The regularizer term $\lambda \left[ (1 - \alpha)^2 + (1 - \beta)^2 \right]$ pen
 
 ---
 
-### 7. Peak Flood Arrival Horizon & Confidence Interval ($\pm 2.0\text{ hours}$)
+#### 7. Peak Flood Arrival Horizon & Confidence Interval ($\pm 2.0\text{ hours}$)
 
 HydroCast computes the operational peak arrival window directly from the resulting runoff hydrograph $Q_{\text{total}}(t)$:
 
@@ -1596,7 +1596,7 @@ HydroCast computes the operational peak arrival window directly from the resulti
 
 <br><hr><br>
 
-## HEC-HMS Headless Automation & DSS File Architecture
+### HEC-HMS Headless Automation & DSS File Architecture
 
 ```
 ========================================================================================
@@ -1632,7 +1632,7 @@ HydroCast computes the operational peak arrival window directly from the resulti
 
 ---
 
-### 1. Overview & Operational Role
+#### 1. Overview & Operational Role
 ```
 ====================================================================================================
            PANCHGANGA HYDROCAST - HEC-HMS 4.13 HYDROLOGICAL ROUTING ARCHITECTURE
@@ -1706,7 +1706,7 @@ In HydroCast, HEC-HMS operates in **headless batch mode** on Windows/Linux serve
 
 ---
 
-### 2. Project Directory Layout & File Manifest
+#### 2. Project Directory Layout & File Manifest
 
 The HEC-HMS model files reside in [`data/hms/HMS_Automation_RJKT/`](file:///e:/hydrocast_complete/data/hms/HMS_Automation_RJKT/):
 
@@ -1723,7 +1723,7 @@ data/hms/HMS_Automation_RJKT/
 
 ---
 
-### 3. HEC-DSS Six-Part Pathname Convention
+#### 3. HEC-DSS Six-Part Pathname Convention
 
 All data within HEC-DSS binary container files adhere to the strict USACE six-part pathname convention:
 
@@ -1739,18 +1739,18 @@ Where:
 - **Part E (Sampling Interval):** `1HOUR`
 - **Part F (User / Version Tag):** `FORECAST`, `OBSERVED`, or `RUN:RUN_1`
 
-#### Example Pathnames:
+##### Example Pathnames:
 - **Input Rainfall:** `/PANCHGANGA/S6/PRECIP-INC/03SEP2026:0600/1HOUR/FORECAST/`
 - **Computed Outflow:** `/PANCHGANGA/J_OUTLET/FLOW/03SEP2026:0600/1HOUR/RUN:RUN_1/`
 
 ---
 
-### 4. Headless Execution Scripting
+#### 4. Headless Execution Scripting
 
 HEC-HMS runs headlessly using an embedded Jython / Jython console script generated dynamically by [`runner.py`](file:///e:/hydrocast_complete/src/hms/runner.py):
 
 ```python
-## Generated jython execution script: run_hms.py
+### Generated jython execution script: run_hms.py
 from hms.model import Hms
 from hms import HmsRun
 
@@ -1760,14 +1760,14 @@ hms.compute("Run 1")
 hms.closeProject()
 ```
 
-#### Command-Line Invocation:
+##### Command-Line Invocation:
 ```cmd
 "C:\Program Files\HEC\HEC-HMS-4.10\hec-hms.cmd" -s run_hms.py
 ```
 
 ---
 
-### 5. Pure Python SCS-CN Hybrid Fallback Engine
+#### 5. Pure Python SCS-CN Hybrid Fallback Engine
 
 Because native HEC-HMS requires Java runtime dependencies and proprietary 64-bit C-libraries (`heclib.dll`), HydroCast includes a **built-in high-speed pure Python hydrologic emulator** in [`runner.py`](file:///e:/hydrocast_complete/src/hms/runner.py):
 
@@ -1779,11 +1779,11 @@ Because native HEC-HMS requires Java runtime dependencies and proprietary 64-bit
 
 ---
 
-### 6. Dynamic Time-Window & Basin Parameter Synchronization
+#### 6. Dynamic Time-Window & Basin Parameter Synchronization
 
 To maintain strict alignment between the 6-hourly operational cycle and the HEC-HMS project files on disk, HydroCast automatically manages:
 
-#### 6.1 Control Specification Synchronization (`Control_1.control`)
+##### 6.1 Control Specification Synchronization (`Control_1.control`)
 At the start of each forecast execution (Step 4), `runner.py` dynamically updates the simulation time window:
 ```text
 Control: Control 1
@@ -1797,7 +1797,7 @@ End:
 ```
 This guarantees that both HEC-HMS and the internal Python emulator calculate identical time envelopes ($T+0\text{h} \to T+89\text{h}$).
 
-#### 6.2 Closed-Loop Basin Calibration Synchronization (`Basin_1.basin`)
+##### 6.2 Closed-Loop Basin Calibration Synchronization (`Basin_1.basin`)
 When the real-time ML calibration engine ([`src/hydrology/ml_calibration.py`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py)) derives updated parameter multipliers ($\alpha, \beta$), it can execute `sync_to_hms_basin_file()`:
 - Parses `Basin_1.basin` text blocks.
 - Rewrites `Curve Number` and `Lag Time` attributes across subbasins $S_1 \dots S_9$.
@@ -1806,9 +1806,9 @@ When the real-time ML calibration engine ([`src/hydrology/ml_calibration.py`](fi
 
 ---
 
-### 7. Governing Hydrological Mathematical Continuum
+#### 7. Governing Hydrological Mathematical Continuum
 
-#### 7.1 SCS Curve Number Loss Method with Dynamic AMC Tracking
+##### 7.1 SCS Curve Number Loss Method with Dynamic AMC Tracking
 The model partitions rainfall into retention, infiltration, and surface runoff using the USDA SCS Curve Number method:
 
 $$S = \frac{25400}{CN} - 254 \quad [\text{mm}]$$
@@ -1824,7 +1824,7 @@ $$Q_{\text{cum}}(h) = \begin{cases}
 
 Incremental excess rainfall: $\Delta P_{\text{excess}}(h) = \max(0.0, \; Q_{\text{cum}}(h) - Q_{\text{cum}}(h - 1))$.
 
-#### 7.2 SCS Dimensionless Unit Hydrograph Transform (SCS-UH)
+##### 7.2 SCS Dimensionless Unit Hydrograph Transform (SCS-UH)
 Time to peak for a 1-hour unit duration:
 
 $$t_p = 0.5 + \frac{t_{\text{lag, min}}}{60.0} \quad [\text{hours}]$$
@@ -1839,7 +1839,7 @@ $$UH(t) = u(t) \times \frac{A_{\text{sub}} \times 1000}{\sum_{t=0}^{89} u(t) \ti
 
 Direct surface runoff: $Q_{\text{direct}}(t) = \sum_{\tau=0}^{t} \Delta P_{\text{excess}}(\tau) \cdot UH(t - \tau)$.
 
-#### 7.3 Muskingum Channel Reach Routing with Adaptive Sub-Stepping
+##### 7.3 Muskingum Channel Reach Routing with Adaptive Sub-Stepping
 Prism and wedge storage routing:
 
 $$O_t = C_0 I_t + C_1 I_{t-1} + C_2 O_{t-1}$$
@@ -1850,14 +1850,14 @@ To guarantee $\Delta t_{\text{sub}} \le 2KX$, adaptive internal sub-stepping is 
 
 $$\text{steps} = \max\left(1, \; \text{round}\left(\frac{K}{\max(0.1, 2 K X)}\right)\right), \quad \Delta t_{\text{sub}} = \frac{K}{\text{steps}}$$
 
-#### 7.4 Exponential Baseflow Recession & Physical Minimum Floor
+##### 7.4 Exponential Baseflow Recession & Physical Minimum Floor
 Natural groundwater recession:
 
 $$Q_{\text{bf}}(t) = Q_{\text{bf0}} \cdot \exp(-0.002 \cdot t)$$
 
 Enforced baseline floor: $\ge 15.0\text{ m}^3/\text{s}$ minimum discharge.
 
-#### 7.5 Subbasin Catchment Parameters (1,837.213 km² Total)
+##### 7.5 Subbasin Catchment Parameters (1,837.213 km² Total)
 
 | ID | Name | Area (km²) | Base CN | Base Lag (min) | Lag (hr) | Time to Peak $t_p$ (hr) |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|
@@ -1871,7 +1871,7 @@ Enforced baseline floor: $\ge 15.0\text{ m}^3/\text{s}$ minimum discharge.
 | S8 | Beed | 177.440 | 65.76 | 3,387.1 | 56.45h | 56.95h |
 | S9 | Radhanagari | 366.970 | 64.31 | 5,199.0 | 86.65h | 87.15h |
 
-#### 7.6 Muskingum Reaches Routing Matrix
+##### 7.6 Muskingum Reaches Routing Matrix
 
 | Reach ID | River Reach Description | Inflow Sources | Outflow Destination | Travel Time $K$ (hr) | Wedge Weight $X$ |
 |:---|:---|:---|:---|:---:|:---:|
@@ -1884,7 +1884,7 @@ Enforced baseline floor: $\ge 15.0\text{ m}^3/\text{s}$ minimum discharge.
 
 <br><hr><br>
 
-## Open-Channel Hydraulics & River Stage Mechanics
+### Open-Channel Hydraulics & River Stage Mechanics
 
 ```
 ========================================================================================
@@ -1908,11 +1908,11 @@ Enforced baseline floor: $\ge 15.0\text{ m}^3/\text{s}$ minimum discharge.
 
 ---
 
-### 1. Theoretical Hydraulic Framework
+#### 1. Theoretical Hydraulic Framework
 
 The hydraulic transformation module bridges the boundary between **hydrological catchment runoff** ($Q\text{ in }m^3/s$ generated by HEC-HMS) and **physical river water level** ($H\text{ in }m\text{ MSL}$ measured at bridge gauges).
 
-#### 1.1 The Classical Manning-Strickler Open-Channel Equation
+##### 1.1 The Classical Manning-Strickler Open-Channel Equation
 
 For uniform steady open channel flow, discharge is governed by Manning's equation:
 
@@ -1928,7 +1928,7 @@ Where:
 
 ---
 
-### 2. Cross-Section Geometry & Station Surveys
+#### 2. Cross-Section Geometry & Station Surveys
 
 The Panchganga river system in Kolhapur features two primary regulatory hydraulic control points separated by $3.8\text{ km}$ of river channel:
 
@@ -1939,9 +1939,9 @@ Slope S₀ = 0.005858 m/m (Steep in-bank)                Slope S₀ = 0.002318 m
 In-bank capacity: ~280 m³/s                           In-bank capacity: ~176 m³/s
 ```
 
-#### 2.1 Surveyed Cross-Section Topometry
+##### 2.1 Surveyed Cross-Section Topometry
 
-##### Site 1: Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)
+###### Site 1: Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)
 - **Coordinates:** $16.708917^\circ\text{ N}, 74.219278^\circ\text{ E}$
 - **Bed Invert Level ($z_{min}$):** $530.18\text{ m MSL}$ (Gauge Zero Datum: $0'\ 0''$)
 - **Alert Stage:** $542.10\text{ m MSL}$ ($39'\ 1''$, $1,800\text{ m}^3/s$)
@@ -1950,7 +1950,7 @@ In-bank capacity: ~280 m³/s                           In-bank capacity: ~176 m�
 - **Highest Flood Level (HFL):** $545.33\text{ m MSL}$ ($49'\ 8''$, $3,850\text{ m}^3/s$, August 2019)
 - **Sensor Elevation:** $549.35\text{ m MSL}$ (ThingSpeak Ultrasonic Radar Gauge)
 
-##### Site 2: Rajaram K.T. (Kolhapur Type) Weir (Kasba Bawada)
+###### Site 2: Rajaram K.T. (Kolhapur Type) Weir (Kasba Bawada)
 - **Coordinates:** $16.736167^\circ\text{ N}, 74.235889^\circ\text{ E}$
 - **Weir Crest Level:** $535.50\text{ m MSL}$ (Needle gates removed during monsoon)
 - **Bed Invert Level:** $530.18\text{ m MSL}$
@@ -1961,9 +1961,9 @@ In-bank capacity: ~280 m³/s                           In-bank capacity: ~176 m�
 
 ---
 
-### 3. The 30% PBIAS Root Cause & Hydraulic Resolution
+#### 3. The 30% PBIAS Root Cause & Hydraulic Resolution
 
-#### 3.1 The Diagnostic Investigation
+##### 3.1 The Diagnostic Investigation
 
 In early iterations of the system, water stage predictions were reasonably accurate ($532.6 - 533.5\text{m}$), but discharge collapsed dramatically to only **$16.6\text{ m}^3/s$** (Shivaji) and **$10.4\text{ m}^3/s$** (Rajaram), resulting in an unacceptable volumetric percent bias (**PBIAS $\approx 30-40\%$**).
 
@@ -1995,7 +1995,7 @@ Three severe hydraulic flaws caused this:
 +---------------------------------------------------------------------------------------+
 ```
 
-#### 3.2 The Dual-Regime Hydraulic Calibration
+##### 3.2 The Dual-Regime Hydraulic Calibration
 
 To resolve this, we re-engineered the rating curve engine in [`stage_converter.py`](file:///e:/hydrocast_complete/src/hydrology/stage_converter.py) using a **dual-regime physical formulation**:
 
@@ -2009,7 +2009,7 @@ To resolve this, we re-engineered the rating curve engine in [`stage_converter.p
 
 ---
 
-### 4. Government WRD Stage-Discharge Alignment Table
+#### 4. Government WRD Stage-Discharge Alignment Table
 
 The table below reflects the exact benchmark records from the Maharashtra Water Resources Department (WRD) embedded directly into the HydroCast hydraulic solver:
 
@@ -2033,7 +2033,7 @@ The table below reflects the exact benchmark records from the Maharashtra Water 
 
 ---
 
-### 5. Live Telemetry Alignment
+#### 5. Live Telemetry Alignment
 
 At current observed radar telemetry:
 - **Measured Water Level:** $533.28\text{ m MSL}$ ($10'\ 2''$ above bed)
@@ -2045,7 +2045,7 @@ The hydraulic model maintains physical conservation of mass throughout the river
 
 ---
 
-### 6. Fluvial Geomorphology & Longitudinal Bed Slopes (L-Section)
+#### 6. Fluvial Geomorphology & Longitudinal Bed Slopes (L-Section)
 
 ```
 ====================================================================================================
@@ -2078,7 +2078,7 @@ Per the authoritative **Krishna Basin Flood 2019 Volume 1 Study Report**:
 
 ---
 
-### 7. Divided Channel Method (DCM) for Sugarcane Overbank Floodplains
+#### 7. Divided Channel Method (DCM) for Sugarcane Overbank Floodplains
 
 ```
    Elevation
@@ -2109,7 +2109,7 @@ $$Q(H) = \frac{1}{n_{\text{main}}} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/
 
 ---
 
-### 8. Sensor-to-Sink Upstream Stage Transfer
+#### 8. Sensor-to-Sink Upstream Stage Transfer
 
 ```
    UPSTREAM                                                    DOWNSTREAM
@@ -2135,7 +2135,7 @@ H_{\text{shivaji}} + 0.648\text{ m} & \text{if } H_{\text{shivaji}} \ge 530.0\te
 
 <br><hr><br>
 
-## Hydraulic Stage-to-Discharge & Inverse Rating Curve Conversion
+### Hydraulic Stage-to-Discharge & Inverse Rating Curve Conversion
 
 ```
 ========================================================================================
@@ -2167,7 +2167,7 @@ H_{\text{shivaji}} + 0.648\text{ m} & \text{if } H_{\text{shivaji}} \ge 530.0\te
 
 ---
 
-### 1. The Core Engineering Challenge
+#### 1. The Core Engineering Challenge
 
 In computational hydrology, the hydrologic model (HEC-HMS / SCS-CN) predicts volumetric water flow rates ($Q$ in $m^3/s$), while disaster management authorities, municipal flood cells, and civil protection personnel operate exclusively on **river stage gauge levels** ($H$ in meters MSL or feet).
 
@@ -2181,7 +2181,7 @@ $$\frac{df}{dh} > 0 \quad \forall h \ge z_{invert}$$
 
 ---
 
-### 2. Why Standard Splines Fail (The Non-Monotonic Oscillation Bug)
+#### 2. Why Standard Splines Fail (The Non-Monotonic Oscillation Bug)
 
 Previous iterations used standard natural cubic splines (`scipy.interpolate.CubicSpline`). 
 
@@ -2206,7 +2206,7 @@ A non-monotonic rating curve means that as flood stage rises, the calculated dis
 
 ---
 
-### 3. Mathematical Formulation: Shape-Preserving PCHIP
+#### 3. Mathematical Formulation: Shape-Preserving PCHIP
 
 To guarantee strict monotonicity, HydroCast utilizes **Piecewise Cubic Hermite Interpolating Polynomials (PCHIP)**:
 
@@ -2225,14 +2225,14 @@ $$d_k = \begin{cases}
 
 Where weights $w_1 = 2(h_{k+1} - h_k) + (h_k - h_{k-1})$ and $w_2 = (h_{k+1} - h_k) + 2(h_k - h_{k-1})$.
 
-#### Properties of the PCHIP Solver:
+##### Properties of the PCHIP Solver:
 1. **Strict Monotonicity:** If data points are strictly increasing ($Q_{k+1} > Q_k$), then $P'(h) > 0$ everywhere on the domain.
 2. **Zero Overshoot:** Local extrema occur ONLY at the specified anchor coordinates, preventing artificial dips or peaks.
 3. **Continuous First Derivative ($C^1$):** Ensures smooth transitions without derivative discontinuities.
 
 ---
 
-### 4. Government WRD Calibration Dataset
+#### 4. Government WRD Calibration Dataset
 
 The rating curves are anchored directly to official field-gauged records from the Maharashtra Water Resources Department (WRD) across 19 hydraulic regimes:
 
@@ -2265,12 +2265,12 @@ The rating curves are anchored directly to official field-gauged records from th
 
 ---
 
-### 5. API Functions & Code Implementation
+#### 5. API Functions & Code Implementation
 
 All conversions are encapsulated in [`stage_converter.py`](file:///e:/hydrocast_complete/src/hydrology/stage_converter.py):
 
 ```python
-## Stage to Discharge:
+### Stage to Discharge:
 def convert_stage_to_discharge_manning(stage_m: float, site_id: str) -> float:
     """
     Interpolates discharge Q (m³/s) from water stage (m MSL) using the
@@ -2279,7 +2279,7 @@ def convert_stage_to_discharge_manning(stage_m: float, site_id: str) -> float:
     curve = get_shivaji_rating_curve() if "SHIVAJI" in site_id.upper() else get_rajaram_rating_curve()
     return stage_to_discharge(stage_m, curve)
 
-## Discharge to Stage:
+### Discharge to Stage:
 def convert_discharge_to_stage_manning(q_m3s: float, site_id: str) -> float:
     """
     Inverse interpolation of stage (m MSL) from discharge Q (m³/s).
@@ -2292,7 +2292,7 @@ By unifying the mathematical formulation around official government field record
 
 ---
 
-### 6. 2D Field Cross-Section Survey (108 Coordinates)
+#### 6. 2D Field Cross-Section Survey (108 Coordinates)
 
 HydroCast integrates 108 high-precision surveyed coordinates across 550m lateral widths at both strategic crossings:
 1. **Chhatrapati Shivaji Maharaj Bridge (Chainage 6+257):**
@@ -2306,7 +2306,7 @@ HydroCast integrates 108 high-precision surveyed coordinates across 550m lateral
 
 ---
 
-### 7. Divided Channel Method (DCM) for Sugarcane Overbank Roughness
+#### 7. Divided Channel Method (DCM) for Sugarcane Overbank Roughness
 
 ```
    Elevation
@@ -2333,7 +2333,7 @@ $$Q(H) = \frac{1}{0.031} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/2} + \sum 
 
 ---
 
-### 8. Sensor-to-Sink Upstream Stage Transfer Function
+#### 8. Sensor-to-Sink Upstream Stage Transfer Function
 
 ```
    UPSTREAM                                                    DOWNSTREAM
@@ -2353,11 +2353,11 @@ $$Q(H) = \frac{1}{0.031} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/2} + \sum 
 
 <br><hr><br>
 
-## Maharashtra WRD Historical Rating Curve Cross-Verification & Slope Calibration
+### Maharashtra WRD Historical Rating Curve Cross-Verification & Slope Calibration
 
-### Hydraulic Slope Correction & Independent Rating Curves
+#### Hydraulic Slope Correction & Independent Rating Curves
 
-#### 1. Root Cause Analysis of Pre-Calibration Discrepancies
+##### 1. Root Cause Analysis of Pre-Calibration Discrepancies
 During initial validation against historical flood marks, the Manning equation bed slope parameter $S_0$ was found to be severely underestimated:
 
 | Parameter | Uncalibrated (Initial) | Calibrated (Surveyed) | Error Factor |
@@ -2369,20 +2369,20 @@ Since Manning's equation governs discharge as:
 $$Q = \frac{1}{n} A R^{2/3} \sqrt{S_0}$$
 The discharge was underestimated by $\sqrt{23.4} \approx 4.84\times$ at Shivaji Bridge prior to correction.
 
-#### 2. Correction of the Stage-Offset Bug
+##### 2. Correction of the Stage-Offset Bug
 The legacy code utilized a single rating curve for both sites, applying an arbitrary `stage - 0.12m` offset for Rajaram. This was hydrologically invalid:
 - **Different Bed Slopes**: Shivaji ($0.005858\text{ m/m}$) vs. Rajaram ($0.002318\text{ m/m}$).
 - **Independent $Q \leftrightarrow H$ Relationships**: The gentler slope at Rajaram requires a higher water depth (stage) to convey identical flow ($Q \propto \sqrt{S}$).
 
-#### 3. Calibrated Rating Curves Comparison
+##### 3. Calibrated Rating Curves Comparison
 
-##### At Current Observed Stage (532.63 m MSL):
+###### At Current Observed Stage (532.63 m MSL):
 | Bridge Site | Uncalibrated $Q$ | Calibrated $Q$ |
 | :--- | :--- | :--- |
 | **Shivaji Bridge** | $18.8\text{ m}^3/\text{s}$ | **$91.1\text{ m}^3/\text{s}$** |
 | **Rajaram K.T. Weir** | $18.7\text{ m}^3/\text{s}$ | **$57.3\text{ m}^3/\text{s}$** |
 
-##### Equal Discharge Physical Stage Profiles:
+###### Equal Discharge Physical Stage Profiles:
 | Discharge $Q$ ($\text{m}^3/\text{s}$) | Stage at Shivaji (m MSL) | Stage at Rajaram (m MSL) | Water Level Delta |
 | :---: | :---: | :---: | :---: |
 | 100 | 532.72 | 533.28 | +0.56 m |
@@ -2396,7 +2396,7 @@ $$\frac{Q_{\text{shivaji}}}{Q_{\text{rajaram}}} = \sqrt{\frac{0.005858}{0.002318
 
 ---
 
-### Benchmark Cross-Verification Script & Ground Truth Table
+#### Benchmark Cross-Verification Script & Ground Truth Table
 
 ```
 ====================================================================================================
@@ -2437,7 +2437,7 @@ from src.hydrology.stage_converter import (
 
 CUSEC_TO_CUMEC = 0.028316847
 
-## Official Government observed flood records: (Stage m MSL, Discharge cusecs)
+### Official Government observed flood records: (Stage m MSL, Discharge cusecs)
 gov_records = [
     (545.62, 69184), (543.38, 62870), (543.84, 64202), (543.62, 84599),
     (543.42, 65654), (543.60, 45360), (542.03, 53467), (543.65, 69622),
@@ -2452,7 +2452,7 @@ gov_records = [
 gov_data = [(stg, q_cfs, q_cfs * CUSEC_TO_CUMEC) for stg, q_cfs in gov_records]
 ```
 
-#### Key Verification Metrics:
+##### Key Verification Metrics:
 - **Calibrated Bed Slope (Shivaji Bridge)**: $S_0 = 0.005858\text{ m/m}$
 - **Calibrated Bed Slope (Rajaram K.T. Weir)**: $S_0 = 0.002318\text{ m/m}$
 - **Spearman Rank Correlation ($\rho$)**: $> 0.995$
@@ -2461,11 +2461,11 @@ gov_data = [(stg, q_cfs, q_cfs * CUSEC_TO_CUMEC) for stg, q_cfs in gov_records]
 
 ---
 
-### 4. Empirical WRD Rajaram Weir Register Validation (Daily & Hourly)
+#### 4. Empirical WRD Rajaram Weir Register Validation (Daily & Hourly)
 
 Official Maharashtra WRD Kolhapur Division (उत्तर विभाग) daily and hourly water level & discharge registers for Rajaram K.T. Weir were cross-checked against the calibrated rating curve:
 
-#### A. 2020–2021 Daily Monsoon Register ($N = 153$ Days, June–October)
+##### A. 2020–2021 Daily Monsoon Register ($N = 153$ Days, June–October)
 - **Stage Range**: $533.26\text{ m}$ to $543.79\text{ m MSL}$ ($10'6''$ to $44'8''$)
 - **Discharge Range**: $36.8\text{ m}^3/\text{s}$ to $1,814.2\text{ m}^3/\text{s}$ ($1,300$ to $64,068\text{ cusecs}$)
 - **Stage Prediction**:
@@ -2479,7 +2479,7 @@ Official Maharashtra WRD Kolhapur Division (उत्तर विभाग) dai
   - **PBIAS**: **+0.19%**
   - **Pearson $R^2$**: **0.9994**
 
-#### B. 2021 & 2023 Hourly Flood Registers ($N = 2,406$ Hourly Observations)
+##### B. 2021 & 2023 Hourly Flood Registers ($N = 2,406$ Hourly Observations)
 Covers the devastating July–August 2021 flood event up to the all-time historic peak ($56'03''$ / $547.33\text{ m MSL}$ / $76,383\text{ cusecs}$):
 - **Stage Range**: $532.70\text{ m}$ to $547.33\text{ m MSL}$ ($8'3''$ to $56'03''$)
 - **Discharge Range**: $7.1\text{ m}^3/\text{s}$ to $2,162.9\text{ m}^3/\text{s}$ ($250$ to $76,383\text{ cusecs}$)
@@ -2496,7 +2496,7 @@ Covers the devastating July–August 2021 flood event up to the all-time histori
 
 ---
 
-### 5. Spatial Reach & Telemetry Validation Architecture
+#### 5. Spatial Reach & Telemetry Validation Architecture
 
 ```
                                  Panchganga River Reach Topology
@@ -2520,7 +2520,7 @@ Covers the devastating July–August 2021 flood event up to the all-time histori
       - Calibration: Calibrated empirical anchors up to 547.33m / 76,383 cusecs
 ```
 
-#### Multi-Run Continuous Lifecycle Tracking
+##### Multi-Run Continuous Lifecycle Tracking
 - **The Problem Solved**: Previously, once a new 90-hour cycle was executed, older cycles were left at partial completion (e.g. 17/90h) with status frozen at `IN_PROGRESS`.
 - **The Solution**: `validate_all_pending_runs()` continuously queries the persistent telemetry cache (`data/telemetry/thingspeak_hourly_cache.json`) and backfills all archived cycles. Once all 90 hours of a cycle elapse, the run automatically transitions to `LIFECYCLE_VERIFIED`.
 - **Complete PostgreSQL Persistence**: Both `simulation_runs` and `forecast_validation_metrics` are synchronized with all 14 columns fully populated (including `spearman_rho_q`, `nse_discharge`, `rmse_q_m3s`, `mae_q_m3s`, and `pbias_discharge_pct`).
@@ -2530,14 +2530,14 @@ Covers the devastating July–August 2021 flood event up to the all-time histori
 <br><hr><br>
 
 
-# Engineering
+## Engineering
 
-## HydroCast — Rainfall-Runoff & Flood Intelligence System
-### System Architecture Specification v3.0 (Operational Release)
+### HydroCast — Rainfall-Runoff & Flood Intelligence System
+#### System Architecture Specification v3.0 (Operational Release)
 
 ---
 
-### 1. High-Level System Architecture
+#### 1. High-Level System Architecture
 
 ```
 ====================================================================================================
@@ -2655,7 +2655,7 @@ HydroCast is an enterprise-grade operational hydrologic forecasting and early wa
 
 ---
 
-### 2. Technology Stack & Component Inventory
+#### 2. Technology Stack & Component Inventory
 
 | Layer | Technology | Operational Function |
 |---|---|---|
@@ -2676,7 +2676,7 @@ HydroCast is an enterprise-grade operational hydrologic forecasting and early wa
 
 ---
 
-### 3. The 12-Step Automated Pipeline Continuum
+#### 3. The 12-Step Automated Pipeline Continuum
 
 The orchestrator ([`src/orchestrator.py`](file:///e:/hydrocast_complete/src/orchestrator.py), [`src/ecmwf/open_meteo.py`](file:///e:/hydrocast_complete/src/ecmwf/open_meteo.py)) executes the following transactional sequence on every 6-hour cycle (00z, 06z, 12z, 18z):
 
@@ -2734,11 +2734,11 @@ The orchestrator ([`src/orchestrator.py`](file:///e:/hydrocast_complete/src/orch
 
 ---
 
-### 4. Subbasin Delineation & Reach Geometry (Panchganga Basin)
+#### 4. Subbasin Delineation & Reach Geometry (Panchganga Basin)
 
 The basin delineation is formalized in [`data/hms/HMS_Automation_RJKT/Basin_1.basin`](file:///e:/hydrocast_complete/data/hms/HMS_Automation_RJKT/Basin_1.basin):
 
-#### Subbasin Catchment Summary ($1,837.21\text{ km}^2$ Gauged Area)
+##### Subbasin Catchment Summary ($1,837.21\text{ km}^2$ Gauged Area)
 | Subbasin ID | Catchment Name | Drainage Area ($\text{km}^2$) | Baseline Curve Number ($CN$) | Subbasin Lag ($t_{\text{lag}}$, min) | Primary Governing Station |
 |---|---|---|---|---|---|
 | **S1** | Karveer (Outlet) | 86.21 | 74.85 | 2,152.0 | KARVIR (550m) |
@@ -2751,7 +2751,7 @@ The basin delineation is formalized in [`data/hms/HMS_Automation_RJKT/Basin_1.ba
 | **S8** | Beed | 177.44 | 65.76 | 3,387.1 | BEED (565m) |
 | **S9** | Radhanagari | 366.97 | 64.31 | 5,199.0 | KASABA_WALAWE (560m) |
 
-#### Muskingum Channel Reach Routing Parameters
+##### Muskingum Channel Reach Routing Parameters
 | Reach ID | River Reach Segment | Upstream Inflow Node | Downstream Outflow Node | Travel Time $K$ (hours) | Storage Factor $X$ |
 |---|---|---|---|---|---|
 | **R1** | Kasari Lower Reach | J_Kasari | J_Confluence | 4.50 | 0.25 |
@@ -2762,9 +2762,9 @@ The basin delineation is formalized in [`data/hms/HMS_Automation_RJKT/Basin_1.ba
 
 ---
 
-### 5. Hydraulic Calibration & Official WRD Datum Datums
+#### 5. Hydraulic Calibration & Official WRD Datum Datums
 
-#### Official Reference Benchmarks (Maharashtra WRD Irrigation Department)
+##### Official Reference Benchmarks (Maharashtra WRD Irrigation Department)
 ```
   Elevation Profile of Bridge Gauge Stations:
 
@@ -2794,7 +2794,7 @@ The basin delineation is formalized in [`data/hms/HMS_Automation_RJKT/Basin_1.ba
 
 ---
 
-### 6. Cold Storage & Telemetry Archival Strategy
+#### 6. Cold Storage & Telemetry Archival Strategy
 
 To preserve sub-second querying latency in PostgreSQL/Supabase over years of operational cycles, HydroCast implements an automated cold storage archival engine ([`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/archive_runs.py)):
 
@@ -2816,7 +2816,7 @@ To preserve sub-second querying latency in PostgreSQL/Supabase over years of ope
 
 ---
 
-### 7. Enterprise Security, JWT Authentication & Rate Limiting
+#### 7. Enterprise Security, JWT Authentication & Rate Limiting
 
 HydroCast implements multi-tier security ([`src/api/security.py`](file:///e:/hydrocast_complete/src/api/security.py), [`src/api/admin.py`](file:///e:/hydrocast_complete/src/api/admin.py)):
 
@@ -2834,7 +2834,7 @@ HydroCast implements multi-tier security ([`src/api/security.py`](file:///e:/hyd
 
 ---
 
-### 8. Containerized Deployment Architecture (Docker Compose)
+#### 8. Containerized Deployment Architecture (Docker Compose)
 
 HydroCast is fully containerized for 1-command reproducible deployment:
 
@@ -2857,7 +2857,7 @@ services:
 
 <br><hr><br>
 
-## IoT Ultrasonic Water Level Telemetry & Sensor Integration
+### IoT Ultrasonic Water Level Telemetry & Sensor Integration
 
 ```
 ========================================================================================
@@ -2930,11 +2930,11 @@ services:
              +-------------------------------+   +-------------------------------+
 ```
 
-### 1. Hardware Architecture & Mounting Geometry
+#### 1. Hardware Architecture & Mounting Geometry
 
 Real-time river stage observations are captured by an autonomous solar-powered ultrasonic level sensor installed beneath the central arch girder of **Chhatrapati Shivaji Maharaj Bridge** ($16.708917^\circ\text{ N}, 74.219278^\circ\text{ E}$) over the Panchganga river.
 
-#### 1.1 Structural Elevation Benchmarks
+##### 1.1 Structural Elevation Benchmarks
 - **Sensor Transducer Face Elevation:** $\mathbf{549.35\text{ m MSL}}$ (Surveyed reference datum).
 - **River Bed Invert Elevation:** $\mathbf{530.18\text{ m MSL}}$ (Gauge Zero Datum: $0'\ 0''$).
 - **Alert Stage:** $\mathbf{542.10\text{ m MSL}}$ (Air gap: $23.79\text{ ft}$).
@@ -2943,7 +2943,7 @@ Real-time river stage observations are captured by an autonomous solar-powered u
 
 ---
 
-### 2. Water Stage Mathematical Conversion
+#### 2. Water Stage Mathematical Conversion
 
 The physical ultrasonic transducer measures the round-trip acoustic pulse transit time ($t_{transit}$), computing the distance through air from the sensor face down to the water surface:
 
@@ -2951,31 +2951,31 @@ $$d_{air} = \frac{v_{sound}(T) \cdot t_{transit}}{2} \quad (\text{measured in fe
 
 Where $v_{sound}(T) \approx 331.3 \cdot \sqrt{1 + \frac{T}{273.15}}\text{ m/s}$ accounts for ambient air temperature compensation.
 
-#### Conversion to Stage in Meters MSL:
+##### Conversion to Stage in Meters MSL:
 In [`thingspeak_gauge.py`](file:///e:/hydrocast_complete/src/sensors/thingspeak_gauge.py):
 
 $$\text{Stage } h\text{ (m MSL)} = 549.35 - \left(d_{air} \times 0.3048\right)$$
 
 $$\text{Water Depth Above Bed } y\text{ (m)} = h - 530.18$$
 
-#### Live Telemetry Example:
+##### Live Telemetry Example:
 - **Measured Air Distance:** $52.72\text{ ft}$ ($16.07\text{ m}$)
 - **Computed Stage:** $549.35 - 16.07 = \mathbf{533.28\text{ m MSL}}$ ($10'\ 2''$ above bed datum)
 - **Live In-Bank Baseflow:** $\mathbf{109.2\text{ m}^3/s}$ ($3,856\text{ cusecs}$)
 
 ---
 
-### 3. ThingSpeak Cloud IoT Protocol & Endpoints
+#### 3. ThingSpeak Cloud IoT Protocol & Endpoints
 
 The sensor reports telemetry via GSM/GPRS Cellular IoT to the MathWorks ThingSpeak cloud:
 
-#### 3.1 Connection Parameters
+##### 3.1 Connection Parameters
 - **Channel ID:** `3424513`
 - **Read API Key:** `TSUKPZEUN1BXODUF`
 - **REST Endpoint:** `https://api.thingspeak.com/channels/3424513/feeds.json`
 - **Update Frequency:** Every 15 minutes
 
-#### 3.2 Live Telemetry Fetch Implementation
+##### 3.2 Live Telemetry Fetch Implementation
 ```python
 def fetch_shivaji_live_telemetry() -> dict:
     """
@@ -3004,7 +3004,7 @@ def fetch_shivaji_live_telemetry() -> dict:
 
 ---
 
-### 4. Outlier Rejection & Fault-Tolerance Filters
+#### 4. Outlier Rejection & Fault-Tolerance Filters
 
 To prevent spurious acoustic echoes from surface waves, heavy spray, or river debris from corrupting model baseflow initialization:
 
@@ -3024,11 +3024,11 @@ To prevent spurious acoustic echoes from surface waves, heavy spray, or river de
 
 ---
 
-### 5. Real-Time Telemetry Validation Engine & 1-Hour Continuous Resampling
+#### 5. Real-Time Telemetry Validation Engine & 1-Hour Continuous Resampling
 
 Beyond single-point initialization, HydroCast operates an autonomous, continuous real-time verification engine in [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py):
 
-#### 5.1 Ingestion & Hourly Mean Resampling
+##### 5.1 Ingestion & Hourly Mean Resampling
 1. **Bulk Ingestion:** Fetches up to 800 recent 5-minute telemetry feeds from ThingSpeak Channel `3424513`.
 2. **Harmonic Hourly Bins:** Groups measurements into hourly UTC intervals (`YYYY-MM-DDTHH:00:00Z`).
 3. **Statistical Aggregation:** For each hour with $k \ge 1$ samples:
@@ -3036,7 +3036,7 @@ Beyond single-point initialization, HydroCast operates an autonomous, continuous
    - $\text{Observed Stage (m MSL)} = 549.35 - (\text{Observed Distance (ft)} \times 0.3048)$
    - Tracks minimum, maximum, sample count, and standard deviation to monitor sensor health.
 
-#### 5.2 1-Hour Automated Execution via GitHub Actions
+##### 5.2 1-Hour Automated Execution via GitHub Actions
 A dedicated CI/CD workflow ([`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml)) triggers **every 1 hour**:
 ```yaml
 schedule:
@@ -3048,7 +3048,7 @@ schedule:
 
 ---
 
-### 6. Integration with Real-Time Closed-Loop Adaptive ML Recalibration
+#### 6. Integration with Real-Time Closed-Loop Adaptive ML Recalibration
 
 The resampled hourly telemetry stream is not merely displayed—it actively drives the **Adaptive ML Recalibration Loop** ([`src/hydrology/ml_calibration.py`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py)):
 
@@ -3058,7 +3058,7 @@ The resampled hourly telemetry stream is not merely displayed—it actively driv
 
 ---
 
-### 7. Resilient Caching & Offline Fail-Safe Operation
+#### 7. Resilient Caching & Offline Fail-Safe Operation
 
 To prevent API throttling or network blips from corrupting forecast cycles:
 
@@ -3071,7 +3071,7 @@ To prevent API throttling or network blips from corrupting forecast cycles:
 
 <br><hr><br>
 
-## Panchganga Rain Gauge Network & Subbasin Station Routing Topology
+### Panchganga Rain Gauge Network & Subbasin Station Routing Topology
 
 ```
 ========================================================================================================================
@@ -3108,7 +3108,7 @@ To prevent API throttling or network blips from corrupting forecast cycles:
 
 ---
 
-### 1. Official Subbasin Delineation & Station Registry
+#### 1. Official Subbasin Delineation & Station Registry
 
 The rainfall network is configured to capture the steep spatial precipitation gradients across the Sahyadri range. The primary stations serve as the default input for each subbasin, with alternate stations evaluated dynamically:
 
@@ -3143,7 +3143,7 @@ The rainfall network is configured to capture the steep spatial precipitation gr
 
 ---
 
-### 2. Dynamic Conservative Station Selection Algorithm
+#### 2. Dynamic Conservative Station Selection Algorithm
 
 In open-channel flood safety, under-predicting rainfall can lead to catastrophic late evacuations. For subbasins with multiple rain gauges ($S_2, S_3, S_5, S_8, S_9$), HydroCast implements **Dynamic Maximum Rainfall Selection**:
 
@@ -3179,7 +3179,7 @@ def select_active_subbasin_gages(
 
 ---
 
-### 3. Hydrologic Impact of the Station Update
+#### 3. Hydrologic Impact of the Station Update
 
 1. **Orographic Catchment Alignment:** In Subbasin $S_5$ (Kumbhi Basin), switching to `Padasali` ($73.843584^\circ\text{ E}, 16.701934^\circ\text{ N}$, elevation $620\text{ m}$) captures the high-intensity storm front along the western ghats crest ($48.7\text{ mm}$ vs $16.5\text{ mm}$ at valley station Salwan).
 2. **Headwater Precision in $S_4$ & $S_7$:** Subbasin $S_4$ now directly links to `Karanjphen` ($262.00\text{ km}^2$), and $S_7$ links to `Garivade` ($195.39\text{ km}^2$), ensuring runoff generation from all 5 headwater tributaries (Kumbhi, Dhamani, Kasari, Bhogawati, and Tulsi) is faithfully integrated.
@@ -3188,7 +3188,7 @@ def select_active_subbasin_gages(
 
 <br><hr><br>
 
-## Open-Meteo & ECMWF Meteorological Data Pipeline
+### Open-Meteo & ECMWF Meteorological Data Pipeline
 
 ```
 ========================================================================================
@@ -3219,11 +3219,11 @@ Resolution: 1 hour                                       AMC-I (Dry) / AMC-II / 
 
 ---
 
-### 1. Overview & Architectural Motivation
+#### 1. Overview & Architectural Motivation
 
 The HydroCast system requires forward-looking meteorological forcing data to drive hydrological flood predictions with a minimum lead time of **48 to 72 hours**. 
 
-#### Why Open-Meteo over Direct ECMWF MARS Subscriptions?
+##### Why Open-Meteo over Direct ECMWF MARS Subscriptions?
 1. **Zero License Friction:** Open-Meteo aggregates the open-data releases from ECMWF (European Centre for Medium-Range Weather Forecasts) IFS HRES 9km (Integrated Forecasting System), DWD ICON, and NOAA GFS.
 2. **Sub-second Response Times:** High-performance Rust-based servers deliver point forecasts in $< 150\text{ ms}$ per coordinate.
 3. **No Local GRIB2 Storage Overhead:** Directly extracts 1D precipitation arrays without downloading multi-gigabyte GRIB2 grid files across India.
@@ -3231,7 +3231,7 @@ The HydroCast system requires forward-looking meteorological forcing data to dri
 
 ---
 
-### 2. Geographical Catchment Envelope
+#### 2. Geographical Catchment Envelope
 
 The Panchganga river basin originates along the high-rainfall crest of the Western Ghats (Sahyadri ridge, receiving $3,000 - 6,000\text{ mm}$ annually) and drains eastward toward Kolhapur city.
 
@@ -3247,7 +3247,7 @@ The Panchganga river basin originates along the high-rainfall crest of the Weste
            73.70° W (Ghats Crest)                              74.50° E (Outlet Confluence)
 ```
 
-#### Catchment Bounding Coordinates:
+##### Catchment Bounding Coordinates:
 - **North ($BBOX\_N$):** $17.20^\circ\text{ N}$
 - **South ($BBOX\_S$):** $16.20^\circ\text{ N}$
 - **East ($BBOX\_E$):** $74.50^\circ\text{ E}$
@@ -3255,7 +3255,7 @@ The Panchganga river basin originates along the high-rainfall crest of the Weste
 
 ---
 
-### 3. The 18-Station Meteorological Grid
+#### 3. The 18-Station Meteorological Grid
 
 The system tracks 18 distinct meteorological nodes across the 9 hydrologic subbasins ($S_1$ to $S_9$):
 
@@ -3286,14 +3286,14 @@ The system tracks 18 distinct meteorological nodes across the 9 hydrologic subba
 
 ---
 
-### 4. API Request Construction & Parameter Specification
+#### 4. API Request Construction & Parameter Specification
 
 The forecast fetcher in [`open_meteo.py`](file:///e:/hydrocast_complete/src/ecmwf/open_meteo.py) queries the Open-Meteo v1 forecast endpoint:
 
-#### 4.1 Endpoint URL
+##### 4.1 Endpoint URL
 `GET https://api.open-meteo.com/v1/forecast`
 
-#### 4.2 Query Parameters
+##### 4.2 Query Parameters
 ```python
 params = {
     "latitude":          round(lat, 4),
@@ -3305,9 +3305,9 @@ params = {
 }
 ```
 
-#### 4.3 Hourly Precipitation Response Parsing
+##### 4.3 Hourly Precipitation Response Parsing
 ```python
-## Open-Meteo JSON Structure:
+### Open-Meteo JSON Structure:
 {
   "latitude": 16.71,
   "longitude": 74.25,
@@ -3321,11 +3321,11 @@ params = {
 
 ---
 
-### 5. Enterprise Retry Engine, Fault Tolerance & Error Handling
+#### 5. Enterprise Retry Engine, Fault Tolerance & Error Handling
 
 To guarantee 100% pipeline reliability without triggering IP-level rate-limiting (`HTTP 429 Too Many Requests`) or crashing on upstream cloud hiccups, HydroCast employs a dedicated retry engine ([`src/ecmwf/retry_utils.py`](file:///e:/hydrocast_complete/src/ecmwf/retry_utils.py)):
 
-#### 5.1 Architecture of `retry_with_backoff`
+##### 5.1 Architecture of `retry_with_backoff`
 The utility wraps both requests and callable workflows:
 ```python
 def retry_with_backoff(
@@ -3341,7 +3341,7 @@ def retry_with_backoff(
     ...
 ```
 
-#### 5.2 Key Resilience Mechanisms
+##### 5.2 Key Resilience Mechanisms
 1. **Exponential Backoff with Full Random Jitter:**
    $$\Delta t_{\text{wait}} = \min\left(t_{\text{max}}, t_{\text{base}} \cdot \text{factor}^{\text{attempt}} + \text{uniform}(0, t_{\text{jitter}})\right)$$
    This prevents synchronized retry storms across concurrent workers.
@@ -3356,7 +3356,7 @@ def retry_with_backoff(
 ---
 
 
-### 6. Antecedent Soil Moisture Condition (AMC) Analysis
+#### 6. Antecedent Soil Moisture Condition (AMC) Analysis
 
 To configure the hydrological runoff Curve Number ($CN$) accurately in HEC-HMS, the system queries the 90-day historical precipitation:
 
@@ -3381,7 +3381,7 @@ This ensures runoff calculations reflect saturated soil conditions where nearly 
 
 <br><hr><br>
 
-## Model Calibration, Validation Metrics & Accuracy Engine
+### Model Calibration, Validation Metrics & Accuracy Engine
 
 ```
 ========================================================================================
@@ -3407,7 +3407,7 @@ rank correlation       NSE Target > 0.85               PBIAS Target < 5%      Vo
 
 ---
 
-### 1. Overview & Validation Philosophy
+#### 1. Overview & Validation Philosophy
 
 ```
 ====================================================================================================
@@ -3464,9 +3464,9 @@ HydroCast employs a **multi-dimensional validation matrix** that assesses:
 
 ---
 
-### 2. Mathematical Formulations
+#### 2. Mathematical Formulations
 
-#### 2.1 Spearman Rank Correlation ($\rho$)
+##### 2.1 Spearman Rank Correlation ($\rho$)
 The Spearman rank correlation assesses how well the relationship between predicted stage ($X$) and observed stage ($Y$) can be described using a monotonic function without assuming linearity:
 
 $$\rho = 1 - \frac{6 \sum_{i=1}^{n} d_i^2}{n (n^2 - 1)}$$
@@ -3480,7 +3480,7 @@ Where:
 
 ---
 
-#### 2.2 Nash-Sutcliffe Model Efficiency (NSE)
+##### 2.2 Nash-Sutcliffe Model Efficiency (NSE)
 The standard metric in international hydrologic engineering:
 
 $$\text{NSE} = 1 - \frac{\sum_{t=1}^{n} \left(Q_{obs}(t) - Q_{sim}(t)\right)^2}{\sum_{t=1}^{n} \left(Q_{obs}(t) - \overline{Q_{obs}}\right)^2}$$
@@ -3505,7 +3505,7 @@ Where:
 
 ---
 
-#### 2.3 Percent Bias (PBIAS %)
+##### 2.3 Percent Bias (PBIAS %)
 Measures the average tendency of the simulated data to be larger or smaller than their observed counterparts (volumetric conservation):
 
 $$\text{PBIAS} = \frac{\sum_{t=1}^{n} \left(Q_{sim}(t) - Q_{obs}(t)\right)}{\sum_{t=1}^{n} Q_{obs}(t)} \times 100\%$$
@@ -3517,7 +3517,7 @@ $$\text{PBIAS} = \frac{\sum_{t=1}^{n} \left(Q_{sim}(t) - Q_{obs}(t)\right)}{\sum
 
 ---
 
-#### 2.4 Error Dispersion: RMSE & MAE
+##### 2.4 Error Dispersion: RMSE & MAE
 
 $$\text{RMSE} = \sqrt{\frac{1}{n} \sum_{t=1}^{n} \left(h_{sim}(t) - h_{obs}(t)\right)^2}$$
 
@@ -3529,7 +3529,7 @@ $$\text{MAE} = \frac{1}{n} \sum_{t=1}^{n} |h_{sim}(t) - h_{obs}(t)|$$
 
 ---
 
-### 3. Station-Wise Rainfall Volume Accuracy (18 Stations)
+#### 3. Station-Wise Rainfall Volume Accuracy (18 Stations)
 
 For each of the 18 catchment rain gauges, HydroCast tracks the total accumulated 90-hour precipitation volume ($V_{sim}$ vs $V_{obs}$):
 
@@ -3541,7 +3541,7 @@ Across the Panchganga catchment, basin-wide volumetric rainfall accuracy current
 
 ---
 
-### 4. Government WRD 19 Benchmark Field Records
+#### 4. Government WRD 19 Benchmark Field Records
 
 ```
 +----+--------------+--------------+-----------------+-----------------+------------------------+
@@ -3572,7 +3572,7 @@ Across the Panchganga catchment, basin-wide volumetric rainfall accuracy current
 
 ---
 
-### 5. Pure Real-Time ThingSpeak IoT Verification Engine
+#### 5. Pure Real-Time ThingSpeak IoT Verification Engine
 
 In addition to baseline simulation validation, HydroCast features a continuous, real-time IoT verification engine implemented in [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py):
 
@@ -3600,7 +3600,7 @@ In addition to baseline simulation validation, HydroCast features a continuous, 
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-#### 5.1 Dual-Units Conversion Mechanics
+##### 5.1 Dual-Units Conversion Mechanics
 The physical ultrasonic sensor mounted beneath Shivaji Bridge measures round-trip acoustic reflection distance through air down to the water surface:
 
 $$\text{Observed Stage (m MSL)} = 549.35\text{ m} - \left(\text{Air Distance (ft)} \times 0.3048\right)$$
@@ -3609,7 +3609,7 @@ $$\text{Air Distance (ft)} = \frac{549.35 - \text{Observed Stage (m MSL)}}{0.304
 
 Both raw sensor feet (`observed_distance_ft`) and elevation (`observed_stage_m`) are preserved in all JSON state schemas, CSV exports, and dashboard tables.
 
-#### 5.2 Elimination of Synthetic Formulas
+##### 5.2 Elimination of Synthetic Formulas
 Historical prototypes included synthetic noise equations to simulate observed data during offline testing. In the production engine:
 - Synthetic equations (e.g., `0.035 * np.sin(i / 2.5)`) have been **completely eliminated**.
 - Only genuine physical ultrasonic measurements recorded by ThingSpeak Channel `3424513` are resampled and compared against the forecasted hydrograph.
@@ -3617,15 +3617,15 @@ Historical prototypes included synthetic noise equations to simulate observed da
 
 ---
 
-### 6. Continuous 90-Hour Lifecycle Tracking & 1-Hour Automation
+#### 6. Continuous 90-Hour Lifecycle Tracking & 1-Hour Automation
 
-#### 6.1 Lifecycle Verification States
+##### 6.1 Lifecycle Verification States
 As time progresses throughout an active 90-hour forecast cycle:
 1. **`INITIALIZED` ($0\text{h}$ verified):** Forecast generated, awaiting initial physical telemetry.
 2. **`IN_PROGRESS` ($1\dots 89\text{h}$ verified):** Real-time telemetry is continuously ingested every hour, updating sample size $N$ and progressive accuracy metrics.
 3. **`LIFECYCLE_VERIFIED` ($90\text{h}$ verified):** The full 90-hour hydrograph has been physically verified against ground truth, and final cumulative performance grades are locked.
 
-#### 6.2 Automated 1-Hour CI/CD Execution
+##### 6.2 Automated 1-Hour CI/CD Execution
 The validation engine runs autonomously every hour via GitHub Actions in [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
 
 ```yaml
@@ -3643,7 +3643,7 @@ Upon execution:
 
 ---
 
-### 7. Real-Time Adaptive ML Recalibration Engine
+#### 7. Real-Time Adaptive ML Recalibration Engine
 
 Beyond static validation, HydroCast implements an autonomous, physics-informed machine learning parameter recalibration engine in [`src/hydrology/ml_calibration.py`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py):
 
@@ -3676,7 +3676,7 @@ Beyond static validation, HydroCast implements an autonomous, physics-informed m
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-#### 7.1 Mathematical Optimization Formulation
+##### 7.1 Mathematical Optimization Formulation
 The calibrator solves for optimal parameters $\theta = [\alpha_K, \alpha_{\text{lag}}, \Delta\text{CN}, X]$:
 
 $$\min_{\theta} L(\theta) = \left(\frac{\Delta t_{\text{modeled}} - \Delta t}{2.0}\right)^2 + \left(\frac{\Delta h_{\text{modeled}} - \Delta h}{0.25}\right)^2 + \left(\frac{X - X_{\text{expected}}}{0.05}\right)^2 + \Omega_{\text{reg}}(\theta)$$
@@ -3687,7 +3687,7 @@ Where:
 - Regularization $\Omega_{\text{reg}}(\theta) = 0.05 \left[(\alpha_K - 1)^2 + (\alpha_{\text{lag}} - 1)^2 + (\Delta\text{CN}/5)^2 + ((X - 0.25)/0.1)^2\right]$ prevents parameter drift during noisy conditions.
 - Fallback: Includes deterministic analytical kinematic-wave approximations to guarantee convergence in $< 5\text{ ms}$.
 
-#### 7.2 Atomic Disk Synchronization
+##### 7.2 Atomic Disk Synchronization
 When recalibrated, the engine creates an automated timestamped backup:
 ```bash
 data/hms/HMS_Automation_RJKT/Basin_1.basin.bak_20260910_120000
@@ -3696,21 +3696,21 @@ It then regex-replaces `Curve Number`, `Lag`, `Muskingum K`, and `Muskingum x` p
 
 ---
 
-### 8. Peak Flood Strike Horizon & Permissible Confidence Interval ($\pm 2.0\text{h}$)
+#### 8. Peak Flood Strike Horizon & Permissible Confidence Interval ($\pm 2.0\text{h}$)
 
 Implemented in `calculate_peak_arrival_window()`:
 
-#### 8.1 Time-to-Peak Lead Time Formulation
+##### 8.1 Time-to-Peak Lead Time Formulation
 For any forecast series $h(t), Q(t)$ over $t \in [0, 89]$ hours:
 $$T_{\text{peak}} = \arg\max_{t} \left\{ h(t) \right\}$$
 $$\text{Peak Arrival Time} = t_{\text{run}} + T_{\text{peak}}$$
 
-#### 8.2 Permissible Uncertainty Horizon (95% Confidence Interval)
+##### 8.2 Permissible Uncertainty Horizon (95% Confidence Interval)
 To provide actionable, legally sound guidance for district disaster management:
 $$\text{Earliest Strike Time} = \text{Peak Arrival Time} - 2.0\text{ hours}$$
 $$\text{Latest Strike Time} = \text{Peak Arrival Time} + 2.0\text{ hours}$$
 
-#### 8.3 Physical Uncertainty Envelopes
+##### 8.3 Physical Uncertainty Envelopes
 1. **Stage Uncertainty Margin (m MSL):**
    $$\delta_{\text{stage}} = 0.12 + 0.003 \times \max(0, h_{\text{peak}} - 535.0) \times 10$$
    $$\text{Stage 95% Band} = [h_{\text{peak}} - \delta_{\text{stage}}, \; h_{\text{peak}} + \delta_{\text{stage}}]$$
@@ -3723,7 +3723,7 @@ This high-precision strike window is visualized on the Next.js dashboard as the 
 
 ---
 
-### 9. Flat Baseflow Stability Guard & Variance Protection
+#### 9. Flat Baseflow Stability Guard & Variance Protection
 
 When the river is in baseflow-only dry periods, the observed stage variance is near zero ($\sigma_{\text{obs}} < 0.05\text{ m}$). Standard Nash-Sutcliffe Efficiency (NSE) formulas divide by this variance, producing unphysical negative infinities ($-\infty$).
 
@@ -3736,7 +3736,7 @@ HydroCast enforces an automated **Variance Guard**:
 
 ---
 
-### 10. Lead-Time Accuracy Degradation Curve (T+0 to T+90h)
+#### 10. Lead-Time Accuracy Degradation Curve (T+0 to T+90h)
 
 ```
 +--------------------+----------------+-----------------+----------------+----------------+
@@ -3784,7 +3784,7 @@ HydroCast enforces an automated **Variance Guard**:
 
 ---
 
-### 1. Executive Summary & Problem Formulation
+#### 1. Executive Summary & Problem Formulation
 
 In numerical flood early warning systems, rainfall accuracy cannot be validated with random heuristics or synthetic noise. If a rainfall forecast is inaccurate, the hydrologic runoff simulation will fail, regardless of how well-calibrated the river hydraulics may be.
 
@@ -3795,9 +3795,9 @@ HydroCast deploys a **3-Tier Concrete Verification Architecture** implemented in
 
 ---
 
-### 2. Tier 1: Official Maharashtra WRD & IMD Ground Ingest
+#### 2. Tier 1: Official Maharashtra WRD & IMD Ground Ingest
 
-#### Ingestion Directory & Format
+##### Ingestion Directory & Format
 Field engineers and automated telemetry scripts deposit ground gauge records into:
 `data/observed_rainfall/`
 
@@ -3831,7 +3831,7 @@ When present, Tier 1 records receive **100% priority** and are tagged in the dat
 
 ---
 
-### 3. Tier 2: Automated Radar-Gauge Calibrated Reanalysis
+#### 3. Tier 2: Automated Radar-Gauge Calibrated Reanalysis
 
 When local CSV files have not yet been deposited (e.g. before the 08:30 AM government bulletin is published), the pipeline automatically queries Open-Meteo's calibrated observations endpoint:
 
@@ -3844,11 +3844,11 @@ $$\text{Endpoint: } \texttt{https://api.open-meteo.com/v1/forecast?latitude}=\{\
 
 ---
 
-### 4. Tier 3: Physical Catchment Mass Balance Inversion
+#### 4. Tier 3: Physical Catchment Mass Balance Inversion
 
 In open-channel hydrology, streamflow is the ultimate integrator of spatial rainfall. The pipeline cross-validates whether the observed rainfall $P_{\text{obs}}$ is hydraulically consistent with the river discharge $Q_{\text{obs}}(t)$ recorded by the Shivaji Bridge ultrasonic radar sensor:
 
-#### 4.1 Volumetric Water Balance Formulation
+##### 4.1 Volumetric Water Balance Formulation
 
 $$\text{Volume of River Runoff } (V_{\text{runoff}}) = \int_{0}^{T} Q_{\text{obs}}(t) \, dt \approx \sum_{t=1}^{N} Q_{\text{obs}}(t) \times 3600 \quad [\text{m}^3]$$
 
@@ -3858,7 +3858,7 @@ Where:
 - $A_{\text{basin}} = 1,837.213\text{ km}^2 = 1.837 \times 10^9\text{ m}^2$ (Delineated Panchganga Basin area).
 - $C_R = \text{Catchment Volumetric Runoff Coefficient}$ ($0.65 - 0.72$ during saturated monsoon AMC-III conditions in the Sahyadri mountains).
 
-#### 4.2 Orographic Distribution Weights
+##### 4.2 Orographic Distribution Weights
 Effective rainfall is distributed across the 9 subbasins using established orographic gradient coefficients:
 
 $$P_k = P_{\text{eff}} \times \omega_k$$
@@ -3879,7 +3879,7 @@ If $C_R$ deviates outside physical boundaries ($C_R < 0.20$ or $C_R > 0.95$), th
 
 ---
 
-### 5. Statistical Error Formulation
+#### 5. Statistical Error Formulation
 
 For each station $i \in [1, 20]$:
 
@@ -3889,14 +3889,14 @@ $$\text{Relative Error } (\% e_i) = \left( \frac{e_i}{P_{\text{observed}, i} + \
 
 $$\text{Station Accuracy } (\%) = \max\left(0, 100 - |\%\, e_i|\right)$$
 
-#### Performance Classification:
+##### Performance Classification:
 - **ACCURATE:** $|\%\, e_i| \le 10.0\%$
 - **MODERATE:** $10.0\% < |\%\, e_i| \le 20.0\%$
 - **DEVIATED:** $|\%\, e_i| > 20.0\%$
 
 ---
 
-### 6. Real Pipeline Execution Output
+#### 6. Real Pipeline Execution Output
 
 Running the pipeline live yields verified ground truth metrics:
 
@@ -3914,7 +3914,7 @@ All 20 station metrics are persisted in Supabase table `station_rainfall_telemet
 
 <br><hr><br>
 
-## System Errors, Past Mistakes & Engineering Assumptions
+### System Errors, Past Mistakes & Engineering Assumptions
 
 ```
 ========================================================================================
@@ -3936,18 +3936,18 @@ All 20 station metrics are persisted in Supabase table `station_rainfall_telemet
 
 ---
 
-### Part I: Post-Mortem of Past Mistakes & Model Errors
+#### Part I: Post-Mortem of Past Mistakes & Model Errors
 
 Before achieving current operational fidelity, the HydroCast codebase inherited and uncovered several severe engineering and hydraulic errors. Documenting these failure modes is critical for institutional memory, academic honesty, and preventing regression.
 
 ---
 
-#### 1. The 30.2× Bed Slope Distortion (The Unsegmented Flood Regression Bug)
+##### 1. The 30.2× Bed Slope Distortion (The Unsegmented Flood Regression Bug)
 
-##### What Went Wrong:
+###### What Went Wrong:
 In the initial uncalibrated system, the stage-discharge converter produced reasonable stage heights ($532.6 - 533.5\text{ m MSL}$), but calculated river discharge collapsed to an absurdly low **$16.6\text{ m}^3/s$** ($586\text{ cusecs}$) at Shivaji Bridge and **$10.4\text{ m}^3/s$** at Rajaram Weir. This resulted in an unacceptable volumetric under-prediction (**PBIAS of $30\% - 40\%$**).
 
-##### Root Cause:
+###### Root Cause:
 The model previously derived the river channel bed slope $S_0$ using an unsegmented single linear regression against 31 historical extreme flood observations recorded during the catastrophic floods of 2019 and 2021 ($542.0\text{m}$ to $545.62\text{m}$ MSL).
 
 At these extreme flood stages, the Panchganga river is subjected to massive backwater effects, floodplain hydraulic drag, and weir submergence. The regression forced an artificial, catchment-wide energy slope of:
@@ -3966,16 +3966,16 @@ $$\text{Suppression Factor} = \sqrt{\frac{0.005858}{0.0001938}} = \sqrt{30.23} \
 
 A true physical flow velocity of $1.65\text{ m/s}$ was crushed to $0.30\text{ m/s}$, reducing discharge from $\sim 109\text{ m}^3/s$ down to $16.6\text{ m}^3/s$.
 
-##### Resolution:
+###### Resolution:
 Re-engineered the rating engine into a **dual-regime hydraulic formulation**:
 - **In-Bank Regime ($h \le 535.0\text{m}$):** Strictly governed by surveyed channel slope ($S_0 = 0.005858$).
 - **Overbank Flood Regime ($h \ge 541.0\text{m}$):** Calibrated to official Maharashtra WRD flood telemetry.
 
 ---
 
-#### 2. Compound Cross-Section Wetted Perimeter Discontinuity
+##### 2. Compound Cross-Section Wetted Perimeter Discontinuity
 
-##### What Went Wrong:
+###### What Went Wrong:
 At stage elevations between $535.0\text{m}$ and $536.0\text{m}$ MSL, the computed rating curve exhibited an inverted gradient: **as river stage increased, calculated discharge actually decreased ($\frac{dQ}{dh} < 0$)**.
 
 ```
@@ -3993,7 +3993,7 @@ At stage elevations between $535.0\text{m}$ and $536.0\text{m}$ MSL, the compute
        532m            534m            535.5m         538m
 ```
 
-##### Root Cause:
+###### Root Cause:
 The cross-section geometry was evaluated using a single continuous boundary polygon. When the water level exceeded bankfull stage ($h \approx 535.2\text{m}$), water began spilling over the main channel banks onto wide horizontal agricultural floodplains.
 
 While flow area ($A$) increased by only $\sim 12\%$, the wetted perimeter ($P$) exploded instantly from **$68\text{ meters}$** to **$310\text{ meters}$**.
@@ -4007,27 +4007,27 @@ $$R^{2/3} \text{ dropped from } (2.60)^{0.667} = 1.89 \implies (1.05)^{0.667} = 
 
 The mathematical formulation punished the discharge calculation for wetting the floodplain, violating physical conservation of energy and mass.
 
-##### Resolution:
+###### Resolution:
 Decomposed the rating curve into composite sub-sections (main channel vs left/right floodplains) and replaced raw single-polygon geometric integration with **Piecewise Cubic Hermite Interpolating Polynomials (PCHIP)** calibrated directly to field observations, enforcing strict monotonicity $\frac{dQ}{dh} > 0$ across all stages.
 
 ---
 
-#### 3. Spline Runge-Phenomenon Oscillation
+##### 3. Spline Runge-Phenomenon Oscillation
 
-##### What Went Wrong:
+###### What Went Wrong:
 Using standard natural cubic splines (`scipy.interpolate.CubicSpline`) to interpolate between surveyed cross-section points caused mathematical polynomial overshoot. Between the normal monsoon stage ($533.5\text{m}$) and the Alert level ($542.1\text{m}$), the spline created an artificial hump and trough, causing the model to over-predict water levels at intermediate flows.
 
-##### Resolution:
+###### Resolution:
 Replaced natural cubic splines with **Shape-Preserving PCHIP (`scipy.interpolate.PchipInterpolator`)**. Unlike standard cubic splines which enforce continuous second derivatives ($C^2$) at the expense of shape preservation, PCHIP guarantees that the interpolant is strictly monotonic if the data points are monotonic, completely eliminating artificial polynomial oscillations.
 
 ---
 
-#### 4. Gauge Zero Datum Elevation Misalignment
+##### 4. Gauge Zero Datum Elevation Misalignment
 
-##### What Went Wrong:
+###### What Went Wrong:
 Early scripts defined the riverbed elevation at Shivaji Bridge as $530.584\text{ m MSL}$, while others used $530.00\text{ m MSL}$. This $58.4\text{ cm}$ discrepancy propagated through all depth calculations, throwing off water depth and wetted perimeter integrations.
 
-##### Resolution:
+###### Resolution:
 Audited against the Maharashtra Water Resources Department (WRD) historical benchmark records:
 $$\text{Official Zero Gauge Datum } (0'\ 0'') \equiv \mathbf{530.18\text{ m MSL}}$$
 $$\text{Sensor Mounting Elevation} \equiv \mathbf{549.35\text{ m MSL}}$$
@@ -4035,33 +4035,33 @@ Water depth above datum is now rigorously calculated as $y = h - 530.18\text{ me
 
 ---
 
-#### 5. The "Stage - 0.12m" Artificial Subtraction Hack
+##### 5. The "Stage - 0.12m" Artificial Subtraction Hack
 
-##### What Went Wrong:
+###### What Went Wrong:
 In previous revisions of `stage_converter.py`, Rajaram K.T. Weir stage was computed by taking the Shivaji Bridge stage and applying a hardcoded subtraction:
 $$\text{Stage}_{\text{rajaram}} = \text{Stage}_{\text{shivaji}} - 0.12\text{ m}$$
 
 This was an empirical hack that completely ignored physical channel hydraulics. Rajaram Weir is $3.8\text{ km}$ downstream and has a significantly gentler bed slope ($S_0 = 0.002318$ vs $0.005858$). Hydraulically, a gentler slope requires a **greater cross-sectional depth** to convey the same discharge. During rising limbs and weir drowning, the stage difference between the two sites varies non-linearly from $+0.40\text{m}$ to $-0.80\text{m}$.
 
-##### Resolution:
+###### Resolution:
 Built distinct, independently calibrated PCHIP hydraulic curves for both Chhatrapati Shivaji Maharaj Bridge and Rajaram K.T. Weir.
 
 ---
 
-#### 6. Arithmetic Rainfall Dilution in Mountain Catchments
+##### 6. Arithmetic Rainfall Dilution in Mountain Catchments
 
-##### What Went Wrong:
+###### What Went Wrong:
 In subbasins with multiple rain gauges (e.g., Subbasin $S_6$ containing Karanjphen at $640\text{m}$ and Gaganbawda at $680\text{m}$), the system initially computed the simple arithmetic mean of rainfall:
 $$\bar{P} = \frac{P_{\text{karanjphen}} + P_{\text{gaganbawda}}}{2}$$
 
 During monsoonal cloudbursts along the Western Ghats crest, Gaganbawda often recorded $160\text{ mm/day}$ while Karanjphen in the valley recorded $50\text{ mm/day}$. Taking the arithmetic average ($105\text{ mm}$) diluted the severe headwater runoff peak, delaying the simulated flood wave arrival by up to 6 hours.
 
-##### Resolution:
+###### Resolution:
 Implemented the **Dynamic Conservative Selection Engine** (`station_selector.py`), which identifies the maximum-precipitation station within multi-gauge subbasins and uses it as the governing hyetograph for hydrologic modeling.
 
 ---
 
-### Part II: Engineering Assumptions & Physical Approximations
+#### Part II: Engineering Assumptions & Physical Approximations
 
 Every numerical model is a simplified representation of nature. The following are the core engineering assumptions underpinning HydroCast:
 
@@ -4092,7 +4092,7 @@ Every numerical model is a simplified representation of nature. The following ar
 
 ---
 
-#### 1. The 1D Quasi-Steady Flow Assumption
+##### 1. The 1D Quasi-Steady Flow Assumption
 HydroCast computes stage from discharge using steady-state hydraulic rating curves on a 1-hour discrete time step. 
 
 **Limitation:** It does not solve the full 2D unsteady shallow water equations (Saint-Venant momentum equations):
@@ -4102,28 +4102,28 @@ During extremely rapid flash flood events ($\frac{\partial Q}{\partial t} > 500\
 
 ---
 
-#### 2. Lumped Hydrologic Parameters (S1 to S9)
+##### 2. Lumped Hydrologic Parameters (S1 to S9)
 The $2,140\text{ km}^2$ catchment is discretized into 9 subbasins ranging from $80.1\text{ km}^2$ ($S_9$) to $510.5\text{ km}^2$ ($S_7$). Within each subbasin, soil infiltration capacity ($CN$), Time of Concentration ($T_c$), and Storage Coefficient ($R$) are spatially lumped.
 
 **Justification:** While fully distributed grid-cell models (e.g., $100\text{m} \times 100\text{m}$ raster cells) provide higher spatial resolution, they require extensive distributed soil data that does not exist for the upper Western Ghats and increase compute time from **$< 20\text{ milliseconds}$** to over **$45\text{ minutes}$**, making real-time automated 6-hourly operational execution impractical.
 
 ---
 
-#### 3. Rigid Bed Invert Assumption
+##### 3. Rigid Bed Invert Assumption
 River cross-sections at Shivaji Bridge and Rajaram Weir are treated as rigid and non-erodible.
 
 **Known Reality:** The Panchganga riverbed consists of basaltic rock overlaid with silt, sand, and gravel deposits. During extreme floods ($Q > 2,000\text{ m}^3/s$), high shear stresses scour loose bed material, temporarily deepening the channel by $0.3 - 0.6\text{ meters}$. During the falling limb, sediment settles back. HydroCast's rigid bed assumption represents the post-monsoon surveyed datum.
 
 ---
 
-#### 4. Upstream Dam Discharges (Radhanagari Dam)
+##### 4. Upstream Dam Discharges (Radhanagari Dam)
 Subbasin $S_7$ is controlled by Radhanagari Dam (gross storage capacity $236.8\text{ MCM} / 8.36\text{ TMC}$). The dam features unique automated siphon spillways (8 siphons) that open progressively when the reservoir reaches Full Reservoir Level (FRL $615.0\text{ m MSL}$).
 
 **Assumption:** HydroCast assumes that during pre-monsoon and early monsoon periods, the dam absorbs runoff. Once soil saturation reaches AMC-III and antecedent storage is full, inflow equals outflow through the siphons. If dam authorities execute emergency manual sluice gate operations outside automated siphon mechanics, that volume must be integrated via the baseflow offset parameter.
 
 ---
 
-#### 5. Downstream Confluence Hydraulic Boundary (Krishna River Backwater)
+##### 5. Downstream Confluence Hydraulic Boundary (Krishna River Backwater)
 The Panchganga river discharges into the Krishna river at Shirol / Narsobawadi, approximately $42\text{ km}$ downstream of Kolhapur.
 
 **Assumption:** HydroCast assumes free hydraulic outfall at the basin outlet.
@@ -4132,7 +4132,7 @@ The Panchganga river discharges into the Krishna river at Shirol / Narsobawadi, 
 ---
 
 
-### Part III: Recent Hydraulic Inconsistencies & Edge-Case Bug Resolutions (v3.1)
+#### Part III: Recent Hydraulic Inconsistencies & Edge-Case Bug Resolutions (v3.1)
 
 ```
 ====================================================================================================
@@ -4146,14 +4146,14 @@ The Panchganga river discharges into the Krishna river at Shirol / Narsobawadi, 
   DCM partitions cross-section.        Delta bed invert: +0.648 m higher.   Fixed: Wave Significance Rule.
 ```
 
-#### 7. Uniform Manning Roughness on Overbank Sugarcane Floodplains
-##### What Went Wrong:
+##### 7. Uniform Manning Roughness on Overbank Sugarcane Floodplains
+###### What Went Wrong:
 The model previously applied a uniform Manning roughness coefficient ($n = 0.035$) across the entire cross-section at both Shivaji Bridge and Rajaram Weir. During high-flow stages when floodwaters spilled over the natural riverbanks (Shivaji bankfull: $541.60\text{ m}$ MSL, Rajaram bankfull: $541.05\text{ m}$ MSL), this uniform roughness severely overpredicted floodplain discharge capacity. Consequently, the modeled stage for high discharges was underestimated by up to $1.2\text{ m}$, failing to match WRD flood registers.
 
-##### Root Cause:
+###### Root Cause:
 The Panchganga river corridor in Kolhapur district is surrounded by intense perennial sugarcane and paddy cultivation. Standing sugarcane crops ($2.5\text{ m}$ to $3.5\text{ m}$ height) present immense hydraulic flow resistance, drastically impeding overbank flood velocity. A single composite Manning $n$ cannot account for the hydraulic discontinuity between a deep silt/gravel main channel and heavily vegetated overbank floodplains.
 
-##### Resolution:
+###### Resolution:
 Implemented the **Divided Channel Method (DCM)** in `src/hydrology/stage_converter.py`. The cross-section is hydraulically partitioned into main channel and overbank floodplains, adopting authoritative roughness values from the **Krishna Basin Flood 2019 Volume 1 Study Report**:
 - **Main River Channel:** $n_{\text{main}} = 0.031$ (clean natural channel, silt/sand/gravel bed, irregular natural banks).
 - **Overbank Sugarcane Floodplains:** $n_{\text{flood}} = 0.070$ (dense standing sugarcane crops and paddy bunds).
@@ -4183,11 +4183,11 @@ $$Q(H) = \frac{1}{n_{\text{main}}} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/
 
 ---
 
-#### 8. Sensor-to-Sink Spatial Transposition Discrepancy
-##### What Went Wrong:
+##### 8. Sensor-to-Sink Spatial Transposition Discrepancy
+###### What Went Wrong:
 The IoT ultrasonic radar sensor is physically mounted on the girder of **Chhatrapati Shivaji Maharaj Bridge** (Chainage 6+257 from Krishna confluence). However, the HEC-HMS hydrological basin model has its catchment sink at **Rajaram K.T. Weir** (Chainage 10+115). Previously, the baseflow and stage conversion pipelines directly applied the Shivaji Bridge sensor reading to the Rajaram rating curve, ignoring the $3,858\text{ m}$ longitudinal distance separating the two facilities.
 
-##### Root Cause:
+###### Root Cause:
 Rajaram Weir is located **upstream** of Shivaji Bridge (higher chainage along the river course). The surveyed thalweg bed invert at Rajaram Weir is **$529.318\text{ m}$ MSL**, whereas at Shivaji Bridge it is **$528.670\text{ m}$ MSL**—a bed elevation differential of **$+0.648\text{ m}$**. Furthermore, during low-flow periods (summer and non-monsoon), the Rajaram K.T. Weir retains water up to its solid masonry crest level (**$530.18\text{ m}$ MSL**) for municipal and agricultural irrigation pumping, establishing an artificial upstream impoundment pool.
 
 ```
@@ -4205,7 +4205,7 @@ Rajaram Weir is located **upstream** of Shivaji Bridge (higher chainage along th
                              Delta Bed RL: +0.648 m (Rajaram higher)
 ```
 
-##### Resolution:
+###### Resolution:
 Engineered `infer_rajaram_stage_from_shivaji(shivaji_stage_m, q_m3s)` in `src/hydrology/stage_converter.py`. The function dynamically evaluates the hydraulic flow regime:
 1. **Low-Flow / Pool Regime ($H_{\text{shivaji}} < 530.0\text{ m}$):** Rajaram water surface elevation is governed by the weir crest impoundment:
    $$H_{\text{rajaram}} = \max\left(530.18, \; H_{\text{shivaji}} + 0.648\right)$$
@@ -4214,24 +4214,24 @@ Engineered `infer_rajaram_stage_from_shivaji(shivaji_stage_m, q_m3s)` in `src/hy
 
 ---
 
-#### 9. False T+89h Flat Baseflow Peak Detection Bug
-##### What Went Wrong:
+##### 9. False T+89h Flat Baseflow Peak Detection Bug
+###### What Went Wrong:
 During non-storm periods when rainfall was negligible and river discharge was dominated by a flat or slowly receding baseflow, the automated pipeline reported a peak arrival time at the very end of the 90-hour forecast window ($T+89\text{h}$), triggering false alarm indicators on user dashboards.
 
-##### Root Cause:
+###### Root Cause:
 `execute_hec_hms()` evaluated `peak_idx = int(np.argmax(q_surface))`. When surface runoff was zero across all 90 hours, `np.argmax()` returned index 89 due to minor floating-point rounding artifacts or tie-breaking at the end of the array. Even when evaluated on total discharge ($Q_{\text{total}}$), minor baseflow recession curves produced a maximum at index 0 or index 89 arbitrarily.
 
-##### Resolution:
+###### Resolution:
 Added the **Physical Flood Wave Significance Rule** in `src/hms/runner.py`:
 
 ```python
-## Physical flood wave significance check in src/hms/runner.py
+### Physical flood wave significance check in src/hms/runner.py
 peak_idx = int(np.argmax(q_total))
 peak_surface_q = float(q_surface[peak_idx])
 initial_baseflow = float(baseflow_array[0])
 
-## Physical rule: A propagating flood wave MUST produce peak surface runoff
-## exceeding 2x the antecedent baseflow. Below this threshold, river is receding.
+### Physical rule: A propagating flood wave MUST produce peak surface runoff
+### exceeding 2x the antecedent baseflow. Below this threshold, river is receding.
 is_significant_event = peak_surface_q > max(0.5, initial_baseflow * 2.0)
 if not is_significant_event:
     peak_idx = 0  # Declare T+0 (flow is receding / baseflow stable)
@@ -4241,11 +4241,11 @@ When no significant flood wave exists, the model declares $T+0\text{h}$, marks l
 
 ---
 
-#### 10. Regional Bed Slope Gradient Mismatch
-##### What Went Wrong:
+##### 10. Regional Bed Slope Gradient Mismatch
+###### What Went Wrong:
 Previous models assumed a uniform longitudinal bed slope ($S_0 = 0.005858$) throughout the entire Panchganga river basin. This steep gradient caused open-channel flow velocities to be vastly overpredicted in the middle and lower reaches, distorting stage conversions.
 
-##### Root Cause:
+###### Root Cause:
 Detailed river survey data from the **Krishna Basin Flood 2019 Volume 1 Report** reveals that the bed slope flattens dramatically as the river progresses from the Western Ghats to the Krishna confluence:
 - **Radhanagari to Prayag Chikhali:** $1:2529$ ($S_0 = 0.000395\text{ m/m}$)
 - **Prayag Chikhali to Rajaram K.T. Weir:** $1:4641$ ($S_0 = 0.000215\text{ m/m}$)
@@ -4271,12 +4271,12 @@ Detailed river survey data from the **Krishna Basin Flood 2019 Volume 1 Report**
        0                     40                      58                          100 km
 ```
 
-##### Resolution:
+###### Resolution:
 Updated canonical slopes in `src/hydrology/stage_converter.py`:
 - **Shivaji Bridge Site:** Calibrated to $S_0 = 0.000201$ to incorporate the local hydraulic headloss and backwater from the Jayanti Nalla stormwater confluence.
 - **Rajaram K.T. Weir Site:** Calibrated to $S_0 = 0.000250$.
 
-### Part IV: Operational Hardening & Edge-Case Failure Mitigations (v3.0)
+#### Part IV: Operational Hardening & Edge-Case Failure Mitigations (v3.0)
 
 During the v3.0 operational production hardening, several systemic risks were diagnosed and engineered against:
 
@@ -4301,10 +4301,10 @@ During the v3.0 operational production hardening, several systemic risks were di
 +-----------------------------------+---------------------------------------+-------------------------------------------+
 ```
 
-#### 1. The Fallacy of Scalar Peak Flood Prediction
+##### 1. The Fallacy of Scalar Peak Flood Prediction
 In early releases, the system reported peak flood arrival as a single scalar timestamp (e.g. `2026-09-11T16:30:00Z`). In real-world Western Ghats hydrology, variations in spatial rainfall distribution, soil heterogeneity, and tributary confluence backwaters introduce non-deterministic travel lags ($\sigma \approx 1.02\text{ hours}$). Reporting a single minute led emergency personnel to expect mathematical precision that nature does not exhibit. In v3.0, the system strictly defines peak arrival as a **$\pm 2.0\text{h}$ operational window** $[T_{\text{peak}} - 2\text{h}, T_{\text{peak}} + 2\text{h}]$ at 95% confidence.
 
-#### 2. Guardrails Against ML Parameter Runaway
+##### 2. Guardrails Against ML Parameter Runaway
 When calibrating against live ultrasonic radar telemetry, acoustic echoes from debris or transient sensor dropout can produce artificial stage spikes. If an unconstrained optimizer attempts to fit these anomalies, it might calculate an unphysical Curve Number ($CN > 98$) or an impossible lag time ($T_{\text{lag}} \to 0$), corrupting subsequent cycles. HydroCast enforces:
 - Hard physical clipping bounds: $\alpha \in [0.85, 1.15]$ and $\beta \in [0.80, 1.20]$.
 - Regularized cost functions that penalize deviations from baseline parameters.
@@ -4312,7 +4312,7 @@ When calibrating against live ultrasonic radar telemetry, acoustic echoes from d
 
 ---
 
-### Part V: Operational Summary
+#### Part V: Operational Summary
 
 By identifying past mistakes, replacing unsegmented regressions with dual-regime PCHIP interpolators, and establishing clear physical boundaries for engineering assumptions, HydroCast operates with high technical transparency. It delivers robust early warning projections while clearly defining the limits of its predictive certainty.
 
@@ -4320,7 +4320,7 @@ By identifying past mistakes, replacing unsegmented regressions with dual-regime
 
 <br><hr><br>
 
-## Technological Novelty & Innovation Architecture of HydroCast
+### Technological Novelty & Innovation Architecture of HydroCast
 
 ```
 ========================================================================================
@@ -4340,7 +4340,7 @@ By identifying past mistakes, replacing unsegmented regressions with dual-regime
 
 ---
 
-### 1. Executive Innovation Thesis
+#### 1. Executive Innovation Thesis
 
 Conventional flood early warning in developing river basins typically suffers from a deep operational disconnect:
 
@@ -4352,11 +4352,11 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ---
 
-### 2. The 10 Core Architectural & Hydrological Novelties
+#### 2. The 10 Core Architectural & Hydrological Novelties
 
 ---
 
-#### Novelty 1: Automated Dual-Regime Monotonic PCHIP Hydraulic Solver
+##### Novelty 1: Automated Dual-Regime Monotonic PCHIP Hydraulic Solver
 - **The Breakthrough:** Solves the notorious "compound channel wetted-perimeter collapse" problem without requiring computationally expensive 2D hydrodynamic shallow-water solvers.
 - **How It Works:** Rather than forcing a single unsegmented Manning equation across all river stages, HydroCast decomposes flow into an **In-Bank Regime ($h \le 535.0\text{m}$, $S_0 = 0.005858$)** and an **Overbank Flood Regime ($h \ge 541.0\text{m}$)**.
 - **Mathematical Guarantee:** Employs **Piecewise Cubic Hermite Interpolating Polynomials (PCHIP)** to enforce strict monotonicity:
@@ -4365,20 +4365,20 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ---
 
-#### Novelty 2: Zero-Downtime Dual-Engine Architecture (USACE HEC-HMS + Pure Python Emulator)
+##### Novelty 2: Zero-Downtime Dual-Engine Architecture (USACE HEC-HMS + Pure Python Emulator)
 - **The Breakthrough:** Total operational resilience against missing native Java or DSS dependencies.
 - **How It Works:** In production environments with USACE HEC-HMS 4.x installed, the system generates automated Jython batch control scripts and executes native headless hydrologic simulations. If Java, HEC-HMS binaries, or DSS C-libraries are missing or fail, HydroCast seamlessly switches in **$< 1\text{ millisecond}$** to an internal, pure-Python vectorized hydrologic continuum (`runner.py`).
 - **Performance:** The internal emulator computes the complete 90-hour runoff convolution across all 9 subbasins in **$< 20\text{ milliseconds}$**, matching native HEC-HMS results within a $\pm 0.4\%$ tolerance.
 
 ---
 
-#### Novelty 3: Dynamic Conservative Maximum-Rainfall Spatial Station Routing
+##### Novelty 3: Dynamic Conservative Maximum-Rainfall Spatial Station Routing
 - **The Breakthrough:** Protects emergency disaster management cells from localized flash floods caused by orographic cloudbursts along the Sahyadri crest.
 - **How It Works:** Traditional systems take arithmetic averages or static Thiessen polygon weights across rain gauges. In mountainous terrain where Gaganbawda ($680\text{m}$) can receive $160\text{ mm/day}$ while Karvir ($550\text{m}$) receives only $40\text{ mm/day}$, averaging dilutes the flood wave. HydroCast dynamically evaluates cumulative precipitation across candidate stations in each subbasin and assigns the **maximum-precipitation station** as the governing boundary condition for that cycle.
 
 ---
 
-#### Novelty 4: Autonomous 90-Day Antecedent Soil Moisture (AMC) Re-Analysis
+##### Novelty 4: Autonomous 90-Day Antecedent Soil Moisture (AMC) Re-Analysis
 - **The Breakthrough:** Dynamically shifts watershed runoff potential between dry and saturated soil conditions without manual user intervention.
 - **How It Works:** On every simulation cycle, the pipeline queries both the forward 90-hour forecast and the historical 90-day precipitation re-analysis. It evaluates 5-day antecedent rainfall ($P_5$) to classify catchment moisture into **AMC-I (Dry)**, **AMC-II (Average)**, or **AMC-III (Wet)**, dynamically updating Curve Numbers ($CN$) via:
   $$CN_{III} = \frac{CN_{II} \cdot e^{0.00673 \cdot (100 - CN_{II})}}{1 + CN_{II} \cdot \left(e^{0.00673 \cdot (100 - CN_{II})} - 1\right)}$$
@@ -4386,13 +4386,13 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ---
 
-#### Novelty 5: Direct Grounding in 19 Official Maharashtra WRD Benchmark Records
+##### Novelty 5: Direct Grounding in 19 Official Maharashtra WRD Benchmark Records
 - **The Breakthrough:** Elimination of theoretical rating curve abstractions by hard-anchoring the mathematical solver to official government field-gauged telemetry.
 - **How It Works:** Integrates 19 historical benchmark observations recorded by the Maharashtra Water Resources Department (WRD) spanning from **Gauge Zero Datum ($530.18\text{m}$ MSL / $0'\ 0''$)** up to **Highest Flood Level ($545.33\text{m}$ MSL / $49'\ 8''$ / $3,850\text{ m}^3/s$)**. The system converts between meters MSL, feet-inches, cusecs, and $\text{m}^3/s$ bidirectionally with zero rounding drift.
 
 ---
 
-#### Novelty 6: Self-Auditing Validation Engine (Real-Time Spearman $\rho$ & NSE Computation)
+##### Novelty 6: Self-Auditing Validation Engine (Real-Time Spearman $\rho$ & NSE Computation)
 - **The Breakthrough:** Transparent, real-time accuracy scoring embedded directly into every forecast cycle.
 - **How It Works:** Unlike black-box models that predict numbers without measuring their own performance, HydroCast continuously computes:
   - **Spearman Rank Correlation ($\rho$):** Measures non-linear monotonic alignment between predicted flood waves and physical radar telemetry.
@@ -4403,20 +4403,20 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ---
 
-#### Novelty 7: Immutable Historical Simulation Runs Ledger & "Run Inspector"
+##### Novelty 7: Immutable Historical Simulation Runs Ledger & "Run Inspector"
 - **The Breakthrough:** Full auditability and time-travel inspection for post-disaster inquiries and model validation.
 - **How It Works:** Every forecast execution is archived as an immutable, timestamped JSON document under `data/runs/{cycle_id}.json`.
 - **The User Experience:** On the **Accuracy & Run Log** dashboard, operators can scroll through a ledger of past cycles (`CYC_20260901_06z`, `CYC_20260902_18z`, etc.) and click **"Inspect Run"**. SWR instantly reloads that historical run into all hydrographs, scatter plots, and prediction tables without a full page refresh, allowing operators to verify what the model predicted 72 hours ago versus what physically occurred.
 
 ---
 
-#### Novelty 8: Zero-Dependency Dual-Mode Data Persistence
+##### Novelty 8: Zero-Dependency Dual-Mode Data Persistence
 - **The Breakthrough:** The platform cannot crash due to database outages during extreme storms.
 - **How It Works:** When connected to PostgreSQL / Supabase, the backend utilizes asynchronous connection pooling (`asyncpg`). If the database server is unreachable, connection drops, or credentials are unconfigured, HydroCast automatically and silently falls back to an internal **atomic JSON ledger storage engine**. The entire API and Next.js frontend continue to function with 100% feature parity.
 
 ---
 
-#### Novelty 9: Event-Driven WebSocket Live Hub & Interactive 2D SVG River Cross-Section
+##### Novelty 9: Event-Driven WebSocket Live Hub & Interactive 2D SVG River Cross-Section
 - **The Breakthrough:** Sub-second situational awareness for Municipal Emergency Operations Centers (EOC).
 - **How It Works:** 
   - **WebSocket Hub (`/ws/live`):** Pushes new simulation completions and emergency CWC threshold breaches to all connected screens instantly, eliminating continuous polling.
@@ -4424,7 +4424,7 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ---
 
-#### Novelty 10: Explicit Dual Regulatory Bridge Hydraulic Coupling
+##### Novelty 10: Explicit Dual Regulatory Bridge Hydraulic Coupling
 - **The Breakthrough:** Discontinuous reach modeling between two critical urban flood bottlenecks separated by $3.8\text{ km}$ of river channel.
 - **How It Works:** Rather than treating Kolhapur as a single point, HydroCast independently models:
   - **Chhatrapati Shivaji Maharaj Bridge:** Steep in-bank slope ($S_0 = 0.005858$), urban ghat constriction, historical reference gauge.
@@ -4433,7 +4433,7 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ---
 
-#### Novelty 11: Real-Time Closed-Loop Physics-Informed ML Recalibration & Disk Sync
+##### Novelty 11: Real-Time Closed-Loop Physics-Informed ML Recalibration & Disk Sync
 - **The Breakthrough:** Dynamically bridges the gap between static calibration and changing real-world catchment dynamics without model drift or unphysical parameter explosion.
 - **How It Works:** On every simulation cycle, the ML calibration engine (`src/hydrology/ml_calibration.py`) queries real-time ultrasonic stage telemetry from ThingSpeak Channel `2418579`. It computes the empirical Nash-Sutcliffe Efficiency (NSE) and volumetric discrepancy against the current forecast hydrograph. If discrepancy $> 10\%$ or NSE $< 0.85$:
   - A bounded SciPy L-BFGS-B / Nelder-Mead optimizer solves for optimal parameter scaling vectors:
@@ -4443,7 +4443,7 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ---
 
-#### Novelty 12: High-Precision Peak Flood Strike Horizon with ±2.0h Permissible Error Window
+##### Novelty 12: High-Precision Peak Flood Strike Horizon with ±2.0h Permissible Error Window
 - **The Breakthrough:** Translates raw discharge hydrographs into actionable, emergency-grade operational time windows with rigorous uncertainty bounds.
 - **How It Works:** Rather than stating an ambiguous peak time, HydroCast analyzes the first and second derivatives ($\frac{dQ}{dt}, \frac{d^2Q}{dt^2}$) around the hydrograph crest and synthesizes them with the cumulative rainfall hyetograph centroid lag:
   - Determines the nominal peak flood arrival time $T_{\text{peak}}$.
@@ -4453,7 +4453,7 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ---
 
-### 3. Comprehensive Comparative Innovation Matrix
+#### 3. Comprehensive Comparative Innovation Matrix
 
 ```
 +-----------------------------+--------------------+--------------------+--------------------+--------------------+
@@ -4506,7 +4506,7 @@ Conventional flood early warning in developing river basins typically suffers fr
 
 ---
 
-### 4. Impact on Disaster Risk Reduction (DRR) in Kolhapur
+#### 4. Impact on Disaster Risk Reduction (DRR) in Kolhapur
 
 The innovations embedded within HydroCast transform disaster management from **reactive crisis response** to **predictive early action**:
 
@@ -4519,7 +4519,7 @@ The innovations embedded within HydroCast transform disaster management from **r
 
 <br><hr><br>
 
-## GIS Geospatial Data, Shapefiles & Subbasin Vector Layers
+### GIS Geospatial Data, Shapefiles & Subbasin Vector Layers
 
 ```
 ========================================================================================
@@ -4549,7 +4549,7 @@ The innovations embedded within HydroCast transform disaster management from **r
 
 ---
 
-### 1. Directory Structure & File Manifest
+#### 1. Directory Structure & File Manifest
 
 The geospatial repository contains both raw QGIS spatial layers and web-optimized GeoJSON files:
 
@@ -4570,7 +4570,7 @@ system/
 
 ---
 
-### 2. Coordinate Reference Systems (CRS) Specification
+#### 2. Coordinate Reference Systems (CRS) Specification
 
 Hydrologic vector processing uses dual spatial reference frames:
 
@@ -4584,9 +4584,9 @@ Hydrologic vector processing uses dual spatial reference frames:
 
 ---
 
-### 3. GeoJSON Feature Property Schemas
+#### 3. GeoJSON Feature Property Schemas
 
-#### 3.1 Subbasin Boundary Polygons (`Panchganga_RJKT_RB.geojson`)
+##### 3.1 Subbasin Boundary Polygons (`Panchganga_RJKT_RB.geojson`)
 
 ```json
 {
@@ -4608,7 +4608,7 @@ Hydrologic vector processing uses dual spatial reference frames:
 }
 ```
 
-#### 3.2 River Network Centerlines (`Panchganga_RJKT_Flowpath.geojson`)
+##### 3.2 River Network Centerlines (`Panchganga_RJKT_Flowpath.geojson`)
 
 ```json
 {
@@ -4630,7 +4630,7 @@ Hydrologic vector processing uses dual spatial reference frames:
 
 ---
 
-### 4. Leaflet Web GIS Integration
+#### 4. Leaflet Web GIS Integration
 
 The interactive map in `OverviewPanel.tsx` visualizes these spatial layers:
 - **Subbasin Choropleth:** Color-coded by cumulative 90-hour rainfall intensity (green: $< 30\text{ mm}$, amber: $30-75\text{ mm}$, purple: $> 75\text{ mm}$).
@@ -4640,9 +4640,9 @@ The interactive map in `OverviewPanel.tsx` visualizes these spatial layers:
 
 <br><hr><br>
 
-## HydroCast: Production Architecture Roadmap & Hardening Guide
+### HydroCast: Production Architecture Roadmap & Hardening Guide
 
-### Executive Architecture Evaluation
+#### Executive Architecture Evaluation
 
 HydroCast implements an end-to-end, operational hydrologic and hydraulic intelligence continuum:
 1. **Meteorological Ingestion**: ECMWF IFS HRES 9km quantitative precipitation forecasts via Open-Meteo API v1.
@@ -4655,7 +4655,7 @@ To advance HydroCast from a **Functional Operational System** to a **Mission-Cri
 
 ---
 
-### The 5 Production Hardening Pillars (100% Open Source)
+#### The 5 Production Hardening Pillars (100% Open Source)
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────┐
@@ -4666,7 +4666,7 @@ To advance HydroCast from a **Functional Operational System** to a **Mission-Cri
 └───────────────────┴───────────────────┴──────────────────┴───────────────────────┘
 ```
 
-#### 1. Robust Orchestration & Fault-Tolerant Scheduling
+##### 1. Robust Orchestration & Fault-Tolerant Scheduling
 - **Objective**: Prevent silent cycle skips caused by temporary API timeouts, network partitions, or compute crashes.
 - **Implementation Options**:
   - **Option A (GitHub Actions Cron)**: Automated execution at 02:30, 08:30, 14:30, 20:30 UTC via `.github/workflows/pipeline.yml` with automated retry steps and centralized status alerts.
@@ -4676,7 +4676,7 @@ To advance HydroCast from a **Functional Operational System** to a **Mission-Cri
   - [x] Configure GitHub Actions 6-hourly automated workflow.
   - [x] Add exponential backoff retry wrappers around external weather ingestion.
 
-#### 2. Automated Multi-Channel Emergency Alerting
+##### 2. Automated Multi-Channel Emergency Alerting
 - **Objective**: Push immediate warning and evacuation bulletins when predicted stages breach Warning or Danger thresholds.
 - **Implementation**:
   - **Telegram Bot API**: Free, zero-infrastructure messaging using `python-telegram-bot` (`src/alerts/evaluator.py`, `src/alerts/telegram_bot.py`).
@@ -4686,7 +4686,7 @@ To advance HydroCast from a **Functional Operational System** to a **Mission-Cri
   - [x] WebSocket live push stream (`/ws/live`) to dashboard.
   - [x] Implement production Telegram bot dispatcher for District Disaster Management Authority (DDMA).
 
-#### 3. Containerization (Docker & Compose)
+##### 3. Containerization (Docker & Compose)
 - **Objective**: Package Python 3.12, Java JDK 17 (for HEC-DSS / HEC-HMS), GDAL, and Next.js into standardized images to ensure complete reproducibility across any cloud VM or on-premise workstation.
 - **Architecture**:
   - `docker-compose.yml` defining:
@@ -4698,7 +4698,7 @@ To advance HydroCast from a **Functional Operational System** to a **Mission-Cri
   - [x] Author standalone `Dockerfile` for Next.js frontend.
   - [x] Provide unified `docker-compose.yml` for 1-command startup.
 
-#### 4. Cold Storage & Telemetry Archival Strategy
+##### 4. Cold Storage & Telemetry Archival Strategy
 - **Objective**: Keep the primary Supabase/PostgreSQL database responsive by pruning high-frequency time-series older than 90 days into compressed parquet archives.
 - **Strategy**:
   - Maintain summary KPIs in `simulation_runs` indefinitely.
@@ -4707,7 +4707,7 @@ To advance HydroCast from a **Functional Operational System** to a **Mission-Cri
   - [x] Build automated weekly archival script (`src/db/archive_runs.py`).
   - [x] Integrate Apache Parquet columnar compression for historical hydrographs.
 
-#### 5. API Security, JWT Authentication & Rate Limiting
+##### 5. API Security, JWT Authentication & Rate Limiting
 - **Objective**: Protect operational endpoints against scrapers, DDoS attacks, and unauthorized database writes.
 - **Strategy**:
   - Standardize API key validation via `X-API-Key` headers on administrative endpoints.
@@ -4720,7 +4720,7 @@ To advance HydroCast from a **Functional Operational System** to a **Mission-Cri
 
 ---
 
-### Implementation Progress Tracker
+#### Implementation Progress Tracker
 
 | Milestone | Area | Status | Target File |
 | :--- | :--- | :---: | :--- |
