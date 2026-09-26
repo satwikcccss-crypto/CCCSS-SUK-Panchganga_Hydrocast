@@ -60,7 +60,7 @@ const GOV_RECORDS = [
 
 export default function AccuracyPanel() {
   const [selectedRunId, setSelectedRunId] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"charts" | "table" | "gov_records" | "runs">("charts");
+  const [activeTab, setActiveTab] = useState<"charts" | "table" | "gov_records" | "runs" | "calibration">("charts");
   const [stationFilter, setStationFilter] = useState<string>("");
   const [hourlySearch, setHourlySearch] = useState<string>("");
   const [govSearch, setGovSearch] = useState<string>("");
@@ -629,6 +629,16 @@ export default function AccuracyPanel() {
         >
           🗄️ Historical Computation Runs Ledger ({runsHistory.length})
         </button>
+        <button
+          onClick={() => setActiveTab("calibration")}
+          className={`pb-3 border-b-2 transition ${
+            activeTab === "calibration"
+              ? "border-indigo-600 text-indigo-600"
+              : "border-transparent text-gray-500 hover:text-gray-800"
+          }`}
+        >
+          🧠 Adaptive ML Recalibration
+        </button>
       </div>
 
       {/* ── TAB 1: INTERACTIVE CHARTS ───────────────────────────────────────── */}
@@ -1106,6 +1116,257 @@ export default function AccuracyPanel() {
           </div>
         </div>
       )}
+
+      {/* ── TAB 5: ADAPTIVE ML RECALIBRATION ENGINE ──────────────────────────── */}
+      {activeTab === "calibration" && (() => {
+        const recal = runData?.recalibration ?? {};
+        const isRecalibrated = Boolean(recal?.is_recalibrated);
+        const triggerReason = recal?.trigger_reason || "INITIAL_BASELINE";
+        const lastCalibratedAt = recal?.last_calibrated_at || "Physics Baseline Active";
+        const timingOffset = recal?.timing_offset_hours ?? 0.0;
+        const stageDiscrepancy = recal?.stage_discrepancy_m ?? 0.0;
+        const alphaK = recal?.alpha_k ?? 1.0;
+        const alphaLag = recal?.alpha_lag ?? 1.0;
+        const deltaCn = recal?.delta_cn ?? 0.0;
+        const muskingumX = recal?.muskingum_x ?? 0.25;
+
+        const subbasins = [
+          { id: "S1", name: "Karveer", baseCn: 74.85, baseLagMin: 2152.0, areaKm2: 86.213 },
+          { id: "S2", name: "Sangarul", baseCn: 65.74, baseLagMin: 3154.3, areaKm2: 153.77 },
+          { id: "S3", name: "Kotoli", baseCn: 64.82, baseLagMin: 3997.7, areaKm2: 261.32 },
+          { id: "S4", name: "Karanjphen", baseCn: 61.89, baseLagMin: 3115.5, areaKm2: 262.00 },
+          { id: "S5", name: "Padasali", baseCn: 60.97, baseLagMin: 2117.1, areaKm2: 106.39 },
+          { id: "S6", name: "Gaganbawda", baseCn: 61.78, baseLagMin: 3318.1, areaKm2: 227.72 },
+          { id: "S7", name: "Garivade", baseCn: 61.28, baseLagMin: 3362.3, areaKm2: 195.39 },
+          { id: "S8", name: "Beed", baseCn: 65.76, baseLagMin: 3387.1, areaKm2: 177.44 },
+          { id: "S9", name: "Radhanagari", baseCn: 64.31, baseLagMin: 5199.0, areaKm2: 366.97 },
+        ];
+
+        const reaches = [
+          { id: "R5", routing: "S6 + S7 → R2", baseK: 18.338, baseLagHr: 18.338 },
+          { id: "R4", routing: "S9 → R2", baseK: 8.085, baseLagHr: 8.085 },
+          { id: "R2", routing: "R5 + R4 + S8 → R1", baseK: 16.500, baseLagHr: 16.500 },
+          { id: "R3", routing: "S4 + S5 → R1", baseK: 9.484, baseLagHr: 9.484 },
+          { id: "R1", routing: "R2 + R3 + S3 + S2 → Sink-1", baseK: 4.500, baseLagHr: 4.500 },
+        ];
+
+        return (
+          <div className="flex flex-col gap-5">
+            {/* Header Status Banner */}
+            <div className={CARD}>
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className={`w-3 h-3 rounded-full ${isRecalibrated ? "bg-emerald-500 animate-pulse" : "bg-indigo-600"}`} />
+                    <h2 className="text-base font-bold text-gray-900">
+                      Physics-Informed Real-Time ML Hydrologic Calibrator
+                    </h2>
+                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded border ${
+                      isRecalibrated
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : "bg-indigo-50 text-indigo-700 border-indigo-200"
+                    }`}>
+                      {isRecalibrated ? "DYNAMICALLY TUNED" : "BASELINE CONSERVATIVE"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1 font-medium">
+                    Continuous feedback loop matching simulated flood waves to observed ThingSpeak sensor hydrographs via Scipy L-BFGS-B optimization.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-mono">
+                  <span className="px-2.5 py-1 bg-gray-100 rounded text-gray-700">
+                    Status: <strong className="text-gray-900">{triggerReason}</strong>
+                  </span>
+                  <span className="px-2.5 py-1 bg-gray-100 rounded text-gray-700">
+                    Confidence: <strong className="text-indigo-600">{recal?.confidence_pct ?? 95}%</strong>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Recalibration Scaling Parameters Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className={CARD}>
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                  α_K (Reach Travel Time Scalar)
+                </div>
+                <div className="mt-2 text-2xl font-extrabold text-indigo-600 font-mono">
+                  {alphaK.toFixed(3)}
+                </div>
+                <div className="mt-1 text-[11px] text-gray-500">
+                  Bounds: [0.50, 1.80] · Reaches R1–R5
+                </div>
+              </div>
+
+              <div className={CARD}>
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                  α_lag (Subbasin Lag Scalar)
+                </div>
+                <div className="mt-2 text-2xl font-extrabold text-blue-600 font-mono">
+                  {alphaLag.toFixed(3)}
+                </div>
+                <div className="mt-1 text-[11px] text-gray-500">
+                  Bounds: [0.50, 1.80] · Subbasins S1–S9
+                </div>
+              </div>
+
+              <div className={CARD}>
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                  ΔCN (SCS Curve Number Shift)
+                </div>
+                <div className="mt-2 text-2xl font-extrabold text-emerald-600 font-mono">
+                  {deltaCn > 0 ? `+${deltaCn.toFixed(2)}` : deltaCn.toFixed(2)}
+                </div>
+                <div className="mt-1 text-[11px] text-gray-500">
+                  Bounds: [-8.0, +8.0] · Soil Retention
+                </div>
+              </div>
+
+              <div className={CARD}>
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                  X (Muskingum Wedge Factor)
+                </div>
+                <div className="mt-2 text-2xl font-extrabold text-purple-600 font-mono">
+                  {muskingumX.toFixed(3)}
+                </div>
+                <div className="mt-1 text-[11px] text-gray-500">
+                  Bounds: [0.15, 0.40] · Wave Steepness
+                </div>
+              </div>
+            </div>
+
+            {/* Timing & Stage Error Diagnostics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className={CARD}>
+                <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                  Wave Discrepancy &amp; Auto-Trigger Diagnostics
+                </div>
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex justify-between py-1 border-b border-gray-100">
+                    <span>Wave Timing Offset (Δt):</span>
+                    <strong className="font-mono text-gray-900">{timingOffset > 0 ? `+${timingOffset.toFixed(1)}h (Late)` : timingOffset < 0 ? `${timingOffset.toFixed(1)}h (Early)` : "0.0h (Synchronized)"}</strong>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-gray-100">
+                    <span>Maximum Stage Discrepancy (Δh):</span>
+                    <strong className="font-mono text-gray-900">{stageDiscrepancy.toFixed(3)} m MSL</strong>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-gray-100">
+                    <span>Trigger Thresholds:</span>
+                    <strong className="font-mono text-amber-700">|Δt| ≥ 1.0h OR (Δh &gt; 0.25m AND Rising Limb)</strong>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span>Last Recalibrated At:</span>
+                    <strong className="font-mono text-gray-900">{lastCalibratedAt}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div className={CARD}>
+                <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                  L-BFGS-B Objective Cost Formulation
+                </div>
+                <div className="text-xs text-gray-600 space-y-1.5 font-mono bg-slate-50 p-3 rounded-lg border border-slate-200">
+                  <div>L(θ) = w_nse·(1 - NSE) + w_time·(Δt / 2.0)²</div>
+                  <div className="pl-6">+ w_peak·(ΔQ / Q_obs)² + w_reg·||θ - θ_0||²</div>
+                  <div className="text-[11px] text-gray-500 pt-1 font-sans">
+                    • w_time = 0.55 reach travel time + 0.45 subbasin lag
+                    <br />• Dual disk persistence: updates <code>runner.py</code> &amp; <code>Basin_1.basin</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Subbasins Dynamic Table */}
+            <div className={CARD}>
+              <div className={CARD_HEADER}>
+                <span className="font-bold text-gray-800">
+                  Subbasin Catchment Parameters (SCS-CN &amp; SCS Dimensionless UH)
+                </span>
+                <span className="text-xs font-semibold text-gray-500">
+                  Total Basin Area: 1,837.21 km² (9 Subbasins)
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left">
+                  <thead className="bg-gray-50 text-gray-500 uppercase border-b border-gray-200">
+                    <tr>
+                      <th className="px-3 py-2">ID</th>
+                      <th className="px-3 py-2">Subbasin Name</th>
+                      <th className="px-3 py-2">Area (km²)</th>
+                      <th className="px-3 py-2">Base CN</th>
+                      <th className="px-3 py-2">Active Calibrated CN</th>
+                      <th className="px-3 py-2">Base Lag (min)</th>
+                      <th className="px-3 py-2">Active Lag (min)</th>
+                      <th className="px-3 py-2">Time to Peak Tp (hr)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {subbasins.map((s) => {
+                      const calCn = Math.min(95.0, Math.max(45.0, s.baseCn + deltaCn));
+                      const calLag = s.baseLagMin * alphaLag;
+                      const tp = 0.5 + (calLag / 60.0);
+                      return (
+                        <tr key={s.id} className="hover:bg-gray-50">
+                          <td className="px-3 py-2 font-mono font-bold text-indigo-700">{s.id}</td>
+                          <td className="px-3 py-2 font-medium text-gray-900">{s.name}</td>
+                          <td className="px-3 py-2 font-mono">{s.areaKm2.toFixed(1)}</td>
+                          <td className="px-3 py-2 font-mono text-gray-500">{s.baseCn.toFixed(2)}</td>
+                          <td className="px-3 py-2 font-mono font-bold text-emerald-700">{calCn.toFixed(2)}</td>
+                          <td className="px-3 py-2 font-mono text-gray-500">{s.baseLagMin.toFixed(0)}</td>
+                          <td className="px-3 py-2 font-mono font-bold text-blue-700">{calLag.toFixed(0)}</td>
+                          <td className="px-3 py-2 font-mono font-bold text-purple-700">{tp.toFixed(1)}h</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Muskingum Reaches Dynamic Table */}
+            <div className={CARD}>
+              <div className={CARD_HEADER}>
+                <span className="font-bold text-gray-800">
+                  Muskingum River Reach Parameters &amp; Network Routing Topology
+                </span>
+                <span className="text-xs font-semibold text-gray-500">
+                  5 Reaches (R1–R5) · Sub-stepped Numerical Routing
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left">
+                  <thead className="bg-gray-50 text-gray-500 uppercase border-b border-gray-200">
+                    <tr>
+                      <th className="px-3 py-2">Reach ID</th>
+                      <th className="px-3 py-2">Hydrologic Routing Inflow → Outflow</th>
+                      <th className="px-3 py-2">Base K (hr)</th>
+                      <th className="px-3 py-2">Calibrated K (hr)</th>
+                      <th className="px-3 py-2">Wedge Storage X</th>
+                      <th className="px-3 py-2">Numerical Sub-steps</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {reaches.map((r) => {
+                      const calK = r.baseK * alphaK;
+                      const subSteps = Math.max(1, Math.round(calK / Math.max(0.1, 2.0 * calK * muskingumX)));
+                      return (
+                        <tr key={r.id} className="hover:bg-gray-50">
+                          <td className="px-3 py-2 font-mono font-bold text-purple-700">{r.id}</td>
+                          <td className="px-3 py-2 font-mono text-gray-800">{r.routing}</td>
+                          <td className="px-3 py-2 font-mono text-gray-500">{r.baseK.toFixed(3)}</td>
+                          <td className="px-3 py-2 font-mono font-bold text-indigo-700">{calK.toFixed(3)}</td>
+                          <td className="px-3 py-2 font-mono font-bold text-emerald-700">{muskingumX.toFixed(3)}</td>
+                          <td className="px-3 py-2 font-mono text-sky-700 font-semibold">{subSteps} step{subSteps > 1 ? "s" : ""}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

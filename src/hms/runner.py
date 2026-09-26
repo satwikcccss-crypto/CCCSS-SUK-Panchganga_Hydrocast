@@ -243,10 +243,22 @@ def execute_hec_hms(
 
     total_area_km2 = sum(s["area_km2"] for s in sub_models.values())  # 1837.213 km²
 
-    # Physical baseline baseflow at Rajaram Weir corresponding to live observed river stage
-    from src.hydrology.stage_converter import convert_stage_to_discharge_manning
+    # Physical baseline baseflow: IoT sensor is at Shivaji Bridge, HMS sink is at Rajaram KT Weir.
+    # Step 1: Infer Rajaram stage from Shivaji using surveyed bed gradient (0.648m over 3858m)
+    #         + KT weir backwater correction in low-flow (dry season / summer impoundment).
+    # Step 2: Convert Rajaram stage to discharge using WRD-anchored PCHIP rating curve.
+    from src.hydrology.stage_converter import (
+        convert_stage_to_discharge_manning, infer_rajaram_stage_from_shivaji
+    )
     if live_stage_m is not None:
-        baseflow = convert_stage_to_discharge_manning(live_stage_m, "SHIVAJI_BRIDGE")
+        # live_stage_m is the Shivaji Bridge IoT sensor reading (m MSL)
+        # Get a first-pass discharge estimate at Shivaji to use in KT weir correction
+        q_shivaji_est = convert_stage_to_discharge_manning(live_stage_m, "SHIVAJI_BRIDGE")
+        # Transfer WSE upstream to Rajaram using bed gradient + KT weir backwater
+        rajaram_stage_m = infer_rajaram_stage_from_shivaji(live_stage_m, q_m3s=q_shivaji_est)
+        # Convert Rajaram stage to discharge using WRD PCHIP anchored rating curve
+        baseflow = convert_stage_to_discharge_manning(rajaram_stage_m, "RAJARAM_BRIDGE")
+        baseflow = max(baseflow, 15.0)  # Minimum 15 m3/s for Panchganga basin (~1837 km²)
     else:
         baseflow = float(os.getenv("MONSOON_BASEFLOW", "91.1"))
 

@@ -30,10 +30,10 @@ Welcome to the comprehensive technical documentation for **HydroCast: Real-Time 
 | **Database Architecture** | [`Database.md`](./Database.md) | PostgreSQL production schema, `pipeline_step_log`, Supabase cloud sync, and Parquet cold storage. |
 | **Open-Meteo & ECMWF** | [`Openmeteo.md`](./Openmeteo.md) | ECMWF IFS HRES 9km QPF ingestion, enterprise exponential backoff retry wrappers, and station routing. |
 | **Rain Gauge Network** | [`Raingauge_Station.md`](./Raingauge_Station.md) | 18 primary and alternate stations, geographical topology, and dynamic selection. |
-| **Basin Hydrology** | [`Hydrology.md`](./Hydrology.md) | 2,140 km² Panchganga basin physiography, subbasins S1–S9, SCS-CN, and closed-loop ML recalibration. |
-| **Runoff Computation** | [`Runoff_Computation.md`](./Runoff_Computation.md) | Mathematical runoff continuum, loss rate, unit hydrograph convolution, and ±2.0h peak strike window. |
-| **HEC-HMS Automation** | [`HMS.md`](./HMS.md) | Headless USACE HEC-HMS 4.x batch runner, DSS time series, dynamic control and basin parameter synchronization. |
-| **River Hydraulics** | [`Hydraulics.md`](./Hydraulics.md) | Manning open-channel flow, bed slope calibration ($S_0 = 0.005858$), and compound cross-sections. |
+| **Basin Hydrology** | [`Hydrology.md`](./Hydrology.md) | 1,837.2 km² Panchganga basin physiography, subbasins S1–S9, SCS-CN, SCS Dimensionless UH, and closed-loop ML recalibration. |
+| **Runoff Computation** | [`Runoff_Computation.md`](./Runoff_Computation.md) | Mathematical runoff continuum, SCS-CN loss, SCS unit hydrograph convolution, and Muskingum reach routing. |
+| **HEC-HMS Automation** | [`HMS.md`](./HMS.md) | Headless USACE HEC-HMS 4.13 batch runner, pure-Python physical solver, SCS-CN loss, SCS-UH, Muskingum routing, and baseflow recession. |
+| **River Hydraulics** | [`Hydraulics.md`](./Hydraulics.md) | Divided Channel Method ($n_{\text{main}}=0.031, n_{\text{flood}}=0.070$), surveyed bed slopes ($1:2529, 1:4641, 1:7700$), and K.T. weir hydraulics. |
 | **Rating Curves** | [`Stage_Conversion_Discharge.md`](./Stage_Conversion_Discharge.md) | Bi-directional monotonic PCHIP rating curves ($dQ/dh > 0$) for Shivaji Bridge & Rajaram Weir. |
 | **Model Calibration** | [`Calibration_Validation.md`](./Calibration_Validation.md) | Spearman rank $\rho$, NSE, PBIAS, real-time ML optimization, and WRD benchmark calibration. |
 | **ML Calibration Engine** | [`ML_Calibration_Engine.md`](./ML_Calibration_Engine.md) | Details the Physics-Informed Machine Learning engine that actively synchronizes optimal Muskingum and Subbasin Lag parameters back to the HEC-HMS model dynamically. |

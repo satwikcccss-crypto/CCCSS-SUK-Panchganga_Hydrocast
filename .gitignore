@@ -56,3 +56,11 @@ Desktop.ini
 .idea/
 *.swp
 *.swo
+
+# Local scratch and logs
+scratch/
+logs/
+node_modules/
+package-lock.json
+package.json
+

@@ -146,6 +146,27 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
       qc: 100,
     },
     {
+      name: "Adaptive ML Recalibration Engine",
+      type: "L-BFGS-B Loss Minimization (Muskingum & SCS-CN)",
+      status: "online",
+      lag: "Real-Time",
+      qc: 100,
+    },
+    {
+      name: "Telegram Bot & DDMA Emergency Dispatcher",
+      type: "Serverless Webhook & CWC Flood Bulletins",
+      status: "online",
+      lag: "<500ms",
+      qc: 100,
+    },
+    {
+      name: "Parquet Cold Storage & Archival Engine",
+      type: "90-Day Retention & PyArrow Partition Storage",
+      status: "online",
+      lag: "Daily Cron",
+      qc: 100,
+    },
+    {
       name: "Primary Catchment Gauges",
       type: "7 Primary Subbasins (Karvir, Sangarul, etc.)",
       status: "online",
