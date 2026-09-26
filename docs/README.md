@@ -4,6 +4,13 @@
   <img src="assets/hydrocast_main_banner.jpg" alt="HydroCast Operational Continuum" width="100%">
 </p>
 
+<p align="center">
+  <a href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/">
+    <img src="https://img.shields.io/badge/🌐_Live_Hydraulic_&_Documentation_Portal-GitHub_Pages-06B6D4?style=for-the-badge&logo=github&logoColor=white" alt="Live GitHub Pages Portal">
+  </a>
+</p>
+
+
 Welcome to the comprehensive technical documentation for **HydroCast: Real-Time Operational Flood Forecasting & Basin Intelligence** for the Panchganga River Catchment (Kolhapur District, Maharashtra, India).
 
 ## Technology & Engineering Stack

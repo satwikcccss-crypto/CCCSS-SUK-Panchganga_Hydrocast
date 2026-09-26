@@ -1,80 +1,267 @@
 # HydroCast Frontend Architecture & Design System
 
 ```
-====================================================================================================
-               HYDROCAST NEXT.JS 14 BASIN INTELLIGENCE DASHBOARD
-====================================================================================================
+========================================================================================
+             HYDROCAST NEXT.JS 14 BASIN INTELLIGENCE DASHBOARD
+========================================================================================
 
-                     Next.js 14 App Router (React 18 Server/Client Model)
-                                              |
-      +---------------------------------------+---------------------------------------+
-      |                                       |                                       |
-      v                                       v                                       v
-[ SWR State Engine ]             [ WebSocket Live Push ]             [ Tailwind Design System ]
-Cached REST revalidation         Event-driven /ws/live listener      Curated HSL Color Tokens
-Fallback: Standalone JSON        Auto-reconnect with backoff         Dark & Light Glassmorphic
-      |                                       |                                       |
-      +---------------------------------------+---------------------------------------+
-                                              |
-                                              v
-                          Dashboard Shell (app/dashboard/page.tsx)
-                                              |
-      +---------------+---------------+-------+-------+---------------+---------------+
-      |               |               |               |               |               |
-      v               v               v               v               v               v
-[ Overview ]    [ Rainfall ]    [ Runoff/HMS ]  [ Accuracy ]    [ System ]     [ FloodBanner ]
-Basin GIS map   18-Station      90h Outflow     Multi-tier KPIs 12-Step flow   CWC Threshold
-Live gauges     Hyetographs     Cross-section   ML Calibrator   Latency/Logs   Emergency Push
-Odometer Count  Isohyetals      Rating curves   Runs Ledger     Archival/Bot   Flashing Alert
+                  Next.js 14 App Router (React 18 Server/Client Model)
+                                       |
+      +--------------------------------+-------------------------------+
+      |                                |                               |
+      v                                v                               v
+[ SWR State Engine ]          [ WebSocket Live Push ]          [ Tailwind CSS Token System ]
+Cached REST revalidation      Event-driven /ws/live listener   Curated HSL Slate/Indigo/Emerald
+Fallback: Standalone JSON     Auto-reconnect with backoff      Dark & Light Glassmorphic Panels
+      |                                |                               |
+      +--------------------------------+-------------------------------+
+                                       |
+                                       v
+                       Dashboard Shell (app/dashboard/page.tsx)
+                                       |
+     +---------------+---------------+--+------------+---------------+---------------+
+     |               |               |               |               |               |
+     v               v               v               v               v               v
+[ Overview ]  [ Rainfall ]   [ Runoff/HMS ] [ Accuracy ]   [ System ]    [ FloodBanner ]
+Basin GIS map  18-Station     90h Discharge  Spearman rho   12-Step flow  CWC threshold
+Live gauges    Hyetographs    Cross-section  ML Calibrator  Latency/Logs  Emergency push
+Odometer Count Isohyetals     Rating curves  WRD benchmarks Archival/Bot  Flashing Alert
 ```
 
 ---
 
-## 1. Technology Stack & Framework Specifications
+## 1. Technology Stack & Key Libraries
 
-- **Framework:** Next.js 14.2.5 (App Router, TypeScript, React 18).
-- **Styling Architecture:** Vanilla Tailwind CSS with custom HSL token palette (Slate, Indigo, Sky, Emerald, Amber, Rose).
-- **Data Visualization Engine:** Chart.js 4.4.x, `react-chartjs-2`, and `chartjs-plugin-annotation`.
-- **Spatial Mapping:** Leaflet 1.9.4 & `react-leaflet` with Panchganga Basin subbasin GeoJSON boundaries.
-- **State Management & Caching:** `swr` (Stale-While-Revalidate) with automated 30s background revalidation.
-- **Motion & Micro-Interactions:** `framer-motion` and `lucide-react`.
-
----
-
-## 2. Component Hierarchy & Operational Workspaces
-
-### 2.1 Workspace Overview (`OverviewPanel.tsx`)
-- **Interactive GIS Basin Map:** Renders Panchganga subbasins S1–S9, river reach paths R1–R5, and 18 hydro-meteorological stations.
-- **Live Engineering Gauges (`EngineeringGauge.tsx`):** Renders calibrated hydraulic column tube gauges for Shivaji Bridge and Rajaram KT Weir with animated water levels and threshold markers.
-- **Animated Odometer Counter (`OdometerCounter.tsx`):** Real-time smooth rolling counter tracking cumulative system visits and forecast compute hours.
-
-### 2.2 Rainfall Intelligence Workspace (`RainfallPanel.tsx`)
-- **18-Station Hydro-Meteorological Grid:** Real-time 90-hour forward hyetographs from ECMWF IFS HRES (0.08° / 9km).
-- **Subbasin Area-Weighted Precipitation:** Catchment-mean hyetographs driving the SCS-CN loss model.
-
-### 2.3 Runoff & Hydraulic Workspace (`RunoffPanel.tsx`)
-- **90-Hour Hydrograph Visualizer:** Discrete surface runoff, baseflow recession, and total basin discharge.
-- **2D Cross-Section Viewer (`CrossSectionViewer.tsx`):** Native dynamic SVG rendering of the 108 surveyed coordinates at Shivaji Bridge and Rajaram KT Weir, with live water surface elevation and floodplain inundation.
-
-### 2.4 Model Accuracy & Calibration Workspace (`AccuracyPanel.tsx`)
-- **Verification Charts:** Dual-axis hydrograph comparison of simulated vs observed ThingSpeak sensor data.
-- **Multi-Tier Statistical KPIs:** Live Spearman $\rho$, Nash-Sutcliffe Efficiency (NSE), Pearson $R^2$, RMSE, and PBIAS.
-- **Adaptive ML Recalibration Tab:** Interactive dashboard displaying real-time $\alpha_K$, $\alpha_{\text{lag}}$, $\Delta CN$, and $X$ optimization states, wave timing offset $\Delta t$, and subbasin parameter matrices.
-- **Government Records Cross-Check:** 19 official WRD staff gauge benchmark levels (11.0 ft to 49.8 ft HFL).
-- **Historical Runs Ledger:** Full 15-cycle historical audit ledger.
-
-### 2.5 System Telemetry Workspace (`SystemPanel.tsx`)
-- **12-Stage Pipeline Flow:** Real-time monitoring of every pipeline execution step.
-- **System Components & Data Sources:** Ingestion health for Open-Meteo, ThingSpeak, HEC-HMS Core, Supabase DB, **Telegram Disaster Bot**, and **Parquet Cold Storage Engine**.
+- **Framework:** Next.js 14.2.5 (App Router, TypeScript, React 18)
+- **Styling:** Vanilla Tailwind CSS with custom color palette (no external unconfigured CSS libraries)
+- **Data Visualization:** Chart.js 4.4.x, `react-chartjs-2`, and `chartjs-plugin-annotation`
+- **Spatial Mapping:** Leaflet 1.9.4 & `react-leaflet` with Panchganga GeoJSON layers
+- **State Management & Caching:** `swr` (Stale-While-Revalidate) with custom fetch wrappers
+- **Icons & Motion:** `lucide-react` & `framer-motion`
+- **Vector Graphics:** Native dynamic SVG for 2D River Cross-Section rendering
 
 ---
 
-## 3. Serverless API Architecture
+## 2. Component Hierarchy & Navigation Flow
+
+The user interface is organized into five segregated operational workspaces accessible via the responsive sidebar:
 
 ```
-frontend/app/api/
-├── telegram/webhook/route.ts   # Serverless Telegram Bot Webhook handler
-├── v1/dashboard/route.ts        # Dynamic force-dynamic state provider
-├── v1/export/route.ts           # Secure serverless CSV export route
-└── v1/history/route.ts          # Historical cycle ledger provider
+app/
+ ├── layout.tsx                     # Global HTML envelope, Inter font, metadata
+ ├── page.tsx                       # Landing redirect to /dashboard
+ ├── dashboard/
+ │    └── page.tsx                  # Primary workspace shell & tab router
+ └── api/
+      └── v1/
+           └── dashboard/
+                └── route.ts        # Next.js API proxy serving pipeline JSON & runs
 ```
+
+### 2.1 Workspace Panel Breakdown
+
+```
++-------------------+-------------------------------------------------------------------+
+| Panel ID          | Primary Functional Responsibility                                 |
++-------------------+-------------------------------------------------------------------+
+| dashboard         | Basin executive overview, gauge cards, key flood KPIs, leaf map   |
+| rainfall          | 18-station rainfall hyetographs, cumulative 90h bars, 90d history |
+| runoff            | HEC-HMS 90-hour runoff hydrograph, peak discharge, SVG river xsec |
+| accuracy          | Spearman correlation scatter, 90h prediction log, WRD records     |
+| system            | 12-step pipeline orchestrator status, latency metrics, audit logs |
++-------------------+-------------------------------------------------------------------+
+```
+
+---
+
+## 3. Data Visualization Architecture (Chart.js Engine)
+
+All charts are engineered with strict hydrologic conventions, high-DPI canvas rendering, and custom tooltip formatting.
+
+### 3.1 Dual-Axis Stage vs Discharge Hydrograph (`RunoffPanel` & `AccuracyPanel`)
+- **Left Y-Axis ($y_{stage}$):** River stage in meters MSL ($530.0 - 546.0\text{m}$).
+- **Right Y-Axis ($y_Q$):** River discharge in $m^3/s$ ($0 - 4,000\text{ m}^3/s$).
+- **Threshold Annotations:**
+  - **Alert Level:** $542.10\text{ m}$ (Yellow dashed horizontal line)
+  - **Warning Level:** $542.70\text{ m}$ (Orange dashed horizontal line)
+  - **Danger Level:** $543.30\text{ m}$ (Red dashed horizontal line)
+  - **HFL:** $545.33\text{ m}$ (Purple dashed horizontal line)
+
+### 3.2 Inverted Meteorological Hyetographs (`RainfallPanel`)
+- Rainfall bars are plotted with an inverted vertical axis ($0\text{ mm}$ at the top, increasing downward) adhering to standard international civil engineering hydrologic conventions.
+
+### 3.3 Spearman Correlation Scatter Plot & Target Accuracy Panel (`AccuracyPanel.tsx`)
+- **Filtered Coordinate Array (`validPts`):** Coordinates are sanitized to ensure both $x$ and $y$ are finite numbers, preventing `NaN` from disrupting Chart.js canvas layout.
+- **Plots the theoretical $1:1$ ideal agreement line ($Y = X$) in dashed slate.**
+- **Live Empirical Badges:** Displays actual Spearman rank coefficient ($\rho$) and Pearson $R^2$ with safe null-fallback (`—`).
+- **Interactive Tooltip Readouts:** Displays Observed stage ($m$ and raw $ft$), Predicted stage ($m$), and error delta $\Delta H$ ($m$).
+- **Elapsed-Only Observed Hydrograph Curve:** In the 90-hour comparison hydrograph, observed telemetry is plotted only for elapsed lead hours ($T+0\text{h} \dots T+16\text{h}$), leaving unreached lead hours open until real-time telemetry arrives.
+- **Dual-Unit Hourly Prediction Log Table:**
+  - Lead time ($+0\text{h} \to +89\text{h}$)
+  - Raw ultrasonic sensor distance in feet (e.g. `52.95 ft`)
+  - Shivaji predicted stage ($m$ MSL) and discharge ($m^3/s$)
+  - Rajaram K.T. Weir stage ($m$ MSL)
+  - Observed water level ($m$ MSL)
+  - Error delta in dual units (e.g. `+0.030m (+0.10ft)`)
+  - 1-click CSV Export including raw feet observations.
+- **Continuous 90h Lifecycle Progress Card:** Visual progress bar and badge tracking verified hours (e.g., `17/90h (18.9%) · IN_PROGRESS`).
+
+```
+     Predicted Stage (m MSL)
+  545 +                                     /  <-- 1:1 Ideal Line (Y = X)
+      |                                  * /
+  543 +                              *  * /    * = Validated Forecast Points
+      |                            *  *  /     Points cluster tightly along
+  540 +                       *  *  *  /       the line demonstrating
+      |                     *  *  *   /        high predictive fidelity
+  535 +                *  *  *       /
+      |              *  *           /
+  532 +---------*--*---------------/
+      +---------+---------+---------+---------+
+     532       535       540       543       545  Observed Stage (m MSL)
+```
+
+---
+
+## 4. 2D River Cross-Section SVG Renderer (`CrossSectionViewer.tsx`)
+
+The cross-section viewer renders a direct 2D geometric elevation slice of the Panchganga river channel using native scalable vector graphics:
+
+```
+  Top of Left Bank (LOB)                                      Top of Right Bank (ROB)
+       \                                                               /
+        \     Water Surface Elevation (WSE = 533.28m MSL)             /
+         \~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/
+          \          Wetted Flow Area A (m²)                        /
+           \                                                       /
+            \_____________________________________________________/
+                       Main Channel Bed Invert (530.18m MSL)
+```
+
+### Key Interactive Features:
+1. **Dynamic Water Level Slider:** Allows hydraulic engineers to manually scrub the water surface elevation from $530.18\text{m}$ to $546.00\text{m}$ to observe simulated floodplain inundation in real time.
+2. **Instant Hydraulic Readouts:** Automatically recalculates and displays:
+   - Wetted Flow Area $A$ ($m^2$)
+   - Wetted Perimeter $P$ ($m$)
+   - Hydraulic Radius $R = A/P$ ($m$)
+   - Conveyance Discharge $Q$ ($m^3/s$)
+3. **Site Selector:** Instantly switches between **Chhatrapati Shivaji Maharaj Bridge** and **Rajaram K.T. Weir**.
+
+---
+
+## 5. State Synchronization, SWR & Vercel Serverless Architecture
+
+Data fetching is wrapped through the client abstraction [`lib/api.ts`](file:///e:/hydrocast_complete/frontend/lib/api.ts):
+
+```typescript
+export async function fetchDashboardData(runId?: string) {
+  const query = runId ? `?run_id=${encodeURIComponent(runId)}` : "";
+  const url = typeof window !== "undefined" 
+    ? `/api/v1/dashboard${query}` 
+    : `${BASE}/api/v1/dashboard${query}`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error("API route response not ok");
+  return await res.json();
+}
+```
+
+### 5.1 Vercel Serverless Edge Bundling
+On Vercel, serverless function workers execute isolated from external project folders (`../data/runs/` is not packaged). To guarantee 100% production reliability:
+- All historical computation runs (`CYC_*.json`) and `runs_index.json` are mirrored into [`frontend/public/data/runs/`](file:///e:/hydrocast_complete/frontend/public/data/runs/).
+- When `/api/v1/dashboard?run_id=...` is called, the serverless handler resolves `path.join(process.cwd(), "public", "data", "runs", `${requestedRunId}.json`)`, instantly serving the archived run without 404s or empty metrics.
+
+### 5.2 Hydration Exception Hardening
+All metric formatters in [`AccuracyPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/AccuracyPanel.tsx) and [`SystemPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/SystemPanel.tsx) are safely guarded:
+```tsx
+ρ = {spearmanRho != null ? spearmanRho.toFixed(3) : "—"} · R² = {pearsonR2 != null ? pearsonR2.toFixed(3) : "—"}
+```
+This prevents `TypeError: Cannot read properties of null (reading 'toFixed')` during initial hydration or when inspecting runs with incomplete lead hours.
+
+---
+
+## 6. Peak Flood Strike Horizon & Permissible Uncertainty Window UI
+
+To provide municipal emergency coordinators with actionable disaster timelines rather than ambiguous single-point predictions, [`DischargeDetailsCard.tsx`](file:///e:/hydrocast_complete/frontend/components/DischargeDetailsCard.tsx) and [`OverviewPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/OverviewPanel.tsx) render a dedicated early warning card:
+
+```tsx
+<div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg">
+  <Clock className="w-5 h-5 text-amber-600" />
+  <div>
+    <div className="text-xs font-semibold text-amber-800 dark:text-amber-300">
+      Peak Flood Arrival Window (95% CI: ±2.0h)
+    </div>
+    <div className="text-sm font-bold text-amber-950 dark:text-amber-100">
+      {formatDate(peakEarliest)} — {formatDate(peakLatest)}
+    </div>
+    <div className="text-[11px] text-muted-foreground">
+      Nominal Crest: {formatDate(peakNominal)} · Peak Inflow: {peakQ.toFixed(1)} m³/s ({cusecs.toLocaleString()} cfs)
+    </div>
+  </div>
+</div>
+```
+
+- Dynamically extracts `peak_arrival_nominal`, `peak_arrival_earliest`, and `peak_arrival_latest` from the cycle summary.
+- Applies CWC hazard tier styling (Amber for Alert, Red for Danger / HFL).
+
+---
+
+## 7. Containerized Standalone Production Deployment (`frontend/Dockerfile`)
+
+The frontend is containerized using a multi-stage Docker build leveraging Next.js standalone output:
+
+```dockerfile
+# Stage 1: Dependency Installation
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+
+# Stage 2: Production Build
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED 1
+RUN npm run build
+
+# Stage 3: Minimal Production Runner
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV production
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+This reduces the final container image footprint to $< 180\text{ MB}$ and ensures zero external system dependencies.
+
+
+
+---
+
+## 8. Interactive Telegram Bot Serverless Webhook (`/api/telegram/webhook`)
+
+HydroCast integrates an edge-ready serverless Next.js API route (`frontend/app/api/telegram/webhook/route.ts`) providing direct two-way disaster intelligence to citizens and emergency authorities:
+- `/start` or `/help`: Command documentation
+- `/status`: System health, cycle ID, runtime SLA
+- `/stage`: Current water level and peak stage forecast for Shivaji Bridge and Rajaram Weir
+- `/alerts`: Active warning and danger alerts
+- `/bulletin`: Full official CWC emergency flood bulletin
+
+---
+
+## 9. Adaptive ML Recalibration Dashboard (`AccuracyPanel.tsx`)
+
+The **Model Accuracy & Validation** workspace features an interactive **Adaptive ML Recalibration** tab displaying:
+- Live parameter scaling factors ($lpha_K, lpha_{	ext{lag}}, \Delta CN, X$)
+- Flood wave timing offset $\Delta t$ and stage error $\Delta h$
+- Real-time parameter matrices for all 9 subbasins and 5 reaches
+- L-BFGS-B objective function formulation and optimization bounds
+
+---
+
+## 10. Animated Visitor Odometer Counter (`OdometerCounter.tsx`)
+
+The dashboard header incorporates an animated odometer counter rendering smooth mechanical digit transitions using CSS transform perspective, displaying total platform forecast hours and user access sessions.

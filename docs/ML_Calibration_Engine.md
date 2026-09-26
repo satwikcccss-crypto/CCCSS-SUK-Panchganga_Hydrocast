@@ -71,8 +71,8 @@ The timing offset represents the phase shift between the observed flood wave and
 
 $$\Delta t = -\frac{\bar{e}_{\text{stage}}}{\text{Rate of Rise}} \quad [\text{hours}]$$
 
-- **Early Arrival ($\Delta t < 0$):** Observed stage rises faster than modeled. Wave velocity in river reaches is faster than modeled.
-- **Late Arrival ($\Delta t > 0$):** Flood wave is delayed. Channel storage attenuation is higher than modeled.
+- **Early Arrival ($\Delta t < 0$):** Observed stage rises faster than modeled. Wave velocity in river reaches is faster than modeled. Channel travel time $K$ and subbasin lag must be scaled downwards ($lpha_K < 1.0, lpha_{	ext{lag}} < 1.0$).
+- **Late Arrival ($\Delta t > 0$):** Flood wave is delayed. Channel storage attenuation is higher than modeled. Channel travel time $K$ and subbasin lag must be scaled upwards ($lpha_K > 1.0, lpha_{	ext{lag}} > 1.0$).
 
 ### 2.2 Auto-Trigger Conditions
 Recalibration is automatically triggered when either of the following conditions is met:

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCast Panchganga - Interactive Hydraulic & Hydrological Intelligence Portal</title>
+  <meta name="description" content="Operational flood forecasting, 2D surveyed river cross-section hydraulics, SCS-CN unit hydrograph simulation, and real-time ML calibration for the Panchganga River Basin.">
+  <link rel="stylesheet" href="app.css">
+  <link rel="icon" href="assets/hydrocast_favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-container">
+        <div class="brand-badge-icon">🌊</div>
+        <div class="brand-titles">
+          <h1>Panchganga HydroCast</h1>
+          <div class="subtitle">
+            <span class="pulse-dot"></span>
+            <span>OPERATIONAL CONTINUUM &bull; 1,837 km² DRAINAGE BASIN &bull; 100 km REACH</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="pill-badge active">
+          <span>USACE HEC-HMS 4.13</span>
+        </span>
+        <span class="pill-badge">
+          <span>ECMWF 9km HRES</span>
+        </span>
+        <span class="pill-badge">
+          <span>ThingSpeak #3424513</span>
+        </span>
+        <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" target="_blank" rel="noopener noreferrer" class="btn-github">
+          <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-nav">
+    <div class="tabs-container">
+      <button class="tab-btn active" data-tab="cross_section">
+        <span>🌊 2D River Cross-Sections & Hydraulics</span>
+      </button>
+      <button class="tab-btn" data-tab="l_section">
+        <span>📐 L-Section River Bed Profile</span>
+      </button>
+      <button class="tab-btn" data-tab="hydrology">
+        <span>🌧️ SCS-CN & Unit Hydrograph Simulator</span>
+      </button>
+      <button class="tab-btn" data-tab="rating_curve">
+        <span>📊 Rating Curves & WRD Benchmarks</span>
+      </button>
+      <button class="tab-btn" data-tab="ml_calibration">
+        <span>🤖 Adaptive ML Recalibrator</span>
+      </button>
+      <button class="tab-btn" data-tab="docs_library">
+        <span>📚 Engineering Documentation Library</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="app-main">
+
+    <!-- ==================================================================== -->
+    <!-- TAB 1: 2D RIVER CROSS-SECTION HYDRAULICS -->
+    <!-- ==================================================================== -->
+    <section id="cross_section" class="tab-content active">
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <span>Surveyed 2D Compound River Cross-Section & Divided Channel Hydraulics</span>
+            </div>
+            <div class="card-desc">
+              108 surveyed coordinates across 550m lateral river width with divided Manning roughness (Main Channel $n=0.031$ vs Sugarcane Floodplains $n=0.070$).
+            </div>
+          </div>
+          <div class="btn-bar" style="margin-top: 0;">
+            <button class="btn-choice site-select-btn active" data-site="SHIVAJI_BRIDGE">Shivaji Bridge (Chainage 6+257)</button>
+            <button class="btn-choice site-select-btn" data-site="RAJARAM_BRIDGE">Rajaram K.T. Weir (Chainage 10+115)</button>
+          </div>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="grid-4" style="margin-bottom: 20px;">
+          <div class="metric-box">
+            <span class="metric-label">Water Surface Elevation</span>
+            <div class="metric-value">
+              <span id="metric-stage">536.00</span>
+              <span class="metric-unit">m MSL</span>
+            </div>
+            <div class="metric-footer" id="metric-alert-badge">NORMAL FLOW</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">River Flow Depth</span>
+            <div class="metric-value">
+              <span id="metric-depth">7.33</span>
+              <span class="metric-unit">m</span>
+            </div>
+            <div class="metric-footer">Above Surveyed Thalweg</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Compound Manning Flow</span>
+            <div class="metric-value" style="color: #22d3ee;">
+              <span id="metric-q">584</span>
+              <span class="metric-unit">m³/s</span>
+            </div>
+            <div class="metric-footer"><span id="metric-cusecs">20,623</span> cusecs</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Main vs Overbank Area</span>
+            <div class="metric-value" style="font-size: 1.15rem; color: #f59e0b;">
+              <span id="metric-main-area">410.2</span> / <span id="metric-flood-area">0.0</span>
+              <span class="metric-unit">m²</span>
+            </div>
+            <div class="metric-footer">Velocity: <span id="metric-velocity">1.42</span> m/s</div>
+          </div>
+        </div>
+
+        <!-- Interactive SVG Canvas -->
+        <div class="svg-container" style="height: 480px; margin-bottom: 20px;">
+          <svg id="cs-svg" class="interactive-canvas" viewBox="0 0 1000 480" preserveAspectRatio="none"></svg>
+        </div>
+
+        <!-- Water Level Slider & Quick Preset Buttons -->
+        <div class="control-group">
+          <div class="control-label-wrap">
+            <span class="control-label">Dynamic Water Surface Elevation (Drag to Inundate Cross-Section)</span>
+            <span class="control-val-badge" id="cs-stage-val">536.00 m MSL</span>
+          </div>
+          <input type="range" id="cs-stage-slider" min="528.67" max="546.50" step="0.05" value="536.00">
+        </div>
+
+        <div class="btn-bar">
+          <span style="font-size: 0.8rem; color: var(--text-dim); display: flex; align-items: center; margin-right: 8px;">WRD Historical Marks:</span>
+          <button class="btn-choice stage-preset-btn" data-stage="529.50">Baseflow (529.50m)</button>
+          <button class="btn-choice stage-preset-btn" data-stage="530.18">Rajaram Crest (530.18m)</button>
+          <button class="btn-choice stage-preset-btn" data-stage="541.60">Bankfull / Sugarcane (541.60m)</button>
+          <button class="btn-choice stage-preset-btn" data-stage="542.10">Shivaji Alert (542.10m)</button>
+          <button class="btn-choice stage-preset-btn" data-stage="542.70">Warning Mark (542.70m)</button>
+          <button class="btn-choice stage-preset-btn" data-stage="543.30">Danger Mark (543.30m)</button>
+          <button class="btn-choice stage-preset-btn" data-stage="545.33">2019 HFL (545.33m)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 2: LONGITUDINAL L-SECTION BED PROFILE -->
+    <!-- ==================================================================== -->
+    <section id="l_section" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <span>Longitudinal River Bed Profile (L-Section) & Slope Transitions</span>
+            </div>
+            <div class="card-desc">
+              Authoritative 100 km river profile from Radhanagari Dam (553.90m) to Krishna River Confluence (520.0m) per Krishna Basin Flood 2019 Volume 1.
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-bottom: 20px;">
+          <div class="metric-box">
+            <span class="metric-label">Reach 1: Radhanagari to Prayag</span>
+            <div class="metric-value" style="color: #06b6d4;">1:2529</div>
+            <div class="metric-footer">Length: ~40 km | S0 = 0.000395 m/m</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Reach 2: Prayag to Rajaram Weir</span>
+            <div class="metric-value" style="color: #3b82f6;">1:4641</div>
+            <div class="metric-footer">Length: ~18 km | S0 = 0.000215 m/m</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Reach 3: Rajaram to Shirol Weir</span>
+            <div class="metric-value" style="color: #8b5cf6;">1:7700</div>
+            <div class="metric-footer">Length: ~42 km | S0 = 0.000130 m/m</div>
+          </div>
+        </div>
+
+        <div class="svg-container" style="height: 450px;">
+          <svg id="l-svg" class="interactive-canvas" viewBox="0 0 1000 450" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 3: HYDROLOGY & UNIT HYDROGRAPH SIMULATOR -->
+    <!-- ==================================================================== -->
+    <section id="hydrology" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <span>SCS-CN Loss Method & SCS Dimensionless Unit Hydrograph Simulator</span>
+            </div>
+            <div class="card-desc">
+              Simulates rainfall-runoff transformation with dynamic Antecedent Moisture Condition (AMC-II / AMC-III) threshold switching at 65 mm / 90 hours.
+            </div>
+          </div>
+        </div>
+
+        <!-- Hydrology Metric Widgets -->
+        <div class="grid-4" style="margin-bottom: 20px;">
+          <div class="metric-box">
+            <span class="metric-label">Antecedent Moisture State</span>
+            <div class="metric-value" style="font-size: 1.1rem;">
+              <span id="metric-amc-status" class="badge-alert badge-baseflow">AMC-II</span>
+            </div>
+            <div class="metric-footer">Threshold: 65 mm / 90h</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Potential Retention (S)</span>
+            <div class="metric-value">
+              <span id="metric-s-retention">119.8</span>
+              <span class="metric-unit">mm</span>
+            </div>
+            <div class="metric-footer">Initial Abstraction Ia: <span id="metric-ia">18.0</span> mm</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Direct Runoff Depth (Qcum)</span>
+            <div class="metric-value" style="color: #22d3ee;">
+              <span id="metric-q-excess">52.4</span>
+              <span class="metric-unit">mm</span>
+            </div>
+            <div class="metric-footer">Runoff Coefficient: <span id="metric-runoff-coeff">43.7%</span></div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Time to Hydrograph Peak (tp)</span>
+            <div class="metric-value" style="color: #f59e0b;">
+              <span id="metric-tp">48.5</span>
+              <span class="metric-unit">hrs</span>
+            </div>
+            <div class="metric-footer">Equation: tp = 0.5 + tlag</div>
+          </div>
+        </div>
+
+        <!-- SVG Plot -->
+        <div class="svg-container" style="height: 400px; margin-bottom: 20px;">
+          <svg id="hydro-svg" class="interactive-canvas" viewBox="0 0 1000 400" preserveAspectRatio="none"></svg>
+        </div>
+
+        <!-- Sliders -->
+        <div class="grid-3">
+          <div class="control-group">
+            <div class="control-label-wrap">
+              <span class="control-label">Total 90h Catchment Rainfall</span>
+              <span class="control-val-badge" id="hydro-rain-val">120 mm</span>
+            </div>
+            <input type="range" id="hydro-rain-slider" min="0" max="350" step="5" value="120">
+          </div>
+          <div class="control-group">
+            <div class="control-label-wrap">
+              <span class="control-label">SCS Base Curve Number (CN)</span>
+              <span class="control-val-badge" id="hydro-cn-val">68.0</span>
+            </div>
+            <input type="range" id="hydro-cn-slider" min="50" max="95" step="0.5" value="68.0">
+          </div>
+          <div class="control-group">
+            <div class="control-label-wrap">
+              <span class="control-label">Subbasin Hydrological Lag Time</span>
+              <span class="control-val-badge" id="hydro-lag-val">48.0 h</span>
+            </div>
+            <input type="range" id="hydro-lag-slider" min="15" max="85" step="1" value="48.0">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 4: RATING CURVE & WRD HISTORICAL BENCHMARKS -->
+    <!-- ==================================================================== -->
+    <section id="rating_curve" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <span>Hydraulic Rating Curve vs Maharashtra WRD Historical Flood Marks</span>
+            </div>
+            <div class="card-desc">
+              Continuous 2D surveyed PCHIP rating curve validated against 10 official Maharashtra Water Resources Department gauge flood records.
+            </div>
+          </div>
+        </div>
+
+        <div class="svg-container" style="height: 450px;">
+          <svg id="rc-svg" class="interactive-canvas" viewBox="0 0 1000 450" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 5: ADAPTIVE ML RECALIBRATION PLAYGROUND -->
+    <!-- ==================================================================== -->
+    <section id="ml_calibration" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <span>Physics-Informed Real-Time ML Recalibration Playground</span>
+            </div>
+            <div class="card-desc">
+              Simulates flood wave arrival discrepancies ($\Delta t$) and stage errors ($\Delta h$), driving bounded L-BFGS-B parameter optimization.
+            </div>
+          </div>
+        </div>
+
+        <!-- ML Metric Widgets -->
+        <div class="grid-4" style="margin-bottom: 20px;">
+          <div class="metric-box">
+            <span class="metric-label">Recalibration Status</span>
+            <div class="metric-value" style="font-size: 1.05rem;">
+              <span id="metric-ml-trigger" class="badge-alert badge-warning">ACTIVE</span>
+            </div>
+            <div class="metric-footer">Trigger: |Δt| >= 1.0h or Δh > 0.25m</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Reach Travel Multiplier (α_K)</span>
+            <div class="metric-value" style="color: #22d3ee;">
+              <span id="metric-alpha-k">0.910</span>
+            </div>
+            <div class="metric-footer">Bounds: [0.500, 1.800]</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Subbasin Lag Multiplier (α_lag)</span>
+            <div class="metric-value" style="color: #10b981;">
+              <span id="metric-alpha-lag">0.928</span>
+            </div>
+            <div class="metric-footer">Bounds: [0.500, 1.800]</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">SCS Curve Number Shift (ΔCN)</span>
+            <div class="metric-value" style="color: #f59e0b;">
+              <span id="metric-delta-cn">-1.58</span>
+            </div>
+            <div class="metric-footer">Wedge X: <span id="metric-x-param">0.274</span></div>
+          </div>
+        </div>
+
+        <!-- Live ML Hydrograph Comparison Plot -->
+        <div class="svg-container" style="height: 400px; margin-bottom: 20px;">
+          <svg id="ml-svg" class="interactive-canvas" viewBox="0 0 1000 400" preserveAspectRatio="none"></svg>
+        </div>
+
+        <!-- Discrepancy Sliders -->
+        <div class="grid-2">
+          <div class="control-group">
+            <div class="control-label-wrap">
+              <span class="control-label">Flood Wave Timing Discrepancy (Δt)</span>
+              <span class="control-val-badge" id="ml-dt-val">-1.2 h</span>
+            </div>
+            <input type="range" id="ml-dt-slider" min="-3.0" max="3.0" step="0.1" value="-1.2">
+          </div>
+          <div class="control-group">
+            <div class="control-label-wrap">
+              <span class="control-label">Observed Stage Discrepancy (Δh)</span>
+              <span class="control-val-badge" id="ml-dh-val">+0.35 m</span>
+            </div>
+            <input type="range" id="ml-dh-slider" min="-1.0" max="1.0" step="0.05" value="0.35">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 6: FULL TECHNICAL DOCUMENTATION LIBRARY -->
+    <!-- ==================================================================== -->
+    <section id="docs_library" class="tab-content">
+      <div class="docs-layout">
+        <aside class="docs-sidebar">
+          <input type="text" id="docs-search" class="docs-search-input" placeholder="Search technical docs...">
+          <div class="docs-file-list" id="docs-file-list"></div>
+        </aside>
+        <article class="docs-viewer">
+          <div class="markdown-body" id="docs-viewer-body">
+            <p>Loading documentation library...</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>HydroCast: Real-Time Operational Flood Forecasting & Basin Intelligence System</p>
+    <p>Center for Continuous Computing & Software Systems (CCCSS) &bull; Shivaji University, Kolhapur (SUK)</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
