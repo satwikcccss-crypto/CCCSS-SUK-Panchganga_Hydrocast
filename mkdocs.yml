@@ -31,6 +31,8 @@ theme:
     - content.code.annotate
 
 markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.superfences
   - pymdownx.details
   - pymdownx.inlinehilite
@@ -52,7 +54,32 @@ extra_css:
 copyright: "Developed by Er. Satwik Udupi. Funded by DST-SERB, Government of India. Integrated with Panchganga HydroCast Telegram Bot."
 
 nav:
-  - HydroCast Documentation: index.md
+  - "Overview":
+    - "HydroCast Documentation": index.md
+    - "Project Background": Project_Background.md
+  - "Frontend":
+    - "Architecture & Design": Frontend.md
+  - "Backend":
+    - "Core Backend": Backend.md
+    - "Database & ORM": Database.md
+    - "Deployment": Deployment_Operations.md
+  - "Hydrology":
+    - "Runoff Computation": Runoff_Computation.md
+    - "HEC-HMS Engine": HMS.md
+    - "Hydraulics & River Routing": Hydraulics.md
+    - "Stage-Discharge Conversion": Stage_Conversion_Discharge.md
+    - "Rating Curve Cross-Check": WRD_Historical_Rating_Curve_CrossCheck.md
+  - "Engineering":
+    - "System Architecture": Architecture.md
+    - "IoT Telemetry": IoT_Telemetry.md
+    - "Raingauge Network": Raingauge_Station.md
+    - "OpenMeteo Integration": Openmeteo.md
+    - "Calibration & Validation": Calibration_Validation.md
+    - "Rainfall Validation Pipeline": Rainfall_Validation_Pipeline.md
+    - "Errors & Engineering Assumptions": Errors_Mistakes_Engineering_Assumptions.md
+    - "System Novelty": Novelty_of_this_System.md
+    - "GIS Shapefiles": Shpfiles.md
+    - "Future Roadmap": ROADMAP.md
 
 docs_dir: docs_src
 site_dir: docs

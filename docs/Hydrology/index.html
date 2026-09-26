@@ -1,0 +1,1561 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/Hydrology/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Panchganga Catchment Hydrology & Watershed Delineation - HydroCast HEC-HMS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#panchganga-catchment-hydrology-watershed-delineation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="HydroCast HEC-HMS Documentation" class="md-header__button md-logo" aria-label="HydroCast HEC-HMS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            HydroCast HEC-HMS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Panchganga Catchment Hydrology &amp; Watershed Delineation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href=".." class="md-tabs__link">
+          
+  
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Frontend/" class="md-tabs__link">
+          
+  
+  
+  Frontend
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Backend/" class="md-tabs__link">
+          
+  
+  
+  Backend
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Runoff_Computation/" class="md-tabs__link">
+          
+  
+  
+  Hydrology
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Architecture/" class="md-tabs__link">
+          
+  
+  
+  Engineering
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="HydroCast HEC-HMS Documentation" class="md-nav__button md-logo" aria-label="HydroCast HEC-HMS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    HydroCast HEC-HMS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Overview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HydroCast Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Project_Background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Background
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Frontend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Backend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Backend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database & ORM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Deployment_Operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hydrology
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Hydrology
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Runoff_Computation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runoff Computation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HMS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HEC-HMS Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Hydraulics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hydraulics & River Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Stage_Conversion_Discharge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage-Discharge Conversion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WRD_Historical_Rating_Curve_CrossCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rating Curve Cross-Check
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engineering
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Engineering
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IoT_Telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IoT Telemetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Raingauge_Station/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Raingauge Network
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Openmeteo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenMeteo Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Calibration_Validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration & Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Rainfall_Validation_Pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rainfall Validation Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Errors_Mistakes_Engineering_Assumptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors & Engineering Assumptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Novelty_of_this_System/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Novelty
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Shpfiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GIS Shapefiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Future Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="panchganga-catchment-hydrology-watershed-delineation">Panchganga Catchment Hydrology &amp; Watershed Delineation<a class="headerlink" href="#panchganga-catchment-hydrology-watershed-delineation" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code>========================================================================================
+             PANCHGANGA BASIN HYDROLOGICAL SYSTEM (1,837.213 KM² CATCHMENT)
+========================================================================================
+
+                 Western Ghats Sahyadri Ridge (High Elevation 600 - 1,000m)
+               [ Kasari ]    [ Kumbhi ]    [ Tulsi ]    [ Bhogawati ]    [ Saraswati ]
+                  (S6)          (S5)          (S4)          (S7)              (S2)
+                    │             │             │             │                 │
+                    ▼             ▼             ▼             ▼                 ▼
+             ┌─────────────┬─────────────┬─────────────┬─────────────┬─────────────┐
+             │ Subbasin S6 │ Subbasin S5 │ Subbasin S4 │ Subbasin S7 │ Subbasin S2 │
+             │ Karanjphen  │   Salwan    │    Beed     │ Radhanagari │  Sangarul   │
+             │ Area: 412km²│ Area: 285km²│ Area: 198km²│ Area: 510km²│ Area: 224km²│
+             └──────┬──────┴──────┬──────┴──────┬──────┴──────┬──────┴──────┬──────┘
+                    │             │             │             │             │
+                    └─────────────┴─────────────┼─────────────┴─────────────┘
+                                                ▼
+                                    Prayag Chikhali Confluence
+                                 (Official Formation of Panchganga)
+                                                │
+                                                ▼
+                                        Subbasin S1 (Karvir)
+                                     Kolhapur Urban Floodplain
+                                                │
+                                ┌───────────────┴───────────────┐
+                                ▼                               ▼
+                    [ Shivaji Maharaj Bridge ]         [ Rajaram K.T. Weir ]
+                     (Historical Ghat Gauge)            (Hydraulic Control)
+                                                │
+                                                ▼
+                                          Subbasin S9
+                                  Confluence with Krishna River
+                                          (Shirol / Narsobawadi)
+</code></pre></div>
+<hr />
+<h2 id="1-physical-physiography-of-the-panchganga-basin">1. Physical Physiography of the Panchganga Basin<a class="headerlink" href="#1-physical-physiography-of-the-panchganga-basin" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>====================================================================================================
+                        PANCHGANGA RIVER BASIN PHYSIOGRAPHIC DELINEATION
+====================================================================================================
+
+      Western Ghats Crestline (Elevation: 900m - 1100m MSL)
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      [S6: Gaganbawda]       [S7: Garivade]       [S5: Padasali]       [S9: Radhanagari]
+      (227.72 km2)           (195.39 km2)         (106.39 km2)         (366.97 km2)
+           |                      |                    |                    |
+       Kumbhi River          Dhamani River        Tulashi River       Bhogavati River
+           \                      /                    |                    |
+            \                    /                     v                    |
+             v                  v                 [S8: Beed]                 |
+           Confluence @ Bahireshwar              (177.44 km2)               |
+                      |                                |                    |
+                      v                                v                    v
+               Kumbhi-Dhamani                   Tulashi-Bhogavati Confluence @ Bid
+                      \                                /
+                       \                              /
+                        v                            v
+                      Prayag Chikhali Confluence (Sacred Sangam)
+                      Elevation: ~536.0m MSL | Kasari River meets Bhogavati
+                                       |
+                                       v
+                             [PANCHGANGA TRUNK RIVER]
+                                       |
+                       +---------------+---------------+
+                       |                               |
+                       v                               v
+             [S3: Kotoli Subbasin]           [S2: Sangarul Subbasin]
+                 (261.32 km2)                    (153.77 km2)
+                       \                               /
+                        \                             /
+                         v                           v
+                      [S1: Karveer Local Watershed (86.21 km2)]
+                                       |
+                   ==========================================
+                   [ CHHATRAPATI SHIVAJI MAHARAJ BRIDGE ]
+                   Chainage: 6+257 | IoT Ultrasonic Sensor
+                   ==========================================
+                                       |
+                               3,858 m River Reach
+                               Bed Slope: 1:4641
+                                       v
+                   ==========================================
+                   [ RAJARAM K.T. WEIR (KASBA BAWADA) ]
+                   Chainage: 10+115 | Basin Model Sink Node
+                   ==========================================
+</code></pre></div>
+<p>The Panchganga river is a major tributary of the Krishna river basin, draining an area of approximately <strong><span class="arithmatex">\(1,837.213\text{ km}^2\)</span></strong> across Kolhapur district, Maharashtra.</p>
+<h3 id="11-the-five-sacred-tributaries">1.1 The Five Sacred Tributaries<a class="headerlink" href="#11-the-five-sacred-tributaries" title="Permanent link">&para;</a></h3>
+<p>The river is formed at Prayag Chikhali by the confluence of five streams:
+1. <strong>Kasari River:</strong> Originates near Dajipur / Gaganbawda (<span class="arithmatex">\(S_6\)</span>), drains through rocky forested gorges.
+2. <strong>Kumbhi River:</strong> Originates near Shengaon (<span class="arithmatex">\(S_5\)</span>), fast-draining basaltic steep terrain.
+3. <strong>Tulsi River:</strong> Originates near Dhamod (<span class="arithmatex">\(S_4\)</span>), moderate agricultural valley.
+4. <strong>Bhogawati River:</strong> The largest tributary, controlled upstream by Radhanagari Dam (<span class="arithmatex">\(S_7\)</span>).
+5. <strong>Saraswati Stream:</strong> Minor subterranean channel joining near Prayag (<span class="arithmatex">\(S_2\)</span>).</p>
+<hr />
+<h2 id="2-subbasin-delineation-parameters-s_1-to-s_9">2. Subbasin Delineation Parameters (<span class="arithmatex">\(S_1\)</span> to <span class="arithmatex">\(S_9\)</span>)<a class="headerlink" href="#2-subbasin-delineation-parameters-s_1-to-s_9" title="Permanent link">&para;</a></h2>
+<p>The catchment is divided into nine hydrologically distinct subbasins based on 30-meter SRTM Digital Elevation Models (DEM):</p>
+<div class="highlight"><pre><span></span><code>+----+-------------------+------------+-----------+-----------+------------+------------+
+| ID | Subbasin Name     | Area (km²) | CN (AMC-II| CN (AMC-III| Tc (Hours) | R (Hours)  |
++----+-------------------+------------+-----------+-----------+------------+------------+
+| S1 | Karvir (Outlet)   | 145.2      | 78.0      | 89.2      | 6.5        | 8.2        |
+| S2 | Sangarul (Tulsi)  | 224.8      | 74.5      | 87.1      | 7.2        | 9.4        |
+| S3 | Kotoli (Kasari L.)| 168.4      | 76.0      | 88.0      | 8.0        | 10.5       |
+| S4 | Beed (Tulsi Lower)| 198.6      | 75.0      | 87.4      | 9.1        | 11.8       |
+| S5 | Salwan (Kumbhi)   | 285.4      | 72.0      | 85.3      | 11.4       | 14.2       |
+| S6 | Karanjphen(Kasari)| 412.0      | 70.5      | 84.1      | 14.2       | 18.5       |
+| S7 | Radhanagari(Bhog.)| 510.5      | 68.0      | 82.2      | 16.5       | 21.0       |
+| S8 | Shiroli/K. Tarale | 115.0      | 77.0      | 88.6      | 5.8        | 7.1        |
+| S9 | Kasaba Walawe     | 80.1       | 79.0      | 90.0      | 4.2        | 5.6        |
++----+-------------------+------------+-----------+-----------+------------+------------+
+|    | TOTAL PANCHGANGA  | 1,837.213.0 km²|           |           |            |            |
++----+-------------------+------------+-----------+-----------+------------+------------+
+</code></pre></div>
+<hr />
+<h2 id="3-scs-curve-number-runoff-depth-mechanics">3. SCS Curve Number Runoff Depth Mechanics<a class="headerlink" href="#3-scs-curve-number-runoff-depth-mechanics" title="Permanent link">&para;</a></h2>
+<p>The physical runoff volume generation follows the United States Natural Resources Conservation Service (NRCS / SCS-CN) standard:</p>
+<h3 id="31-potential-soil-retention">3.1 Potential Soil Retention<a class="headerlink" href="#31-potential-soil-retention" title="Permanent link">&para;</a></h3>
+<p>Given a calibrated Curve Number <span class="arithmatex">\(CN\)</span>:</p>
+<div class="arithmatex">\[S_{ret} = \frac{25,400}{CN} - 254 \quad (\text{expressed in mm})\]</div>
+<h3 id="32-initial-abstraction">3.2 Initial Abstraction<a class="headerlink" href="#32-initial-abstraction" title="Permanent link">&para;</a></h3>
+<p>The initial surface wetting, depression storage, and vegetative canopy interception prior to runoff:</p>
+<div class="arithmatex">\[I_a = 0.2 \cdot S_{ret}\]</div>
+<p><em>(For dense basaltic soil with monsoon pre-saturation, this can be dynamically lowered to <span class="arithmatex">\(I_a = 0.05 \cdot S_{ret}\)</span>).</em></p>
+<h3 id="33-cumulative-runoff-equation">3.3 Cumulative Runoff Equation<a class="headerlink" href="#33-cumulative-runoff-equation" title="Permanent link">&para;</a></h3>
+<p>For any accumulated precipitation depth <span class="arithmatex">\(P\)</span>:</p>
+<div class="arithmatex">\[Q_{cum} = \begin{cases} 
+0 &amp; \text{if } P \le I_a \\ 
+\frac{(P - I_a)^2}{P - I_a + S_{ret}} &amp; \text{if } P &gt; I_a 
+\end{cases}\]</div>
+<h3 id="34-incremental-runoff-hyetograph">3.4 Incremental Runoff Hyetograph<a class="headerlink" href="#34-incremental-runoff-hyetograph" title="Permanent link">&para;</a></h3>
+<p>The excess rainfall generated in time step <span class="arithmatex">\(\Delta t\)</span> (hour <span class="arithmatex">\(h\)</span>) is:</p>
+<div class="arithmatex">\[\Delta Q_{excess}[h] = Q_{cum}[h] - Q_{cum}[h-1]\]</div>
+<hr />
+<h2 id="4-hydrograph-transformation-scs-unit-hydrograph">4. Hydrograph Transformation: SCS Unit Hydrograph<a class="headerlink" href="#4-hydrograph-transformation-scs-unit-hydrograph" title="Permanent link">&para;</a></h2>
+<p>To convert the rainfall-excess hyetograph into a river discharge hydrograph at the subbasin outlet, HydroCast utilizes the <strong>SCS Unit Hydrograph method</strong>:</p>
+<div class="highlight"><pre><span></span><code>        Excess Rain Hyetograph                     SCS Unit Hydrograph Translation &amp; Attenuation
+             [ mm/hr ]                                     [ m³/s ]
+                |                                             /\  Peak Runoff
+                |                                            /  \
+               ---       ====== Convolution ======&gt;         /    \
+              |   |                                        /      \
+            --|   |--                                    /          \
+                                                        /            \_____ Baseflow
+</code></pre></div>
+<ol>
+<li>
+<p><strong>Translation (Time-Area Routing):</strong>
+   Runoff is lagged to the outlet according to the dimensionless time-area curve:
+   $<span class="arithmatex">\(\frac{A_t}{A} = \begin{cases} 
+   1.414 \cdot \left(\frac{t}{T_c}\right)^{1.5} &amp; \text{for } 0 \le t \le 0.5 T_c \\ 
+   1 - 1.414 \cdot \left(1 - \frac{t}{T_c}\right)^{1.5} &amp; \text{for } 0.5 T_c &lt; t \le T_c 
+   \end{cases}\)</span>$
+   Where <span class="arithmatex">\(T_c\)</span> is the Time of Concentration.</p>
+</li>
+<li>
+<p><strong>Attenuation (Linear Reservoir Routing):</strong>
+   Storage effects in channels and valley wetlands are modeled through a linear reservoir with storage coefficient <span class="arithmatex">\(R\)</span>:
+   $<span class="arithmatex">\(S = R \cdot O\)</span>$
+   Using finite differences:
+   $<span class="arithmatex">\(O_2 = C_A \cdot I_2 + C_B \cdot I_1 + C_C \cdot O_1\)</span>$
+   Where routing coefficients are derived from <span class="arithmatex">\(\Delta t\)</span> and <span class="arithmatex">\(R\)</span>:
+   $<span class="arithmatex">\(C_A = C_B = \frac{\Delta t}{2R + \Delta t}, \quad C_C = \frac{2R - \Delta t}{2R + \Delta t}\)</span>$</p>
+</li>
+</ol>
+<hr />
+<h2 id="5-monsoon-baseflow-separation-physical-groundwater-release">5. Monsoon Baseflow Separation &amp; Physical Groundwater Release<a class="headerlink" href="#5-monsoon-baseflow-separation-physical-groundwater-release" title="Permanent link">&para;</a></h2>
+<p>The Panchganga river maintains a continuous physical baseflow during the June–September Southwest Monsoon generated by unconfined groundwater aquifers in the Sahyadri lateritic formations.</p>
+<p>In <a href="file:///e:/hydrocast_complete/src/hms/runner.py"><code>runner.py</code></a>:
+1. <strong>Physical Live Baseflow:</strong> Extracted directly from live water level telemetry:
+   $<span class="arithmatex">\(Q_{base} = \text{convert\_stage\_to\_discharge\_manning}(h_{live}, \text{"SHIVAJI\_BRIDGE"})\)</span>$
+   At current normal monsoon stages (<span class="arithmatex">\(532.63 - 533.28\text{ m MSL}\)</span>), <span class="arithmatex">\(Q_{base} \approx 91.1 - 109.2\text{ m}^3/s\)</span>.
+2. <strong>Total River Hydrograph:</strong>
+   $<span class="arithmatex">\(Q_{total}(t) = Q_{base} + \sum_{i=1}^{9} Q_{surface, i}(t)\)</span>$</p>
+<p>This ensures that even during dry weather breaks between monsoon storms, river discharge never collapses to artificial zero or non-physical single-digit values.</p>
+<hr />
+<h2 id="6-real-time-closed-loop-ml-parameter-recalibration-engine">6. Real-Time Closed-Loop ML Parameter Recalibration Engine<a class="headerlink" href="#6-real-time-closed-loop-ml-parameter-recalibration-engine" title="Permanent link">&para;</a></h2>
+<p>To adapt to temporal variations in catchment characteristics (e.g. soil pore saturation, crop cover progression, siltation behind weir crests), HydroCast incorporates an automated closed-loop machine learning calibration engine (<code>src/hydrology/ml_calibration.py</code>):</p>
+<div class="highlight"><pre><span></span><code>       ┌─────────────────────────────────────────────────────────┐
+       │     Real-Time Observed Telemetry (ThingSpeak Gauge)     │
+       └────────────────────────────┬────────────────────────────┘
+                                    │ Q_obs(t)
+                                    ▼
+       ┌─────────────────────────────────────────────────────────┐
+       │          Residual &amp; Discrepancy Evaluation             │
+       │           NSE &lt; 0.85  OR  Volumetric Error &gt; 10%        │
+       └────────────────────────────┬────────────────────────────┘
+                                    │ Discrepancy Triggered
+                                    ▼
+       ┌─────────────────────────────────────────────────────────┐
+       │   Bounded SciPy Optimization (L-BFGS-B / Nelder-Mead)   │
+       │    min_{α, β} ∑ [ Q_sim(t; α·CN, β·Tlag) - Q_obs(t) ]² │
+       │         α ∈ [0.85, 1.15]   |   β ∈ [0.80, 1.20]         │
+       └────────────────────────────┬────────────────────────────┘
+                                    │ Optimal Multipliers
+                                    ▼
+       ┌─────────────────────────────────────────────────────────┐
+       │       Atomic Parameter Persistence &amp; Model Sync         │
+       │   data/telemetry/ml_calibration_state.json -&gt; HEC-HMS   │
+       └─────────────────────────────────────────────────────────┘
+</code></pre></div>
+<ol>
+<li><strong>Residual Evaluation:</strong> Compares the simulated hydrograph <span class="arithmatex">\(Q_{\text{sim}}(t)\)</span> against observed gauge discharge <span class="arithmatex">\(Q_{\text{obs}}(t)\)</span> derived from Shivaji Bridge ultrasonic water levels.</li>
+<li><strong>Physically Bound Optimization:</strong> Scales subbasin Curve Numbers by multiplier <span class="arithmatex">\(\alpha \in [0.85, 1.15]\)</span> and lag times by <span class="arithmatex">\(\beta \in [0.80, 1.20]\)</span>. These hard mathematical bounds guarantee that calibration can never induce unphysical hydrological runaway or negative runoffs.</li>
+<li><strong>Automated HEC-HMS Disk Synchronization:</strong> In addition to internal emulator parameter updates, the calibration engine provides disk synchronization routines (<code>sync_to_hms_basin_file</code>) to persist updated catchment parameters back into <code>.basin</code> and <code>.control</code> project files.</li>
+</ol>
+<hr />
+<h2 id="7-peak-flood-strike-horizon-20h-permissible-error-window">7. Peak Flood Strike Horizon &amp; ±2.0h Permissible Error Window<a class="headerlink" href="#7-peak-flood-strike-horizon-20h-permissible-error-window" title="Permanent link">&para;</a></h2>
+<p>HydroCast translates continuous 90-hour hydrographs into operational disaster response timeframes:</p>
+<ol>
+<li><strong>Nominal Crest Detection:</strong> Identifies the point of maximum simulated discharge:
+   $<span class="arithmatex">\(T_{\text{peak}} = \arg\max_{t} Q_{\text{total}}(t)\)</span>$</li>
+<li><strong>Gradient &amp; Centroid Validation:</strong> Cross-checks the crest with the hyetograph centroid lag:
+   $<span class="arithmatex">\(\bar{T}_{\text{rain}} = \frac{\sum t \cdot P(t)}{\sum P(t)}, \quad T_{\text{lag, basin}} \approx 14.2 - 18.5\text{ hours}\)</span>$</li>
+<li><strong>Permissible Error Window Formulation:</strong>
+   Based on empirical validation across historical monsoon events (2019, 2021, 2026), the travel time variability follows a normal distribution with standard deviation <span class="arithmatex">\(\sigma_t \approx 1.02\text{ hours}\)</span>.
+   At a 95% confidence level (<span class="arithmatex">\(z \approx 1.96\)</span>), the permissible early warning window is:
+   $<span class="arithmatex">\([T_{\text{earliest}}, T_{\text{latest}}] = [T_{\text{peak}} - 2.0\text{h}, T_{\text{peak}} + 2.0\text{h}]\)</span>$</li>
+<li><strong>Operational Integration:</strong> Both the nominal peak and the bounding window are published in the REST API payload (<code>/api/v1/runoff/summary</code>), rendered on the Next.js visual alert banner, and pushed directly to District Disaster Management Authority (DDMA) emergency dispatch channels.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Developed by Er. Satwik Udupi. Funded by DST-SERB, Government of India. Integrated with Panchganga HydroCast Telegram Bot.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

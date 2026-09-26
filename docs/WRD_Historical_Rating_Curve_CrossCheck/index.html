@@ -1,0 +1,1837 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/WRD_Historical_Rating_Curve_CrossCheck/">
+      
+      
+        <link rel="prev" href="../Stage_Conversion_Discharge/">
+      
+      
+        <link rel="next" href="../Architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Rating Curve Cross-Check - HydroCast HEC-HMS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#maharashtra-wrd-historical-rating-curve-cross-verification-slope-calibration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="HydroCast HEC-HMS Documentation" class="md-header__button md-logo" aria-label="HydroCast HEC-HMS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            HydroCast HEC-HMS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Rating Curve Cross-Check
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href=".." class="md-tabs__link">
+          
+  
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Frontend/" class="md-tabs__link">
+          
+  
+  
+  Frontend
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Backend/" class="md-tabs__link">
+          
+  
+  
+  Backend
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../Runoff_Computation/" class="md-tabs__link">
+          
+  
+  
+  Hydrology
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Architecture/" class="md-tabs__link">
+          
+  
+  
+  Engineering
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="HydroCast HEC-HMS Documentation" class="md-nav__button md-logo" aria-label="HydroCast HEC-HMS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    HydroCast HEC-HMS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Overview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HydroCast Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Project_Background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Background
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Frontend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Backend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Backend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database & ORM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Deployment_Operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hydrology
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Hydrology
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Runoff_Computation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runoff Computation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HMS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HEC-HMS Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Hydraulics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hydraulics & River Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Stage_Conversion_Discharge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage-Discharge Conversion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rating Curve Cross-Check
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rating Curve Cross-Check
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#hydraulic-slope-correction-independent-rating-curves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hydraulic Slope Correction &amp; Independent Rating Curves
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Hydraulic Slope Correction &amp; Independent Rating Curves">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-root-cause-analysis-of-pre-calibration-discrepancies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Root Cause Analysis of Pre-Calibration Discrepancies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-correction-of-the-stage-offset-bug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Correction of the Stage-Offset Bug
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-calibrated-rating-curves-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Calibrated Rating Curves Comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Calibrated Rating Curves Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#at-current-observed-stage-53263-m-msl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        At Current Observed Stage (532.63 m MSL):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#equal-discharge-physical-stage-profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Equal Discharge Physical Stage Profiles:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-cross-verification-script-ground-truth-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Cross-Verification Script &amp; Ground Truth Table
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Benchmark Cross-Verification Script &amp; Ground Truth Table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-verification-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Verification Metrics:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-empirical-wrd-rajaram-weir-register-validation-daily-hourly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Empirical WRD Rajaram Weir Register Validation (Daily &amp; Hourly)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Empirical WRD Rajaram Weir Register Validation (Daily &amp; Hourly)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-20202021-daily-monsoon-register-n-153-days-juneoctober" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. 2020–2021 Daily Monsoon Register (\(N = 153\) Days, June–October)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-2021-2023-hourly-flood-registers-n-2406-hourly-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. 2021 &amp; 2023 Hourly Flood Registers (\(N = 2,406\) Hourly Observations)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-spatial-reach-telemetry-validation-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Spatial Reach &amp; Telemetry Validation Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Spatial Reach &amp; Telemetry Validation Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multi-run-continuous-lifecycle-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Run Continuous Lifecycle Tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engineering
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Engineering
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IoT_Telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IoT Telemetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Raingauge_Station/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Raingauge Network
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Openmeteo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenMeteo Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Calibration_Validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration & Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Rainfall_Validation_Pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rainfall Validation Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Errors_Mistakes_Engineering_Assumptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors & Engineering Assumptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Novelty_of_this_System/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Novelty
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Shpfiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GIS Shapefiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Future Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="maharashtra-wrd-historical-rating-curve-cross-verification-slope-calibration">Maharashtra WRD Historical Rating Curve Cross-Verification &amp; Slope Calibration<a class="headerlink" href="#maharashtra-wrd-historical-rating-curve-cross-verification-slope-calibration" title="Permanent link">&para;</a></h1>
+<h2 id="hydraulic-slope-correction-independent-rating-curves">Hydraulic Slope Correction &amp; Independent Rating Curves<a class="headerlink" href="#hydraulic-slope-correction-independent-rating-curves" title="Permanent link">&para;</a></h2>
+<h3 id="1-root-cause-analysis-of-pre-calibration-discrepancies">1. Root Cause Analysis of Pre-Calibration Discrepancies<a class="headerlink" href="#1-root-cause-analysis-of-pre-calibration-discrepancies" title="Permanent link">&para;</a></h3>
+<p>During initial validation against historical flood marks, the Manning equation bed slope parameter <span class="arithmatex">\(S_0\)</span> was found to be severely underestimated:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;">Uncalibrated (Initial)</th>
+<th style="text-align: left;">Calibrated (Surveyed)</th>
+<th style="text-align: left;">Error Factor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Shivaji Bridge <span class="arithmatex">\(S_0\)</span></strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(0.00025\text{ m/m}\)</span></td>
+<td style="text-align: left;"><strong><span class="arithmatex">\(0.005858\text{ m/m}\)</span></strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(23.4\times\)</span> too low</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Rajaram K.T. Weir <span class="arithmatex">\(S_0\)</span></strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(0.00025\text{ m/m}\)</span></td>
+<td style="text-align: left;"><strong><span class="arithmatex">\(0.002318\text{ m/m}\)</span></strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(9.3\times\)</span> too low</td>
+</tr>
+</tbody>
+</table>
+<p>Since Manning's equation governs discharge as:
+$<span class="arithmatex">\(Q = \frac{1}{n} A R^{2/3} \sqrt{S_0}\)</span>$
+The discharge was underestimated by <span class="arithmatex">\(\sqrt{23.4} \approx 4.84\times\)</span> at Shivaji Bridge prior to correction.</p>
+<h3 id="2-correction-of-the-stage-offset-bug">2. Correction of the Stage-Offset Bug<a class="headerlink" href="#2-correction-of-the-stage-offset-bug" title="Permanent link">&para;</a></h3>
+<p>The legacy code utilized a single rating curve for both sites, applying an arbitrary <code>stage - 0.12m</code> offset for Rajaram. This was hydrologically invalid:
+- <strong>Different Bed Slopes</strong>: Shivaji (<span class="arithmatex">\(0.005858\text{ m/m}\)</span>) vs. Rajaram (<span class="arithmatex">\(0.002318\text{ m/m}\)</span>).
+- <strong>Independent <span class="arithmatex">\(Q \leftrightarrow H\)</span> Relationships</strong>: The gentler slope at Rajaram requires a higher water depth (stage) to convey identical flow (<span class="arithmatex">\(Q \propto \sqrt{S}\)</span>).</p>
+<h3 id="3-calibrated-rating-curves-comparison">3. Calibrated Rating Curves Comparison<a class="headerlink" href="#3-calibrated-rating-curves-comparison" title="Permanent link">&para;</a></h3>
+<h4 id="at-current-observed-stage-53263-m-msl">At Current Observed Stage (532.63 m MSL):<a class="headerlink" href="#at-current-observed-stage-53263-m-msl" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Bridge Site</th>
+<th style="text-align: left;">Uncalibrated <span class="arithmatex">\(Q\)</span></th>
+<th style="text-align: left;">Calibrated <span class="arithmatex">\(Q\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Shivaji Bridge</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(18.8\text{ m}^3/\text{s}\)</span></td>
+<td style="text-align: left;"><strong><span class="arithmatex">\(91.1\text{ m}^3/\text{s}\)</span></strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Rajaram K.T. Weir</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(18.7\text{ m}^3/\text{s}\)</span></td>
+<td style="text-align: left;"><strong><span class="arithmatex">\(57.3\text{ m}^3/\text{s}\)</span></strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="equal-discharge-physical-stage-profiles">Equal Discharge Physical Stage Profiles:<a class="headerlink" href="#equal-discharge-physical-stage-profiles" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Discharge <span class="arithmatex">\(Q\)</span> (<span class="arithmatex">\(\text{m}^3/\text{s}\)</span>)</th>
+<th style="text-align: center;">Stage at Shivaji (m MSL)</th>
+<th style="text-align: center;">Stage at Rajaram (m MSL)</th>
+<th style="text-align: center;">Water Level Delta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">100</td>
+<td style="text-align: center;">532.72</td>
+<td style="text-align: center;">533.28</td>
+<td style="text-align: center;">+0.56 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">500</td>
+<td style="text-align: center;">535.84</td>
+<td style="text-align: center;">536.25</td>
+<td style="text-align: center;">+0.41 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">1,000</td>
+<td style="text-align: center;">536.51</td>
+<td style="text-align: center;">537.13</td>
+<td style="text-align: center;">+0.62 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">2,000</td>
+<td style="text-align: center;">537.49</td>
+<td style="text-align: center;">538.38</td>
+<td style="text-align: center;">+0.89 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">3,000</td>
+<td style="text-align: center;">538.25</td>
+<td style="text-align: center;">539.37</td>
+<td style="text-align: center;">+1.12 m</td>
+</tr>
+<tr>
+<td style="text-align: center;">5,000</td>
+<td style="text-align: center;">539.50</td>
+<td style="text-align: center;">541.05</td>
+<td style="text-align: center;">+1.55 m</td>
+</tr>
+</tbody>
+</table>
+<div class="arithmatex">\[\frac{Q_{\text{shivaji}}}{Q_{\text{rajaram}}} = \sqrt{\frac{0.005858}{0.002318}} = 1.589 \quad (\text{constant across all equivalent depths})\]</div>
+<hr />
+<h2 id="benchmark-cross-verification-script-ground-truth-table">Benchmark Cross-Verification Script &amp; Ground Truth Table<a class="headerlink" href="#benchmark-cross-verification-script-ground-truth-table" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>====================================================================================================
+           HYDROCAST 2D RATING CURVE vs MAHARASHTRA WRD HISTORICAL BENCHMARKS
+====================================================================================================
+
+ Stage (m MSL)
+   546.0 +                                                               * (49.8 ft / 3,850 m3/s)
+         |                                                      [2019 HFL Benchmark]
+   544.0 |                                                * (43.0 ft / 2,675 m3/s) [DANGER]
+         |                                          * (41.1 ft / 2,200 m3/s) [WARNING]
+   542.0 |                                    * (39.1 ft / 1,800 m3/s) [SHIVAJI ALERT]
+         |                              * (37.1 ft / 1,480 m3/s) [RAJARAM ALERT]
+   540.0 |                        * (29.0 ft / 800.5 m3/s)
+         |                  * (26.2 ft / 613.1 m3/s)
+   536.0 |            * (20.5 ft / 370.6 m3/s)
+         |      * (18.4 ft / 274.4 m3/s)
+   534.0 |  * (16.6 ft / 217.6 m3/s)
+         |* (11.0 ft / 80.0 m3/s)
+   532.0 +----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----&gt; Discharge (m3/s)
+         0   400   800  1200  1600  2000  2400  2800  3200  3600  4000 m3/s
+</code></pre></div>
+<p>The following ground-truth flood observations were sourced from official Maharashtra WRD records (जास्तीत जास्त पूर पातळी / विसर्ग):</p>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Cross-verification of Manning&#39;s rating curve vs WRD Government Observed Flood Records.</span>
+<span class="sd">Data source: Maharashtra WRD record table (जास्तीत जास्त पूर पातळी / विसर्ग)</span>
+<span class="sd">Units: Stage in meters MSL, Discharge in cusecs (1 cusec = 0.028316847 m³/s)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.hydrology.stage_converter</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">convert_stage_to_discharge_manning</span><span class="p">,</span>
+    <span class="n">convert_discharge_to_stage_manning</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">CUSEC_TO_CUMEC</span> <span class="o">=</span> <span class="mf">0.028316847</span>
+
+<span class="c1"># Official Government observed flood records: (Stage m MSL, Discharge cusecs)</span>
+<span class="n">gov_records</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mf">545.62</span><span class="p">,</span> <span class="mi">69184</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.38</span><span class="p">,</span> <span class="mi">62870</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.84</span><span class="p">,</span> <span class="mi">64202</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.62</span><span class="p">,</span> <span class="mi">84599</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">543.42</span><span class="p">,</span> <span class="mi">65654</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.60</span><span class="p">,</span> <span class="mi">45360</span><span class="p">),</span> <span class="p">(</span><span class="mf">542.03</span><span class="p">,</span> <span class="mi">53467</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.65</span><span class="p">,</span> <span class="mi">69622</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">543.57</span><span class="p">,</span> <span class="mi">68422</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.90</span><span class="p">,</span> <span class="mi">57092</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.61</span><span class="p">,</span> <span class="mi">84206</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.62</span><span class="p">,</span> <span class="mi">50845</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">543.48</span><span class="p">,</span> <span class="mi">32685</span><span class="p">),</span> <span class="p">(</span><span class="mf">544.84</span><span class="p">,</span> <span class="mi">59830</span><span class="p">),</span> <span class="p">(</span><span class="mf">544.27</span><span class="p">,</span> <span class="mi">68030</span><span class="p">),</span> <span class="p">(</span><span class="mf">544.36</span><span class="p">,</span> <span class="mi">65002</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">543.38</span><span class="p">,</span> <span class="mi">63003</span><span class="p">),</span> <span class="p">(</span><span class="mf">544.39</span><span class="p">,</span> <span class="mi">65504</span><span class="p">),</span> <span class="p">(</span><span class="mf">542.24</span><span class="p">,</span> <span class="mi">30907</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.04</span><span class="p">,</span> <span class="mi">32888</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">543.84</span><span class="p">,</span> <span class="mi">34026</span><span class="p">),</span> <span class="p">(</span><span class="mf">542.35</span><span class="p">,</span> <span class="mi">34026</span><span class="p">),</span> <span class="p">(</span><span class="mf">542.48</span><span class="p">,</span> <span class="mi">62200</span><span class="p">),</span> <span class="p">(</span><span class="mf">542.02</span><span class="p">,</span> <span class="mi">33209</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">543.26</span><span class="p">,</span> <span class="mi">54003</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.94</span><span class="p">,</span> <span class="mi">63684</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.90</span><span class="p">,</span> <span class="mi">76352</span><span class="p">),</span> <span class="p">(</span><span class="mf">543.44</span><span class="p">,</span> <span class="mi">50845</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">543.36</span><span class="p">,</span> <span class="mi">50423</span><span class="p">),</span> <span class="p">(</span><span class="mf">542.29</span><span class="p">,</span> <span class="mi">62370</span><span class="p">),</span> <span class="p">(</span><span class="mf">542.78</span><span class="p">,</span> <span class="mi">62040</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">gov_data</span> <span class="o">=</span> <span class="p">[(</span><span class="n">stg</span><span class="p">,</span> <span class="n">q_cfs</span><span class="p">,</span> <span class="n">q_cfs</span> <span class="o">*</span> <span class="n">CUSEC_TO_CUMEC</span><span class="p">)</span> <span class="k">for</span> <span class="n">stg</span><span class="p">,</span> <span class="n">q_cfs</span> <span class="ow">in</span> <span class="n">gov_records</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="key-verification-metrics">Key Verification Metrics:<a class="headerlink" href="#key-verification-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Calibrated Bed Slope (Shivaji Bridge)</strong>: <span class="arithmatex">\(S_0 = 0.005858\text{ m/m}\)</span></li>
+<li><strong>Calibrated Bed Slope (Rajaram K.T. Weir)</strong>: <span class="arithmatex">\(S_0 = 0.002318\text{ m/m}\)</span></li>
+<li><strong>Spearman Rank Correlation (<span class="arithmatex">\(\rho\)</span>)</strong>: <span class="arithmatex">\(&gt; 0.995\)</span></li>
+<li><strong>Nash-Sutcliffe Efficiency (NSE)</strong>: <span class="arithmatex">\(&gt; 0.998\)</span></li>
+<li><strong>Volume Bias (PBIAS)</strong>: <span class="arithmatex">\(&lt; 0.2\%\)</span></li>
+</ul>
+<hr />
+<h2 id="4-empirical-wrd-rajaram-weir-register-validation-daily-hourly">4. Empirical WRD Rajaram Weir Register Validation (Daily &amp; Hourly)<a class="headerlink" href="#4-empirical-wrd-rajaram-weir-register-validation-daily-hourly" title="Permanent link">&para;</a></h2>
+<p>Official Maharashtra WRD Kolhapur Division (उत्तर विभाग) daily and hourly water level &amp; discharge registers for Rajaram K.T. Weir were cross-checked against the calibrated rating curve:</p>
+<h3 id="a-20202021-daily-monsoon-register-n-153-days-juneoctober">A. 2020–2021 Daily Monsoon Register (<span class="arithmatex">\(N = 153\)</span> Days, June–October)<a class="headerlink" href="#a-20202021-daily-monsoon-register-n-153-days-juneoctober" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Stage Range</strong>: <span class="arithmatex">\(533.26\text{ m}\)</span> to <span class="arithmatex">\(543.79\text{ m MSL}\)</span> (<span class="arithmatex">\(10'6''\)</span> to <span class="arithmatex">\(44'8''\)</span>)</li>
+<li><strong>Discharge Range</strong>: <span class="arithmatex">\(36.8\text{ m}^3/\text{s}\)</span> to <span class="arithmatex">\(1,814.2\text{ m}^3/\text{s}\)</span> (<span class="arithmatex">\(1,300\)</span> to <span class="arithmatex">\(64,068\text{ cusecs}\)</span>)</li>
+<li><strong>Stage Prediction</strong>:</li>
+<li><strong>NSE</strong>: <strong>0.9983</strong></li>
+<li><strong>RMSE</strong>: <span class="arithmatex">\(0.110\text{ m}\)</span> (<span class="arithmatex">\(11.0\text{ cm}\)</span>)</li>
+<li><strong>MAE</strong>: <span class="arithmatex">\(0.051\text{ m}\)</span> (<span class="arithmatex">\(5.1\text{ cm}\)</span>)</li>
+<li><strong>Spearman Rank Correlation (<span class="arithmatex">\(\rho\)</span>)</strong>: <strong>0.9957</strong></li>
+<li><strong>Discharge Prediction</strong>:</li>
+<li><strong>NSE</strong>: <strong>0.9993</strong></li>
+<li><strong>RMSE</strong>: <span class="arithmatex">\(10.99\text{ m}^3/\text{s}\)</span></li>
+<li><strong>PBIAS</strong>: <strong>+0.19%</strong></li>
+<li><strong>Pearson <span class="arithmatex">\(R^2\)</span></strong>: <strong>0.9994</strong></li>
+</ul>
+<h3 id="b-2021-2023-hourly-flood-registers-n-2406-hourly-observations">B. 2021 &amp; 2023 Hourly Flood Registers (<span class="arithmatex">\(N = 2,406\)</span> Hourly Observations)<a class="headerlink" href="#b-2021-2023-hourly-flood-registers-n-2406-hourly-observations" title="Permanent link">&para;</a></h3>
+<p>Covers the devastating July–August 2021 flood event up to the all-time historic peak (<span class="arithmatex">\(56'03''\)</span> / <span class="arithmatex">\(547.33\text{ m MSL}\)</span> / <span class="arithmatex">\(76,383\text{ cusecs}\)</span>):
+- <strong>Stage Range</strong>: <span class="arithmatex">\(532.70\text{ m}\)</span> to <span class="arithmatex">\(547.33\text{ m MSL}\)</span> (<span class="arithmatex">\(8'3''\)</span> to <span class="arithmatex">\(56'03''\)</span>)
+- <strong>Discharge Range</strong>: <span class="arithmatex">\(7.1\text{ m}^3/\text{s}\)</span> to <span class="arithmatex">\(2,162.9\text{ m}^3/\text{s}\)</span> (<span class="arithmatex">\(250\)</span> to <span class="arithmatex">\(76,383\text{ cusecs}\)</span>)
+- <strong>Stage Prediction</strong>:
+  - <strong>NSE</strong>: <strong>0.9990</strong>
+  - <strong>RMSE</strong>: <span class="arithmatex">\(0.104\text{ m}\)</span> (<span class="arithmatex">\(10.4\text{ cm}\)</span>)
+  - <strong>MAE</strong>: <strong><span class="arithmatex">\(0.049\text{ m}\)</span> (<span class="arithmatex">\(4.9\text{ cm}\)</span>)</strong>
+  - <strong>Spearman Rank Correlation (<span class="arithmatex">\(\rho\)</span>)</strong>: <strong>0.9961</strong>
+- <strong>Discharge Prediction</strong>:
+  - <strong>NSE</strong>: <strong>0.9996</strong>
+  - <strong>RMSE</strong>: <span class="arithmatex">\(10.70\text{ m}^3/\text{s}\)</span>
+  - <strong>PBIAS</strong>: <strong>+0.03%</strong>
+  - <strong>Pearson <span class="arithmatex">\(R^2\)</span></strong>: <strong>0.9996</strong></p>
+<hr />
+<h2 id="5-spatial-reach-telemetry-validation-architecture">5. Spatial Reach &amp; Telemetry Validation Architecture<a class="headerlink" href="#5-spatial-reach-telemetry-validation-architecture" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>                                 Panchganga River Reach Topology
+
+  [J_Outlet (Basin Outflow)] 
+              |
+              | ~12 km River Reach (1.5h wave travel time)
+              v
+  [Chhatrapati Shivaji Maharaj Bridge]
+      - Sensor: Ultrasonic IoT Radar (ThingSpeak Channel 3424513)
+      - Mount Datum: 549.35 m MSL
+      - Channel Slope: S0 = 0.005858 m/m
+      - Live Calibration: Real-time 5-min pings resampled to hourly means
+              |
+              | 3.8 km Downstream Reach (~1.0h wave travel time)
+              v
+  [Rajaram K.T. Weir (Kasba Bawada)]
+      - Gauge: WRD Maharashtra staff gauge &amp; weir register
+      - Weir Crest / Datum: 530.18 m MSL
+      - Channel Slope: S0 = 0.002318 m/m (floodplain attenuation)
+      - Calibration: Calibrated empirical anchors up to 547.33m / 76,383 cusecs
+</code></pre></div>
+<h3 id="multi-run-continuous-lifecycle-tracking">Multi-Run Continuous Lifecycle Tracking<a class="headerlink" href="#multi-run-continuous-lifecycle-tracking" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The Problem Solved</strong>: Previously, once a new 90-hour cycle was executed, older cycles were left at partial completion (e.g. 17/90h) with status frozen at <code>IN_PROGRESS</code>.</li>
+<li><strong>The Solution</strong>: <code>validate_all_pending_runs()</code> continuously queries the persistent telemetry cache (<code>data/telemetry/thingspeak_hourly_cache.json</code>) and backfills all archived cycles. Once all 90 hours of a cycle elapse, the run automatically transitions to <code>LIFECYCLE_VERIFIED</code>.</li>
+<li><strong>Complete PostgreSQL Persistence</strong>: Both <code>simulation_runs</code> and <code>forecast_validation_metrics</code> are synchronized with all 14 columns fully populated (including <code>spearman_rho_q</code>, <code>nse_discharge</code>, <code>rmse_q_m3s</code>, <code>mae_q_m3s</code>, and <code>pbias_discharge_pct</code>).</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../Stage_Conversion_Discharge/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Stage-Discharge Conversion">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Stage-Discharge Conversion
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../Architecture/" class="md-footer__link md-footer__link--next" aria-label="Next: System Architecture">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                System Architecture
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Developed by Er. Satwik Udupi. Funded by DST-SERB, Government of India. Integrated with Panchganga HydroCast Telegram Bot.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
