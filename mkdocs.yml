@@ -20,6 +20,8 @@ theme:
   features:
     - navigation.instant
     - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
     - navigation.top
     - navigation.footer
     - toc.integrate
@@ -29,8 +31,6 @@ theme:
     - content.code.annotate
 
 markdown_extensions:
-  - pymdownx.arithmatex:
-      generic: true
   - pymdownx.superfences
   - pymdownx.details
   - pymdownx.inlinehilite
