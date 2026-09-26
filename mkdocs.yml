@@ -48,31 +48,29 @@ extra_javascript:
 
 nav:
   - Overview: README.md
-  - Architecture: Architecture.md
-  - Runoff & Hydrology:
+  - Frontend:
+    - UI Architecture: Frontend.md
+  - Backend:
+    - Server & APIs: Backend.md
+    - Database Schema: Database.md
+    - Deployment Operations: Deployment_Operations.md
+  - Hydrology:
     - Runoff Computation: Runoff_Computation.md
-    - HMS Structure: HMS.md
-  - Hydraulics & Rating:
+    - HEC-HMS Structure: HMS.md
     - 2D Hydraulics: Hydraulics.md
-    - Stage Conversion: Stage_Conversion_Discharge.md
+    - Stage-Discharge Conversion: Stage_Conversion_Discharge.md
     - Rating Curve Checks: WRD_Historical_Rating_Curve_CrossCheck.md
-  - Real-time IoT & Meteorology:
+  - Engineering:
+    - System Architecture: Architecture.md
     - IoT Telemetry: IoT_Telemetry.md
     - Rain Gauge Stations: Raingauge_Station.md
     - OpenMeteo NWP: Openmeteo.md
-  - Validation & Accuracy:
-    - Calibration Validation: Calibration_Validation.md
+    - Calibration & Validation: Calibration_Validation.md
     - Rainfall Validation: Rainfall_Validation_Pipeline.md
-  - System Components:
-    - Backend: Backend.md
-    - Database: Database.md
-    - Frontend: Frontend.md
-    - Deployment: Deployment_Operations.md
-  - Further Details:
-    - Novelty of this System: Novelty_of_this_System.md
     - Errors & Assumptions: Errors_Mistakes_Engineering_Assumptions.md
-    - ROADMAP: ROADMAP.md
-    - Shpfiles: Shpfiles.md
+    - Novelty of this System: Novelty_of_this_System.md
+    - GIS Shapefiles: Shpfiles.md
+    - Roadmap: ROADMAP.md
 
 docs_dir: docs_src
 site_dir: docs
