@@ -13,6 +13,39 @@
 
 Welcome to the comprehensive technical documentation for **HydroCast: Real-Time Operational Flood Forecasting & Basin Intelligence** for the Panchganga River Catchment (Kolhapur District, Maharashtra, India).
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<div id="hydrocast-map" style="height: 450px; width: 100%; border-radius: 8px; margin: 30px 0; border: 1px solid #475569; z-index: 1;"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var map = L.map('hydrocast-map').setView([16.65, 74.15], 10);
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+    }).addTo(map);
+
+    fetch('gis/panchganga_subbasins.geojson')
+        .then(r => r.json())
+        .then(data => {
+            L.geoJSON(data, {
+                style: {color: "#06B6D4", weight: 2, fillOpacity: 0.1},
+                onEachFeature: (f, l) => l.bindPopup("<b>Subbasin:</b> " + (f.properties.name || "Panchganga Catchment"))
+            }).addTo(map);
+        });
+
+    fetch('gis/panchganga_rivers.geojson')
+        .then(r => r.json())
+        .then(data => {
+            L.geoJSON(data, {
+                style: {color: "#3B82F6", weight: 4},
+                onEachFeature: (f, l) => l.bindPopup("<b>Reach:</b> " + (f.properties.name || "River Reach"))
+            }).addTo(map);
+        });
+});
+</script>
+
 ## Technology & Engineering Stack
 
 | Area | Tool |
