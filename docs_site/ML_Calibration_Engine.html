@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Calibration Engine - HydroCast HEC-HMS Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Chart.js for beautiful plotting -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- MathJax for rendering equations cleanly -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: { fontCache: 'global' }
+      };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="logo">HydroCast HEC-HMS <span>Documentation Portal</span></div>
+            <nav class="top-nav">
+                <a href="index.html">Overview</a>
+                <a href="repository_structure.html">Code & Structure</a>
+                <div class="nav-dropdown">
+                    <a href="#" class="dropbtn">Technical Manuals ▼</a>
+                    <div class="dropdown-content">
+                        <a href="Accuracy_Analysis_PI_Report.html">Accuracy Analysis PI Report</a>
+<a href="Architecture.html">Architecture</a>
+<a href="Backend.html">Backend</a>
+<a href="Calibration_Validation.html">Calibration Validation</a>
+<a href="Database.html">Database</a>
+<a href="Deployment_Operations.html">Deployment Operations</a>
+<a href="Errors_Mistakes_Engineering_Assumptions.html">Errors Mistakes Engineering Assumptions</a>
+<a href="Frontend.html">Frontend</a>
+<a href="HMS.html">HMS</a>
+<a href="Hydraulics.html">Hydraulics</a>
+<a href="Hydrology.html">Hydrology</a>
+<a href="IoT_Telemetry.html">IoT Telemetry</a>
+<a href="ML_Calibration_Engine.html">ML Calibration Engine</a>
+<a href="Novelty_of_this_System.html">Novelty of this System</a>
+<a href="Openmeteo.html">Openmeteo</a>
+<a href="ROADMAP.html">ROADMAP</a>
+<a href="Rainfall_Validation_Pipeline.html">Rainfall Validation Pipeline</a>
+<a href="Raingauge_Station.html">Raingauge Station</a>
+<a href="Runoff_Computation.html">Runoff Computation</a>
+<a href="Shpfiles.html">Shpfiles</a>
+<a href="Stage_Conversion_Discharge.html">Stage Conversion Discharge</a>
+<a href="WRD_Historical_Rating_Curve_CrossCheck.html">WRD Historical Rating Curve CrossCheck</a>
+
+                    </div>
+                </div>
+                <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" target="_blank" class="github-btn">GitHub</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <main class="content">
+            <h1>Real-Time Adaptive Machine Learning Hydrologic Calibrator</h1>
+<pre><code>====================================================================================================
+               PHYSICS-INFORMED REAL-TIME ML CALIBRATION CONTROL LOOP
+====================================================================================================
+
+      ThingSpeak Ultrasonic IoT Sensor Telemetry (Shivaji Bridge)
+                               |
+                               v
+               [ Telemetry Ingestion &amp; Quality Control ]
+               - 1-hour rolling median filter
+               - Spike removal &amp; missing value interpolation
+               - Water Surface Elevation (m MSL)
+                               |
+                               +-----------------------------------+
+                               |                                   |
+                               v                                   v
+             [ Observed Rising Limb Detector ]   [ Previous Forecast Cycle Evaluator ]
+             - Rate of rise &gt; 0.15 m/hr          - Aligns predicted stage vs observed
+             - Identifies hydrograph slope       - Computes timing offset: Delta_t (hr)
+                                                 - Computes stage discrepancy: Delta_h (m)
+                               |                                   |
+                               +-----------------+-----------------+
+                                                 |
+                                                 v
+                                 +-------------------------------+
+                                 |  Recalibration Trigger Logic  |
+                                 +-------------------------------+
+                                 |  |Delta_t| &gt;= 1.0 hr          |
+                                 |  OR                           |
+                                 |  Delta_h &gt; 0.25m AND Rising   |
+                                 +-------------------------------+
+                                                 |
+                     +---------------------------+---------------------------+
+                     | (Trigger Condition Met)                               | (Tolerances Satisfied)
+                     v                                                       v
+     +-----------------------------------------------+       +-------------------------------+
+     | Scipy L-BFGS-B Bounded Loss Optimization      |       | Retain Baseline Parameters    |
+     | - alpha_K   in [0.50, 1.80] (Reach Travel)    |       | alpha_K = 1.0, alpha_lag = 1.0|
+     | - alpha_lag in [0.50, 1.80] (Subbasin Lag)    |       | Delta_CN = 0.0, X = 0.250     |
+     | - Delta_CN  in [-8.0, +8.0] (Soil Retention)  |       +-------------------------------+
+     | - X         in [0.15, 0.40] (Wedge Storage)   |
+     +-----------------------------------------------+
+                     |
+                     v
+     [ Dual System State Synchronization ]
+     - Updates src/hms/runner.py runtime parameters
+     - Atomically updates Basin_1.basin with timestamped .bak backups
+     - Persists data/telemetry/ml_calibration_state.json
+</code></pre>
+<hr />
+<h2>1. Engine Purpose &amp; Operational Philosophy</h2>
+<p>The <strong>Adaptive Hydrologic Calibrator</strong> (<code>src/hydrology/ml_calibration.py</code>) functions as an automated real-time machine learning supervisory loop. During major monsoon storms, uncalibrated static hydrological models suffer from two primary errors:
+1. <strong>Timing Lead-Time Errors ($\Delta t$):</strong> Flood peaks arrive earlier or later than simulated due to variable channel velocities, antecedent soil moisture, or backwater obstructions.
+2. <strong>Volumetric Runoff Errors ($\Delta h, \Delta Q$):</strong> Peak stage is underpredicted or overpredicted due to dynamic infiltration changes and seasonal crop resistance (sugarcane).</p>
+<p>The calibrator detects discrepancies between real-time ultrasonic sensor observations and simulated forecasts, solving a <strong>bounded physics-informed loss minimization</strong> problem to dynamically adjust governing parameters.</p>
+<hr />
+<h2>2. Discrepancy Detection &amp; Trigger Criteria</h2>
+<p>The engine continuously evaluates real-time ThingSpeak Channel 3424513 water levels against previous forecast cycles.</p>
+<h3>2.1 Wave Timing Offset ($\Delta t$)</h3>
+<p>The timing offset represents the phase shift between the observed flood wave and the modeled hydrograph. During rising limb conditions ($dh/dt &gt; 0.15\text{ m/hr}$):</p>
+<p>$$\Delta t = -\frac{\bar{e}_{\text{stage}}}{\text{Rate of Rise}} \quad [\text{hours}]$$</p>
+<ul>
+<li><strong>Early Arrival ($\Delta t &lt; 0$):</strong> Observed stage rises faster than modeled. Wave velocity in river reaches is faster than modeled. Channel travel time $K$ and subbasin lag must be scaled downwards ($lpha_K &lt; 1.0, lpha_{   ext{lag}} &lt; 1.0$).</li>
+<li><strong>Late Arrival ($\Delta t &gt; 0$):</strong> Flood wave is delayed. Channel storage attenuation is higher than modeled. Channel travel time $K$ and subbasin lag must be scaled upwards ($lpha_K &gt; 1.0, lpha_{    ext{lag}} &gt; 1.0$).</li>
+</ul>
+<h3>2.2 Auto-Trigger Conditions</h3>
+<p>Recalibration is automatically triggered when either of the following conditions is met:</p>
+<p>$$\left|\Delta t\right| \ge 1.0\text{ hr} \quad \text{OR} \quad \left(\max |e_{\text{stage}}| &gt; 0.25\text{ m} \;\land\; \text{is_rising}\right)$$</p>
+<hr />
+<h2>3. Mathematical Optimization Formulation</h2>
+<p>The engine solves for optimal scaling vector $\theta = [\alpha_K, \alpha_{\text{lag}}, \Delta CN, X]$ using the <strong>L-BFGS-B</strong> algorithm (Limited-memory Broyden-Fletcher-Goldfarb-Shanno with Box constraints).</p>
+<h3>3.1 Objective Loss Function</h3>
+<p>$$L(\theta) = w_{\text{nse}} \cdot (1 - \text{NSE}) + w_{\text{time}} \cdot \left(\frac{\Delta t_{\text{modeled}} - \Delta t}{2.0}\right)^2 + w_{\text{stage}} \cdot \left(\frac{\Delta h_{\text{modeled}} - \Delta h}{0.25}\right)^2 + w_{\text{reg}} \cdot |\theta - \theta_0|^2$$</p>
+<p>Where:
+- $\Delta t_{\text{modeled}} = 0.55 \cdot \left(\frac{\alpha_K - 1.0}{0.075}\right) + 0.45 \cdot \left(\frac{\alpha_{\text{lag}} - 1.0}{0.060}\right)$ (55% reach travel time, 45% subbasin lag).
+- $\Delta h_{\text{modeled}} = -\frac{\Delta CN}{4.5}$
+- Regularization penalty: $w_{\text{reg}} = 0.05$ (prevents wild swings away from baseline).</p>
+<h3>3.2 Parameter Bounding Constraints</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: center;">Symbol</th>
+<th style="text-align: center;">Baseline</th>
+<th style="text-align: center;">Physical Lower Bound</th>
+<th style="text-align: center;">Physical Upper Bound</th>
+<th style="text-align: left;">Physical Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Reach Travel Time Multiplier</strong></td>
+<td style="text-align: center;">$\alpha_K$</td>
+<td style="text-align: center;">1.000</td>
+<td style="text-align: center;">0.500</td>
+<td style="text-align: center;">1.800</td>
+<td style="text-align: left;">Scales travel time $K$ across reaches R1–R5</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Subbasin Lag Time Multiplier</strong></td>
+<td style="text-align: center;">$\alpha_{\text{lag}}$</td>
+<td style="text-align: center;">1.000</td>
+<td style="text-align: center;">0.500</td>
+<td style="text-align: center;">1.800</td>
+<td style="text-align: left;">Scales lag time $t_{\text{lag}}$ across S1–S9</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SCS Curve Number Shift</strong></td>
+<td style="text-align: center;">$\Delta CN$</td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">-8.00</td>
+<td style="text-align: center;">+8.00</td>
+<td style="text-align: left;">Uniform soil retention adjustment</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Muskingum Wedge Weight</strong></td>
+<td style="text-align: center;">$X$</td>
+<td style="text-align: center;">0.250</td>
+<td style="text-align: center;">0.150</td>
+<td style="text-align: center;">0.400</td>
+<td style="text-align: left;">Controls flood wave steepness &amp; diffusion</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4. Deterministic Analytical Kinematic-Wave Fallback</h2>
+<p>If numerical optimization fails to converge within 50 iterations or library exceptions occur, the engine falls back to a deterministic analytical solution:</p>
+<p>$$k_{\text{shift}} = \text{clip}\left(1.0 + \Delta t \cdot 0.075, \; 0.60, \; 1.60\right)$$</p>
+<p>$$\text{lag}_{\text{shift}} = \text{clip}\left(1.0 + \Delta t \cdot 0.060, \; 0.60, \; 1.60\right)$$</p>
+<p>$$CN_{\text{shift}} = \text{clip}\left(-\Delta h \cdot 4.5, \; -6.0, \; 6.0\right)$$</p>
+<p>$$X_{\text{shift}} = \text{clip}\left(0.25 - \Delta t \cdot 0.02, \; 0.16, \; 0.36\right)$$</p>
+<p>This guarantees <strong>100% fail-safe execution</strong> in production runtime environments.</p>
+<hr />
+<h2>5. Dual Synchronization &amp; State Persistence</h2>
+<p>Upon successful recalibration, the engine executes simultaneous atomic synchronization:
+1. <strong>Python Emulator In-Memory Parameters:</strong> Injected into <code>execute_hec_hms()</code> parameter dictionary.
+2. <strong>HEC-HMS Project File (<code>Basin_1.basin</code>):</strong> Atomically rewritten on disk with updated <code>Curve Number:</code> and <code>Lag:</code> values, retaining timestamped backups (<code>Basin_1.basin.bak_&lt;TIMESTAMP&gt;</code>).
+3. <strong>Telemetry State Ledger:</strong> Persisted to <code>data/telemetry/ml_calibration_state.json</code>.</p>
+        </main>
+    </div>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p><strong>Panchganga HydroCast</strong> &bull; Hydrologic Engineering Center &bull; Shivaji University, Kolhapur</p>
+            <p style="margin-top: 4px; font-size: 0.8rem; color: #64748b;">Funded by DST-SERB, Government of India</p>
+        </div>
+    </footer>
+    
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydraulics - HydroCast HEC-HMS Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Chart.js for beautiful plotting -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- MathJax for rendering equations cleanly -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: { fontCache: 'global' }
+      };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="logo">HydroCast HEC-HMS <span>Documentation Portal</span></div>
+            <nav class="top-nav">
+                <a href="index.html">Overview</a>
+                <a href="repository_structure.html">Code & Structure</a>
+                <div class="nav-dropdown">
+                    <a href="#" class="dropbtn">Technical Manuals ▼</a>
+                    <div class="dropdown-content">
+                        <a href="Accuracy_Analysis_PI_Report.html">Accuracy Analysis PI Report</a>
+<a href="Architecture.html">Architecture</a>
+<a href="Backend.html">Backend</a>
+<a href="Calibration_Validation.html">Calibration Validation</a>
+<a href="Database.html">Database</a>
+<a href="Deployment_Operations.html">Deployment Operations</a>
+<a href="Errors_Mistakes_Engineering_Assumptions.html">Errors Mistakes Engineering Assumptions</a>
+<a href="Frontend.html">Frontend</a>
+<a href="HMS.html">HMS</a>
+<a href="Hydraulics.html">Hydraulics</a>
+<a href="Hydrology.html">Hydrology</a>
+<a href="IoT_Telemetry.html">IoT Telemetry</a>
+<a href="ML_Calibration_Engine.html">ML Calibration Engine</a>
+<a href="Novelty_of_this_System.html">Novelty of this System</a>
+<a href="Openmeteo.html">Openmeteo</a>
+<a href="ROADMAP.html">ROADMAP</a>
+<a href="Rainfall_Validation_Pipeline.html">Rainfall Validation Pipeline</a>
+<a href="Raingauge_Station.html">Raingauge Station</a>
+<a href="Runoff_Computation.html">Runoff Computation</a>
+<a href="Shpfiles.html">Shpfiles</a>
+<a href="Stage_Conversion_Discharge.html">Stage Conversion Discharge</a>
+<a href="WRD_Historical_Rating_Curve_CrossCheck.html">WRD Historical Rating Curve CrossCheck</a>
+
+                    </div>
+                </div>
+                <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" target="_blank" class="github-btn">GitHub</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <main class="content">
+            <h1>Open-Channel Hydraulics &amp; River Stage Mechanics</h1>
+<div class="chart-container">
+    <h3 style="text-align:center; margin-top:0;">Longitudinal Bed Profile (L-Section)</h3>
+    <canvas id="lSectionChart"></canvas>
+</div>
+
+<p>Per the authoritative <strong>Krishna Basin Flood 2019 Volume 1 Study Report</strong>:
+- <strong>Radhanagari Dam to Prayag Chikhali:</strong> $1:2529$ ($S_0 = 0.000395\text{ m/m}$), length $\approx 40\text{ km}$.
+- <strong>Prayag Chikhali to Rajaram K.T. Weir:</strong> $1:4641$ ($S_0 = 0.000215\text{ m/m}$), length $\approx 18\text{ km}$.
+- <strong>Rajaram K.T. Weir to Shirol K.T. Weir:</strong> $1:7700$ ($S_0 = 0.000130\text{ m/m}$), length $\approx 42\text{ km}$.</p>
+<hr />
+<h2>7. Divided Channel Method (DCM) for Sugarcane Overbank Floodplains</h2>
+<pre><code>   Elevation
+    (m MSL)
+     546.0 +                                                    2019 HFL (545.33 m)
+           |                                                   ~~~~~~~~~~~~~~~~~~~~
+     544.0 |   Left Floodplain              Main River Channel          Right Floodplain
+           |   (Sugarcane / Paddy)          (Gravel / Silt Bed)         (Sugarcane / Crops)
+     542.0 |   n_flood = 0.070              n_main = 0.031              n_flood = 0.070
+           |  +--------------------+                                   +--------------------+
+     540.0 |  |                    |       +-------------------+       |                    |
+           |  |                    |      /                     \      |                    |
+     536.0 |  |                    |     /                       \     |                    |
+           |  |                    |    /                         \    |                    |
+     532.0 |  |                    |   /                           \   |                    |
+           |  |                    |  /                             \  |                    |
+     528.0 |  +--------------------+ /                               \ +--------------------+
+           |                        /                                      528.67+-----------------------+-------- Thalweg: 528.67m MSL -----+--------------------
+           +-----------------------+-----------------------------------+--------------------+
+              Left Overbank                      Main Channel               Right Overbank
+</code></pre>
+<p>To eliminate overbank discharge distortion during high stages ($&gt;541.6\text{ m}$ MSL), the flow cross-section is hydraulically subdivided:
+- <strong>Main Channel ($n_{\text{main}} = 0.031$):</strong> Clean natural riverbed with silt and gravel.
+- <strong>Overbank Floodplains ($n_{\text{flood}} = 0.070$):</strong> Heavy resistance due to dense standing sugarcane crops.</p>
+<p>$$Q(H) = \frac{1}{n_{\text{main}}} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/2} + \sum_{\text{flood}} \frac{1}{n_{\text{flood}}} A_{\text{flood}} R_{\text{flood}}^{2/3} S_0^{1/2}$$</p>
+<hr />
+<h2>8. Sensor-to-Sink Upstream Stage Transfer</h2>
+<pre><code>   UPSTREAM                                                    DOWNSTREAM
+   Chainage 10+115                                           Chainage 6+257
+   Rajaram K.T. Weir                                         Shivaji Bridge
+   (HEC-HMS Model Sink-1)                                    (IoT Ultrasonic Sensor)
+   ======================                                    ======================
+         |                                                            |
+         |  Thalweg: 529.318 m MSL                                    |  Thalweg: 528.670 m MSL
+         |  Crest RL: 530.18 m MSL                                    |  Sensor Datum: 549.35 m MSL
+         |                                                            |
+         +------------------- Bed Distance: 3,858 m ------------------+
+                             Bed Slope: S_0 = 1:4641 (0.000215)
+                             Delta Bed RL: +0.648 m (Rajaram higher)
+</code></pre>
+<p>The model applies <code>infer_rajaram_stage_from_shivaji(shivaji_stage_m, q_m3s)</code>:
+$$H_{\text{rajaram}} = \begin{cases}
+\max(530.18, \; H_{\text{shivaji}} + 0.648) &amp; \text{if } H_{\text{shivaji}} &lt; 530.0\text{ m (Weir Impoundment)} \[1ex]
+H_{\text{shivaji}} + 0.648\text{ m} &amp; \text{if } H_{\text{shivaji}} \ge 530.0\text{ m (Open Flood Regime)}
+\end{cases}$$</p>
+        </main>
+    </div>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p><strong>Panchganga HydroCast</strong> &bull; Hydrologic Engineering Center &bull; Shivaji University, Kolhapur</p>
+            <p style="margin-top: 4px; font-size: 0.8rem; color: #64748b;">Funded by DST-SERB, Government of India</p>
+        </div>
+    </footer>
+    
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const ctx = document.getElementById('lSectionChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [0, 40, 58, 100],
+                datasets: [{
+                    label: 'River Bed Elevation (m MSL)',
+                    data: [553.90, 536.0, 529.318, 523.86],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#1d4ed8',
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.parsed.y !== null) label += context.parsed.y + ' m';
+                                return label;
+                            },
+                            afterLabel: function(context) {
+                                const idx = context.dataIndex;
+                                if (idx === 0) return "Radhanagari Dam";
+                                if (idx === 1) return "Prayag Chikhali";
+                                if (idx === 2) return "Rajaram KT Weir";
+                                if (idx === 3) return "Shirol KT Weir";
+                                return "";
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Distance from Dam (km)', font: {weight: 'bold'} }
+                    },
+                    y: {
+                        title: { display: true, text: 'Elevation (m MSL)', font: {weight: 'bold'} }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Openmeteo - HydroCast HEC-HMS Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Chart.js for beautiful plotting -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- MathJax for rendering equations cleanly -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: { fontCache: 'global' }
+      };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="logo">HydroCast HEC-HMS <span>Documentation Portal</span></div>
+            <nav class="top-nav">
+                <a href="index.html">Overview</a>
+                <a href="repository_structure.html">Code & Structure</a>
+                <div class="nav-dropdown">
+                    <a href="#" class="dropbtn">Technical Manuals ▼</a>
+                    <div class="dropdown-content">
+                        <a href="Accuracy_Analysis_PI_Report.html">Accuracy Analysis PI Report</a>
+<a href="Architecture.html">Architecture</a>
+<a href="Backend.html">Backend</a>
+<a href="Calibration_Validation.html">Calibration Validation</a>
+<a href="Database.html">Database</a>
+<a href="Deployment_Operations.html">Deployment Operations</a>
+<a href="Errors_Mistakes_Engineering_Assumptions.html">Errors Mistakes Engineering Assumptions</a>
+<a href="Frontend.html">Frontend</a>
+<a href="HMS.html">HMS</a>
+<a href="Hydraulics.html">Hydraulics</a>
+<a href="Hydrology.html">Hydrology</a>
+<a href="IoT_Telemetry.html">IoT Telemetry</a>
+<a href="ML_Calibration_Engine.html">ML Calibration Engine</a>
+<a href="Novelty_of_this_System.html">Novelty of this System</a>
+<a href="Openmeteo.html">Openmeteo</a>
+<a href="ROADMAP.html">ROADMAP</a>
+<a href="Rainfall_Validation_Pipeline.html">Rainfall Validation Pipeline</a>
+<a href="Raingauge_Station.html">Raingauge Station</a>
+<a href="Runoff_Computation.html">Runoff Computation</a>
+<a href="Shpfiles.html">Shpfiles</a>
+<a href="Stage_Conversion_Discharge.html">Stage Conversion Discharge</a>
+<a href="WRD_Historical_Rating_Curve_CrossCheck.html">WRD Historical Rating Curve CrossCheck</a>
+
+                    </div>
+                </div>
+                <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" target="_blank" class="github-btn">GitHub</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <main class="content">
+            <h1>Open-Meteo &amp; ECMWF Meteorological Data Pipeline</h1>
+<pre><code>========================================================================================
+             HYDROCAST METEOROLOGICAL INGESTION &amp; FORECAST ENGINE
+========================================================================================
+
+           ECMWF Integrated Forecasting System (IFS HRES 9km / 0.1° Grid)
+                                       │
+                                       ▼
+                       Open-Meteo High-Performance REST API
+                                       │
+     ┌─────────────────────────────────┴─────────────────────────────────┐
+     ▼                                                                   ▼
+[ 90-Hour Forward Hyetograph ]                          [ 90-Day Antecedent Re-Analysis ]
+Hourly precipitation (mm/hr)                             Historical daily accumulation (mm)
+Horizon: T+0 to T+89h                                    Evaluates Soil Moisture:
+Resolution: 1 hour                                       AMC-I (Dry) / AMC-II / AMC-III (Wet)
+     │                                                                   │
+     └─────────────────────────────────┬─────────────────────────────────┘
+                                       ▼
+                 Dynamic Subbasin Station Selector &amp; Spatial Router
+                                       │
+                 Panchganga 18 Rain Gauge Network (S1 to S9)
+                                       │
+                                       ▼
+                   HEC-HMS Conservative Hyetograph Generation
+</code></pre>
+<hr />
+<h2>1. Overview &amp; Architectural Motivation</h2>
+<p>The HydroCast system requires forward-looking meteorological forcing data to drive hydrological flood predictions with a minimum lead time of <strong>48 to 72 hours</strong>. </p>
+<h3>Why Open-Meteo over Direct ECMWF MARS Subscriptions?</h3>
+<ol>
+<li><strong>Zero License Friction:</strong> Open-Meteo aggregates the open-data releases from ECMWF (European Centre for Medium-Range Weather Forecasts) IFS HRES 9km (Integrated Forecasting System), DWD ICON, and NOAA GFS.</li>
+<li><strong>Sub-second Response Times:</strong> High-performance Rust-based servers deliver point forecasts in $&lt; 150\text{ ms}$ per coordinate.</li>
+<li><strong>No Local GRIB2 Storage Overhead:</strong> Directly extracts 1D precipitation arrays without downloading multi-gigabyte GRIB2 grid files across India.</li>
+<li><strong>Deterministic Run Schedules:</strong> Aligned to the 00z, 06z, 12z, and 18z ECMWF operational forecast cycles.</li>
+</ol>
+<hr />
+<h2>2. Geographical Catchment Envelope</h2>
+<p>The Panchganga river basin originates along the high-rainfall crest of the Western Ghats (Sahyadri ridge, receiving $3,000 - 6,000\text{ mm}$ annually) and drains eastward toward Kolhapur city.</p>
+<pre><code> Catchment Bounding Box:
+ 17.20° N  +-----------------------------------------------------------+ (North: Kasaba Walawe)
+           |   Gaganbawda (680m)                                       |
+           |   ~5,500 mm/yr                                            |
+           |                  Karanjphen (640m)                        |
+           |                                       Karvir (550m)       |
+           |       Radhanagari (615m)              Kolhapur City       |
+ 16.20° N  +-----------------------------------------------------------+ (South: Radhanagari)
+           73.70° W (Ghats Crest)                              74.50° E (Outlet Confluence)
+</code></pre>
+<h3>Catchment Bounding Coordinates:</h3>
+<ul>
+<li><strong>North ($BBOX_N$):</strong> $17.20^\circ\text{ N}$</li>
+<li><strong>South ($BBOX_S$):</strong> $16.20^\circ\text{ N}$</li>
+<li><strong>East ($BBOX_E$):</strong> $74.50^\circ\text{ E}$</li>
+<li><strong>West ($BBOX_W$):</strong> $73.70^\circ\text{ E}$</li>
+</ul>
+<hr />
+<h2>3. The 18-Station Meteorological Grid</h2>
+<p>The system tracks 18 distinct meteorological nodes across the 9 hydrologic subbasins ($S_1$ to $S_9$):</p>
+<pre><code>+----+-------------------+----------+-----------+------------+------------+--------------------+
+| ID | Station Name      | Subbasin | Elevation | Longitude  | Latitude   | Hierarchy Role     |
++----+-------------------+----------+-----------+------------+------------+--------------------+
+| 01 | KARVIR            | S1       | 550 m     | 74.248177° | 16.706369° | Primary Governing  |
+| 02 | SANGARUL          | S2       | 572 m     | 74.093163° | 16.684196° | Primary Governing  |
+| 03 | BALINGA           | S2       | 560 m     | 74.170310° | 16.687844° | Alternate Backup   |
+| 04 | KALE              | S2       | 580 m     | 74.056450° | 16.722809° | Alternate Backup   |
+| 05 | KOTOLI            | S3       | 585 m     | 74.051871° | 16.782017° | Primary Governing  |
+| 06 | BAJAR_BHOGAON     | S3       | 590 m     | 74.110782° | 16.808677° | Alternate Backup   |
+| 07 | PADAL             | S3       | 575 m     | 74.115187° | 16.744601° | Alternate Backup   |
+| 08 | BEED              | S4       | 565 m     | 74.128896° | 16.647984° | Primary Governing  |
+| 09 | SALWAN            | S5       | 595 m     | 73.973500° | 16.671200° | Primary Governing  |
+| 10 | KARANJPHEN        | S6       | 640 m     | 73.903649° | 16.785097° | Primary Governing  |
+| 11 | GAGANBAWDA        | S6       | 680 m     | 73.834674° | 16.546993° | Alternate Backup   |
+| 12 | RADHANAGARI       | S7       | 615 m     | 73.997182° | 16.410210° | Primary Governing  |
+| 13 | SHIROLI_DHUMALA   | S8       | 560 m     | 74.106283° | 16.616677° | Alternate Backup   |
+| 14 | HALADI            | S8       | 565 m     | 74.148293° | 16.583344° | Alternate Backup   |
+| 15 | RASHIWADE_BK      | S8       | 570 m     | 74.058300° | 16.541700° | Alternate Backup   |
+| 16 | AAVALI_BK         | S8       | 575 m     | 74.016700° | 16.500000° | Alternate Backup   |
+| 17 | KASABA_TARALE     | S8       | 580 m     | 73.966700° | 16.466700° | Primary Governing  |
+| 18 | KASABA_WALAWE     | S9       | 560 m     | 74.195610° | 16.824510° | Primary Governing  |
++----+-------------------+----------+-----------+------------+------------+--------------------+
+</code></pre>
+<hr />
+<h2>4. API Request Construction &amp; Parameter Specification</h2>
+<p>The forecast fetcher in <a href="file:///e:/hydrocast_complete/src/ecmwf/open_meteo.py"><code>open_meteo.py</code></a> queries the Open-Meteo v1 forecast endpoint:</p>
+<h3>4.1 Endpoint URL</h3>
+<p><code>GET https://api.open-meteo.com/v1/forecast</code></p>
+<h3>4.2 Query Parameters</h3>
+<pre><code class="language-python">params = {
+    &quot;latitude&quot;:          round(lat, 4),
+    &quot;longitude&quot;:         round(lon, 4),
+    &quot;hourly&quot;:            &quot;precipitation&quot;,
+    &quot;forecast_days&quot;:     4,                # 96 hours, aligned to 90
+    &quot;timezone&quot;:          &quot;UTC&quot;,
+    &quot;cell_selection&quot;:    &quot;land&quot;,
+}
+</code></pre>
+<h3>4.3 Hourly Precipitation Response Parsing</h3>
+<pre><code class="language-python"># Open-Meteo JSON Structure:
+{
+  &quot;latitude&quot;: 16.71,
+  &quot;longitude&quot;: 74.25,
+  &quot;elevation&quot;: 552.0,
+  &quot;hourly&quot;: {
+    &quot;time&quot;: [&quot;2026-09-03T06:00&quot;, &quot;2026-09-03T07:00&quot;, ...],
+    &quot;precipitation&quot;: [1.2, 3.4, 0.8, 0.0, 5.6, ...]  # mm/hr
+  }
+}
+</code></pre>
+<hr />
+<h2>5. Enterprise Retry Engine, Fault Tolerance &amp; Error Handling</h2>
+<p>To guarantee 100% pipeline reliability without triggering IP-level rate-limiting (<code>HTTP 429 Too Many Requests</code>) or crashing on upstream cloud hiccups, HydroCast employs a dedicated retry engine (<a href="file:///e:/hydrocast_complete/src/ecmwf/retry_utils.py"><code>src/ecmwf/retry_utils.py</code></a>):</p>
+<h3>5.1 Architecture of <code>retry_with_backoff</code></h3>
+<p>The utility wraps both requests and callable workflows:</p>
+<pre><code class="language-python">def retry_with_backoff(
+    fn=None,
+    max_retries: int = 4,
+    base_delay: float = 1.0,
+    max_delay: float = 30.0,
+    factor: float = 2.0,
+    jitter: bool = True,
+    retryable_exceptions=(requests.RequestException, Exception),
+    retryable_status_codes=(429, 500, 502, 503, 504),
+):
+    ...
+</code></pre>
+<h3>5.2 Key Resilience Mechanisms</h3>
+<ol>
+<li><strong>Exponential Backoff with Full Random Jitter:</strong>
+   $$\Delta t_{\text{wait}} = \min\left(t_{\text{max}}, t_{\text{base}} \cdot \text{factor}^{\text{attempt}} + \text{uniform}(0, t_{\text{jitter}})\right)$$
+   This prevents synchronized retry storms across concurrent workers.</li>
+<li><strong>Polite Inter-Station Delays:</strong>
+   A 250ms spacing between sequential station requests ensures compliance with Open-Meteo non-commercial fair-use burst limits.</li>
+<li><strong>HTTP Status Code Discrimination:</strong>
+   Transient errors (<code>429 Too Many Requests</code>, <code>500 Internal Server Error</code>, <code>502 Bad Gateway</code>, <code>503 Service Unavailable</code>, <code>504 Gateway Timeout</code>) trigger automatic backoff, while permanent errors (<code>400 Bad Request</code>, <code>404 Not Found</code>) fail fast without wasting quota.</li>
+<li><strong>Spatial Fallback (Nearest Neighbor):</strong>
+   If a station API fails after 4 exponential backoff attempts, the dynamic station selector automatically routes to the closest spatial alternate station in the same or adjacent subbasin using Euclidean geographic distance:
+   $$d = \sqrt{(\Delta\text{lon} \cdot \cos\bar{\phi})^2 + \Delta\phi^2}$$</li>
+</ol>
+<hr />
+<h2>6. Antecedent Soil Moisture Condition (AMC) Analysis</h2>
+<p>To configure the hydrological runoff Curve Number ($CN$) accurately in HEC-HMS, the system queries the 90-day historical precipitation:</p>
+<p>$$P_{5} = \sum_{d=t-5}^{t} \text{Rainfall}_d \quad (\text{5-day antecedent rainfall in mm})$$</p>
+<pre><code>+-------------------+--------------------------------+--------------------------------+
+| Moisture Category | 5-Day Dormant Season Rain (mm) | 5-Day Growing Season Rain (mm) |
++-------------------+--------------------------------+--------------------------------+
+| AMC-I  (Dry)      | &lt; 12.5 mm                      | &lt; 35.0 mm                      |
+| AMC-II (Average)  | 12.5 to 28.0 mm                | 35.0 to 53.0 mm                |
+| AMC-III (Wet)     | &gt; 28.0 mm                      | &gt; 53.0 mm                      |
++-------------------+--------------------------------+--------------------------------+
+</code></pre>
+<p>When heavy monsoon spells occur in Kolhapur ($P_5 &gt; 53\text{ mm}$), the engine automatically converts Curve Numbers to $CN_{III}$ using the standard hydrologic conversion:</p>
+<p>$$CN_{III} = \frac{CN_{II} \cdot e^{0.00673 \cdot (100 - CN_{II})}}{1 + CN_{II} \cdot (e^{0.00673 \cdot (100 - CN_{II})} - 1)}$$</p>
+<p>This ensures runoff calculations reflect saturated soil conditions where nearly 100% of excess rainfall converts directly into flood discharge.</p>
+        </main>
+    </div>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p><strong>Panchganga HydroCast</strong> &bull; Hydrologic Engineering Center &bull; Shivaji University, Kolhapur</p>
+            <p style="margin-top: 4px; font-size: 0.8rem; color: #64748b;">Funded by DST-SERB, Government of India</p>
+        </div>
+    </footer>
+    
+</body>
+</html>

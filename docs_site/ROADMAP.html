@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROADMAP - HydroCast HEC-HMS Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Chart.js for beautiful plotting -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- MathJax for rendering equations cleanly -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: { fontCache: 'global' }
+      };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="logo">HydroCast HEC-HMS <span>Documentation Portal</span></div>
+            <nav class="top-nav">
+                <a href="index.html">Overview</a>
+                <a href="repository_structure.html">Code & Structure</a>
+                <div class="nav-dropdown">
+                    <a href="#" class="dropbtn">Technical Manuals ▼</a>
+                    <div class="dropdown-content">
+                        <a href="Accuracy_Analysis_PI_Report.html">Accuracy Analysis PI Report</a>
+<a href="Architecture.html">Architecture</a>
+<a href="Backend.html">Backend</a>
+<a href="Calibration_Validation.html">Calibration Validation</a>
+<a href="Database.html">Database</a>
+<a href="Deployment_Operations.html">Deployment Operations</a>
+<a href="Errors_Mistakes_Engineering_Assumptions.html">Errors Mistakes Engineering Assumptions</a>
+<a href="Frontend.html">Frontend</a>
+<a href="HMS.html">HMS</a>
+<a href="Hydraulics.html">Hydraulics</a>
+<a href="Hydrology.html">Hydrology</a>
+<a href="IoT_Telemetry.html">IoT Telemetry</a>
+<a href="ML_Calibration_Engine.html">ML Calibration Engine</a>
+<a href="Novelty_of_this_System.html">Novelty of this System</a>
+<a href="Openmeteo.html">Openmeteo</a>
+<a href="ROADMAP.html">ROADMAP</a>
+<a href="Rainfall_Validation_Pipeline.html">Rainfall Validation Pipeline</a>
+<a href="Raingauge_Station.html">Raingauge Station</a>
+<a href="Runoff_Computation.html">Runoff Computation</a>
+<a href="Shpfiles.html">Shpfiles</a>
+<a href="Stage_Conversion_Discharge.html">Stage Conversion Discharge</a>
+<a href="WRD_Historical_Rating_Curve_CrossCheck.html">WRD Historical Rating Curve CrossCheck</a>
+
+                    </div>
+                </div>
+                <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" target="_blank" class="github-btn">GitHub</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <main class="content">
+            <h1>HydroCast: Production Architecture Roadmap &amp; Hardening Guide</h1>
+<h2>Executive Architecture Evaluation</h2>
+<p>HydroCast implements an end-to-end, operational hydrologic and hydraulic intelligence continuum:
+1. <strong>Meteorological Ingestion</strong>: ECMWF IFS HRES 9km quantitative precipitation forecasts via Open-Meteo API v1.
+2. <strong>Dynamic Station Selection</strong>: Multi-gauge maximum-precipitation and centroid routing across 9 Panchganga subbasins.
+3. <strong>Hydrologic Watershed Simulation</strong>: Loss modeling, SCS unit hydrograph transform, and Muskingum reach routing via HEC-HMS 4.x (with pure-Python SCS-CN fallback).
+4. <strong>Calibrated River Hydraulics</strong>: Bi-directional monotonic PCHIP rating curves anchored to surveyed river bed slopes ($S_0 = 0.005858$ at Shivaji, $S_0 = 0.002318$ at Rajaram) and verified against Maharashtra WRD ground truth.
+5. <strong>Persistence &amp; Presentation</strong>: Resilient dual-layer persistence (immutable JSON multi-run ledger + Supabase/PostgreSQL) serving a Next.js 14 executive dashboard with live WebSocket broadcast.</p>
+<p>To advance HydroCast from a <strong>Functional Operational System</strong> to a <strong>Mission-Critical Production Platform</strong>, five architectural hardening pillars are defined below.</p>
+<hr />
+<h2>The 5 Production Hardening Pillars (100% Open Source)</h2>
+<pre><code>┌──────────────────────────────────────────────────────────────────────────────────┐
+│                       HYDROCAST PRODUCTION PILLARS                       │
+├───────────────────┬───────────────────┬──────────────────┬───────────────────────┤
+│ 1. Orchestration  │ 2. Real-Time Alert│ 3. Docker        │ 4. Archival &amp; Security│
+│    &amp; Scheduling   │    &amp; Telegram Bot │    Containers    │    Rate-Limiting      │
+└───────────────────┴───────────────────┴──────────────────┴───────────────────────┘
+</code></pre>
+<h3>1. Robust Orchestration &amp; Fault-Tolerant Scheduling</h3>
+<ul>
+<li><strong>Objective</strong>: Prevent silent cycle skips caused by temporary API timeouts, network partitions, or compute crashes.</li>
+<li><strong>Implementation Options</strong>:</li>
+<li><strong>Option A (GitHub Actions Cron)</strong>: Automated execution at 02:30, 08:30, 14:30, 20:30 UTC via <code>.github/workflows/pipeline.yml</code> with automated retry steps and centralized status alerts.</li>
+<li><strong>Option B (Airflow / Systemd Timers)</strong>: Deploy systemd timer units on Linux hosts or Apache Airflow DAGs with retry-on-failure (<code>retries=3, retry_delay=timedelta(minutes=5)</code>).</li>
+<li><strong>Milestones</strong>:</li>
+<li>[x] Implement 12-step transactional pipeline orchestrator (<code>src/orchestrator.py</code>).</li>
+<li>[x] Configure GitHub Actions 6-hourly automated workflow.</li>
+<li>[x] Add exponential backoff retry wrappers around external weather ingestion.</li>
+</ul>
+<h3>2. Automated Multi-Channel Emergency Alerting</h3>
+<ul>
+<li><strong>Objective</strong>: Push immediate warning and evacuation bulletins when predicted stages breach Warning or Danger thresholds.</li>
+<li><strong>Implementation</strong>:</li>
+<li><strong>Telegram Bot API</strong>: Free, zero-infrastructure messaging using <code>python-telegram-bot</code> (<code>src/alerts/evaluator.py</code>, <code>src/alerts/telegram_bot.py</code>).</li>
+<li><strong>FastAPI Webhooks</strong>: Broadcast CWC alert events to disaster management agency dispatch endpoints.</li>
+<li><strong>Milestones</strong>:</li>
+<li>[x] Threshold evaluation engine (<code>src/alerts/evaluator.py</code>) with CWC warning tiers.</li>
+<li>[x] WebSocket live push stream (<code>/ws/live</code>) to dashboard.</li>
+<li>[x] Implement production Telegram bot dispatcher for District Disaster Management Authority (DDMA).</li>
+</ul>
+<h3>3. Containerization (Docker &amp; Compose)</h3>
+<ul>
+<li><strong>Objective</strong>: Package Python 3.12, Java JDK 17 (for HEC-DSS / HEC-HMS), GDAL, and Next.js into standardized images to ensure complete reproducibility across any cloud VM or on-premise workstation.</li>
+<li><strong>Architecture</strong>:</li>
+<li><code>docker-compose.yml</code> defining:<ol>
+<li><code>hydrocast-backend</code>: FastAPI + HEC-DSS runtime with Python &amp; Java.</li>
+<li><code>hydrocast-frontend</code>: Node.js 20 Next.js production SSR container.</li>
+<li><code>hydrocast-db</code>: Local PostgreSQL 15 + PostGIS container (for offline air-gapped deployments).</li>
+</ol>
+</li>
+<li><strong>Milestones</strong>:</li>
+<li>[x] Author multi-stage <code>Dockerfile</code> for backend with OpenJDK 17 + GDAL.</li>
+<li>[x] Author standalone <code>Dockerfile</code> for Next.js frontend.</li>
+<li>[x] Provide unified <code>docker-compose.yml</code> for 1-command startup.</li>
+</ul>
+<h3>4. Cold Storage &amp; Telemetry Archival Strategy</h3>
+<ul>
+<li><strong>Objective</strong>: Keep the primary Supabase/PostgreSQL database responsive by pruning high-frequency time-series older than 90 days into compressed parquet archives.</li>
+<li><strong>Strategy</strong>:</li>
+<li>Maintain summary KPIs in <code>simulation_runs</code> indefinitely.</li>
+<li>Export granular 15-minute <code>hydrograph_results</code> and <code>rainfall_data</code> older than 30-90 days into Apache Parquet files stored in MinIO (self-hosted S3) or Cloud Storage.</li>
+<li><strong>Milestones</strong>:</li>
+<li>[x] Build automated weekly archival script (<code>src/db/archive_runs.py</code>).</li>
+<li>[x] Integrate Apache Parquet columnar compression for historical hydrographs.</li>
+</ul>
+<h3>5. API Security, JWT Authentication &amp; Rate Limiting</h3>
+<ul>
+<li><strong>Objective</strong>: Protect operational endpoints against scrapers, DDoS attacks, and unauthorized database writes.</li>
+<li><strong>Strategy</strong>:</li>
+<li>Standardize API key validation via <code>X-API-Key</code> headers on administrative endpoints.</li>
+<li>Implement IP-based rate-limiting using <code>slowapi</code> on public FastAPI endpoints.</li>
+<li>Implement JWT authentication for administrative manual run triggering.</li>
+<li><strong>Milestones</strong>:</li>
+<li>[x] Internal authorization header check for broadcast endpoints.</li>
+<li>[x] Enforce rate limits (100 req/min) on <code>/api/v1/runoff/*</code> endpoints.</li>
+<li>[x] Implement JWT authentication router and manual trigger endpoints (<code>/api/v1/admin/*</code>).</li>
+</ul>
+<hr />
+<h2>Implementation Progress Tracker</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Milestone</th>
+<th style="text-align: left;">Area</th>
+<th style="text-align: center;">Status</th>
+<th style="text-align: left;">Target File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Dynamic 18-Station Selection</td>
+<td style="text-align: left;">Hydrology</td>
+<td style="text-align: center;">Completed</td>
+<td style="text-align: left;"><code>src/ecmwf/station_selector.py</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Monotonic PCHIP Rating Curves</td>
+<td style="text-align: left;">Hydraulics</td>
+<td style="text-align: center;">Completed</td>
+<td style="text-align: left;"><code>src/hydrology/stage_converter.py</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">WRD Ground Truth Verification</td>
+<td style="text-align: left;">Accuracy</td>
+<td style="text-align: center;">Completed</td>
+<td style="text-align: left;"><code>docs/WRD_Historical_Rating_Curve_CrossCheck.md</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Observed Rainfall Pipeline</td>
+<td style="text-align: left;">QC / Ingestion</td>
+<td style="text-align: center;">Completed</td>
+<td style="text-align: left;"><code>src/hydrology/observed_rainfall_pipeline.py</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Pipeline Orchestrator</td>
+<td style="text-align: left;">Execution</td>
+<td style="text-align: center;">Completed</td>
+<td style="text-align: left;"><code>src/orchestrator.py</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Next.js Operational Dashboard</td>
+<td style="text-align: left;">Presentation</td>
+<td style="text-align: center;">Completed</td>
+<td style="text-align: left;"><code>frontend/app/dashboard/page.tsx</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Docker Multi-Container Compose</td>
+<td style="text-align: left;">Operations</td>
+<td style="text-align: center;">Completed</td>
+<td style="text-align: left;"><code>docker-compose.yml</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Weekly Parquet Data Pruning</td>
+<td style="text-align: left;">Database</td>
+<td style="text-align: center;">Completed</td>
+<td style="text-align: left;"><code>src/db/archive_runs.py</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">DDMA Telegram Alert Dispatcher</td>
+<td style="text-align: left;">Alerting</td>
+<td style="text-align: center;">Completed</td>
+<td style="text-align: left;"><code>src/alerts/telegram_bot.py</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">API Rate Limiting &amp; Admin JWT</td>
+<td style="text-align: left;">Security</td>
+<td style="text-align: center;">Completed</td>
+<td style="text-align: left;"><code>src/api/security.py</code></td>
+</tr>
+</tbody>
+</table>
+        </main>
+    </div>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p><strong>Panchganga HydroCast</strong> &bull; Hydrologic Engineering Center &bull; Shivaji University, Kolhapur</p>
+            <p style="margin-top: 4px; font-size: 0.8rem; color: #64748b;">Funded by DST-SERB, Government of India</p>
+        </div>
+    </footer>
+    
+</body>
+</html>

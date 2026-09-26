@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shpfiles - HydroCast HEC-HMS Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Chart.js for beautiful plotting -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- MathJax for rendering equations cleanly -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: { fontCache: 'global' }
+      };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="logo">HydroCast HEC-HMS <span>Documentation Portal</span></div>
+            <nav class="top-nav">
+                <a href="index.html">Overview</a>
+                <a href="repository_structure.html">Code & Structure</a>
+                <div class="nav-dropdown">
+                    <a href="#" class="dropbtn">Technical Manuals ▼</a>
+                    <div class="dropdown-content">
+                        <a href="Accuracy_Analysis_PI_Report.html">Accuracy Analysis PI Report</a>
+<a href="Architecture.html">Architecture</a>
+<a href="Backend.html">Backend</a>
+<a href="Calibration_Validation.html">Calibration Validation</a>
+<a href="Database.html">Database</a>
+<a href="Deployment_Operations.html">Deployment Operations</a>
+<a href="Errors_Mistakes_Engineering_Assumptions.html">Errors Mistakes Engineering Assumptions</a>
+<a href="Frontend.html">Frontend</a>
+<a href="HMS.html">HMS</a>
+<a href="Hydraulics.html">Hydraulics</a>
+<a href="Hydrology.html">Hydrology</a>
+<a href="IoT_Telemetry.html">IoT Telemetry</a>
+<a href="ML_Calibration_Engine.html">ML Calibration Engine</a>
+<a href="Novelty_of_this_System.html">Novelty of this System</a>
+<a href="Openmeteo.html">Openmeteo</a>
+<a href="ROADMAP.html">ROADMAP</a>
+<a href="Rainfall_Validation_Pipeline.html">Rainfall Validation Pipeline</a>
+<a href="Raingauge_Station.html">Raingauge Station</a>
+<a href="Runoff_Computation.html">Runoff Computation</a>
+<a href="Shpfiles.html">Shpfiles</a>
+<a href="Stage_Conversion_Discharge.html">Stage Conversion Discharge</a>
+<a href="WRD_Historical_Rating_Curve_CrossCheck.html">WRD Historical Rating Curve CrossCheck</a>
+
+                    </div>
+                </div>
+                <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" target="_blank" class="github-btn">GitHub</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <main class="content">
+            <h1>GIS Geospatial Data, Shapefiles &amp; Subbasin Vector Layers</h1>
+<pre><code>========================================================================================
+             PANCHGANGA BASIN GIS SHAPEFILES &amp; VECTOR GEOJSON LAYERS
+========================================================================================
+
+                 [ 30m SRTM DEM Elevation Grid ]
+                               │
+               D8 Flow Direction &amp; Flow Accumulation
+                               │
+            ┌──────────────────┴──────────────────┐
+            ▼                                     ▼
+ [ Panchganga_RJKT_RB.geojson ]        [ Panchganga_RJKT_Flowpath.geojson ]
+ Basin Outer Boundary &amp; Subbasins     Vector Stream Network &amp; Flowpaths
+ - Catchment Area: 2,140 km²           - Strahler Stream Orders (1 to 5)
+ - S1 to S9 Subbasin Polygons          - Kasari, Kumbhi, Tulsi, Bhogawati,
+ - Attributes: Area, Slope, CN         - Main Stem Panchganga Channel
+            │                                     │
+            └──────────────────┬──────────────────┘
+                               ▼
+               Web-Ready Projection Transform
+                     (UTM 43N ──&gt; EPSG:4326)
+                               │
+                               ▼
+            [ Leaflet Web GIS Interactive Dashboard Map ]
+</code></pre>
+<hr />
+<h2>1. Directory Structure &amp; File Manifest</h2>
+<p>The geospatial repository contains both raw QGIS spatial layers and web-optimized GeoJSON files:</p>
+<pre><code>system/
+ ├── data/
+ │    └── Shapefiles_Panchganga basin/
+ │         ├── Panchganga_RJKT_RB.geojson        # Watershed boundary &amp; subbasins (1.07 MB)
+ │         ├── Panchganga_RJKT_RB.qmd            # QGIS metadata descriptor
+ │         ├── Panchganga_RJKT_Flowpath.geojson  # High-resolution river centerlines (749 KB)
+ │         └── Panchganga_RJKT_Flowpath.qmd      # QGIS stream layer metadata
+ └── frontend/
+      └── public/
+           └── data/
+                ├── panchganga_subbasins.geojson # Leaflet-optimized polygon layer
+                └── panchganga_rivers.geojson    # Leaflet-optimized stream network
+</code></pre>
+<hr />
+<h2>2. Coordinate Reference Systems (CRS) Specification</h2>
+<p>Hydrologic vector processing uses dual spatial reference frames:</p>
+<ol>
+<li><strong>Analytical Hydrologic Projected CRS: <code>EPSG:32643</code> (UTM Zone 43N)</strong></li>
+<li><strong>Units:</strong> Meters ($m$)</li>
+<li><strong>Spheroid:</strong> WGS 84</li>
+<li><strong>Usage:</strong> Used in GIS preprocessing for exact planimetric area calculation ($\text{Area } A = \iint dx\,dy$), channel length measurement ($L$), and reach slope determination ($\Delta z / \Delta L$).</li>
+<li><strong>Web Map Geographic CRS: <code>EPSG:4326</code> (WGS 84 Lat/Long)</strong></li>
+<li><strong>Units:</strong> Decimal degrees ($^\circ$)</li>
+<li><strong>Usage:</strong> Used for client-side Leaflet rendering, Open-Meteo coordinate queries, and GeoJSON serialization.</li>
+</ol>
+<hr />
+<h2>3. GeoJSON Feature Property Schemas</h2>
+<h3>3.1 Subbasin Boundary Polygons (<code>Panchganga_RJKT_RB.geojson</code>)</h3>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;Feature&quot;,
+  &quot;geometry&quot;: {
+    &quot;type&quot;: &quot;Polygon&quot;,
+    &quot;coordinates&quot;: [[[74.093, 16.684], [74.128, 16.647], ...]]
+  },
+  &quot;properties&quot;: {
+    &quot;Subbasin&quot;: &quot;S2&quot;,
+    &quot;Name&quot;: &quot;Sangarul (Tulsi Upper)&quot;,
+    &quot;Area_km2&quot;: 224.8,
+    &quot;Mean_Elev_m&quot;: 572.0,
+    &quot;CN_AMC2&quot;: 74.5,
+    &quot;Tc_hours&quot;: 7.2,
+    &quot;R_hours&quot;: 9.4,
+    &quot;Primary_Gage&quot;: &quot;SANGARUL&quot;
+  }
+}
+</code></pre>
+<h3>3.2 River Network Centerlines (<code>Panchganga_RJKT_Flowpath.geojson</code>)</h3>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;Feature&quot;,
+  &quot;geometry&quot;: {
+    &quot;type&quot;: &quot;LineString&quot;,
+    &quot;coordinates&quot;: [[[73.834, 16.546], [73.903, 16.785], ...]]
+  },
+  &quot;properties&quot;: {
+    &quot;Reach_ID&quot;: &quot;R_KASARI_01&quot;,
+    &quot;Stream_Name&quot;: &quot;Kasari River&quot;,
+    &quot;Strahler_Order&quot;: 4,
+    &quot;Length_km&quot;: 42.6,
+    &quot;Bed_Slope_m_per_m&quot;: 0.0034,
+    &quot;Manning_n&quot;: 0.040
+  }
+}
+</code></pre>
+<hr />
+<h2>4. Leaflet Web GIS Integration</h2>
+<p>The interactive map in <code>OverviewPanel.tsx</code> visualizes these spatial layers:
+- <strong>Subbasin Choropleth:</strong> Color-coded by cumulative 90-hour rainfall intensity (green: $&lt; 30\text{ mm}$, amber: $30-75\text{ mm}$, purple: $&gt; 75\text{ mm}$).
+- <strong>River Flowpaths:</strong> Dynamic blue vector lines with thickness proportional to Strahler stream order.
+- <strong>Sensor Pin Overlays:</strong> Interactive markers at Shivaji Bridge and Rajaram Weir displaying live water level ($m$ MSL), alert badges, and historical flood marks.</p>
+        </main>
+    </div>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p><strong>Panchganga HydroCast</strong> &bull; Hydrologic Engineering Center &bull; Shivaji University, Kolhapur</p>
+            <p style="margin-top: 4px; font-size: 0.8rem; color: #64748b;">Funded by DST-SERB, Government of India</p>
+        </div>
+    </footer>
+    
+</body>
+</html>
