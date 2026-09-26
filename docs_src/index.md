@@ -22,8 +22,9 @@ Welcome to the comprehensive technical documentation for **HydroCast: Real-Time 
 document.addEventListener("DOMContentLoaded", function() {
     var map = L.map('hydrocast-map').setView([16.65, 74.15], 10);
     
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+    L.tileLayer('https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        attribution: '&copy; Google Maps Terrain'
     }).addTo(map);
 
     fetch('gis/panchganga_subbasins.geojson')
