@@ -8,29 +8,31 @@
       
       
       
-        <link rel="canonical" href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/">
+        <link rel="canonical" href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/Raingauge_Station/">
       
       
+        <link rel="prev" href="../IoT_Telemetry/">
       
-        <link rel="next" href="Architecture/">
+      
+        <link rel="next" href="../Openmeteo/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>HydroCast HEC-HMS Documentation</title>
+        <title>Rain Gauge Stations - HydroCast HEC-HMS Documentation</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,7 +51,7 @@
       
     
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#hydrocast-technical-documentation-library" class="md-skip">
+        <a href="#panchganga-rain-gauge-network-subbasin-station-routing-topology" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +90,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="HydroCast HEC-HMS Documentation" class="md-header__button md-logo" aria-label="HydroCast HEC-HMS Documentation" data-md-component="logo">
+    <a href=".." title="HydroCast HEC-HMS Documentation" class="md-header__button md-logo" aria-label="HydroCast HEC-HMS Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Rain Gauge Stations
             
           </span>
         </div>
@@ -219,11 +221,9 @@
   
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="." class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
         
   
   
@@ -242,7 +242,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="Architecture/" class="md-tabs__link">
+      <a href="../Architecture/" class="md-tabs__link">
         
   
   
@@ -263,7 +263,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="Runoff_Computation/" class="md-tabs__link">
+        <a href="../Runoff_Computation/" class="md-tabs__link">
           
   
   
@@ -283,7 +283,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="Hydraulics/" class="md-tabs__link">
+        <a href="../Hydraulics/" class="md-tabs__link">
           
   
   
@@ -299,11 +299,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="IoT_Telemetry/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../IoT_Telemetry/" class="md-tabs__link">
           
   
   
@@ -323,7 +325,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="Calibration_Validation/" class="md-tabs__link">
+        <a href="../Calibration_Validation/" class="md-tabs__link">
           
   
   
@@ -343,7 +345,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="Backend/" class="md-tabs__link">
+        <a href="../Backend/" class="md-tabs__link">
           
   
   
@@ -363,7 +365,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="Novelty_of_this_System/" class="md-tabs__link">
+        <a href="../Novelty_of_this_System/" class="md-tabs__link">
           
   
   
@@ -397,7 +399,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="HydroCast HEC-HMS Documentation" class="md-nav__button md-logo" aria-label="HydroCast HEC-HMS Documentation" data-md-component="logo">
+    <a href=".." title="HydroCast HEC-HMS Documentation" class="md-nav__button md-logo" aria-label="HydroCast HEC-HMS Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -424,37 +426,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -470,48 +445,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#technology-engineering-stack" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technology &amp; Engineering Stack
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#technical-modules" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Modules
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -523,7 +456,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Architecture/" class="md-nav__link">
+      <a href="../Architecture/" class="md-nav__link">
         
   
   
@@ -602,7 +535,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Runoff_Computation/" class="md-nav__link">
+      <a href="../Runoff_Computation/" class="md-nav__link">
         
   
   
@@ -630,7 +563,7 @@
   
   
     <li class="md-nav__item">
-      <a href="HMS/" class="md-nav__link">
+      <a href="../HMS/" class="md-nav__link">
         
   
   
@@ -717,7 +650,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Hydraulics/" class="md-nav__link">
+      <a href="../Hydraulics/" class="md-nav__link">
         
   
   
@@ -745,7 +678,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Stage_Conversion_Discharge/" class="md-nav__link">
+      <a href="../Stage_Conversion_Discharge/" class="md-nav__link">
         
   
   
@@ -773,7 +706,7 @@
   
   
     <li class="md-nav__item">
-      <a href="WRD_Historical_Rating_Curve_CrossCheck/" class="md-nav__link">
+      <a href="../WRD_Historical_Rating_Curve_CrossCheck/" class="md-nav__link">
         
   
   
@@ -805,26 +738,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -842,7 +780,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -860,7 +798,7 @@
   
   
     <li class="md-nav__item">
-      <a href="IoT_Telemetry/" class="md-nav__link">
+      <a href="../IoT_Telemetry/" class="md-nav__link">
         
   
   
@@ -885,10 +823,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="Raingauge_Station/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rain Gauge Stations
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -904,6 +869,59 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-official-subbasin-delineation-station-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Official Subbasin Delineation &amp; Station Registry
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-dynamic-conservative-station-selection-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dynamic Conservative Station Selection Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-hydrologic-impact-of-the-station-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Hydrologic Impact of the Station Update
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -916,7 +934,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Openmeteo/" class="md-nav__link">
+      <a href="../Openmeteo/" class="md-nav__link">
         
   
   
@@ -1003,7 +1021,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Calibration_Validation/" class="md-nav__link">
+      <a href="../Calibration_Validation/" class="md-nav__link">
         
   
   
@@ -1031,7 +1049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Rainfall_Validation_Pipeline/" class="md-nav__link">
+      <a href="../Rainfall_Validation_Pipeline/" class="md-nav__link">
         
   
   
@@ -1118,7 +1136,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Backend/" class="md-nav__link">
+      <a href="../Backend/" class="md-nav__link">
         
   
   
@@ -1146,7 +1164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Database/" class="md-nav__link">
+      <a href="../Database/" class="md-nav__link">
         
   
   
@@ -1174,7 +1192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Frontend/" class="md-nav__link">
+      <a href="../Frontend/" class="md-nav__link">
         
   
   
@@ -1202,7 +1220,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Deployment_Operations/" class="md-nav__link">
+      <a href="../Deployment_Operations/" class="md-nav__link">
         
   
   
@@ -1289,7 +1307,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Novelty_of_this_System/" class="md-nav__link">
+      <a href="../Novelty_of_this_System/" class="md-nav__link">
         
   
   
@@ -1317,7 +1335,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Errors_Mistakes_Engineering_Assumptions/" class="md-nav__link">
+      <a href="../Errors_Mistakes_Engineering_Assumptions/" class="md-nav__link">
         
   
   
@@ -1345,7 +1363,7 @@
   
   
     <li class="md-nav__item">
-      <a href="ROADMAP/" class="md-nav__link">
+      <a href="../ROADMAP/" class="md-nav__link">
         
   
   
@@ -1373,7 +1391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Shpfiles/" class="md-nav__link">
+      <a href="../Shpfiles/" class="md-nav__link">
         
   
   
@@ -1428,10 +1446,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#technology-engineering-stack" class="md-nav__link">
+  <a href="#1-official-subbasin-delineation-station-registry" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Technology &amp; Engineering Stack
+        1. Official Subbasin Delineation &amp; Station Registry
       
     </span>
   </a>
@@ -1439,10 +1457,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#technical-modules" class="md-nav__link">
+  <a href="#2-dynamic-conservative-station-selection-algorithm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Technical Modules
+        2. Dynamic Conservative Station Selection Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-hydrologic-impact-of-the-station-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Hydrologic Impact of the Station Update
       
     </span>
   </a>
@@ -1469,180 +1498,106 @@
   
 
 
-<h1 id="hydrocast-technical-documentation-library">HydroCast Technical Documentation Library<a class="headerlink" href="#hydrocast-technical-documentation-library" title="Permanent link">&para;</a></h1>
-<p align="center">
-  <img src="assets/hydrocast_main_banner.jpg" alt="HydroCast Operational Continuum" width="100%">
-</p>
+<h1 id="panchganga-rain-gauge-network-subbasin-station-routing-topology">Panchganga Rain Gauge Network &amp; Subbasin Station Routing Topology<a class="headerlink" href="#panchganga-rain-gauge-network-subbasin-station-routing-topology" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code>========================================================================================================================
+                 PANCHGANGA BASIN RAIN GAUGE NETWORK &amp; SUBBASIN ROUTING TOPOLOGY
+========================================================================================================================
 
-<p align="center">
-  <a href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/">
-    <img src="https://img.shields.io/badge/🌐_Live_Hydraulic_&_Documentation_Portal-GitHub_Pages-06B6D4?style=for-the-badge&logo=github&logoColor=white" alt="Live GitHub Pages Portal">
-  </a>
-</p>
+  Elevation &amp; Orographic Rainfall Gradient (West to East):
+  Altitude (m MSL)
+   700 +   [ GAGANBAWDA (680m) ]  &lt;-- Crest of Western Ghats (Highest Rainfall Zone ~5,000 mm/year)
+       |   [ KARANJPHEN (640m) ]  [ PADASALI (620m) ]
+   600 +   [ RADHANAGARI (615m) ] [ GARIVADE (610m) ] [ KOTOLI (585m) ]
+       |   [ SANGARUL (572m) ]    [ BEED (565m) ]     [ KASABA TARALE (595m) ]
+   550 +---------------------------------------------- [ KARVEER (550m) ] &lt;-- Valley Floor / Outlet
+       +-----------------------------------------------------------------------------------------&gt;
+       West (Sahyadri Escarpment)                                          East (Kolhapur Plains)
 
-<p>Welcome to the comprehensive technical documentation for <strong>HydroCast: Real-Time Operational Flood Forecasting &amp; Basin Intelligence</strong> for the Panchganga River Catchment (Kolhapur District, Maharashtra, India).</p>
-<h2 id="technology-engineering-stack">Technology &amp; Engineering Stack<a class="headerlink" href="#technology-engineering-stack" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Area</th>
-<th style="text-align: left;">Tool</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><strong>OS</strong></td>
-<td style="text-align: left;"><img alt="Linux" src="https://img.shields.io/badge/OS-Linux-FCC624?style=flat&amp;logo=linux&amp;logoColor=black" /> <img alt="macOS" src="https://img.shields.io/badge/OS-macOS-000000?style=flat&amp;logo=apple&amp;logoColor=white" /> <img alt="Windows" src="https://img.shields.io/badge/OS-Windows-0078D6?style=flat&amp;logo=windows&amp;logoColor=white" /></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Languages</strong></td>
-<td style="text-align: left;"><img alt="Bash" src="https://img.shields.io/badge/Code-Bash-4EAA25?style=flat&amp;logo=gnubash&amp;logoColor=white" /> <img alt="Python" src="https://img.shields.io/badge/Code-Python_3.11-3776AB?style=flat&amp;logo=python&amp;logoColor=white" /> <img alt="Java" src="https://img.shields.io/badge/Code-Java_LTS-ED8B00?style=flat&amp;logo=openjdk&amp;logoColor=white" /> <img alt="Node.js" src="https://img.shields.io/badge/Code-Node.js-339933?style=flat&amp;logo=nodedotjs&amp;logoColor=white" /> <img alt="JavaScript" src="https://img.shields.io/badge/Code-JavaScript-F7DF1E?style=flat&amp;logo=javascript&amp;logoColor=black" /> <img alt="TypeScript" src="https://img.shields.io/badge/Code-TypeScript-3178C6?style=flat&amp;logo=typescript&amp;logoColor=white" /> <img alt="SQL" src="https://img.shields.io/badge/Code-SQL-CC292B?style=flat&amp;logo=postgresql&amp;logoColor=white" /></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Frameworks</strong></td>
-<td style="text-align: left;"><img alt="Next.js" src="https://img.shields.io/badge/Code-Next.js_14-000000?style=flat&amp;logo=nextdotjs&amp;logoColor=white" /> <img alt="React" src="https://img.shields.io/badge/Code-React_18-61DAFB?style=flat&amp;logo=react&amp;logoColor=black" /> <img alt="FastAPI" src="https://img.shields.io/badge/Code-FastAPI-009688?style=flat&amp;logo=fastapi&amp;logoColor=white" /> <img alt="Tailwind" src="https://img.shields.io/badge/Code-Tailwind_CSS-06B6D4?style=flat&amp;logo=tailwindcss&amp;logoColor=white" /> <img alt="Leaflet" src="https://img.shields.io/badge/Code-Leaflet-199900?style=flat&amp;logo=leaflet&amp;logoColor=white" /></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Hydrology &amp; ML</strong></td>
-<td style="text-align: left;"><img alt="HEC-HMS" src="https://img.shields.io/badge/Engine-HEC--HMS_4.12-1D4ED8?style=flat&amp;logo=apache&amp;logoColor=white" /> <img alt="Jython" src="https://img.shields.io/badge/Script-Jython_2.7-D97706?style=flat&amp;logo=python&amp;logoColor=white" /> <img alt="GeoPandas" src="https://img.shields.io/badge/GIS-GeoPandas-139C5A?style=flat&amp;logo=geopandas&amp;logoColor=white" /> <img alt="GDAL" src="https://img.shields.io/badge/GIS-GDAL-499848?style=flat&amp;logo=osgeo&amp;logoColor=white" /> <img alt="SciPy" src="https://img.shields.io/badge/Math-SciPy_PCHIP-8CAAE6?style=flat&amp;logo=scipy&amp;logoColor=black" /> <img alt="NumPy" src="https://img.shields.io/badge/Math-NumPy-013243?style=flat&amp;logo=numpy&amp;logoColor=white" /></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Databases &amp; Archival</strong></td>
-<td style="text-align: left;"><img alt="PostgreSQL" src="https://img.shields.io/badge/DB-PostgreSQL_15-4169E1?style=flat&amp;logo=postgresql&amp;logoColor=white" /> <img alt="Supabase" src="https://img.shields.io/badge/DB-Supabase-3ECF8E?style=flat&amp;logo=supabase&amp;logoColor=black" /> <img alt="Parquet" src="https://img.shields.io/badge/Storage-Apache_Parquet-4B67A1?style=flat&amp;logo=apache&amp;logoColor=white" /> <img alt="PostGIS" src="https://img.shields.io/badge/DB-PostGIS-336791?style=flat&amp;logo=postgresql&amp;logoColor=white" /></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>IoT &amp; Alerting</strong></td>
-<td style="text-align: left;"><img alt="ThingSpeak" src="https://img.shields.io/badge/IoT-ThingSpeak-005B94?style=flat&amp;logo=mathworks&amp;logoColor=white" /> <img alt="Telegram" src="https://img.shields.io/badge/Alerts-Telegram_Bot-26A5E4?style=flat&amp;logo=telegram&amp;logoColor=white" /> <img alt="Radar" src="https://img.shields.io/badge/Hardware-Radar%20Altimeter-F59E0B?style=flat&amp;logo=target&amp;logoColor=white" /> <img alt="Open-Meteo" src="https://img.shields.io/badge/NWP-Open--Meteo-F97316?style=flat&amp;logo=accuweather&amp;logoColor=white" /></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Infrastructure</strong></td>
-<td style="text-align: left;"><img alt="Docker" src="https://img.shields.io/badge/Containers-Docker-2496ED?style=flat&amp;logo=docker&amp;logoColor=white" /> <img alt="Compose" src="https://img.shields.io/badge/Containers-Docker_Compose-2496ED?style=flat&amp;logo=docker&amp;logoColor=white" /> <img alt="GitHub Actions" src="https://img.shields.io/badge/CICD-GitHub_Actions-2088FF?style=flat&amp;logo=githubactions&amp;logoColor=white" /> <img alt="Vercel" src="https://img.shields.io/badge/Deploy-Vercel-000000?style=flat&amp;logo=vercel&amp;logoColor=white" /></td>
-</tr>
-</tbody>
-</table>
+  Subbasin Spatial Hierarchy &amp; Delineated Drainage Areas (Total Gauged Catchment: 1,837.21 km²):
+
+  ┌───────────────┬──────────────┬────────────────────────────────┬──────────────────────────────────────────┐
+  │ Subbasin ID   │ Area (km²)   │ Primary Raingauge Station      │ Alternate Station(s)                     │
+  ├───────────────┼──────────────┼────────────────────────────────┼──────────────────────────────────────────┤
+  │ S1            │ 86.213 km²   │ Karveer                        │ — (Centroid fallback to Karveer)         │
+  │ S2            │ 153.770 km²  │ Sangarul                       │ Balinga, Kale                            │
+  │ S3            │ 261.320 km²  │ Kotoli                         │ Bajar Bhogaon, Padal                     │
+  │ S4            │ 262.000 km²  │ Karanjphen                     │ — (High-altitude headwater gauge)        │
+  │ S5            │ 106.390 km²  │ Padasali                       │ Salwan                                   │
+  │ S6            │ 227.720 km²  │ Gaganbawda                     │ Gaganbawda (Crest Gauge)                 │
+  │ S7            │ 195.390 km²  │ Garivade                       │ — (Dudhganga-Panchganga ridge)           │
+  │ S8            │ 177.440 km²  │ Beed                           │ Shiroli-Dhumala                          │
+  │ S9            │ 366.970 km²  │ Radhanagari                    │ Haladi, Rashiwade Bk, Aavali Bk,         │
+  │               │              │                                │ Kasaba Tarale, Kasaba Walawe             │
+  └───────────────┴──────────────┴────────────────────────────────┴──────────────────────────────────────────┘
+</code></pre></div>
 <hr />
-<h2 id="technical-modules">Technical Modules<a class="headerlink" href="#technical-modules" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Module</th>
-<th style="text-align: left;">Document</th>
-<th style="text-align: left;">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><strong>System Architecture</strong></td>
-<td style="text-align: left;"><a href="Architecture/"><code>Architecture.md</code></a></td>
-<td style="text-align: left;">12-Step operational prediction pipeline, ML recalibration loop, multi-container Docker, and cold storage.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>API &amp; Backend</strong></td>
-<td style="text-align: left;"><a href="Backend/"><code>Backend.md</code></a></td>
-<td style="text-align: left;">FastAPI REST services, SlowAPI rate limiting, admin JWT tokens, manual triggers, and WebSockets.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Frontend Dashboard</strong></td>
-<td style="text-align: left;"><a href="Frontend/"><code>Frontend.md</code></a></td>
-<td style="text-align: left;">Next.js 14 App Router, Peak Flood Strike Horizon (±2.0h CI), 2D SVG Cross-Section, and Docker runtime.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Database Architecture</strong></td>
-<td style="text-align: left;"><a href="Database/"><code>Database.md</code></a></td>
-<td style="text-align: left;">PostgreSQL production schema, <code>pipeline_step_log</code>, Supabase cloud sync, and Parquet cold storage.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Open-Meteo &amp; ECMWF</strong></td>
-<td style="text-align: left;"><a href="Openmeteo/"><code>Openmeteo.md</code></a></td>
-<td style="text-align: left;">ECMWF IFS HRES 9km QPF ingestion, enterprise exponential backoff retry wrappers, and station routing.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Rain Gauge Network</strong></td>
-<td style="text-align: left;"><a href="Raingauge_Station/"><code>Raingauge_Station.md</code></a></td>
-<td style="text-align: left;">18 primary and alternate stations, geographical topology, and dynamic selection.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Basin Hydrology</strong></td>
-<td style="text-align: left;"><a href="Hydrology/"><code>Hydrology.md</code></a></td>
-<td style="text-align: left;">1,837.2 km² Panchganga basin physiography, subbasins S1–S9, SCS-CN, SCS Dimensionless UH, and closed-loop ML recalibration.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Runoff Computation</strong></td>
-<td style="text-align: left;"><a href="Runoff_Computation/"><code>Runoff_Computation.md</code></a></td>
-<td style="text-align: left;">Mathematical runoff continuum, SCS-CN loss, SCS unit hydrograph convolution, and Muskingum reach routing.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>HEC-HMS Automation</strong></td>
-<td style="text-align: left;"><a href="HMS/"><code>HMS.md</code></a></td>
-<td style="text-align: left;">Headless USACE HEC-HMS 4.13 batch runner, pure-Python physical solver, SCS-CN loss, SCS-UH, Muskingum routing, and baseflow recession.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>River Hydraulics</strong></td>
-<td style="text-align: left;"><a href="Hydraulics/"><code>Hydraulics.md</code></a></td>
-<td style="text-align: left;">Divided Channel Method (<span class="arithmatex">\(n_{\text{main}}=0.031, n_{\text{flood}}=0.070\)</span>), surveyed bed slopes (<span class="arithmatex">\(1:2529, 1:4641, 1:7700\)</span>), and K.T. weir hydraulics.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Rating Curves</strong></td>
-<td style="text-align: left;"><a href="Stage_Conversion_Discharge/"><code>Stage_Conversion_Discharge.md</code></a></td>
-<td style="text-align: left;">Bi-directional monotonic PCHIP rating curves (<span class="arithmatex">\(dQ/dh &gt; 0\)</span>) for Shivaji Bridge &amp; Rajaram Weir.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Model Calibration</strong></td>
-<td style="text-align: left;"><a href="Calibration_Validation/"><code>Calibration_Validation.md</code></a></td>
-<td style="text-align: left;">Spearman rank <span class="arithmatex">\(\rho\)</span>, NSE, PBIAS, real-time ML optimization, and WRD benchmark calibration.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>ML Calibration Engine</strong></td>
-<td style="text-align: left;"><a href="ML_Calibration_Engine/"><code>ML_Calibration_Engine.md</code></a></td>
-<td style="text-align: left;">Details the Physics-Informed Machine Learning engine that actively synchronizes optimal Muskingum and Subbasin Lag parameters back to the HEC-HMS model dynamically.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Rainfall Validation</strong></td>
-<td style="text-align: left;"><a href="Rainfall_Validation_Pipeline/"><code>Rainfall_Validation_Pipeline.md</code></a></td>
-<td style="text-align: left;">Observed rainfall ingestion, ground truth telemetry verification, and QC checks.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>WRD Ground Truth</strong></td>
-<td style="text-align: left;"><a href="WRD_Historical_Rating_Curve_CrossCheck/"><code>WRD_Historical_Rating_Curve_CrossCheck.md</code></a></td>
-<td style="text-align: left;">Historical flood marks cross-verification vs Maharashtra WRD government records.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>IoT Telemetry</strong></td>
-<td style="text-align: left;"><a href="IoT_Telemetry/"><code>IoT_Telemetry.md</code></a></td>
-<td style="text-align: left;">ThingSpeak ultrasonic radar level sensor, 549.35m datum, live stage polling, and ML recalibration integration.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>GIS Vector Layers</strong></td>
-<td style="text-align: left;"><a href="Shpfiles/"><code>Shpfiles.md</code></a></td>
-<td style="text-align: left;">GeoJSON subbasin delineations, stream network routing, and DEM processing.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Engineering Autopsy</strong></td>
-<td style="text-align: left;"><a href="Errors_Mistakes_Engineering_Assumptions/"><code>Errors_Mistakes_Engineering_Assumptions.md</code></a></td>
-<td style="text-align: left;">Historical post-mortem of bed slope distortion, wetted perimeter collapse, and v3.0 edge-case mitigations.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>System Novelty</strong></td>
-<td style="text-align: left;"><a href="Novelty_of_this_System/"><code>Novelty_of_this_System.md</code></a></td>
-<td style="text-align: left;">12 core scientific and architectural innovations of HydroCast vs traditional warning systems.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>PI Research Report</strong></td>
-<td style="text-align: left;"><a href="Accuracy_Analysis_PI_Report/"><code>Accuracy_Analysis_PI_Report.md</code></a></td>
-<td style="text-align: left;">Formal research report prepared for the Principal Investigator on model accuracy.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Production Roadmap</strong></td>
-<td style="text-align: left;"><a href="ROADMAP/"><code>ROADMAP.md</code></a></td>
-<td style="text-align: left;">5 Open-source production hardening pillars: Dockerization, alerting, archival, security, and retries.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Operations Manual</strong></td>
-<td style="text-align: left;"><a href="Deployment_Operations/"><code>Deployment_Operations.md</code></a></td>
-<td style="text-align: left;">Docker Compose multi-container, DDMA Telegram bot dispatch, scheduled Parquet pruning, and NGINX setup.</td>
-</tr>
-</tbody>
-</table>
+<h2 id="1-official-subbasin-delineation-station-registry">1. Official Subbasin Delineation &amp; Station Registry<a class="headerlink" href="#1-official-subbasin-delineation-station-registry" title="Permanent link">&para;</a></h2>
+<p>The rainfall network is configured to capture the steep spatial precipitation gradients across the Sahyadri range. The primary stations serve as the default input for each subbasin, with alternate stations evaluated dynamically:</p>
+<div class="highlight"><pre><span></span><code>+----+-------------------+----------+-------------+-----------+------------+------------+--------------------+
+| No | Station Name      | Subbasin | Subbasin km²| Elevation | Longitude  | Latitude   | Hierarchy Role     |
++----+-------------------+----------+-------------+-----------+------------+------------+--------------------+
+| 01 | KARVEER           | S1       | 86.213 km²  | 550 m     | 74.248177° | 16.706369° | PRIMARY GOVERNING  |
+| 02 | SANGARUL          | S2       | 153.770 km² | 572 m     | 74.093163° | 16.684196° | PRIMARY GOVERNING  |
+| 03 | BALINGA           | S2       | —           | 560 m     | 74.170310° | 16.687844° | Alternate Backup   |
+| 04 | KALE              | S2       | —           | 580 m     | 74.056450° | 16.722809° | Alternate Backup   |
+| 05 | KOTOLI            | S3       | 261.320 km² | 585 m     | 74.051871° | 16.782017° | PRIMARY GOVERNING  |
+| 06 | BAJAR_BHOGAON     | S3       | —           | 590 m     | 74.110782° | 16.808677° | Alternate Backup   |
+| 07 | PADAL             | S3       | —           | 575 m     | 74.115187° | 16.744601° | Alternate Backup   |
+| 08 | KARANJPHEN        | S4       | 262.000 km² | 640 m     | 73.903649° | 16.785097° | PRIMARY GOVERNING  |
+| 09 | PADASALI          | S5       | 106.390 km² | 620 m     | 73.843584° | 16.701934° | PRIMARY GOVERNING  |
+| 10 | SALWAN            | S5       | —           | 595 m     | 73.973500° | 16.671200° | Alternate Backup   |
+| 11 | GAGANBAWDA        | S6       | 227.720 km² | 680 m     | 73.834674° | 16.546993° | PRIMARY GOVERNING  |
+| 12 | GARIVADE          | S7       | 195.390 km² | 610 m     | 73.918419° | 16.520366° | PRIMARY GOVERNING  |
+| 13 | BEED              | S8       | 177.440 km² | 565 m     | 74.128896° | 16.647984° | PRIMARY GOVERNING  |
+| 14 | SHIROLI_DHUMALA   | S8       | —           | 560 m     | 74.106283° | 16.616677° | Alternate Backup   |
+| 15 | RADHANAGARI       | S9       | 366.970 km² | 615 m     | 73.997182° | 16.410210° | PRIMARY GOVERNING  |
+| 16 | HALADI            | S9       | —           | 555 m     | 74.156292° | 16.593263° | Alternate Backup   |
+| 17 | RASHIWADE_BK      | S9       | —           | 570 m     | 74.101973° | 16.547564° | Alternate Backup   |
+| 18 | AAVALI_BK         | S9       | —           | 585 m     | 74.054981° | 16.481009° | Alternate Backup   |
+| 19 | KASABA_TARALE     | S9       | —           | 595 m     | 74.021589° | 16.447888° | Alternate Backup   |
+| 20 | KASABA_WALAWE     | S9       | —           | 615 m     | 73.997182° | 16.410210° | Alternate Backup   |
++----+-------------------+----------+-------------+-----------+------------+------------+--------------------+
+|    | TOTAL GAUGED AREA | 9 SUBS   | 1,837.21 km²| —         | —          | —          | 20 STATIONS ACTIVE |
++----+-------------------+----------+-------------+-----------+------------+------------+--------------------+
+</code></pre></div>
+<hr />
+<h2 id="2-dynamic-conservative-station-selection-algorithm">2. Dynamic Conservative Station Selection Algorithm<a class="headerlink" href="#2-dynamic-conservative-station-selection-algorithm" title="Permanent link">&para;</a></h2>
+<p>In open-channel flood safety, under-predicting rainfall can lead to catastrophic late evacuations. For subbasins with multiple rain gauges (<span class="arithmatex">\(S_2, S_3, S_5, S_8, S_9\)</span>), HydroCast implements <strong>Dynamic Maximum Rainfall Selection</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">select_active_subbasin_gages</span><span class="p">(</span>
+    <span class="n">station_rainfall_90hr</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluates 90-hour rainfall across all primary and alternate stations in each subbasin.</span>
+<span class="sd">    Selects the maximum-precipitation station as the governing gauge.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">by_subbasin</span> <span class="o">=</span> <span class="n">group_by_subbasin</span><span class="p">(</span><span class="n">STATION_REGISTRY</span><span class="p">)</span>
+    <span class="n">selection_results</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">sub_id</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;S1&quot;</span><span class="p">,</span> <span class="s2">&quot;S2&quot;</span><span class="p">,</span> <span class="s2">&quot;S3&quot;</span><span class="p">,</span> <span class="s2">&quot;S4&quot;</span><span class="p">,</span> <span class="s2">&quot;S5&quot;</span><span class="p">,</span> <span class="s2">&quot;S6&quot;</span><span class="p">,</span> <span class="s2">&quot;S7&quot;</span><span class="p">,</span> <span class="s2">&quot;S8&quot;</span><span class="p">,</span> <span class="s2">&quot;S9&quot;</span><span class="p">]:</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="n">by_subbasin</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sub_id</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">scored</span> <span class="o">=</span> <span class="p">[(</span><span class="n">station_rainfall_90hr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">]</span>
+        <span class="n">scored</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">best_rf</span><span class="p">,</span> <span class="n">best_st</span> <span class="o">=</span> <span class="n">scored</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">selection_results</span><span class="p">[</span><span class="n">sub_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;subbasin_id&quot;</span><span class="p">:</span> <span class="n">sub_id</span><span class="p">,</span>
+            <span class="s2">&quot;selected_station_id&quot;</span><span class="p">:</span> <span class="n">best_st</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="s2">&quot;station_name&quot;</span><span class="p">:</span> <span class="n">best_st</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="n">best_st</span><span class="o">.</span><span class="n">lat</span><span class="p">,</span>
+            <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="n">best_st</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span>
+            <span class="s2">&quot;cumulative_mm&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">best_rf</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;MAX_RAIN_VOLUME&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;candidates_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">),</span>
+        <span class="p">}</span>
+    <span class="k">return</span> <span class="n">selection_results</span>
+</code></pre></div>
+<hr />
+<h2 id="3-hydrologic-impact-of-the-station-update">3. Hydrologic Impact of the Station Update<a class="headerlink" href="#3-hydrologic-impact-of-the-station-update" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Orographic Catchment Alignment:</strong> In Subbasin <span class="arithmatex">\(S_5\)</span> (Kumbhi Basin), switching to <code>Padasali</code> (<span class="arithmatex">\(73.843584^\circ\text{ E}, 16.701934^\circ\text{ N}\)</span>, elevation <span class="arithmatex">\(620\text{ m}\)</span>) captures the high-intensity storm front along the western ghats crest (<span class="arithmatex">\(48.7\text{ mm}\)</span> vs <span class="arithmatex">\(16.5\text{ mm}\)</span> at valley station Salwan).</li>
+<li><strong>Headwater Precision in <span class="arithmatex">\(S_4\)</span> &amp; <span class="arithmatex">\(S_7\)</span>:</strong> Subbasin <span class="arithmatex">\(S_4\)</span> now directly links to <code>Karanjphen</code> (<span class="arithmatex">\(262.00\text{ km}^2\)</span>), and <span class="arithmatex">\(S_7\)</span> links to <code>Garivade</code> (<span class="arithmatex">\(195.39\text{ km}^2\)</span>), ensuring runoff generation from all 5 headwater tributaries (Kumbhi, Dhamani, Kasari, Bhogawati, and Tulsi) is faithfully integrated.</li>
+<li><strong>Conservative Subbasin <span class="arithmatex">\(S_9\)</span> Buffering:</strong> Subbasin <span class="arithmatex">\(S_9\)</span> (<span class="arithmatex">\(366.97\text{ km}^2\)</span>) contains the Radhanagari reservoir drainage zone with 6 active telemetry candidates (<code>Radhanagari</code>, <code>Haladi</code>, <code>Rashiwade Bk.</code>, <code>Aavali Bk.</code>, <code>Kasaba Tarale</code>, and <code>Kasaba Walawe</code>). The max-volume router automatically tracks the localized convective cloudburst clusters across the reservoir catchment.</li>
+</ol>
 
 
 
@@ -1698,12 +1653,12 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
-        <script src="javascripts/mathjax.js"></script>
+        <script src="../javascripts/mathjax.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       

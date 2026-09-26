@@ -1,0 +1,75 @@
+site_name: HydroCast HEC-HMS Documentation
+site_url: https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/
+repo_url: https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Overview: README.md
+  - Architecture: Architecture.md
+  - Runoff & Hydrology:
+    - Runoff Computation: Runoff_Computation.md
+    - HMS Structure: HMS.md
+  - Hydraulics & Rating:
+    - 2D Hydraulics: Hydraulics.md
+    - Stage Conversion: Stage_Conversion_Discharge.md
+    - Rating Curve Checks: WRD_Historical_Rating_Curve_CrossCheck.md
+  - Real-time IoT & Meteorology:
+    - IoT Telemetry: IoT_Telemetry.md
+    - Rain Gauge Stations: Raingauge_Station.md
+    - OpenMeteo NWP: Openmeteo.md
+  - Validation & Accuracy:
+    - Calibration Validation: Calibration_Validation.md
+    - Rainfall Validation: Rainfall_Validation_Pipeline.md
+  - System Components:
+    - Backend: Backend.md
+    - Database: Database.md
+    - Frontend: Frontend.md
+    - Deployment: Deployment_Operations.md
+  - Further Details:
+    - Novelty of this System: Novelty_of_this_System.md
+    - Errors & Assumptions: Errors_Mistakes_Engineering_Assumptions.md
+    - ROADMAP: ROADMAP.md
+    - Shpfiles: Shpfiles.md
