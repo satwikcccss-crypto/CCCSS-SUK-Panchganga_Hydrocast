@@ -1,0 +1,9 @@
+/* Expand the width of the documentation for desktop screens */
+.md-grid {
+  max-width: 95vw;
+}
+
+/* Ensure wide tables in hydrology/hydraulics do not compress too much */
+.md-typeset table:not([class]) {
+  width: 100%;
+}
