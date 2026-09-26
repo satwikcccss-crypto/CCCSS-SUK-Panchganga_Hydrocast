@@ -1,0 +1,2178 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/Hydraulics/">
+      
+      
+        <link rel="prev" href="../HMS/">
+      
+      
+        <link rel="next" href="../Stage_Conversion_Discharge/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>2D Hydraulics - HydroCast HEC-HMS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#open-channel-hydraulics-river-stage-mechanics" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="HydroCast HEC-HMS Documentation" class="md-header__button md-logo" aria-label="HydroCast HEC-HMS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            HydroCast HEC-HMS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2D Hydraulics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../Architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Runoff_Computation/" class="md-tabs__link">
+          
+  
+  
+  Runoff & Hydrology
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Hydraulics & Rating
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../IoT_Telemetry/" class="md-tabs__link">
+          
+  
+  
+  Real-time IoT & Meteorology
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Calibration_Validation/" class="md-tabs__link">
+          
+  
+  
+  Validation & Accuracy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Backend/" class="md-tabs__link">
+          
+  
+  
+  System Components
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Novelty_of_this_System/" class="md-tabs__link">
+          
+  
+  
+  Further Details
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="HydroCast HEC-HMS Documentation" class="md-nav__button md-logo" aria-label="HydroCast HEC-HMS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    HydroCast HEC-HMS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runoff & Hydrology
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runoff & Hydrology
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Runoff_Computation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runoff Computation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HMS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HMS Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hydraulics & Rating
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Hydraulics & Rating
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Hydraulics
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Hydraulics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-theoretical-hydraulic-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Theoretical Hydraulic Framework
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Theoretical Hydraulic Framework">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-classical-manning-strickler-open-channel-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Classical Manning-Strickler Open-Channel Equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-cross-section-geometry-station-surveys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Cross-Section Geometry &amp; Station Surveys
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Cross-Section Geometry &amp; Station Surveys">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-surveyed-cross-section-topometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Surveyed Cross-Section Topometry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1 Surveyed Cross-Section Topometry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#site-1-chhatrapati-shivaji-maharaj-bridge-panchganga-ghat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Site 1: Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#site-2-rajaram-kt-kolhapur-type-weir-kasba-bawada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Site 2: Rajaram K.T. (Kolhapur Type) Weir (Kasba Bawada)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-30-pbias-root-cause-hydraulic-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The 30% PBIAS Root Cause &amp; Hydraulic Resolution
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The 30% PBIAS Root Cause &amp; Hydraulic Resolution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-diagnostic-investigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The Diagnostic Investigation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-the-dual-regime-hydraulic-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 The Dual-Regime Hydraulic Calibration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-government-wrd-stage-discharge-alignment-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Government WRD Stage-Discharge Alignment Table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-live-telemetry-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Live Telemetry Alignment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-fluvial-geomorphology-longitudinal-bed-slopes-l-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Fluvial Geomorphology &amp; Longitudinal Bed Slopes (L-Section)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-divided-channel-method-dcm-for-sugarcane-overbank-floodplains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Divided Channel Method (DCM) for Sugarcane Overbank Floodplains
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-sensor-to-sink-upstream-stage-transfer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Sensor-to-Sink Upstream Stage Transfer
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Stage_Conversion_Discharge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage Conversion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WRD_Historical_Rating_Curve_CrossCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rating Curve Checks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Real-time IoT & Meteorology
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Real-time IoT & Meteorology
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IoT_Telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IoT Telemetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Raingauge_Station/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rain Gauge Stations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Openmeteo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenMeteo NWP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation & Accuracy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation & Accuracy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Calibration_Validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Rainfall_Validation_Pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rainfall Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Backend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Frontend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Deployment_Operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Details
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Further Details
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Novelty_of_this_System/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Novelty of this System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Errors_Mistakes_Engineering_Assumptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors & Assumptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROADMAP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Shpfiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shpfiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-theoretical-hydraulic-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Theoretical Hydraulic Framework
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Theoretical Hydraulic Framework">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-classical-manning-strickler-open-channel-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Classical Manning-Strickler Open-Channel Equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-cross-section-geometry-station-surveys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Cross-Section Geometry &amp; Station Surveys
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Cross-Section Geometry &amp; Station Surveys">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-surveyed-cross-section-topometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Surveyed Cross-Section Topometry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1 Surveyed Cross-Section Topometry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#site-1-chhatrapati-shivaji-maharaj-bridge-panchganga-ghat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Site 1: Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#site-2-rajaram-kt-kolhapur-type-weir-kasba-bawada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Site 2: Rajaram K.T. (Kolhapur Type) Weir (Kasba Bawada)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-30-pbias-root-cause-hydraulic-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The 30% PBIAS Root Cause &amp; Hydraulic Resolution
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The 30% PBIAS Root Cause &amp; Hydraulic Resolution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-diagnostic-investigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The Diagnostic Investigation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-the-dual-regime-hydraulic-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 The Dual-Regime Hydraulic Calibration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-government-wrd-stage-discharge-alignment-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Government WRD Stage-Discharge Alignment Table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-live-telemetry-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Live Telemetry Alignment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-fluvial-geomorphology-longitudinal-bed-slopes-l-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Fluvial Geomorphology &amp; Longitudinal Bed Slopes (L-Section)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-divided-channel-method-dcm-for-sugarcane-overbank-floodplains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Divided Channel Method (DCM) for Sugarcane Overbank Floodplains
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-sensor-to-sink-upstream-stage-transfer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Sensor-to-Sink Upstream Stage Transfer
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="open-channel-hydraulics-river-stage-mechanics">Open-Channel Hydraulics &amp; River Stage Mechanics<a class="headerlink" href="#open-channel-hydraulics-river-stage-mechanics" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code>========================================================================================
+             HYDROCAST PANCHGANGA HYDRAULICS ENGINE &amp; RATING SYSTEM
+========================================================================================
+
+  Cross-Section View at Chhatrapati Shivaji Maharaj Bridge (Looking Downstream):
+  Elevation (m MSL)
+  546 +                                          . - ~ ~ - .   &lt;-- 2019/2021 HFL (545.33m, 3,850 m³/s)
+  544 +                                      . &#39;             &#39; .
+  543 +----------------- DANGER LEVEL (543.30m, 2,675 m³/s) ----+-- Overbank Floodplain Flow
+  542 +-------- ALERT LEVEL (542.10m, 1,800 m³/s) --------------+
+  540 +                                                         |   Compound Valley Storage
+  536 +                     ~~~~~~~~~~~~~~~~~                   |
+  534 +             . - ~ ~                   ~ ~ - .           |   Bankfull Level (~535.0m)
+  532 +---------+  /    Observed Stage (533.28m)       \  +-------+
+  530 +   LOB   |_/     Bed Level: 530.18m MSL        \_|  ROB      In-Bank Main Channel Flow
+      +---------+---------------------------------------+-------+
+      0        40       80      120     160     200     240    280  Station (meters)
+</code></pre></div>
+<hr />
+<h2 id="1-theoretical-hydraulic-framework">1. Theoretical Hydraulic Framework<a class="headerlink" href="#1-theoretical-hydraulic-framework" title="Permanent link">&para;</a></h2>
+<p>The hydraulic transformation module bridges the boundary between <strong>hydrological catchment runoff</strong> (<span class="arithmatex">\(Q\text{ in }m^3/s\)</span> generated by HEC-HMS) and <strong>physical river water level</strong> (<span class="arithmatex">\(H\text{ in }m\text{ MSL}\)</span> measured at bridge gauges).</p>
+<h3 id="11-the-classical-manning-strickler-open-channel-equation">1.1 The Classical Manning-Strickler Open-Channel Equation<a class="headerlink" href="#11-the-classical-manning-strickler-open-channel-equation" title="Permanent link">&para;</a></h3>
+<p>For uniform steady open channel flow, discharge is governed by Manning's equation:</p>
+<div class="arithmatex">\[Q = \frac{1}{n} \cdot A \cdot R^{2/3} \cdot S_0^{1/2}\]</div>
+<p>Where:
+- <span class="arithmatex">\(Q\)</span> = Total river discharge (<span class="arithmatex">\(m^3/s\)</span>)
+- <span class="arithmatex">\(n\)</span> = Composite Manning roughness coefficient (dimensionless, typically <span class="arithmatex">\(0.035 - 0.045\text{ s/m}^{1/3}\)</span> for gravelly/rocky Deccan trap river beds with seasonal monsoon brush)
+- <span class="arithmatex">\(A\)</span> = Net wetted cross-sectional flow area (<span class="arithmatex">\(m^2\)</span>)
+- <span class="arithmatex">\(P\)</span> = Wetted perimeter along bed and banks (<span class="arithmatex">\(m\)</span>)
+- <span class="arithmatex">\(R = \frac{A}{P}\)</span> = Hydraulic radius (<span class="arithmatex">\(m\)</span>)
+- <span class="arithmatex">\(S_0\)</span> = Longitudinal channel energy slope (<span class="arithmatex">\(m/m\)</span>)</p>
+<hr />
+<h2 id="2-cross-section-geometry-station-surveys">2. Cross-Section Geometry &amp; Station Surveys<a class="headerlink" href="#2-cross-section-geometry-station-surveys" title="Permanent link">&para;</a></h2>
+<p>The Panchganga river system in Kolhapur features two primary regulatory hydraulic control points separated by <span class="arithmatex">\(3.8\text{ km}\)</span> of river channel:</p>
+<div class="highlight"><pre><span></span><code>[ Shivaji Bridge Gauge ]  ====== 3.8 km Reach ======&gt;  [ Rajaram K.T. Weir ]
+Elevation: 530.18 - 549.35m MSL                       Elevation: 530.18 - 545.33m MSL
+Slope S₀ = 0.005858 m/m (Steep in-bank)                Slope S₀ = 0.002318 m/m (Backwater zone)
+In-bank capacity: ~280 m³/s                           In-bank capacity: ~176 m³/s
+</code></pre></div>
+<h3 id="21-surveyed-cross-section-topometry">2.1 Surveyed Cross-Section Topometry<a class="headerlink" href="#21-surveyed-cross-section-topometry" title="Permanent link">&para;</a></h3>
+<h4 id="site-1-chhatrapati-shivaji-maharaj-bridge-panchganga-ghat">Site 1: Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)<a class="headerlink" href="#site-1-chhatrapati-shivaji-maharaj-bridge-panchganga-ghat" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Coordinates:</strong> <span class="arithmatex">\(16.708917^\circ\text{ N}, 74.219278^\circ\text{ E}\)</span></li>
+<li><strong>Bed Invert Level (<span class="arithmatex">\(z_{min}\)</span>):</strong> <span class="arithmatex">\(530.18\text{ m MSL}\)</span> (Gauge Zero Datum: <span class="arithmatex">\(0'\ 0''\)</span>)</li>
+<li><strong>Alert Stage:</strong> <span class="arithmatex">\(542.10\text{ m MSL}\)</span> (<span class="arithmatex">\(39'\ 1''\)</span>, <span class="arithmatex">\(1,800\text{ m}^3/s\)</span>)</li>
+<li><strong>Warning Stage:</strong> <span class="arithmatex">\(542.70\text{ m MSL}\)</span> (<span class="arithmatex">\(41'\ 1''\)</span>, <span class="arithmatex">\(2,200\text{ m}^3/s\)</span>)</li>
+<li><strong>Danger Stage:</strong> <span class="arithmatex">\(543.30\text{ m MSL}\)</span> (<span class="arithmatex">\(43'\ 0''\)</span>, <span class="arithmatex">\(2,675\text{ m}^3/s\)</span>)</li>
+<li><strong>Highest Flood Level (HFL):</strong> <span class="arithmatex">\(545.33\text{ m MSL}\)</span> (<span class="arithmatex">\(49'\ 8''\)</span>, <span class="arithmatex">\(3,850\text{ m}^3/s\)</span>, August 2019)</li>
+<li><strong>Sensor Elevation:</strong> <span class="arithmatex">\(549.35\text{ m MSL}\)</span> (ThingSpeak Ultrasonic Radar Gauge)</li>
+</ul>
+<h4 id="site-2-rajaram-kt-kolhapur-type-weir-kasba-bawada">Site 2: Rajaram K.T. (Kolhapur Type) Weir (Kasba Bawada)<a class="headerlink" href="#site-2-rajaram-kt-kolhapur-type-weir-kasba-bawada" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Coordinates:</strong> <span class="arithmatex">\(16.736167^\circ\text{ N}, 74.235889^\circ\text{ E}\)</span></li>
+<li><strong>Weir Crest Level:</strong> <span class="arithmatex">\(535.50\text{ m MSL}\)</span> (Needle gates removed during monsoon)</li>
+<li><strong>Bed Invert Level:</strong> <span class="arithmatex">\(530.18\text{ m MSL}\)</span></li>
+<li><strong>Alert Stage:</strong> <span class="arithmatex">\(541.50\text{ m MSL}\)</span> (<span class="arithmatex">\(37'\ 1''\)</span>, <span class="arithmatex">\(1,480\text{ m}^3/s\)</span>)</li>
+<li><strong>Warning Stage:</strong> <span class="arithmatex">\(542.07\text{ m MSL}\)</span> (<span class="arithmatex">\(39'\ 0''\)</span>, <span class="arithmatex">\(1,850\text{ m}^3/s\)</span>)</li>
+<li><strong>Danger Stage:</strong> <span class="arithmatex">\(543.30\text{ m MSL}\)</span> (<span class="arithmatex">\(43'\ 0''\)</span>, <span class="arithmatex">\(2,400\text{ m}^3/s\)</span>)</li>
+<li><strong>HFL:</strong> <span class="arithmatex">\(545.33\text{ m MSL}\)</span> (<span class="arithmatex">\(3,600\text{ m}^3/s\)</span>)</li>
+</ul>
+<hr />
+<h2 id="3-the-30-pbias-root-cause-hydraulic-resolution">3. The 30% PBIAS Root Cause &amp; Hydraulic Resolution<a class="headerlink" href="#3-the-30-pbias-root-cause-hydraulic-resolution" title="Permanent link">&para;</a></h2>
+<h3 id="31-the-diagnostic-investigation">3.1 The Diagnostic Investigation<a class="headerlink" href="#31-the-diagnostic-investigation" title="Permanent link">&para;</a></h3>
+<p>In early iterations of the system, water stage predictions were reasonably accurate (<span class="arithmatex">\(532.6 - 533.5\text{m}\)</span>), but discharge collapsed dramatically to only <strong><span class="arithmatex">\(16.6\text{ m}^3/s\)</span></strong> (Shivaji) and <strong><span class="arithmatex">\(10.4\text{ m}^3/s\)</span></strong> (Rajaram), resulting in an unacceptable volumetric percent bias (<strong>PBIAS <span class="arithmatex">\(\approx 30-40\%\)</span></strong>).</p>
+<p>Three severe hydraulic flaws caused this:</p>
+<div class="highlight"><pre><span></span><code>+---------------------------------------------------------------------------------------+
+| FLAW 1: Unsegmented Bed Slope Calibration (The 24x Distortion)                         |
+| An unsegmented regression was fitted against 31 historical high-flood records         |
+| (stages 542m - 545.62m). Because flood stages encounter extreme backwater resistance  |
+| and weir submergence, the regression forced an artificial bed slope of:               |
+|         S₀ = 0.0001938 m/m (Shivaji)  and  S₀ = 0.0000767 m/m (Rajaram)               |
+| The true field-surveyed bed slopes are:                                               |
+|         S₀ = 0.005858 m/m (Shivaji, 30.2x higher!)                                    |
+|         S₀ = 0.002318 m/m (Rajaram, 30.2x higher!)                                    |
+| Since velocity v ∝ √S₀, v collapsed from 1.6 m/s down to 0.28 m/s!                    |
++---------------------------------------------------------------------------------------+
+| FLAW 2: The Wetted Perimeter Discontinuity (Compound Channel Collapse)               |
+| At stage h ≈ 535.5m, flow spills out of the trapezoidal main channel into the wide     |
+| lateral floodplains. The single cross-section formulation caused wetted perimeter P   |
+| to jump instantly from 68m to 310m while Area A grew slowly. Hydraulic radius         |
+| R = A/P collapsed from 2.60m down to 1.05m! Because Q ∝ R^(2/3), the calculated     |
+| discharge actually DECREASED as stage increased—violating fundamental physics!        |
++---------------------------------------------------------------------------------------+
+| FLAW 3: Artificial Offset Hack (Stage - 0.12m)                                         |
+| The system previously computed Shivaji rating and subtracted 0.12m for Rajaram.       |
+| In reality, Rajaram has a gentler bed slope (0.002318 vs 0.005858), which hydraulically|
+| requires a HIGHER depth to convey the same discharge (backwater pooling).             |
++---------------------------------------------------------------------------------------+
+</code></pre></div>
+<h3 id="32-the-dual-regime-hydraulic-calibration">3.2 The Dual-Regime Hydraulic Calibration<a class="headerlink" href="#32-the-dual-regime-hydraulic-calibration" title="Permanent link">&para;</a></h3>
+<p>To resolve this, we re-engineered the rating curve engine in <a href="file:///e:/hydrocast_complete/src/hydrology/stage_converter.py"><code>stage_converter.py</code></a> using a <strong>dual-regime physical formulation</strong>:</p>
+<ol>
+<li><strong>In-Bank Regime (<span class="arithmatex">\(h \le 535.0\text{ m MSL}\)</span>):</strong>
+   Governed strictly by surveyed channel slope (<span class="arithmatex">\(S_0 = 0.005858\)</span>), carrying normal monsoon baseflows (<span class="arithmatex">\(40 - 280\text{ m}^3/s\)</span>).</li>
+<li><strong>Overbank Flood Regime (<span class="arithmatex">\(h \ge 541.0\text{ m MSL}\)</span>):</strong>
+   Governed by valley storage and weir drowning, calibrated against the 19 Government WRD benchmark observations.</li>
+<li><strong>Monotonic PCHIP Spline Interpolation:</strong>
+   Replaced standard cubic splines with <strong>Piecewise Cubic Hermite Interpolating Polynomials (PCHIP)</strong>, which preserves shape and mathematically guarantees strict monotonicity:
+   $<span class="arithmatex">\(\frac{dQ}{dh} &gt; 0 \quad \forall h \in [530.18\text{m}, 548.00\text{m}]\)</span>$</li>
+</ol>
+<hr />
+<h2 id="4-government-wrd-stage-discharge-alignment-table">4. Government WRD Stage-Discharge Alignment Table<a class="headerlink" href="#4-government-wrd-stage-discharge-alignment-table" title="Permanent link">&para;</a></h2>
+<p>The table below reflects the exact benchmark records from the Maharashtra Water Resources Department (WRD) embedded directly into the HydroCast hydraulic solver:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Stage <span class="arithmatex">\(h\)</span> (m MSL)</th>
+<th style="text-align: left;">Stage (ft-in)</th>
+<th style="text-align: left;">WRD Discharge (Cusecs)</th>
+<th style="text-align: left;">Discharge <span class="arithmatex">\(Q\)</span> (<span class="arithmatex">\(m^3/s\)</span>)</th>
+<th style="text-align: left;">Flow Regime</th>
+<th style="text-align: left;">Alert Classification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>530.18</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(0'\ 0''\)</span></td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0.00</td>
+<td style="text-align: left;">Gauge Zero Datum</td>
+<td style="text-align: left;">DRY BED</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>533.54</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(11'\ 0''\)</span></td>
+<td style="text-align: left;">2,825</td>
+<td style="text-align: left;">80.00</td>
+<td style="text-align: left;">In-Bank Baseflow</td>
+<td style="text-align: left;">NORMAL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>533.71</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(11'\ 7''\)</span></td>
+<td style="text-align: left;">3,134</td>
+<td style="text-align: left;">88.74</td>
+<td style="text-align: left;">In-Bank Baseflow</td>
+<td style="text-align: left;">NORMAL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>533.99</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(12'\ 6''\)</span></td>
+<td style="text-align: left;">3,902</td>
+<td style="text-align: left;">110.49</td>
+<td style="text-align: left;">Main Channel Flow</td>
+<td style="text-align: left;">NORMAL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>535.21</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(16'\ 6''\)</span></td>
+<td style="text-align: left;">7,684</td>
+<td style="text-align: left;">217.59</td>
+<td style="text-align: left;">Approaching Bankfull</td>
+<td style="text-align: left;">NORMAL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>535.59</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(17'\ 9''\)</span></td>
+<td style="text-align: left;">8,958</td>
+<td style="text-align: left;">253.66</td>
+<td style="text-align: left;">Bankfull Inundation</td>
+<td style="text-align: left;">NORMAL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>535.77</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(18'\ 4''\)</span></td>
+<td style="text-align: left;">9,690</td>
+<td style="text-align: left;">274.39</td>
+<td style="text-align: left;">K.T. Weir Crest Overflow</td>
+<td style="text-align: left;">NORMAL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>536.41</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(20'\ 5''\)</span></td>
+<td style="text-align: left;">13,087</td>
+<td style="text-align: left;">370.58</td>
+<td style="text-align: left;">Over-Weir Broad Flow</td>
+<td style="text-align: left;">NORMAL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>538.16</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(26'\ 2''\)</span></td>
+<td style="text-align: left;">21,650</td>
+<td style="text-align: left;">613.06</td>
+<td style="text-align: left;">Weir Fully Drowned</td>
+<td style="text-align: left;">NORMAL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>539.02</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(29'\ 0''\)</span></td>
+<td style="text-align: left;">28,270</td>
+<td style="text-align: left;">800.52</td>
+<td style="text-align: left;">Pre-Flood Valley Spreading</td>
+<td style="text-align: left;">NORMAL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>541.50</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(37'\ 1''\)</span></td>
+<td style="text-align: left;">52,266</td>
+<td style="text-align: left;">1,480.00</td>
+<td style="text-align: left;">Rajaram K.T. Weir Alert Level</td>
+<td style="text-align: left;"><strong>ALERT</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>542.10</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(39'\ 1''\)</span></td>
+<td style="text-align: left;">63,567</td>
+<td style="text-align: left;">1,800.00</td>
+<td style="text-align: left;">Shivaji Bridge Alert Level</td>
+<td style="text-align: left;"><strong>ALERT</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>542.70</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(41'\ 1''\)</span></td>
+<td style="text-align: left;">77,692</td>
+<td style="text-align: left;">2,200.00</td>
+<td style="text-align: left;">Warning Stage</td>
+<td style="text-align: left;"><strong>WARNING</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>543.30</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(43'\ 0''\)</span></td>
+<td style="text-align: left;">94,467</td>
+<td style="text-align: left;">2,675.00</td>
+<td style="text-align: left;">Danger Stage</td>
+<td style="text-align: left;"><strong>DANGER</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>545.33</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(49'\ 8''\)</span></td>
+<td style="text-align: left;">135,961</td>
+<td style="text-align: left;">3,850.00</td>
+<td style="text-align: left;">Highest Flood Level (2019/2021)</td>
+<td style="text-align: left;"><strong>EMERGENCY (HFL)</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-live-telemetry-alignment">5. Live Telemetry Alignment<a class="headerlink" href="#5-live-telemetry-alignment" title="Permanent link">&para;</a></h2>
+<p>At current observed radar telemetry:
+- <strong>Measured Water Level:</strong> <span class="arithmatex">\(533.28\text{ m MSL}\)</span> (<span class="arithmatex">\(10'\ 2''\)</span> above bed)
+- <strong>Computed Discharge (Shivaji Bridge):</strong> <span class="arithmatex">\(\mathbf{109.2\text{ m}^3/s}\)</span> (<span class="arithmatex">\(3,856\text{ cusecs}\)</span>)
+- <strong>Computed Discharge (Rajaram Weir):</strong> <span class="arithmatex">\(\mathbf{62.4\text{ m}^3/s}\)</span> (<span class="arithmatex">\(2,203\text{ cusecs}\)</span>)
+- <strong>Discharge Ratio:</strong> <span class="arithmatex">\(\frac{Q_{shivaji}}{Q_{rajaram}} \approx \sqrt{\frac{0.005858}{0.002318}} = 1.589\)</span></p>
+<p>The hydraulic model maintains physical conservation of mass throughout the river reach while adhering strictly to government calibration records.</p>
+<hr />
+<h2 id="6-fluvial-geomorphology-longitudinal-bed-slopes-l-section">6. Fluvial Geomorphology &amp; Longitudinal Bed Slopes (L-Section)<a class="headerlink" href="#6-fluvial-geomorphology-longitudinal-bed-slopes-l-section" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>====================================================================================================
+           LONGITUDINAL BED PROFILE (L-SECTION) &amp; SLOPE TRANSITIONS
+====================================================================================================
+
+ Elevation
+  (m MSL)
+   560 +   [Radhanagari Dam: 553.90m MSL]
+       |    \
+   550 |     \  Bhogavati River Bed Slope = 1:2529 (0.000395 m/m)
+       |      \  Length: ~40 km (Radhanagari to Prayag Chikhali)
+   540 |       \
+       |        +-- [Prayag Chikhali Confluence (Sacred Sangam): ~536.0m MSL]
+   535 |            \
+       |             \  Upper Panchganga Bed Slope = 1:4641 (0.000215 m/m)
+   530 |              \  Length: ~18 km (Prayag Chikhali to Rajaram KT Weir)
+       |               +-- [Rajaram KT Weir: Crest 530.18m | Bed 529.318m MSL]
+   525 |                   \
+       |                    \  Lower Panchganga Bed Slope = 1:7700 (0.000130 m/m)
+   520 |                     \  Length: ~42 km (Rajaram KT Weir to Shirol KT Weir)
+       +----------------------+---------------------------------------------------&gt; Distance (km)
+       0                     40                      58                          100 km
+</code></pre></div>
+<p>Per the authoritative <strong>Krishna Basin Flood 2019 Volume 1 Study Report</strong>:
+- <strong>Radhanagari Dam to Prayag Chikhali:</strong> <span class="arithmatex">\(1:2529\)</span> (<span class="arithmatex">\(S_0 = 0.000395\text{ m/m}\)</span>), length <span class="arithmatex">\(\approx 40\text{ km}\)</span>.
+- <strong>Prayag Chikhali to Rajaram K.T. Weir:</strong> <span class="arithmatex">\(1:4641\)</span> (<span class="arithmatex">\(S_0 = 0.000215\text{ m/m}\)</span>), length <span class="arithmatex">\(\approx 18\text{ km}\)</span>.
+- <strong>Rajaram K.T. Weir to Shirol K.T. Weir:</strong> <span class="arithmatex">\(1:7700\)</span> (<span class="arithmatex">\(S_0 = 0.000130\text{ m/m}\)</span>), length <span class="arithmatex">\(\approx 42\text{ km}\)</span>.</p>
+<hr />
+<h2 id="7-divided-channel-method-dcm-for-sugarcane-overbank-floodplains">7. Divided Channel Method (DCM) for Sugarcane Overbank Floodplains<a class="headerlink" href="#7-divided-channel-method-dcm-for-sugarcane-overbank-floodplains" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>   Elevation
+    (m MSL)
+     546.0 +                                                    2019 HFL (545.33 m)
+           |                                                   ~~~~~~~~~~~~~~~~~~~~
+     544.0 |   Left Floodplain              Main River Channel          Right Floodplain
+           |   (Sugarcane / Paddy)          (Gravel / Silt Bed)         (Sugarcane / Crops)
+     542.0 |   n_flood = 0.070              n_main = 0.031              n_flood = 0.070
+           |  +--------------------+                                   +--------------------+
+     540.0 |  |                    |       +-------------------+       |                    |
+           |  |                    |      /                     \      |                    |
+     536.0 |  |                    |     /                       \     |                    |
+           |  |                    |    /                         \    |                    |
+     532.0 |  |                    |   /                           \   |                    |
+           |  |                    |  /                             \  |                    |
+     528.0 |  +--------------------+ /                               \ +--------------------+
+           |                        /                                      528.67+-----------------------+-------- Thalweg: 528.67m MSL -----+--------------------
+           +-----------------------+-----------------------------------+--------------------+
+              Left Overbank                      Main Channel               Right Overbank
+</code></pre></div>
+<p>To eliminate overbank discharge distortion during high stages (<span class="arithmatex">\(&gt;541.6\text{ m}\)</span> MSL), the flow cross-section is hydraulically subdivided:
+- <strong>Main Channel (<span class="arithmatex">\(n_{\text{main}} = 0.031\)</span>):</strong> Clean natural riverbed with silt and gravel.
+- <strong>Overbank Floodplains (<span class="arithmatex">\(n_{\text{flood}} = 0.070\)</span>):</strong> Heavy resistance due to dense standing sugarcane crops.</p>
+<div class="arithmatex">\[Q(H) = \frac{1}{n_{\text{main}}} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/2} + \sum_{\text{flood}} \frac{1}{n_{\text{flood}}} A_{\text{flood}} R_{\text{flood}}^{2/3} S_0^{1/2}\]</div>
+<hr />
+<h2 id="8-sensor-to-sink-upstream-stage-transfer">8. Sensor-to-Sink Upstream Stage Transfer<a class="headerlink" href="#8-sensor-to-sink-upstream-stage-transfer" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>   UPSTREAM                                                    DOWNSTREAM
+   Chainage 10+115                                           Chainage 6+257
+   Rajaram K.T. Weir                                         Shivaji Bridge
+   (HEC-HMS Model Sink-1)                                    (IoT Ultrasonic Sensor)
+   ======================                                    ======================
+         |                                                            |
+         |  Thalweg: 529.318 m MSL                                    |  Thalweg: 528.670 m MSL
+         |  Crest RL: 530.18 m MSL                                    |  Sensor Datum: 549.35 m MSL
+         |                                                            |
+         +------------------- Bed Distance: 3,858 m ------------------+
+                             Bed Slope: S_0 = 1:4641 (0.000215)
+                             Delta Bed RL: +0.648 m (Rajaram higher)
+</code></pre></div>
+<p>The model applies <code>infer_rajaram_stage_from_shivaji(shivaji_stage_m, q_m3s)</code>:
+$<span class="arithmatex">\(H_{\text{rajaram}} = \begin{cases}
+\max(530.18, \; H_{\text{shivaji}} + 0.648) &amp; \text{if } H_{\text{shivaji}} &lt; 530.0\text{ m (Weir Impoundment)} \\[1ex]
+H_{\text{shivaji}} + 0.648\text{ m} &amp; \text{if } H_{\text{shivaji}} \ge 530.0\text{ m (Open Flood Regime)}
+\end{cases}\)</span>$</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
