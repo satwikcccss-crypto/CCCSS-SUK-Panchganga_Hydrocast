@@ -265,3 +265,13 @@ The **Model Accuracy & Validation** workspace features an interactive **Adaptive
 ## 10. Animated Visitor Odometer Counter (`OdometerCounter.tsx`)
 
 The dashboard header incorporates an animated odometer counter rendering smooth mechanical digit transitions using CSS transform perspective, displaying total platform forecast hours and user access sessions.
+
+---
+
+## 11. Interactive GIS Leaflet Map (`MapComponent.tsx`)
+
+The central **Overview Panel** features a fully interactive spatial mapping engine built using Leaflet.js and `react-leaflet`. It visualizes the spatial distribution of the flood model:
+- **Subbasin Catchments:** Renders high-resolution GeoJSON polygons representing the 9 hydrological subbasins (e.g., Warna, Kasari, Kumbhi, Tulsi).
+- **River Reaches:** Plots the main stem of the Panchganga River and its 5 primary routing reaches as vector PolyLines.
+- **Real-Time Rain Gauge Markers:** Overlays the 18 physical IoT rain gauge stations with active telemetry indicators (e.g., flashing red for extreme precipitation zones).
+- **Basemap:** Uses a dark-mode styled topographic/satellite tile layer to ensure high contrast with the flood warning indicators and hydrologic boundaries.

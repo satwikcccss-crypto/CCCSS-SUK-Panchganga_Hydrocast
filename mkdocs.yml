@@ -22,6 +22,7 @@ theme:
     - navigation.tracking
     - navigation.top
     - navigation.footer
+    - toc.integrate
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -39,6 +40,7 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+      toc_depth: 3
 
 extra_javascript:
   - javascripts/mathjax.js
@@ -48,32 +50,10 @@ extra_javascript:
 extra_css:
   - stylesheets/extra.css
 
+copyright: "Developed by Er. Satwik Udupi. Funded by DST-SERB, Government of India. Integrated with Panchganga HydroCast Telegram Bot."
+
 nav:
-  - Overview: README.md
-  - Project Background & Datasets: Project_Background.md
-  - Frontend:
-    - UI Architecture: Frontend.md
-  - Backend:
-    - Server & APIs: Backend.md
-    - Database Schema: Database.md
-    - Deployment Operations: Deployment_Operations.md
-  - Hydrology:
-    - Runoff Computation: Runoff_Computation.md
-    - HEC-HMS Structure: HMS.md
-    - 2D Hydraulics: Hydraulics.md
-    - Stage-Discharge Conversion: Stage_Conversion_Discharge.md
-    - Rating Curve Checks: WRD_Historical_Rating_Curve_CrossCheck.md
-  - Engineering:
-    - System Architecture: Architecture.md
-    - IoT Telemetry: IoT_Telemetry.md
-    - Rain Gauge Stations: Raingauge_Station.md
-    - OpenMeteo NWP: Openmeteo.md
-    - Calibration & Validation: Calibration_Validation.md
-    - Rainfall Validation: Rainfall_Validation_Pipeline.md
-    - Errors & Assumptions: Errors_Mistakes_Engineering_Assumptions.md
-    - Novelty of this System: Novelty_of_this_System.md
-    - GIS Shapefiles: Shpfiles.md
-    - Roadmap: ROADMAP.md
+  - HydroCast Documentation: index.md
 
 docs_dir: docs_src
 site_dir: docs
