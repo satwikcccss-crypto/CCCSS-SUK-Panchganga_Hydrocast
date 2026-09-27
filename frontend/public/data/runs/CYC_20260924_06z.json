@@ -20274,7 +20274,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260924_06z",
-    "validation_timestamp": "2026-09-26T23:10:31.916494+00:00",
+    "validation_timestamp": "2026-09-27T02:00:24.771782+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20286,25 +20286,25 @@
       "downstream_weir": "Rajaram K.T. Weir (3.8 km downstream, S0=0.002318)"
     },
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 66,
+    "verified_hours": 68,
     "total_forecast_hours": 90,
-    "completion_pct": 73.3,
+    "completion_pct": 75.6,
     "metrics": {
-      "sample_size_hours": 66,
-      "rmse_stage_m": 0.131,
-      "mae_stage_m": 0.084,
-      "nse_stage": -0.9997,
+      "sample_size_hours": 68,
+      "rmse_stage_m": 0.165,
+      "mae_stage_m": 0.1,
+      "nse_stage": -1.1203,
       "pbias_stage_pct": 0.01,
-      "spearman_rho": 0.0806,
-      "pearson_r2": 0.0,
-      "rmse_q_m3s": 40.34,
-      "mae_q_m3s": 40.15,
-      "nse_discharge": -105.7086,
-      "pbias_discharge_pct": -98.33,
-      "spearman_rho_q": 0.0806,
-      "pearson_r2_q": 0.0023,
+      "spearman_rho": -0.0154,
+      "pearson_r2": 0.0383,
+      "rmse_q_m3s": 39.95,
+      "mae_q_m3s": 39.68,
+      "nse_discharge": -72.5999,
+      "pbias_discharge_pct": -98.28,
+      "spearman_rho_q": -0.0154,
+      "pearson_r2_q": 0.0564,
       "basin_rainfall_accuracy_pct": 94.5,
-      "performance_grade": "VERY_GOOD"
+      "performance_grade": "SATISFACTORY"
     },
     "scatter_points": [
       {
@@ -20698,10 +20698,22 @@
         "actual_distance_ft": 60.89
       },
       {
-        "actual_stage": 530.77,
+        "actual_stage": 530.73,
         "predicted_stage": 531.18,
         "lead_hours": 65,
-        "actual_distance_ft": 60.95
+        "actual_distance_ft": 61.1
+      },
+      {
+        "actual_stage": 530.59,
+        "predicted_stage": 531.18,
+        "lead_hours": 66,
+        "actual_distance_ft": 61.56
+      },
+      {
+        "actual_stage": 530.59,
+        "predicted_stage": 531.18,
+        "lead_hours": 67,
+        "actual_distance_ft": 61.54
       }
     ],
     "actual_observed_series": [
@@ -21555,11 +21567,11 @@
         "timestamp": "2026-09-26T23:00:00+00:00",
         "predicted_stage_m": 531.18,
         "predicted_discharge_m3s": 1.1,
-        "observed_stage_m": 530.77,
-        "observed_distance_ft": 60.95,
-        "observed_discharge_m3s": 31.9,
-        "error_delta_m": 0.41,
-        "error_delta_ft": 1.35,
+        "observed_stage_m": 530.73,
+        "observed_distance_ft": 61.1,
+        "observed_discharge_m3s": 30.6,
+        "error_delta_m": 0.45,
+        "error_delta_ft": 1.48,
         "alert_level": "NORMAL",
         "has_observation": true
       },
@@ -21568,26 +21580,26 @@
         "timestamp": "2026-09-27T00:00:00+00:00",
         "predicted_stage_m": 531.18,
         "predicted_discharge_m3s": 1.1,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 530.59,
+        "observed_distance_ft": 61.56,
+        "observed_discharge_m3s": 25.7,
+        "error_delta_m": 0.59,
+        "error_delta_ft": 1.94,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 67,
         "timestamp": "2026-09-27T01:00:00+00:00",
         "predicted_stage_m": 531.18,
         "predicted_discharge_m3s": 1.1,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 530.59,
+        "observed_distance_ft": 61.54,
+        "observed_discharge_m3s": 25.7,
+        "error_delta_m": 0.59,
+        "error_delta_ft": 1.94,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 68,
