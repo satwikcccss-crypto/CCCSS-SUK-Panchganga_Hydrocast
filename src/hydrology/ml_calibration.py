@@ -422,7 +422,9 @@ class AdaptiveHydrologicCalibrator:
             dwell = (modeled_dt - timing_offset_hours) / 2.0
             dstage = (-d_cn / 4.5 - stage_error_m) / 0.25
             dx = (x_val - expected_x) / 0.05
-            return np.concatenate([resid, [dwell, dstage, dx]])
+            dk = (a_k - k_shift) / 0.20
+            dlag = (a_lag - lag_shift) / 0.20
+            return np.concatenate([resid, [dwell, dstage, dx, dk, dlag]])
 
         try:
             opt_res = optimize.least_squares(
