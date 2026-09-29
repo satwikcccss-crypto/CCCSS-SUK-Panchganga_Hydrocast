@@ -1,11 +1,24 @@
 """
 Dynamic Subbasin Station Selector & Spatial Fallback Engine
 ============================================================
-Dynamically evaluates rainfall volume across Primary & Alternate stations for each
-Panchganga subbasin (S1 to S9).
-Selects the maximum-rainfall station for conservative flood forecasting in HEC-HMS.
-For ungauged subbasins, performs spatial nearest-neighbor assignment to the closest
-high-rainfall station.
+SINGLE CANONICAL station-selector module for HydroCast.
+
+Two ingestion paths share this one file (no more duplicate selectors):
+
+1. REGISTRY PATH (production pipeline, pure-Python, no DB):
+   STATION_REGISTRY + select_active_subbasin_gages — evaluates rainfall volume
+   across Primary & Alternate stations per Panchganga subbasin (S1 to S9),
+   selecting the maximum-rainfall station for conservative flood forecasting.
+   Ungauged subbasins use spatial nearest-neighbour assignment.
+
+2. ORCHESTRATOR PATH (Postgres + ECMWF grid):
+   load_stations / select_stations / store_selection — used by
+   src/orchestrator.py when a live Postgres/PostGIS database is available.
+   Heavy DB dependencies (psycopg2, xarray, scipy) are imported lazily inside
+   the functions so the production registry path stays dependency-light.
+
+The SubbasinRainfall result container is shared by both paths and by the
+canonical DSS writer (src/dss/writer.py).
 """
 
 import logging
@@ -25,6 +38,16 @@ class RainStation:
     lat: float
     is_primary: bool = True
     elevation_m: float = 600.0
+
+
+@dataclass
+class SubbasinRainfall:
+    """Per-subbasin selection result — 90h hyetograph of the governing station."""
+    subbasin_id: str
+    selected_station: str
+    cumulative_mm: float
+    hyetograph: List[float]
+    all_stations: Dict[str, float]
 
 
 # ── Subbasin Catchment Areas (Official GIS Delineation) ──────────────────────
@@ -186,3 +209,186 @@ def select_active_subbasin_gages(
             }
 
     return selection_results
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ORCHESTRATOR PATH — Postgres / PostGIS + ECMWF grid (lazy imports)
+# Used by src/orchestrator.py when the automation server has a live database.
+# The pure-registry functions above never require these dependencies.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def load_stations(conn) -> List[RainStation]:
+    """Load all active gauge stations from Postgres as canonical RainStations."""
+    import psycopg2  # noqa: F401  (kept for explicit dependency documentation)
+
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT station_id, station_name, subbasin_id,
+                   ST_Y(geom) AS lat, ST_X(geom) AS lon
+            FROM gauge_stations
+            WHERE is_active = TRUE
+            ORDER BY subbasin_id, station_id
+        """)
+        return [
+            RainStation(station_id=row[0], name=row[1], subbasin=row[2],
+                        lat=float(row[3]), lon=float(row[4]), is_primary=True)
+            for row in cur.fetchall()
+        ]
+
+
+def interpolate_ecmwf_to_station(ds, station: RainStation) -> "np.ndarray":
+    """
+    Bilinear interpolation of ECMWF gridded TP to a point station location.
+    Returns array shape (90,) in mm/hr.
+    """
+    import numpy as np
+    tp = ds["tp_mm_hr"]   # (valid_time=90, lat, lon)
+    point_da = tp.interp(
+        latitude=station.lat,
+        longitude=station.lon,
+        method="linear",
+    )
+    return np.maximum(point_da.values, 0.0)
+
+
+def fetch_observed_gauge_ts(
+    conn,
+    station_id: str,
+    start_utc,
+    end_utc,
+) -> Optional["np.ndarray"]:
+    """
+    Pull observed 1-hourly gauge data from Postgres for the 90-hr window.
+    Returns array (90,) or None if insufficient coverage.
+    """
+    import numpy as np
+    import pandas as pd
+    hours = pd.date_range(start=start_utc, periods=90, freq="1h", tz="UTC")
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT date_trunc('hour', timestamp) AS hr,
+                   AVG(rainfall_mm) AS mm
+            FROM rainfall_data
+            WHERE gauge_id = %s
+              AND timestamp >= %s
+              AND timestamp < %s
+            GROUP BY hr
+            ORDER BY hr
+        """, (station_id, start_utc, end_utc))
+        rows = cur.fetchall()
+
+    if len(rows) < 45:   # need at least 50% coverage
+        return None
+
+    ts_df = pd.DataFrame(rows, columns=["hr", "mm"]).set_index("hr")
+    ts_df.index = pd.DatetimeIndex(ts_df.index).tz_localize("UTC")
+    ts_full = ts_df.reindex(hours, fill_value=0.0)
+    return ts_full["mm"].values.astype(np.float32)
+
+
+def select_stations(
+    ds_ecmwf,
+    stations: List[RainStation],
+    conn,
+    run_time,
+    prefer_observed: bool = True,
+) -> Dict[str, SubbasinRainfall]:
+    """
+    Core DB-driven selection logic (orchestrator path).
+    For each subbasin:
+      1. Gather 90-hr hyetograph for every station (observed if available, else ECMWF).
+      2. Compute cumulative (sum of 90 values).
+      3. Select station with maximum cumulative (same conservative rule as the
+         registry path).
+
+    Returns dict: subbasin_id → SubbasinRainfall
+    """
+    import numpy as np
+    from datetime import timedelta
+    end_utc = run_time + timedelta(hours=90)
+
+    by_sub: Dict[str, List[RainStation]] = {}
+    for st in stations:
+        by_sub.setdefault(st.subbasin, []).append(st)
+
+    results: Dict[str, SubbasinRainfall] = {}
+
+    for sub_id, sub_stations in by_sub.items():
+        log.info("Subbasin %s: evaluating %d stations", sub_id, len(sub_stations))
+        candidates: Dict[str, "np.ndarray"] = {}
+
+        for st in sub_stations:
+            obs = None
+            if prefer_observed:
+                obs = fetch_observed_gauge_ts(conn, st.station_id, run_time, end_utc)
+            hyeto = obs if obs is not None else interpolate_ecmwf_to_station(ds_ecmwf, st)
+            source = "observed" if obs is not None else "ecmwf_interp"
+            cum = float(hyeto.sum())
+            log.info("  %s (%s): %.1f mm [%s]", st.station_id, st.name, cum, source)
+            candidates[st.station_id] = hyeto
+
+        cumulative = {sid: float(h.sum()) for sid, h in candidates.items()}
+        selected_id = max(cumulative, key=lambda k: cumulative[k])
+
+        log.info(
+            "  → SELECTED %s for %s (%.1f mm cumulative)",
+            selected_id, sub_id, cumulative[selected_id],
+        )
+
+        results[sub_id] = SubbasinRainfall(
+            subbasin_id=sub_id,
+            selected_station=selected_id,
+            cumulative_mm=cumulative[selected_id],
+            hyetograph=candidates[selected_id].tolist(),
+            all_stations=cumulative,
+        )
+
+    return results
+
+
+def store_selection(conn, results: Dict[str, SubbasinRainfall], run_time, cycle_id: str):
+    """
+    Persist:
+    - All raw station hyetographs   → table `rainfall_data`
+    - Selection decision            → table `station_selection_log`
+    - Selected hyetograph           → table `subbasin_rainfall_ts`
+    """
+    import json
+    from datetime import timedelta
+
+    with conn.cursor() as cur:
+        for sub_id, result in results.items():
+            cur.execute("""
+                INSERT INTO station_selection_log
+                    (cycle_id, subbasin_id, selected_station_id,
+                     cumulative_mm, all_candidates_json, selected_at)
+                VALUES (%s, %s, %s, %s, %s, NOW())
+                ON CONFLICT (cycle_id, subbasin_id)
+                DO UPDATE SET
+                    selected_station_id = EXCLUDED.selected_station_id,
+                    cumulative_mm       = EXCLUDED.cumulative_mm,
+                    all_candidates_json = EXCLUDED.all_candidates_json,
+                    selected_at         = NOW()
+            """, (
+                cycle_id, sub_id, result.selected_station,
+                result.cumulative_mm,
+                json.dumps(result.all_stations),
+            ))
+
+        valid_times = [run_time + timedelta(hours=h + 1) for h in range(90)]
+        for sub_id, result in results.items():
+            for i, (vt, mm) in enumerate(zip(valid_times, result.hyetograph)):
+                cur.execute("""
+                    INSERT INTO subbasin_rainfall_ts
+                        (basin_id, subbasin_id, source_id, forecast_run_time,
+                         valid_time, lead_hours, rainfall_mm_hr, quality_score)
+                    VALUES ('MAIN_BASIN', %s, 'selected_gauge', %s, %s, %s, %s, 1.0)
+                    ON CONFLICT (subbasin_id, valid_time, source_id)
+                    DO UPDATE SET
+                        rainfall_mm_hr = EXCLUDED.rainfall_mm_hr,
+                        source_id      = EXCLUDED.source_id,
+                        forecast_run_time = EXCLUDED.forecast_run_time
+                """, (sub_id, run_time, vt, i + 1, mm))
+
+    conn.commit()
+    log.info("Stored station selection and hyetographs for cycle %s", cycle_id)

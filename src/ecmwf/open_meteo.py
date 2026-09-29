@@ -1,14 +1,19 @@
 """
 Open-Meteo Rainfall Downloader & Dynamic Station Selector for Panchganga
-========================================================================
+=======================================================================
 Downloads 90-hour ECMWF IFS hourly forecasts for all 18 Primary & Alternate
 stations across Panchganga subbasins (S1 to S9).
 Evaluates rainfall volume per subbasin and selects governing gages for HEC-HMS.
-Generates DSS precipitation time-series and dumps latest pipeline state for the Dashboard & Supabase.
+Also captures a soil-moisture snapshot (forecast + 5-day ERA5-Land antecedent)
+per subbasin — fetch-and-log ONLY, stored for future AMC refinement and never
+used in runoff decisions.
+Generates DSS precipitation time-series and dumps latest pipeline state for the
+Dashboard & Supabase.
 """
 
 import json
 import logging
+import math
 import os
 import time
 from datetime import datetime, timezone, timedelta
@@ -30,7 +35,7 @@ cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
 openmeteo = openmeteo_requests.Client(session=retry_session)
 
-from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_gages
+from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_gages, SUBBASIN_AREAS_KM2
 from src.hms.runner import execute_hec_hms
 from src.sensors.thingspeak_gauge import fetch_shivaji_live_telemetry
 from src.hydrology.stage_converter import convert_discharge_to_stage_manning
@@ -59,6 +64,19 @@ LOGS_DIR = PROJECT_ROOT / "data" / "logs"
 LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
 OM_URL = "https://api.open-meteo.com/v1/forecast"
+SOIL_MOISTURE_ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/era5"
+
+# ── Soil moisture (fetch-and-log ONLY, never used in runoff decisions) ──────
+# Captured every cycle and stored with each run for FUTURE AMC refinement.
+# ERA5-Land / ECMWF IFS share the same 4-layer m^3/m^3 soil moisture fields.
+SOIL_MOISTURE_LAYERS = (
+    "soil_moisture_0_to_7cm",
+    "soil_moisture_7_to_28cm",
+    "soil_moisture_28_to_100cm",
+    "soil_moisture_100_to_255cm",
+)
+SOIL_MOISTURE_SANE_RANGE = (0.0, 0.60)   # volumetric water content m^3/m^3 physical bounds
+ANTECEDENT_DAYS = 5                      # TR-55 5-day antecedent window that AMC refinement needs
 
 
 @with_retry(max_retries=4, base_delay=1.5, max_delay=20.0)
@@ -76,12 +94,16 @@ def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarr
     Fetch 90-hr hourly precipitation (mm/hr) from Open-Meteo with retries,
     physical range checks, NaN/Inf imputation, and automated fallback.
     """
+    import math
+    required_hours_from_midnight = start_dt.hour + 90
+    forecast_days = math.ceil(required_hours_from_midnight / 24.0)
+
     params = {
         "latitude":      round(lat, 4),
         "longitude":     round(lon, 4),
         "hourly":        "precipitation",
         "models":        "ecmwf_ifs",
-        "forecast_days": 4,
+        "forecast_days": forecast_days,
         "timezone":      "UTC",
     }
     
@@ -130,6 +152,95 @@ def fetch_point_forecast(lat: float, lon: float, start_dt: datetime) -> np.ndarr
         ) from e
 
 
+
+
+def _sanitize_soil_moisture(values) -> np.ndarray:
+    """Clip volumetric soil moisture to physical m^3/m^3 bounds and kill NaNs/Infs."""
+    v = np.nan_to_num(np.asarray(values, dtype=float), nan=0.0, posinf=0.0, neginf=0.0)
+    return np.clip(v, SOIL_MOISTURE_SANE_RANGE[0], SOIL_MOISTURE_SANE_RANGE[1])
+
+
+def fetch_soil_moisture_snapshot(lat: float, lon: float, start_dt: datetime) -> Optional[dict]:
+    """
+    Best-effort IFS 90h soil-moisture snapshot at (lat, lon).
+
+    FETCH-AND-LOG ONLY: returned data is stored for future AMC refinement and
+    NEVER modifies Curve Numbers, K/x, or routing. Returns None on any failure
+    without raising, so the forecast pipeline is never blocked.
+    """
+    try:
+        forecast_days = max(4, math.ceil((start_dt.hour + 90) / 24.0))
+        params = {
+            "latitude": round(lat, 4),
+            "longitude": round(lon, 4),
+            "hourly": ",".join(SOIL_MOISTURE_LAYERS),
+            "models": "ecmwf_ifs",
+            "forecast_days": forecast_days,
+            "timezone": "UTC",
+        }
+        response = _call_openmeteo_api(OM_URL, params=params)[0]
+        hourly = response.Hourly()
+        times = pd.date_range(
+            start=pd.Timestamp(hourly.Time(), unit="s", tz="UTC"),
+            end=pd.Timestamp(hourly.TimeEnd(), unit="s", tz="UTC"),
+            freq=pd.Timedelta(seconds=hourly.Interval()),
+            inclusive="left",
+        )
+        out = {"depths_cm": {}, "current_vwc": {}}
+        for i, layer in enumerate(SOIL_MOISTURE_LAYERS):
+            try:
+                raw = hourly.Variables(i).ValuesAsNumpy()
+            except Exception:
+                raw = None
+            if raw is None or len(raw) == 0:
+                continue
+            df = pd.DataFrame({"time": times, "v": raw}).sort_values("time")
+            df = df[df["time"] >= start_dt].head(90)
+            cleaned = _sanitize_soil_moisture(df["v"].values)
+            series = np.zeros(90, dtype=float)
+            series[: len(cleaned)] = cleaned
+            out["depths_cm"][layer] = [round(float(x), 4) for x in series]
+            out["current_vwc"][layer] = round(float(cleaned[0]), 4) if len(cleaned) else None
+        return out if out["depths_cm"] else None
+    except Exception as e:
+        log.info("IFS soil-moisture snapshot unavailable at (%.4f, %.4f): %s (fetch-only, skipped)", lat, lon, e)
+        return None
+
+
+def fetch_antecedent_soil_moisture(lat: float, lon: float, start_dt: datetime) -> Optional[dict]:
+    """
+    ERA5-Land DAILY soil moisture for the 5 days before the forecast window.
+
+    FETCH-AND-LOG ONLY: same guarantee as fetch_soil_moisture_snapshot — stored
+    for future refinement (the true physical antecedent-wetness signal that AMC
+    proxies), never used in today's CN / K / routing decisions.
+    """
+    try:
+        end = start_dt.date() - timedelta(days=1)
+        begin = end - timedelta(days=ANTECEDENT_DAYS - 1)
+        params = {
+            "latitude": round(lat, 4),
+            "longitude": round(lon, 4),
+            "start_date": begin.isoformat(),
+            "end_date": end.isoformat(),
+            "daily": ",".join(SOIL_MOISTURE_LAYERS),
+            "timezone": "UTC",
+        }
+        daily = _call_openmeteo_api(SOIL_MOISTURE_ARCHIVE_URL, params=params)[0].Daily()
+        dtimes = pd.to_datetime(daily.Time(), unit="s", utc=True)
+        out = {}
+        for i, layer in enumerate(SOIL_MOISTURE_LAYERS):
+            if i >= daily.VariablesLength():
+                continue
+            cleaned = _sanitize_soil_moisture(daily.Variables(i).ValuesAsNumpy())
+            out[layer] = {
+                pd.Timestamp(dt).strftime("%Y-%m-%d"): round(float(v), 4)
+                for dt, v in zip(dtimes, cleaned)
+            }
+        return out if out else None
+    except Exception as e:
+        log.info("ERA5-Land antecedent soil moisture unavailable at (%.4f, %.4f): %s (fetch-only, skipped)", lat, lon, e)
+        return None
 
 
 def convert_discharge_to_stage(q: float, site: str) -> float:
@@ -286,14 +397,44 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     for sub, hyeto in ecmwf_hyetographs.items():
         gauge_hyetographs[sub] = hyeto
 
-    record_log("INFO", "HEC-DSS hyetograph time-series generated: /PANCHGANGA/*/PRECIP-INC/1HOUR/")
+    record_log("INFO", "HEC-DSS hyetograph time-series generated: //<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/")
     _end_step(s2)
+
+    # 02b. Soil moisture snapshot — fetch-and-log ONLY (future AMC refinement).
+    s2b = _start_step("02b. Soil-Moisture Snapshot (fetch-and-log only, never used in decisions)")
+    soil_moisture = {
+        "unit": "m3/m3",
+        "note": "Observability only — recorded each cycle for future AMC refinement; never modifies CN, K, x, or routing.",
+        "per_subbasin": {},
+    }
+    for sub in subbasins_list:
+        info = governing_subbasin_gages.get(sub, {})
+        st_id = info.get("selected_station_id")
+        gage = next((g for g in STATION_REGISTRY if g.station_id == st_id), None)
+        if gage is None:
+            continue
+        snapshot = fetch_soil_moisture_snapshot(gage.lat, gage.lon, start_dt)
+        antecedent = fetch_antecedent_soil_moisture(gage.lat, gage.lon, start_dt)
+        soil_moisture["per_subbasin"][sub] = {
+            "station_id": st_id,
+            "forecast_90h_vwc": snapshot,
+            "antecedent_5d_vwc": antecedent,
+        }
+    captured_subs = sorted(soil_moisture["per_subbasin"].keys())
+    record_log("INFO", f"Soil-moisture snapshot captured for {len(captured_subs)} subbasins ({', '.join(captured_subs) or 'none'})")
+    _end_step(s2b)
 
     s3 = _start_step("03. Live Telemetry Fetch & IoT Sync")
     # Fetch live ThingSpeak IoT telemetry for Shivaji Bridge (Ground Truth Observed Water Level)
     shivaji_telemetry = fetch_shivaji_live_telemetry()
-    live_stage = shivaji_telemetry.get("stage_m", 532.60)
-    record_log("INFO", f"ThingSpeak Shivaji Live Ground Truth: Distance={shivaji_telemetry.get('raw_feet', 54.83):.2f} ft -> Water Level={live_stage:.2f} m MSL")
+    raw_feet = shivaji_telemetry.get("raw_feet")
+    live_stage = shivaji_telemetry.get("stage_m")
+    if raw_feet is None or live_stage is None:
+        record_log("WARN", "ThingSpeak Shivaji telemetry unavailable/abnormal — using last-known fallback (532.60 m / 54.83 ft)")
+        raw_feet = 54.83
+        live_stage = 532.60
+    else:
+        record_log("INFO", f"ThingSpeak Shivaji Live Ground Truth: Distance={raw_feet:.2f} ft -> Water Level={live_stage:.2f} m MSL")
     _end_step(s3)
 
     s4 = _start_step("04. Real-Time ML Recalibration Assessment")
@@ -505,6 +646,26 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         }
     }
 
+    total_rainfall_mm = 0.0
+    total_area = 0.0
+    for sub, series in subbasin_arrays.items():
+        area = SUBBASIN_AREAS_KM2.get(sub, 0.0)
+        tot = float(np.sum(series))
+        total_rainfall_mm += tot * area
+        total_area += area
+    if total_area > 0:
+        total_rainfall_mm /= total_area
+    total_rainfall_mm = round(total_rainfall_mm, 1)
+
+    # Catchment-mean surface (0-7 cm) soil moisture at forecast start — observability only.
+    surface_vwc = []
+    for sub in soil_moisture.get("per_subbasin", {}).values():
+        snap = sub.get("forecast_90h_vwc") or {}
+        v = snap.get("current_vwc", {}).get("soil_moisture_0_to_7cm")
+        if v is not None:
+            surface_vwc.append(float(v))
+    mean_surface_vwc = round(float(np.mean(surface_vwc)), 4) if surface_vwc else None
+
     pipeline_state = {
         "cycle_id": cycle_id,
         "summary": summary_obj,
@@ -513,6 +674,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         "stations": all_stations_summary,
         "subbasin_stations": [s for s in all_stations_summary if s.get("is_governing")],
         "gauges": gauge_hyetographs,
+        "soil_moisture": soil_moisture,
         "hydrograph": hydrograph,
         "bridgeShivaji": bridge_shivaji,
         "bridgeRajaram": bridge_rajaram,
@@ -541,10 +703,11 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
                 "start_time": start_dt.isoformat(),
                 "end_time": datetime.now(timezone.utc).isoformat(),
                 "duration_seconds": round(time.perf_counter() - t_cycle_start, 1),
-                "total_rainfall_mm": round(max([float(v) for v in station_cumulatives.values()]), 1),
+                "total_rainfall_mm": total_rainfall_mm,
                 "peak_discharge_m3s": peak_q,
                 "peak_stage_m": peak_stg_shivaji,
-                "alert_level": "WARNING" if peak_stg_shivaji >= 542.73 else "NORMAL",
+                "surface_soil_moisture_0_7cm": mean_surface_vwc,
+                "alert_level": "WARNING" if peak_stg_shivaji >= 542.70 else "NORMAL",
             },
         },
         "logs": log_stream,
@@ -556,7 +719,12 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         pipeline_state["validation"] = validation_eval
         pipeline_state["status"]["last_cycle"]["spearman_rho"] = validation_eval.get("metrics", {}).get("spearman_rho")
         pipeline_state["status"]["last_cycle"]["nse"] = validation_eval.get("metrics", {}).get("nse_discharge")
-        record_log("INFO", f"Model accuracy evaluated: Spearman ρ={validation_eval['metrics']['spearman_rho']:.3f}, NSE={validation_eval['metrics']['nse_discharge']:.3f} [{validation_eval['performance_grade']}]")
+        rho = validation_eval.get("metrics", {}).get("spearman_rho")
+        nse = validation_eval.get("metrics", {}).get("nse_discharge")
+        grade = validation_eval.get("performance_grade", "UNKNOWN")
+        rho_str = f"{rho:.3f}" if rho is not None else "N/A"
+        nse_str = f"{nse:.3f}" if nse is not None else "N/A"
+        record_log("INFO", f"Model accuracy evaluated: Spearman ρ={rho_str}, NSE={nse_str} [{grade}]")
     except Exception as e:
         log.warning("Accuracy evaluation skipped: %s", e)
 

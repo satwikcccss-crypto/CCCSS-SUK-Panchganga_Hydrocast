@@ -2,12 +2,23 @@
 src/api/admin.py
 ================
 Administrative API router for HydroCast.
-Protected by JWT authentication and API keys.
-Endpoints:
-  - POST /api/v1/admin/auth/token  (Login & get JWT)
-  - POST /api/v1/admin/trigger-run (Manual forecast cycle execution)
-  - POST /api/v1/admin/archive     (Trigger Parquet cold storage archival)
-  - GET  /api/v1/admin/me          (Current session info)
+
+Every route in this router requires a credential. Two are accepted:
+
+* **JWT bearer token** — obtained from ``POST /api/v1/admin/auth/token`` and
+  scoped to the ``admin`` role.
+* **Master ``X-API-Key``** — the same key used for public reads, useful for
+  service-to-service automation that should not carry a password.
+
+Both are enforced by :func:`src.api.security.verify_admin_auth`.
+
+Endpoints
+---------
+POST /api/v1/admin/auth/token    exchange credentials for a signed JWT
+GET  /api/v1/admin/me            current identity and claims
+POST /api/v1/admin/trigger-run   manually execute a forecast cycle
+POST /api/v1/admin/archive       Parquet cold-storage archival
+POST /api/v1/admin/recalibrate   forced ML recalibration and basin sync
 """
 
 import asyncio
@@ -17,7 +28,7 @@ from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.api.security import (
     verify_admin_credentials,
@@ -28,36 +39,105 @@ from src.db.archive_runs import run_archival
 
 log = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/admin", tags=["Administration & Control"])
+router = APIRouter(
+    prefix="/api/v1/admin",
+    tags=["Admin"],
+    responses={
+        401: {"description": "Missing or invalid credentials."},
+        403: {"description": "Valid credentials without the required role."},
+    },
+)
 
 
 class TokenRequest(BaseModel):
-    username: str
-    password: str
+    """Administrative login credentials."""
+
+    username: str = Field(
+        ...,
+        examples=["admin"],
+        description="Administrator username, from `ADMIN_USERNAME`.",
+    )
+    password: str = Field(
+        ...,
+        examples=["********"],
+        description="Administrator password, from `ADMIN_PASSWORD`. Never logged or echoed back.",
+    )
 
 
 class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-    expires_in_seconds: int
+    """A signed HS256 bearer token and its lifetime."""
+
+    access_token: str = Field(
+        ...,
+        description="JWT to send as `Authorization: Bearer <token>`.",
+    )
+    token_type: str = Field(default="bearer", description="Always `bearer`.")
+    expires_in_seconds: int = Field(
+        ...,
+        examples=[86400],
+        description="Token lifetime in seconds (24 hours by default).",
+    )
 
 
 class TriggerRunRequest(BaseModel):
-    date: Optional[str] = None  # YYYYMMDD
-    hour: Optional[int] = None  # 0, 6, 12, 18
-    cycle_id: Optional[str] = None
-    async_mode: bool = True
+    """Selects which forecast cycle to execute and whether to wait for it."""
+
+    date: Optional[str] = Field(
+        None,
+        examples=["20260929"],
+        description="Cycle date as `YYYYMMDD`. Defaults to the current 6-hourly synoptic hour.",
+    )
+    hour: Optional[int] = Field(
+        None,
+        examples=[6],
+        ge=0,
+        le=23,
+        description="Cycle hour (UTC). Production cadence is 00, 06, 12, 18.",
+    )
+    cycle_id: Optional[str] = Field(
+        None,
+        examples=["CYC_20260929_0600_MANUAL"],
+        description="Explicit cycle identifier. Auto-generated when omitted.",
+    )
+    async_mode: bool = Field(
+        True,
+        description=(
+            "`true` queues the cycle as a background task and returns immediately. "
+            "`false` runs it inline and blocks until the cycle finishes."
+        ),
+    )
 
 
 class ArchiveRequest(BaseModel):
-    retention_days: int = 90
-    dry_run: bool = False
+    """Controls which rows move to Parquet cold storage."""
+
+    retention_days: int = Field(
+        90,
+        ge=1,
+        examples=[90],
+        description="Archive telemetry older than this many days.",
+    )
+    dry_run: bool = Field(
+        False,
+        description="When `true`, report what would be archived without writing anything.",
+    )
 
 
-@router.post("/auth/token", response_model=TokenResponse)
+@router.post(
+    "/auth/token",
+    response_model=TokenResponse,
+    summary="Exchange credentials for a JWT",
+    response_description="A signed bearer token valid for 24 hours.",
+    responses={401: {"description": "Incorrect username or password."}},
+)
 async def login_for_access_token(req: TokenRequest):
-    """
-    Authenticate administrator credentials and return signed JWT bearer token.
+    """Authenticate administrator credentials and return a signed JWT bearer token.
+
+    Use the returned `access_token` in the **Authorize** dialog on the Swagger
+    page, or send it as `Authorization: Bearer <token>`.
+
+    A successful login is cheap and idempotent — call it once per session, not
+    once per request; the token is valid for a full day.
     """
     if not verify_admin_credentials(req.username, req.password):
         raise HTTPException(
@@ -74,9 +154,17 @@ async def login_for_access_token(req: TokenRequest):
     )
 
 
-@router.get("/me")
+@router.get(
+    "/me",
+    summary="Current administrator identity",
+    response_description="The authenticated subject and role from the token claims.",
+)
 async def get_current_admin(auth: Dict[str, Any] = Depends(verify_admin_auth)):
-    """Return identity and claims for the authenticated administrator."""
+    """Return identity and claims for the authenticated administrator.
+
+    Useful as a cheap token check: a `200` here means the credential is still
+    valid and carries the `admin` role.
+    """
     return {
         "user": auth.get("sub"),
         "role": auth.get("role"),
@@ -94,15 +182,25 @@ def _execute_pipeline_task(run_dt: Optional[datetime], cycle_id: Optional[str]):
         log.error("Manual pipeline run %s failed: %s", cycle_id, e)
 
 
-@router.post("/trigger-run")
+@router.post(
+    "/trigger-run",
+    summary="Trigger a forecast cycle",
+    response_description="Queued acknowledgement, or the completed run when `async_mode` is false.",
+)
 async def trigger_manual_run(
     req: TriggerRunRequest,
     background_tasks: BackgroundTasks,
     auth: Dict[str, Any] = Depends(verify_admin_auth),
 ):
-    """
-    Manually trigger a full 12-step hydrologic and hydraulic simulation cycle.
-    Protected by JWT Bearer token or master X-API-Key.
+    """Manually trigger a full 12-step hydrologic and hydraulic simulation cycle.
+
+    Protected by JWT bearer token or the master `X-API-Key`.
+
+    With `async_mode=true` (the default) the cycle is queued and the response
+    returns immediately with a `cycle_id` to poll; set it to `false` to run
+    inline and block until the cycle finishes.
+
+    :raises HTTPException 400: if `date` and `hour` are given but malformed.
     """
     now = datetime.now(timezone.utc)
     run_dt = None
@@ -137,14 +235,21 @@ async def trigger_manual_run(
         }
 
 
-@router.post("/archive")
+@router.post(
+    "/archive",
+    summary="Archive telemetry to Parquet cold storage",
+    response_description="Archival outcome including rows written and partitions skipped.",
+)
 async def trigger_cold_storage_archival(
     req: ArchiveRequest,
     auth: Dict[str, Any] = Depends(verify_admin_auth),
 ):
-    """
-    Manually trigger cold storage parquet archival for old telemetry tables.
-    Protected by JWT Bearer token or master X-API-Key.
+    """Manually trigger cold storage Parquet archival for old telemetry tables.
+
+    Protected by JWT bearer token or the master `X-API-Key`.
+
+    Always run with `dry_run=true` first when archiving a large backlog: the dry
+    run reports exactly which partitions would move without touching them.
     """
     res = run_archival(retention_days=req.retention_days, dry_run=req.dry_run)
     return {
@@ -155,19 +260,45 @@ async def trigger_cold_storage_archival(
 
 
 class RecalibrationRequest(BaseModel):
-    timing_offset_hours: float = 0.0
-    stage_error_m: float = 0.0
-    sync_basin_file: bool = True
+    """Residuals from the most recent verification, used to nudge parameters."""
+
+    timing_offset_hours: float = Field(
+        0.0,
+        description="Signed peak-timing error. Positive means the model peaks too early.",
+    )
+    stage_error_m: float = Field(
+        0.0,
+        description="Signed mean stage error. Positive means the model over-predicts stage.",
+    )
+    sync_basin_file: bool = Field(
+        True,
+        description=(
+            "Write the new parameters back to `Basin_1.basin` so HEC-HMS and the "
+            "emulator stay in agreement. The write is atomic and keeps a "
+            "timestamped `.bak` alongside the original."
+        ),
+    )
 
 
-@router.post("/recalibrate")
+@router.post(
+    "/recalibrate",
+    summary="Force ML recalibration",
+    response_description="Updated calibration coefficients and whether the basin file was synchronised.",
+)
 async def trigger_recalibration(
     req: RecalibrationRequest,
     auth: Dict[str, Any] = Depends(verify_admin_auth),
 ):
-    """
-    Manually trigger ML parameter recalibration (Muskingum K & X, Subbasin lag, Curve Numbers).
-    Synchronizes both Python emulator and Basin_1.basin.
+    """Manually trigger ML parameter recalibration.
+
+    Recalibrates Muskingum K (`alpha_k`), subbasin lag (`alpha_lag`), Curve
+    Number (`delta_cn`) and the Muskingum routing exponent X.
+
+    Synchronises both the Python emulator and `Basin_1.basin`. `Basin_1.basin`
+    is the single source of truth for all routing and loss parameters, so when
+    `sync_basin_file` is `true` (the default) the write-back is what makes the
+    change take effect for the next cycle; the response reports the outcome as
+    `basin_file_synced`.
     """
     from src.hydrology.ml_calibration import calibrator
     cal_params = calibrator.recalibrate_parameters(

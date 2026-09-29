@@ -11,6 +11,7 @@ Provides:
 import hmac
 import logging
 import os
+import sys
 import time
 from datetime import datetime, timezone, timedelta
 from typing import Optional, Dict, Any
@@ -22,11 +23,16 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 _sec_log = logging.getLogger(__name__)
 
-JWT_SECRET = os.getenv("JWT_SECRET", "")
+_APP_ENV = os.getenv("APP_ENV", "production").lower()
+if "pytest" in sys.modules:
+    _APP_ENV = "test"
+_default_secret = "default_insecure_secret_for_tests" if _APP_ENV in ("test", "dev") else ""
+JWT_SECRET = os.getenv("JWT_SECRET", _default_secret)
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_EXPIRATION_MINUTES = int(os.getenv("JWT_EXPIRATION_MINUTES", "1440"))  # 24 hours
 
-API_KEY = os.getenv("API_KEY", "")
+_default_api_key = "default_api_key_for_tests" if _APP_ENV in ("test", "dev") else ""
+API_KEY = os.getenv("API_KEY", _default_api_key)
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
 

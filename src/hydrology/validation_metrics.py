@@ -132,7 +132,20 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
     pred_stages = np.array([pt["predicted_stage_m"] for pt in valid_points], dtype=np.float64)
     obs_stages = np.array([pt["observed_stage_m"] for pt in valid_points], dtype=np.float64)
     pred_q = np.array([pt["predicted_discharge_m3s"] for pt in valid_points], dtype=np.float64)
-    obs_q = np.array([pt.get("observed_discharge_m3s", pt["predicted_discharge_m3s"]) for pt in valid_points], dtype=np.float64)
+    # Never substitute the prediction for a missing observation. If the observed
+    # discharge is absent the pair is dropped so the discharge metrics are not
+    # computed against the forecast's own values (which would score a perfect
+    # self-agreement).
+    q_pairs = [
+        (pt["predicted_discharge_m3s"], pt["observed_discharge_m3s"])
+        for pt in valid_points
+        if pt.get("observed_discharge_m3s") is not None
+    ]
+    if q_pairs:
+        pred_q = np.array([p for p, _ in q_pairs], dtype=np.float64)
+        obs_q = np.array([o for _, o in q_pairs], dtype=np.float64)
+    else:
+        pred_q = obs_q = None
 
     # Flat-flow guard: during baseflow-only (no active storm), both predicted and observed
     # series are nearly constant. NSE and Spearman are undefined/meaningless in this case.
@@ -157,7 +170,7 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
                 "mae_stage_m": round(float(mae_stage), 3),
                 "pbias_stage_pct": None,
                 "pearson_r2": None,
-                "basin_rainfall_accuracy_pct": 94.50,
+                "basin_rainfall_accuracy_pct": None,
             },
             "station_volume_accuracy": [],
             "scatter_points": [],
@@ -165,36 +178,79 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
             "actual_observed_series": actual_obs,
         }
 
+    # Skill metrics (NSE, Spearman, Pearson) require a minimum matched sample size
+    # and enough observed spread; otherwise the NSE denominator collapses and the
+    # score is numerically unstable rather than informative.
+    from src.hydrology.realtime_telemetry_validator import (
+        MIN_CORRELATION_SAMPLES,
+        MIN_OBS_Q_STD_M3S,
+        MIN_OBS_STAGE_STD_M,
+    )
+
+    obs_std = float(np.std(obs_stages))
+    nse_reliable = (
+        len(valid_points) >= MIN_CORRELATION_SAMPLES
+        and obs_std >= MIN_OBS_STAGE_STD_M
+    )
+
     # 1. Spearman Correlation (Non-linear monotonic rank tracking)
-    spearman_rho_stage, pval_spearman_stage = compute_spearman_correlation(pred_stages, obs_stages)
-    spearman_rho_q, pval_spearman_q = compute_spearman_correlation(pred_q, obs_q)
+    #    Gated on the same reliability conditions as NSE.
+    if nse_reliable:
+        spearman_rho_stage, pval_spearman_stage = compute_spearman_correlation(pred_stages, obs_stages)
+    else:
+        spearman_rho_stage, pval_spearman_stage = None, None
+    spearman_rho_q = None
+    pval_spearman_q = None
 
     # 2. Pearson Correlation & R²
-    r_stage, r2_stage, pval_pearson = compute_pearson_correlation(pred_stages, obs_stages)
-    r_q, r2_q, _ = compute_pearson_correlation(pred_q, obs_q)
+    if nse_reliable:
+        r_stage, r2_stage, pval_pearson = compute_pearson_correlation(pred_stages, obs_stages)
+    else:
+        r_stage, r2_stage, pval_pearson = None, None, None
 
-    # 3. Nash-Sutcliffe Efficiency (NSE)
-    nse_stage = compute_nse(pred_stages, obs_stages)
-    nse_q = compute_nse(pred_q, obs_q)
+    # 3. Nash-Sutcliffe Efficiency (NSE) and 4/5 error metrics.
+    nse_stage = compute_nse(pred_stages, obs_stages) if nse_reliable else None
 
-    # 4. RMSE & MAE
+    # 4. RMSE & MAE (well defined for any sample size)
     rmse_stage, mae_stage = compute_rmse_mae(pred_stages, obs_stages)
-    rmse_q, mae_q = compute_rmse_mae(pred_q, obs_q)
+    if pred_q is not None and len(pred_q) > 0:
+        q_obs_std = float(np.std(obs_q))
+        nse_q_reliable = (
+            len(pred_q) >= MIN_CORRELATION_SAMPLES and q_obs_std >= MIN_OBS_Q_STD_M3S
+        )
+        nse_q = compute_nse(pred_q, obs_q) if nse_q_reliable else None
+        rmse_q, mae_q = compute_rmse_mae(pred_q, obs_q)
+        pbias_q = compute_pbias(pred_q, obs_q) if nse_q_reliable else None
+        rho_q = compute_spearman_correlation(pred_q, obs_q)[0] if nse_q_reliable else None
+    else:
+        nse_q = rmse_q = mae_q = pbias_q = rho_q = None
 
-    # 5. Percent Bias (PBIAS)
+    # 5. Percent Bias (PBIAS) for stage
     pbias_stage = compute_pbias(pred_stages, obs_stages)
-    pbias_q = compute_pbias(pred_q, obs_q)
 
-    # Rating benchmark
-    if nse_q >= 0.80 and spearman_rho_q >= 0.85:
-        performance_grade = "EXCELLENT"
-        badge_color = "emerald"
-    elif nse_q >= 0.65 and spearman_rho_q >= 0.75:
-        performance_grade = "VERY GOOD"
+    # Performance grade. Uses NSE and Spearman as conjunctive conditions, and
+    # never awards a rating better than CALIBRATION REQUIRED when a reliably
+    # computed NSE is zero or negative.
+    if nse_q is not None and spearman_rho_q is not None:
+        if nse_q >= 0.80 and spearman_rho_q >= 0.85:
+            performance_grade = "EXCELLENT"
+            badge_color = "emerald"
+        elif nse_q >= 0.65 and spearman_rho_q >= 0.75:
+            performance_grade = "VERY GOOD"
+            badge_color = "sky"
+        elif nse_q >= 0.50:
+            performance_grade = "SATISFACTORY"
+            badge_color = "amber"
+        elif nse_q > 0.0:
+            performance_grade = "MODERATE BIAS"
+            badge_color = "amber"
+        else:
+            performance_grade = "CALIBRATION REQUIRED"
+            badge_color = "rose"
+    elif not nse_reliable:
+        # Skill metrics undefined: too few matched hours, or stable baseflow.
+        performance_grade = "ACCUMULATING TELEMETRY" if len(valid_points) < MIN_CORRELATION_SAMPLES else "BASEFLOW STABLE"
         badge_color = "sky"
-    elif nse_q >= 0.50:
-        performance_grade = "SATISFACTORY"
-        badge_color = "amber"
     else:
         performance_grade = "CALIBRATION REQUIRED"
         badge_color = "rose"
@@ -203,39 +259,36 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
     stations_data = run_state.get("stations", [])
     try:
         from src.hydrology.observed_rainfall_pipeline import validate_station_rainfall
-        streamflow_obs = [p["observed_discharge_m3s"] for p in actual_obs] if actual_obs else []
+        streamflow_obs = [
+            p["observed_discharge_m3s"]
+            for p in actual_obs
+            if p.get("observed_discharge_m3s") is not None
+        ]
         station_volume_accuracy, rain_summary = validate_station_rainfall(stations_data, streamflow_obs)
         basin_rain_error_pct = rain_summary["basin_error_pct"]
         basin_rain_accuracy_pct = rain_summary["basin_accuracy_pct"]
     except Exception as e:
-        log.warning(f"Falling back to physical mass-balance rainfall estimation: {e}")
-        station_volume_accuracy = []
-        total_pred_rain = 0.0
-        total_obs_rain = 0.0
-        for st in stations_data:
-            st_id = st.get("station_id")
-            name = st.get("station_name", st_id)
-            sub = st.get("subbasin_id", "")
-            pred_vol = float(st.get("cumulative_90h_mm", 0.0))
-            obs_vol = pred_vol
-            err_mm = 0.0
-            err_pct = 0.0
-            total_pred_rain += pred_vol
-            total_obs_rain += obs_vol
-            station_volume_accuracy.append({
-                "station_id": st_id,
-                "station_name": name,
-                "subbasin_id": sub,
-                "predicted_volume_mm": pred_vol,
-                "observed_volume_mm": obs_vol,
-                "source": "FALLBACK_EQUIVALENT",
-                "error_mm": err_mm,
-                "error_pct": err_pct,
-                "accuracy_pct": 100.0,
-                "status": "ACCURATE",
-            })
-        basin_rain_error_pct = 0.0
-        basin_rain_accuracy_pct = 100.0
+        # The rainfall pipeline failed. Report the stations as UNVERIFIED rather
+        # than echoing each prediction back as its own "observation", which would
+        # produce a meaningless 100% accuracy.
+        log.warning("Station rainfall validation unavailable: %s", e)
+        station_volume_accuracy = [
+            {
+                "station_id": st.get("station_id"),
+                "station_name": st.get("station_name", st.get("station_id")),
+                "subbasin_id": st.get("subbasin_id", ""),
+                "predicted_volume_mm": float(st.get("cumulative_90h_mm", 0.0)),
+                "observed_volume_mm": None,
+                "source": "UNVERIFIED",
+                "error_mm": None,
+                "error_pct": None,
+                "accuracy_pct": None,
+                "status": "UNVERIFIED",
+            }
+            for st in stations_data
+        ]
+        basin_rain_error_pct = None
+        basin_rain_accuracy_pct = None
 
     # 7. Scatter Plot Points for Correlation
     scatter_points = []
@@ -244,7 +297,8 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
             "lead_hours": pt["lead_hours"],
             "actual_stage": pt["observed_stage_m"],
             "predicted_stage": pt["predicted_stage_m"],
-            "actual_discharge": pt["observed_discharge_m3s"],
+            # Rating-implied, not independently measured (see compute_pure_metrics).
+            "actual_discharge": pt.get("observed_discharge_m3s"),
             "predicted_discharge": pt["predicted_discharge_m3s"],
         })
 
@@ -266,9 +320,15 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
                 "spearman_rho": sub_rho,
             })
 
+    lifecycle_status = (run_state.get("validation") or {}).get("lifecycle_status")
+
     return {
         "status": "VALIDATED",
-        "sample_size_hours": len(actual_obs),
+        "lifecycle_status": lifecycle_status or "VALIDATED",
+        "verified_hours": len(valid_points),
+        "total_forecast_hours": len(shivaji_fc),
+        "sample_size_hours": len(valid_points),
+        "matched_pairs": len(valid_points),
         "performance_grade": performance_grade,
         "badge_color": badge_color,
         "metrics": {
@@ -285,6 +345,14 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
             "mae_q_m3s": mae_q,
             "pbias_stage_pct": pbias_stage,
             "pbias_discharge_pct": pbias_q,
+            "skill_metrics_reliable": bool(nse_reliable),
+            "observed_stage_std_m": round(obs_std, 4),
+            "discharge_metrics_source": "RATING_IMPLIED_DERIVED" if pred_q is not None else None,
+            "discharge_metrics_note": (
+                "Observed discharge is the observed stage pushed through the same "
+                "rating curve used for the forecast; it is a derived quantity, not "
+                "an independent discharge measurement."
+            ),
             "basin_rainfall_accuracy_pct": basin_rain_accuracy_pct,
             "basin_rainfall_error_pct": basin_rain_error_pct,
         },

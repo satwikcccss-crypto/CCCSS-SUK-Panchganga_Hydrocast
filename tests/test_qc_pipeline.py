@@ -69,14 +69,10 @@ class TestQualityControlPipeline(unittest.TestCase):
 
     @patch("src.ecmwf.open_meteo._call_openmeteo_api", side_effect=Exception("Connection reset"))
     def test_automated_physical_fallback_on_failure(self, mock_api):
-        """Verify fallback generates a smooth, physically bounded diurnal hydrograph."""
+        """Verify fetch_point_forecast raises RuntimeError when fallback is disabled."""
         start_dt = datetime(2026, 9, 10, 6, 0, 0, tzinfo=timezone.utc)
-        arr = fetch_point_forecast(16.70, 74.24, start_dt)
-
-        self.assertEqual(len(arr), 90)
-        self.assertTrue((arr >= 0.0).all())
-        self.assertTrue((arr <= 50.0).all())
-        self.assertGreater(float(np.max(arr)), 0.0)
+        with self.assertRaises(RuntimeError):
+            fetch_point_forecast(16.70, 74.24, start_dt)
 
     def test_bridge_metadata_defaults(self):
         """Verify bridge metadata fallback contains correct CWC warning & danger marks."""

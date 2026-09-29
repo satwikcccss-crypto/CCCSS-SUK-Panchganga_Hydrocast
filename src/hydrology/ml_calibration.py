@@ -46,6 +46,9 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 from scipy import optimize
 
+from src.hms import runner as hms_runner
+from src.hms.basin_parser import load_basin_parameters
+
 log = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -58,27 +61,10 @@ CALIBRATION_STATE_FILE = TELEMETRY_DIR / "ml_calibration_state.json"
 # Permissible uncertainty margin for peak arrival (default ±2.0 hours)
 CONFIDENCE_INTERVAL_HOURS = float(os.getenv("PEAK_ARRIVAL_CI_HOURS", "2.0"))
 
-# Baseline Subbasin Catchment Parameters (Official Basin_1.basin)
-BASE_SUB_MODELS: Dict[str, Dict[str, Any]] = {
-    "S1": {"name": "Karveer",     "area_km2": 86.213, "cn": 74.85, "lag_min": 2152.0},
-    "S2": {"name": "Sangarul",    "area_km2": 153.77, "cn": 65.74, "lag_min": 3154.3},
-    "S3": {"name": "Kotoli",      "area_km2": 261.32, "cn": 64.82, "lag_min": 3997.7},
-    "S4": {"name": "Karanjphen",  "area_km2": 262.00, "cn": 61.89, "lag_min": 3115.5},
-    "S5": {"name": "Padasali",    "area_km2": 106.39, "cn": 60.97, "lag_min": 2117.1},
-    "S6": {"name": "Gaganbawda",  "area_km2": 227.72, "cn": 61.78, "lag_min": 3318.1},
-    "S7": {"name": "Garivade",    "area_km2": 195.39, "cn": 61.28, "lag_min": 3362.3},
-    "S8": {"name": "Beed",        "area_km2": 177.44, "cn": 65.76, "lag_min": 3387.1},
-    "S9": {"name": "Radhanagari", "area_km2": 366.97, "cn": 64.31, "lag_min": 5199.0},
-}
-
-# Baseline Muskingum Reach Parameters (Official Basin_1.basin)
-BASE_REACHES: Dict[str, Dict[str, Any]] = {
-    "R5": {"k_hr": 18.338, "x": 0.25},
-    "R4": {"k_hr": 8.085,  "x": 0.25},
-    "R2": {"k_hr": 16.500, "x": 0.25},
-    "R3": {"k_hr": 9.484,  "x": 0.25},
-    "R1": {"k_hr": 4.500,  "x": 0.25},
-}
+# Baseline Subbasin Catchment Parameters — loaded directly from the official
+# Basin_1.basin model (the same file HEC-HMS executes).  The emulator reads the
+# same source, so calibration and production can never drift apart.
+BASE_SUB_MODELS, BASE_REACHES = load_basin_parameters()
 
 
 def calculate_peak_arrival_window(
@@ -237,7 +223,11 @@ class AdaptiveHydrologicCalibrator:
         }
 
     def save_calibration_state(self) -> None:
-        """Persists calibration state to JSON."""
+        """Persists calibration state to JSON (skipped under pytest to keep the
+        live production state file free of test-driven extreme parameters)."""
+        if os.environ.get("PYTEST_CURRENT_TEST"):
+            log.info("Skipping calibration state persistence during tests")
+            return
         try:
             with open(CALIBRATION_STATE_FILE, "w", encoding="utf-8") as f:
                 json.dump(self.state, f, indent=2)
@@ -361,51 +351,94 @@ class AdaptiveHydrologicCalibrator:
         x_shift = 0.25 - (timing_offset_hours * 0.02)
 
         # Bound parameters strictly within physical hydrologic limits
-        initial_params = np.array([
-            np.clip(k_shift, 0.60, 1.60),
-            np.clip(lag_shift, 0.60, 1.60),
-            np.clip(cn_shift, -7.0, 7.0),
-            np.clip(x_shift, 0.16, 0.36),
-        ], dtype=np.float64)
-
-        # Objective function for bounded refinement
-        def hydrologic_loss(p):
-            a_k, a_lag, d_cn, x_val = p
-            # Timing discrepancy penalty: reach travel time (55%) + subbasin lag (45%)
-            modeled_dt = 0.55 * ((a_k - 1.0) / 0.075) + 0.45 * ((a_lag - 1.0) / 0.060)
-            timing_loss = ((modeled_dt - timing_offset_hours) / 2.0) ** 2
-
-            # Wave steepness matching: X shifts with timing offset
-            expected_x = float(np.clip(0.25 - (timing_offset_hours * 0.02), 0.16, 0.36))
-            x_loss = ((x_val - expected_x) / 0.05) ** 2
-
-            # Stage & Peak Q penalty
-            modeled_dh = -d_cn / 4.5
-            stage_loss = ((modeled_dh - stage_error_m) / 0.25) ** 2
-
-            # Gentle regularization towards baseline (prevent wild swings)
-            reg = 0.05 * ((a_k - 1.0) ** 2 + (a_lag - 1.0) ** 2 + (d_cn / 5.0) ** 2 + ((x_val - 0.25) / 0.1) ** 2)
-
-            return timing_loss + stage_loss + x_loss + reg
-
-        bounds = [
+        bounds = np.array([
             (0.50, 1.80),   # α_K
             (0.50, 1.80),   # α_lag
             (-8.0, 8.0),    # ΔCN
             (0.15, 0.40),   # X
-        ]
+        ], dtype=np.float64)
+        lo, hi = bounds[:, 0], bounds[:, 1]
+
+        initial_params = np.array([
+            float(np.clip(k_shift, 0.60, 1.60)),
+            float(np.clip(lag_shift, 0.60, 1.60)),
+            float(np.clip(cn_shift, -7.0, 7.0)),
+            float(np.clip(x_shift, 0.16, 0.36)),
+        ], dtype=np.float64)
+
+        # ── True nonlinear least-squares fit (Levenberg–Marquardt via
+        #    scipy.optimize.least_squares) of the emulator hydrograph ─────────
+        # The emulator is re-run at every trial parameter set against the same
+        # forecast hyetographs, and its surface-runoff hydrograph is fitted to
+        # an observed-equivalent target.  The target is the baseline-run
+        # hydrograph translated by the wave timing offset (Δt<0 → wave arrived
+        # early → shift left) and rescaled by the observed peak discharge error.
+        ref = hms_runner.compute_emulator_hydrograph(
+            BASE_SUB_MODELS, BASE_REACHES, subbasin_hyetographs, baseflow_m3s=0.0,
+        )
+        q0 = np.asarray(ref["q_surface"], dtype=np.float64)
+        T = len(q0)
+        shift_n = int(round(-timing_offset_hours))
+        q_target = np.zeros(T, dtype=np.float64)
+        if abs(shift_n) < T:
+            if shift_n >= 0:
+                q_target[:T - shift_n] = q0[shift_n:]
+            else:
+                q_target[-shift_n:] = q0[:T + shift_n]
+
+        ref_peak = float(np.max(q0))
+        if ref_peak > 0.0 and peak_discharge_error_m3s != 0.0:
+            q_scale = max(0.5, (ref_peak + peak_discharge_error_m3s) / ref_peak)
+            q_target *= q_scale
+
+        wind = np.arange(0, min(T, 90))
+        resid_scale = max(1.0, float(np.max(q_target)) * 0.15)
+        expected_x = float(np.clip(0.25 - (timing_offset_hours * 0.02), 0.16, 0.36))
+
+        def hydrologic_residuals(p):
+            """Box-projected Levenberg–Marquardt residuals: emulator hydrograph
+            mismatch plus analytic physics anchors (timing, stage, wave shape)."""
+            p = np.clip(p, lo, hi)
+            a_k, a_lag, d_cn, x_val = (float(p[0]), float(p[1]), float(p[2]), float(p[3]))
+
+            sub_m = copy.deepcopy(BASE_SUB_MODELS)
+            for sid, props in sub_m.items():
+                props["cn"] = float(np.clip(props["cn"] + d_cn, 45.0, 95.0))
+                props["lag_min"] = float(props["lag_min"] * a_lag)
+            rch = copy.deepcopy(BASE_REACHES)
+            for rid, rp in rch.items():
+                rp["k_hr"] = float(rp["k_hr"] * a_k)
+                rp["x"] = float(x_val)
+
+            sim = hms_runner.compute_emulator_hydrograph(
+                sub_m, rch, subbasin_hyetographs, baseflow_m3s=0.0,
+            )
+            qs = np.asarray(sim["q_surface"], dtype=np.float64)
+            n = min(len(qs), T)
+            pts = wind[wind < n]
+            resid = (qs[pts] - q_target[pts]) / resid_scale
+
+            modeled_dt = 0.55 * ((a_k - 1.0) / 0.075) + 0.45 * ((a_lag - 1.0) / 0.060)
+            dwell = (modeled_dt - timing_offset_hours) / 2.0
+            dstage = (-d_cn / 4.5 - stage_error_m) / 0.25
+            dx = (x_val - expected_x) / 0.05
+            return np.concatenate([resid, [dwell, dstage, dx]])
 
         try:
-            opt_res = optimize.minimize(
-                hydrologic_loss,
+            opt_res = optimize.least_squares(
+                hydrologic_residuals,
                 initial_params,
-                method="L-BFGS-B",
-                bounds=bounds,
-                options={"maxiter": 50, "ftol": 1e-4},
+                method="lm",
+                max_nfev=25,
+                ftol=1e-8,
+                xtol=1e-8,
+                gtol=1e-8,
             )
-            final_p = opt_res.x if opt_res.success else initial_params
+            final_p = np.clip(opt_res.x, lo, hi)
+            if not np.all(np.isfinite(final_p)):
+                final_p = initial_params
         except Exception as e:
-            log.warning("Scipy optimization fell back to analytical physics: %s", e)
+            log.warning("Levenberg-Marquardt recalibration fell back to analytical physics: %s", e)
             final_p = initial_params
 
         alpha_k = round(float(final_p[0]), 3)

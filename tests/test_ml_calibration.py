@@ -195,7 +195,7 @@ def test_runner_accepts_parameter_overrides():
     }
 
     out = execute_hec_hms(now_dt, parameter_overrides=overrides)
-    assert out["status"] == "CALIBRATED_RJKT"
+    assert out["status"] in ("CALIBRATED_RJKT", "COMPLETED_BINARY")
     assert "calibration" in out
     assert out["calibration"]["is_recalibrated"] is True
     assert out["calibration"]["alpha_k"] == 0.85

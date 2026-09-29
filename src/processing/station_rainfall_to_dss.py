@@ -5,6 +5,12 @@ Downloads hourly precipitation forecasts from Open-Meteo API v1 for user-defined
 rain gauge stations or subbasin centroids, exports to structured CSV time series,
 and converts to HEC-DSS format (.dss) ready for HEC-HMS hydrological simulation.
 
+NOTE: This is a standalone offline CSV conversion CLI. It stays in sync with the
+operational pipeline by delegating binary DSS writing to the canonical per-gauge
+writer `src/dss/writer.py`, so both produce the SAME HEC-HMS Gage Manager
+convention: //<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/ (e.g. into HMS_Automation_RJKT.dss).
+The offline CSV/Jython fallbacks below use that same pathname scheme.
+
 Features:
   - Flexible CSV reader supporting custom column formats (e.g. 'Raingauge_Station', 'Longitude (X)', 'Latitude (Y)').
   - Direct Open-Meteo v1 Forecast API ingestion (ECMWF IFS / Best Match models).
@@ -37,6 +43,14 @@ from typing import Optional, List, Dict, Tuple
 import numpy as np
 import pandas as pd
 import requests
+
+# Allow running as a standalone CLI from the repository root:
+#   python src/processing/station_rainfall_to_dss.py --stations-csv ...
+_PKG_ROOT = Path(__file__).resolve().parents[2]
+if str(_PKG_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PKG_ROOT))
+
+from src.dss.writer import write_gage_to_dss, SUBBASIN_TO_GAGE  # single canonical DSS writer
 
 logging.basicConfig(
     level=logging.INFO,
@@ -412,50 +426,46 @@ def export_to_dss(
 ) -> Path:
     """
     Convert rainfall hyetographs to HEC-DSS (.dss).
-    If pydsstools is installed, directly writes native binary DSS.
-    Also produces standard HEC-DSS CSV table and HEC-DSSVue Jython importer script.
+
+    Binary DSS records are written through the CANONICAL writer
+    (`src/dss/writer.py::write_gage_to_dss`), guaranteeing the exact
+    HEC-HMS Gage Manager convention:
+        //<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/
+    (the same pathname scheme the operational pipeline writes into
+    HMS_Automation_RJKT.dss). Subbasin representative records are named with
+    the official gauge alias from the canonical SUBBASIN_TO_GAGE map.
+
+    Also produces a standard HEC-DSS CSV table and HEC-DSSVue Jython importer
+    script as an offline fallback when pydsstools is not available.
     """
     dss_dir = output_dir / "dss"
     dss_dir.mkdir(parents=True, exist_ok=True)
     dss_path = dss_dir / "rainfall_input.dss"
 
-    # Targets to export (both subbasin mappings and station records)
+    # Targets to export (both subbasin mappings and station records).
+    # Gauge part = official gauge alias for known subbasins, else the raw name.
     targets: List[Tuple[str, StationForecast]] = []
     if export_all_stations:
         for fc in forecasts:
             targets.append((fc.station.station_id, fc))
 
-    # Also include subbasin representative records
     subbasin_groups: Dict[str, List[StationForecast]] = {}
     for fc in forecasts:
         subbasin_groups.setdefault(fc.station.subbasin_id, []).append(fc)
     for sub_id, group in subbasin_groups.items():
         best_fc = max(group, key=lambda x: x.total_precipitation_mm)
-        targets.append((sub_id, best_fc))
+        gauge = SUBBASIN_TO_GAGE.get(sub_id, sub_id)
+        targets.append((gauge, best_fc))
 
     pydss_written = False
     try:
         from pydsstools.heclib.dss.HecDss import HecDss
-        from pydsstools.core import TimeSeriesContainer
 
         with HecDss.Open(str(dss_path)) as dss:
             for b_part, fc in targets:
-                start_dt = fc.timestamps[0]
-                d_part = start_dt.strftime("%d%b%Y").upper()
-                pathname = f"/{basin_name}/{b_part}/PRECIP-INC/{d_part}/1HOUR/OPENMETEO-V1/"
-
-                tsc = TimeSeriesContainer()
-                tsc.pathname = pathname
-                tsc.startDateTime = start_dt.strftime("%d%b%Y %H:%M:%S").upper()
-                tsc.numberValues = len(fc.precipitation_mm_hr)
-                tsc.units = "MM"
-                tsc.type = "INST-VAL"
-                tsc.interval = 60
-                tsc.values = [float(v) for v in fc.precipitation_mm_hr]
-
-                dss.put(tsc)
-                log.info("✓ Binary DSS written: %s", pathname)
-        log.info("Native HEC-DSS file successfully saved: %s", dss_path)
+                pn = write_gage_to_dss(dss, b_part, fc.precipitation_mm_hr, fc.timestamps[0])
+                log.info("✓ Binary DSS written: %s", pn)
+        log.info("Native HEC-DSS file successfully saved (Gage-Manager convention): %s", dss_path)
         pydss_written = True
     except ImportError:
         log.info("pydsstools not installed. Generating DSS tabular files and Jython import automation script...")
@@ -463,6 +473,7 @@ def export_to_dss(
         log.warning("Binary DSS write encountered an issue: %s", e)
 
     # ── Fallback / Auxiliary: HEC-DSSVue Table & Jython Script ─────────────────
+    # (Aligned to the same //<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/ convention.)
     dss_table_path = dss_dir / "hec_dss_rainfall_table.csv"
     with open(dss_table_path, "w") as f:
         f.write("# HEC-DSSVue Tabular Rainfall Import Format\n")
@@ -470,7 +481,7 @@ def export_to_dss(
         for b_part, fc in targets:
             start_dt = fc.timestamps[0]
             d_part = start_dt.strftime("%d%b%Y").upper()
-            f.write(f"\nPATHNAME: /{basin_name}/{b_part}/PRECIP-INC/{d_part}/1HOUR/OPENMETEO-V1/\n")
+            f.write(f"\nPATHNAME: //{b_part}/PRECIP-INC/{d_part}/1HOUR/GAGE/\n")
             f.write("UNITS: MM\nTYPE: INST-VAL\nINTERVAL: 1HOUR\n")
             f.write("DATE,TIME,VALUE\n")
             for dt, val in zip(fc.timestamps, fc.precipitation_mm_hr):
@@ -493,7 +504,7 @@ dss = HecDss.open("{dss_path.resolve().as_posix()}")
         jython_code += f"""
 # Record for {b_part}
 tsc = TimeSeriesContainer()
-tsc.fullName = "/{basin_name}/{b_part}/PRECIP-INC/{d_part}/1HOUR/OPENMETEO-V1/"
+tsc.fullName = "//{b_part}/PRECIP-INC/{d_part}/1HOUR/GAGE/"
 tsc.interval = 60
 tsc.units = "MM"
 tsc.type = "INST-VAL"

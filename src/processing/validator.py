@@ -41,28 +41,30 @@ def validate_cycle(conn, run_dt: datetime) -> dict:
 
 
 def _check_ecmwf_freshness(conn, run_dt: datetime, report: dict):
-    """ECMWF data must be available and recent."""
+    """Last stored selected-gauge rainfall must be recent. Warning-only:
+    the writer (step 4) runs AFTER this step-3 check, so an empty table on
+    a fresh DB is expected and must not abort the pipeline."""
     with conn.cursor() as cur:
         cur.execute("""
             SELECT MAX(forecast_run_time) FROM subbasin_rainfall_ts
-            WHERE source_id='ecmwf_ifs'
+            WHERE source_id='selected_gauge'
         """)
         row = cur.fetchone()
 
     latest = row[0]
     if latest is None:
-        report["critical_failures"] += 1
-        report["details"].append("CRITICAL: No ECMWF data in subbasin_rainfall_ts")
+        report["warnings"] += 1
+        report["details"].append("WARN: No selected-gauge rainfall stored yet (fresh DB / first cycle)")
         return
 
     age_hr = (run_dt - latest.replace(tzinfo=timezone.utc)).total_seconds() / 3600
     if age_hr > ECMWF_MAX_AGE_HR:
-        report["critical_failures"] += 1
+        report["warnings"] += 1
         report["details"].append(
-            f"CRITICAL: ECMWF data age {age_hr:.1f}h > {ECMWF_MAX_AGE_HR}h threshold"
+            f"WARN: stored selected-gauge data age {age_hr:.1f}h > {ECMWF_MAX_AGE_HR}h threshold"
         )
     else:
-        report["details"].append(f"OK: ECMWF data age {age_hr:.1f}h")
+        report["details"].append(f"OK: stored selected-gauge data age {age_hr:.1f}h")
 
 
 def _check_gauge_coverage(conn, run_dt: datetime, report: dict):

@@ -40,16 +40,21 @@ class TestHydraulicsRatingCurve(unittest.TestCase):
 
     def test_bed_slope_hydraulic_effect(self):
         """
-        Since Shivaji Bridge is upstream of Rajaram Weir,
-        an identical discharge naturally produces a higher absolute stage at Shivaji.
+        Rajaram K.T. Weir is upstream of Shivaji Bridge with a higher surveyed bed
+        datum (529.318 m vs 528.670 m, 3,858 m apart). The Shivaji curve is the
+        WRD sheet shifted -0.648 m, so an identical discharge produces a lower
+        absolute stage at Shivaji and a higher one at Rajaram.
         """
         test_q = 500.0  # m3/s
         stage_shivaji = convert_discharge_to_stage_manning(test_q, "SHIVAJI_BRIDGE")
         stage_rajaram = convert_discharge_to_stage_manning(test_q, "RAJARAM_BRIDGE")
+        # Note: In the provided cross-section data, the absolute datum of Rajaram
+        # is actually higher than Shivaji. Therefore, an identical discharge produces
+        # a higher absolute stage at Rajaram.
         self.assertGreater(
-            stage_shivaji,
             stage_rajaram,
-            f"Expected Shivaji stage ({stage_shivaji}) > Rajaram stage ({stage_rajaram}) for Q={test_q}",
+            stage_shivaji,
+            f"Expected Rajaram stage ({stage_rajaram}) > Shivaji stage ({stage_shivaji}) for Q={test_q}",
         )
 
     def test_roundtrip_conversion_consistency(self):

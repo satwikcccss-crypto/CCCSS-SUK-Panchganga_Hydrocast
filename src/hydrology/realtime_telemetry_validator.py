@@ -57,6 +57,29 @@ THINGSPEAK_CHANNEL_ID = os.getenv("THINGSPEAK_CHANNEL_ID", "3424513")
 THINGSPEAK_API_KEY = os.getenv("THINGSPEAK_API_KEY", "")
 SHIVAJI_DATUM_MSL = 549.35  # Elevation of ultrasonic sensor mount in meters MSL
 
+# ── Validation statistical reliability thresholds ─────────────────────────────
+# Correlation and NSE are only meaningful above a minimum sample size. Below
+# MIN_CORRELATION_SAMPLES the observed window is too short to rank reliably.
+MIN_CORRELATION_SAMPLES = 6
+# If the observed series is flatter than this (metres), NSE is numerically
+# unstable because its denominator (observed variance) approaches zero and the
+# score explodes to large negative values that do not reflect real skill.
+MIN_OBS_STAGE_STD_M = 0.05
+MIN_OBS_Q_STD_M3S = 1.0
+# Observed-variance floor below which NSE is reported as undefined (None)
+# rather than a misleading number.
+NSE_VARIANCE_FLOOR = 1e-4
+
+# A cycle whose forecast window has fully elapsed but which still has missing
+# telemetry is only declared permanently unverifiable once the run has been
+# eligible for re-validation for at least this many hours. Before that point
+# the missing hours may simply not have been ingested by ThingSpeak yet, so the
+# run stays re-validatable (AWAITING_OBSERVATIONS). Past this threshold the
+# sensor data is treated as a genuine, unrecoverable outage and the run is
+# stamped OBSERVATION_GAP so the dashboard can explain the zero instead of
+# showing an indefinitely pending state.
+OBSERVATION_GAP_GRACE_HOURS = float(os.getenv("OBSERVATION_GAP_GRACE_HOURS", "12"))
+
 TELEMETRY_CACHE_DIR = ROOT_DIR / "data" / "telemetry"
 TELEMETRY_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 TELEMETRY_CACHE_FILE = TELEMETRY_CACHE_DIR / "thingspeak_hourly_cache.json"
@@ -196,80 +219,101 @@ def compute_pure_metrics(
     Zero synthetic noise. Zero artificial damping.
     """
     n = len(pred_stages)
-    if n < 3:
-        return {
-            "sample_size_hours": n,
-            "status": "INSUFFICIENT_DATA",
-            "rmse_stage_m": None,
-            "mae_stage_m": None,
-            "nse_stage": None,
-            "pbias_stage_pct": None,
-            "spearman_rho": None,
-            "pearson_r2": None,
-            "rmse_q_m3s": None,
-            "mae_q_m3s": None,
-            "nse_discharge": None,
-            "pbias_discharge_pct": None,
-            "spearman_rho_q": None,
-            "pearson_r2_q": None,
-            "basin_rainfall_accuracy_pct": 94.50,
-            "performance_grade": "ACCUMULATING_TELEMETRY",
-        }
 
-    # 1. Stage Metrics
-    rmse_s = float(np.sqrt(np.mean((pred_stages - obs_stages) ** 2)))
-    mae_s = float(np.mean(np.abs(pred_stages - obs_stages)))
+    # Error metrics (RMSE / MAE / PBIAS) are well defined for any sample size and
+    # are reported whenever at least one matched point exists.
+    if n >= 1:
+        rmse_s = float(np.sqrt(np.mean((pred_stages - obs_stages) ** 2)))
+        mae_s = float(np.mean(np.abs(pred_stages - obs_stages)))
+        sum_obs_s = float(np.sum(obs_stages))
+        pbias_s = (
+            float((np.sum(pred_stages - obs_stages) / sum_obs_s) * 100.0)
+            if abs(sum_obs_s) > 1e-6
+            else 0.0
+        )
+    else:
+        rmse_s = mae_s = pbias_s = None
 
-    denom_s = float(np.sum((obs_stages - np.mean(obs_stages)) ** 2))
-    numer_s = float(np.sum((obs_stages - pred_stages) ** 2))
-    if denom_s > 1e-6:
+    # Skill metrics (NSE / Spearman / Pearson) require both a minimum sample size
+    # and enough observed variance to be numerically stable.
+    obs_std_s = float(np.std(obs_stages)) if n else 0.0
+    nse_is_reliable = (
+        n >= MIN_CORRELATION_SAMPLES
+        and obs_std_s >= MIN_OBS_STAGE_STD_M
+        and float(np.sum((obs_stages - np.mean(obs_stages)) ** 2)) > NSE_VARIANCE_FLOOR
+    ) if n else False
+
+    if nse_is_reliable:
+        denom_s = float(np.sum((obs_stages - np.mean(obs_stages)) ** 2))
+        numer_s = float(np.sum((obs_stages - pred_stages) ** 2))
         nse_s = float(1.0 - (numer_s / denom_s))
     else:
-        nse_s = 1.0 if numer_s < 1e-4 else 0.0
+        nse_s = None
 
-    sum_obs_s = float(np.sum(obs_stages))
-    pbias_s = float((np.sum(pred_stages - obs_stages) / sum_obs_s) * 100.0) if abs(sum_obs_s) > 1e-6 else 0.0
-
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=getattr(stats, "ConstantInputWarning", UserWarning))
-        res_spearman_s = stats.spearmanr(pred_stages, obs_stages)
-        rho_s = float(res_spearman_s.statistic) if hasattr(res_spearman_s, "statistic") else float(res_spearman_s[0])
-        if math.isnan(rho_s):
-            rho_s = 0.0
-
-        res_pearson_s = stats.pearsonr(pred_stages, obs_stages)
-        r_val_s = float(res_pearson_s.statistic) if hasattr(res_pearson_s, "statistic") else float(res_pearson_s[0])
-        if math.isnan(r_val_s):
-            r_val_s = 0.0
-        r2_s = r_val_s ** 2
-
-    # 2. Discharge Metrics (if provided)
-    if pred_discharges is not None and obs_discharges is not None and len(pred_discharges) == n:
-        rmse_q = float(np.sqrt(np.mean((pred_discharges - obs_discharges) ** 2)))
-        mae_q = float(np.mean(np.abs(pred_discharges - obs_discharges)))
-
-        denom_q = float(np.sum((obs_discharges - np.mean(obs_discharges)) ** 2))
-        numer_q = float(np.sum((obs_discharges - pred_discharges) ** 2))
-        if denom_q > 1e-6:
-            nse_q = float(1.0 - (numer_q / denom_q))
-        else:
-            nse_q = 1.0 if numer_q < 1e-4 else 0.0
-
-        sum_obs_q = float(np.sum(obs_discharges))
-        pbias_q = float((np.sum(pred_discharges - obs_discharges) / sum_obs_q) * 100.0) if abs(sum_obs_q) > 1e-6 else 0.0
-
+    if n >= MIN_CORRELATION_SAMPLES and obs_std_s >= MIN_OBS_STAGE_STD_M:
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=getattr(stats, "ConstantInputWarning", UserWarning))
-            res_spearman_q = stats.spearmanr(pred_discharges, obs_discharges)
-            rho_q = float(res_spearman_q.statistic) if hasattr(res_spearman_q, "statistic") else float(res_spearman_q[0])
-            if math.isnan(rho_q):
-                rho_q = 0.0
+            res_spearman_s = stats.spearmanr(pred_stages, obs_stages)
+            rho_s = float(res_spearman_s.statistic) if hasattr(res_spearman_s, "statistic") else float(res_spearman_s[0])
+            if math.isnan(rho_s):
+                rho_s = 0.0
 
-            res_pearson_q = stats.pearsonr(pred_discharges, obs_discharges)
-            r_val_q = float(res_pearson_q.statistic) if hasattr(res_pearson_q, "statistic") else float(res_pearson_q[0])
-            if math.isnan(r_val_q):
-                r_val_q = 0.0
-            r2_q = r_val_q ** 2
+            res_pearson_s = stats.pearsonr(pred_stages, obs_stages)
+            r_val_s = float(res_pearson_s.statistic) if hasattr(res_pearson_s, "statistic") else float(res_pearson_s[0])
+            if math.isnan(r_val_s):
+                r_val_s = 0.0
+            r2_s = r_val_s ** 2
+    else:
+        rho_s = None
+        r2_s = None
+
+    # Discharge metrics. NOTE: the "observed" discharge is the sensor-observed
+    # stage pushed through the same rating curve used to build the forecast, so
+    # these are rating-implied (derived) values, NOT an independent discharge
+    # measurement. They are a monotone transform of the stage errors and must not
+    # be read as independent evidence of discharge skill.
+    has_q = (
+        pred_discharges is not None
+        and obs_discharges is not None
+        and len(pred_discharges) == n
+        and n > 0
+    )
+    if has_q:
+        rmse_q = float(np.sqrt(np.mean((pred_discharges - obs_discharges) ** 2)))
+        mae_q = float(np.mean(np.abs(pred_discharges - obs_discharges)))
+        sum_obs_q = float(np.sum(obs_discharges))
+        pbias_q = (
+            float((np.sum(pred_discharges - obs_discharges) / sum_obs_q) * 100.0)
+            if abs(sum_obs_q) > 1e-6
+            else 0.0
+        )
+
+        obs_std_q = float(np.std(obs_discharges))
+        if (
+            n >= MIN_CORRELATION_SAMPLES
+            and obs_std_q >= MIN_OBS_Q_STD_M3S
+            and float(np.sum((obs_discharges - np.mean(obs_discharges)) ** 2)) > NSE_VARIANCE_FLOOR
+        ):
+            denom_q = float(np.sum((obs_discharges - np.mean(obs_discharges)) ** 2))
+            numer_q = float(np.sum((obs_discharges - pred_discharges) ** 2))
+            nse_q = float(1.0 - (numer_q / denom_q))
+
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=getattr(stats, "ConstantInputWarning", UserWarning))
+                res_spearman_q = stats.spearmanr(pred_discharges, obs_discharges)
+                rho_q = float(res_spearman_q.statistic) if hasattr(res_spearman_q, "statistic") else float(res_spearman_q[0])
+                if math.isnan(rho_q):
+                    rho_q = 0.0
+
+                res_pearson_q = stats.pearsonr(pred_discharges, obs_discharges)
+                r_val_q = float(res_pearson_q.statistic) if hasattr(res_pearson_q, "statistic") else float(res_pearson_q[0])
+                if math.isnan(r_val_q):
+                    r_val_q = 0.0
+                r2_q = r_val_q ** 2
+        else:
+            nse_q = None
+            rho_q = None
+            r2_q = None
     else:
         rmse_q = None
         mae_q = None
@@ -278,33 +322,65 @@ def compute_pure_metrics(
         rho_q = None
         r2_q = None
 
-    # Standard Hydrological Performance Grading (Moriasi et al., 2007 with steady-state low-variance threshold)
-    if (nse_s >= 0.75 and rmse_s <= 0.25) or (rmse_s <= 0.08 and mae_s <= 0.06):
-        grade = "EXCELLENT"
-    elif (nse_s >= 0.60 and rmse_s <= 0.50) or (rmse_s <= 0.15 and mae_s <= 0.12):
-        grade = "VERY_GOOD"
-    elif (nse_s >= 0.40 and rmse_s <= 1.00) or (rmse_s <= 0.30 and mae_s <= 0.25):
-        grade = "SATISFACTORY"
-    elif nse_s > 0.0 or rmse_s <= 0.50:
-        grade = "MODERATE_BIAS"
+    # Performance grade. Absolute-error bands (Moriasi et al., 2007) apply ONLY
+    # when the skill metrics are reliable. When NSE is unavailable, the grade is
+    # driven by the error bands alone and is explicitly labelled as such. A
+    # reliably-computed negative NSE is never allowed to grade better than
+    # CALIBRATION_REQUIRED.
+    if nse_s is not None:
+        if nse_s >= 0.75 and rmse_s <= 0.25:
+            grade = "EXCELLENT"
+        elif nse_s >= 0.60 and rmse_s <= 0.50:
+            grade = "VERY_GOOD"
+        elif nse_s >= 0.40 and rmse_s <= 1.00:
+            grade = "SATISFACTORY"
+        elif nse_s > 0.0:
+            grade = "MODERATE_BIAS"
+        else:
+            grade = "CALIBRATION_REQUIRED"
+    elif n == 0:
+        grade = "ACCUMULATING_TELEMETRY"
+    elif obs_std_s < MIN_OBS_STAGE_STD_M:
+        # Genuinely stable baseflow: error is meaningful, skill is not defined.
+        grade = "BASEFLOW_STABLE"
     else:
-        grade = "CALIBRATION_REQUIRED"
+        # Not enough matched hours yet to rank the series.
+        grade = "ACCUMULATING_TELEMETRY"
+
+    # Validation status. "INSUFFICIENT_DATA" only when there are no matched
+    # points at all; a short-but-nonzero window is "ACCUMULATING_TELEMETRY".
+    if n == 0:
+        status = "INSUFFICIENT_DATA"
+    elif nse_is_reliable:
+        status = "VALIDATED"
+    else:
+        status = "ACCUMULATING_TELEMETRY"
 
     return {
+        "status": status,
         "sample_size_hours": n,
-        "rmse_stage_m": round(rmse_s, 3),
-        "mae_stage_m": round(mae_s, 3),
-        "nse_stage": round(nse_s, 4),
-        "pbias_stage_pct": round(pbias_s, 2),
-        "spearman_rho": round(rho_s, 4),
-        "pearson_r2": round(r2_s, 4),
+        "matched_pairs": n,
+        "observed_stage_std_m": round(obs_std_s, 4) if n else None,
+        "skill_metrics_reliable": bool(nse_is_reliable),
+        "rmse_stage_m": round(rmse_s, 3) if rmse_s is not None else None,
+        "mae_stage_m": round(mae_s, 3) if mae_s is not None else None,
+        "nse_stage": round(nse_s, 4) if nse_s is not None else None,
+        "pbias_stage_pct": round(pbias_s, 2) if pbias_s is not None else None,
+        "spearman_rho": round(rho_s, 4) if rho_s is not None else None,
+        "pearson_r2": round(r2_s, 4) if r2_s is not None else None,
+        "discharge_metrics_source": "RATING_IMPLIED_DERIVED" if has_q else None,
+        "discharge_metrics_note": (
+            "Observed discharge is derived from the observed stage via the same "
+            "rating curve used for the forecast; it is NOT an independent "
+            "discharge measurement."
+        ),
         "rmse_q_m3s": round(rmse_q, 2) if rmse_q is not None else None,
         "mae_q_m3s": round(mae_q, 2) if mae_q is not None else None,
         "nse_discharge": round(nse_q, 4) if nse_q is not None else None,
         "pbias_discharge_pct": round(pbias_q, 2) if pbias_q is not None else None,
         "spearman_rho_q": round(rho_q, 4) if rho_q is not None else None,
         "pearson_r2_q": round(r2_q, 4) if r2_q is not None else None,
-        "basin_rainfall_accuracy_pct": 94.50,
+        "basin_rainfall_accuracy_pct": None,
         "performance_grade": grade,
     }
 
@@ -398,7 +474,10 @@ def validate_run_with_observations(
         if obs:
             obs_stage = float(obs["observed_stage_m"])
             obs_ft = float(obs["observed_distance_ft"])
-            # Convert Shivaji stage to Shivaji discharge using site rating curve (S0=0.005858)
+            # Rating-implied discharge from the observed stage. This is NOT an
+            # independent discharge measurement: the sensor only measures stage,
+            # and the same rating curve produced the forecast discharge. Reported
+            # as a derived quantity for consistency checking only.
             obs_q = convert_stage_to_discharge_manning(obs_stage, "SHIVAJI_BRIDGE")
             diff_m = round(pred_stage - obs_stage, 3)
             diff_ft = round(diff_m / 0.3048, 2)
@@ -433,14 +512,33 @@ def validate_run_with_observations(
     verified_hours = len(pred_stages)
     now_utc = datetime.now(timezone.utc)
 
-    # Lifecycle state:
-    # If the forecast cycle's entire 90-hour window has elapsed in real-world time,
-    # or all 90 hours have matching observations, mark LIFECYCLE_VERIFIED.
-    # Otherwise, if it is currently in progress, mark IN_PROGRESS.
-    if last_hour_dt and (now_utc >= last_hour_dt):
+    # Lifecycle state. A cycle is only LIFECYCLE_VERIFIED once every forecast
+    # hour has a matching observation. Wall-clock elapse alone does NOT verify a
+    # run: a cycle whose window has passed but whose telemetry is still arriving
+    # stays re-validatable so it can accumulate more points.
+    #
+    # OBSERVATION_GAP marks a run whose window has fully elapsed, is still
+    # missing telemetry, and has been eligible for re-validation for longer than
+    # OBSERVATION_GAP_GRACE_HOURS. That combination means the sensor data will
+    # never arrive (outage / data loss), so the run is recorded as permanently
+    # unverifiable rather than left pending forever.
+    window_elapsed = bool(last_hour_dt and (now_utc >= last_hour_dt))
+    hours_past_window = (
+        (now_utc - last_hour_dt).total_seconds() / 3600.0 if window_elapsed else 0.0
+    )
+    gap_is_permanent = (
+        window_elapsed
+        and total_hours > 0
+        and verified_hours < total_hours
+        and hours_past_window >= OBSERVATION_GAP_GRACE_HOURS
+    )
+
+    if total_hours > 0 and verified_hours >= total_hours:
         lifecycle_status = "LIFECYCLE_VERIFIED"
-    elif verified_hours >= total_hours:
-        lifecycle_status = "LIFECYCLE_VERIFIED"
+    elif gap_is_permanent:
+        lifecycle_status = "OBSERVATION_GAP"
+    elif window_elapsed:
+        lifecycle_status = "AWAITING_OBSERVATIONS"
     elif verified_hours > 0:
         lifecycle_status = "IN_PROGRESS"
     else:
@@ -466,6 +564,20 @@ def validate_run_with_observations(
         if obs.get("has_observation") and obs.get("observed_stage_m") is not None
     ]
 
+    missing_hours = max(0, total_hours - verified_hours)
+    observation_gap = {
+        "is_gap": lifecycle_status == "OBSERVATION_GAP",
+        "missing_hours": missing_hours,
+        "hours_past_window": round(hours_past_window, 1) if window_elapsed else None,
+        "grace_hours": OBSERVATION_GAP_GRACE_HOURS,
+        "note": (
+            "The full 90-hour forecast window has elapsed and the missing "
+            "telemetry has not arrived within the grace period, so this cycle "
+            "is permanently unverifiable against ground truth. Metrics are "
+            "reported only for the hours that were observed."
+        ) if lifecycle_status == "OBSERVATION_GAP" else None,
+    }
+
     validation_result = {
         "cycle_id": cycle_id,
         "validation_timestamp": now_utc.isoformat(),
@@ -475,14 +587,16 @@ def validate_run_with_observations(
             "validation_point": "Chhatrapati Shivaji Maharaj Bridge",
             "latitude": 16.707274,
             "longitude": 74.217482,
-            "channel_slope": 0.005858,
+            "sensor_bed_datum_m": 528.670,
+            "rating_curve_basis": "WRD stage-discharge sheet, shifted -0.648 m downstream datum",
             "travel_time_from_hms_outlet_hours": 1.5,
-            "downstream_weir": "Rajaram K.T. Weir (3.8 km downstream, S0=0.002318)",
+            "upstream_weir": "Rajaram K.T. Weir (3,858 m upstream, bed datum +0.648 m)",
         },
         "lifecycle_status": lifecycle_status,
         "verified_hours": verified_hours,
         "total_forecast_hours": total_hours,
         "completion_pct": completion_pct,
+        "observation_gap": observation_gap,
         "metrics": metrics,
         "scatter_points": scatter_points,
         "actual_observed_series": aligned_series,
@@ -691,8 +805,23 @@ def validate_all_pending_runs(
             current_status = val.get("lifecycle_status")
             verified_h = val.get("verified_hours", 0)
 
-            # Skip if already fully verified unless forced
-            if not force_revalidate and current_status == "LIFECYCLE_VERIFIED" and verified_h >= 85:
+            # Skip only runs whose forecast hours are ALL matched. Runs that have
+            # elapsed in wall-clock time but still lack observations must be
+            # re-scanned, otherwise they can never accumulate more data. This
+            # deliberately includes OBSERVATION_GAP runs: if the sensor feed is
+            # ever backfilled, a re-scan promotes them back to LIFECYCLE_VERIFIED.
+            fc_total = 0
+            _b = data.get("bridgeShivaji", [])
+            if isinstance(_b, dict):
+                fc_total = len(_b.get("forecast", []))
+            elif isinstance(_b, list):
+                fc_total = len(_b)
+            if (
+                not force_revalidate
+                and current_status == "LIFECYCLE_VERIFIED"
+                and fc_total > 0
+                and verified_h >= fc_total
+            ):
                 continue
 
             b_raw = data.get("bridgeShivaji", [])

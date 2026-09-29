@@ -419,22 +419,54 @@ def _wetted_properties(station: np.ndarray, elevation: np.ndarray, wse: float):
 # 543.30          43' 0"       94,467               2675.00 (Danger)
 # 545.33          49' 8"       135,961              3850.00 (HFL)
 
-# NOTE ON RAJARAM KT WEIR ANCHOR POINTS (Krishna Basin Flood 2019 Vol.1 & survey)
-# 529.318 m = actual thalweg/bed from X-Section 29 survey (this is where Q=0 physically)
-# 530.18  m = Kolhapur-type (KT) weir crest elevation — flow over weir starts above this
-#             In summer the weir pools water to crest level but discharge over weir = 0.
-#             In monsoon the weir is fully submerged and acts like a natural reach.
-# Therefore both 529.318m and 530.18m correctly have Q=0 as anchors.
+# NOTE ON RAJARAM KT WEIR ANCHOR POINTS (official WRD Maharashtra rating sheet + 2021–2023 record)
+# The rating anchors ARE the official Maharashtra WRD stage-discharge sheet values.
+# 529.318 m = actual thalweg/bed from X-Section 29 survey (Q=0 physically)
+# 530.18  m = Kolhapur-type (KT) weir crest elevation — summer ponding gives Q=0 at crest
+# 532.70–533.36 m = observed low-flow monsoon points from WRD 2021–2023 hourly record
+#                   (532.70→14.16, 532.83→22.65, 532.88→28.32, 532.98→32.56,
+#                    533.00→34.0, 533.36→71.25) — monotonic subset; replaces the old
+#                    fabricated 531.50→3.0 tail which collapsed baseflow to 1–15 m³/s.
 RAJARAM_ANCHORS_STAGE = np.array([
-    529.318, 530.18,  531.50,  532.70,  533.36,  533.54,  534.15,  535.19,  536.00,
-    537.04,  538.29,  539.46,  540.37,  541.51,  542.38,  543.29,  544.39,
-    545.38,  546.19,  547.00,  547.33,  549.00
+    529.318, 530.18,  532.70,  532.83,  532.88,  532.98,  533.00,  533.36,
+    533.54,  533.56,  533.59,  533.64,  533.66,  533.69,  533.71,  533.99,
+    535.21,  535.59,  535.77,  536.41,  538.16,  539.02,  541.50,  542.10,
+    542.70,  543.30,  545.33
 ])
 RAJARAM_ANCHORS_Q = np.array([
-    0.0,     0.0,     3.00,    14.16,   71.25,   80.00,   125.00,  214.25,  305.17,
-    448.12,  648.29,  883.87,  965.89,  1219.13, 1690.01, 1776.51, 1857.73,
-    1935.00, 2015.31, 2116.14, 2162.93, 2450.00
+    0.0,     0.0,     14.16,   22.65,   28.32,   32.56,   34.00,   71.25,
+    80.00,   81.24,   82.49,   85.01,   86.25,   87.50,   88.74,   110.49,
+    217.59,  253.66,  274.39,  370.58,  613.06,  800.52,  1480.00, 1800.00,
+    2200.00, 2675.00, 3850.00
 ])
+
+# ── SHIVAJI BRIDGE WRD-ANCHORED RATING (downstream offset −0.648 m) ────────────
+# Shivaji Bridge is 3,858 m DOWNSTREAM of the Rajaram gauge.  Its bed RL is
+# 0.648 m lower (528.670 vs 529.318 m MSL).  At the SAME discharge the water
+# surface at Shivaji sits ~0.648 m below the WRD gauge stage.  WRD officially
+# recorded the Shivaji ALERT stage (542.10 m) at the same 1800 m³/s as the
+# Rajaram WARNING — exactly the +0.648 m datum separation.
+# Therefore:  Shivaji_stage_for_Q = WRD_sheet_stage − 0.648  (same Q value).
+# Low-flow points mirror the observed Rajaram monsoon pairs, shifted −0.648 m.
+SHIVAJI_RC_OFFSET_M = 0.648  # Rajaram bed 529.318 − Shivaji bed 528.670
+SHIVAJI_ANCHORS_STAGE = np.array([
+    528.670, 532.052, 532.182, 532.232, 532.332, 532.352, 532.712, 532.892,
+    532.912, 532.942, 532.992, 533.012, 533.042, 533.062, 533.342, 534.562,
+    534.942, 535.122, 535.762, 537.512, 538.372, 540.852, 541.452, 542.052,
+    542.652, 544.682
+])
+SHIVAJI_ANCHORS_Q = np.array([
+    0.0,     14.16,   22.65,   28.32,   32.56,   34.00,   71.25,   80.00,
+    81.24,   82.49,   85.01,   86.25,   87.50,   88.74,   110.49,  217.59,
+    253.66,  274.39,  370.58,  613.06,  800.52,  1480.00, 1800.00, 2200.00,
+    2675.00, 3850.00
+])
+
+# WRD-grounded monsoon baseflow floor (m³/s) for the Panchganga (~2,140 km²).
+# WRD 2021–2023 observed July–October minimum ≈ 71 m³/s; 5th percentile ≈ 82 m³/s.
+# A 15.0 floor previously let the emulator report 1–15 m³/s — unphysical for a
+# perennial 2000+ km² monsoon catchment.  40.0 is a conservative WRD-derived minimum.
+WRD_MONSOON_BASEFLOW_FLOOR_M3S = 40.0
 
 
 # ── Compound Section Bankfull Constants ──────────────────────────────────────
@@ -476,11 +508,15 @@ def build_calibrated_rating_curve(
       - Main channel (bed to bankfull):  Manning n = cs.n_main (0.035)
       - Floodplain (above bankfull):     Manning n = cs.n_flood (0.055 sugarcane/paddy)
 
-    Rajaram KT Weir uses PCHIP interpolation on observed WRD gauge anchors for
-    high-confidence stage-discharge above the weir crest (530.18 m).  Below the
-    weir crest the weir impounds water for irrigation — Q over weir = 0.
+    SHIVAJI_BRIDGE and RAJARAM_BRIDGE both use PCHIP interpolation anchored on
+    the official Maharashtra WRD stage-discharge sheet (Rajaram directly; Shivaji
+    shifted −0.648 m downstream for the lower bed datum) plus WRD-observed
+    low-flow monsoon points.  These guarantee discharge matches the government
+    reference at low, moderate and flood flows.  Cross-section geometry columns
+    (area_m2 / wp_m / hyd_radius) are still computed from the surveyed XS so the
+    wetted area for a given ThingSpeak stage is available.
 
-    The compound-section Q is calculated via the divided-channel method (DCM):
+    Non-anchored sites fall back to the compound-section Manning DCM:
       Q_total = Q_main + Q_overbank_left + Q_overbank_right
     where each sub-section uses its own n, A, P, R.
     """
@@ -489,13 +525,16 @@ def build_calibrated_rating_curve(
     h_max = h_max if h_max is not None else (cs.hfl_m + 3.0)
 
     is_rajaram = cs.site_id in ("RAJARAM_BRIDGE", "RAJARAM_WEIR")
+    is_shivaji = cs.site_id in ("SHIVAJI_BRIDGE", "SHIVAJI_WEIR")
     bankfull   = RAJARAM_BANKFULL_RL_M if is_rajaram else SHIVAJI_BANKFULL_RL_M
     n_flood    = cs.n_flood  # Default 0.055 for sugarcane/paddy overbank
 
     if is_rajaram:
-        pchip = PchipInterpolator(RAJARAM_ANCHORS_STAGE, RAJARAM_ANCHORS_Q)
+        anchors = PchipInterpolator(RAJARAM_ANCHORS_STAGE, RAJARAM_ANCHORS_Q)
+    elif is_shivaji:
+        anchors = PchipInterpolator(SHIVAJI_ANCHORS_STAGE, SHIVAJI_ANCHORS_Q)
     else:
-        pchip = None
+        anchors = None
 
     wse_values = np.linspace(h_min, h_max, n_points)
     rows = []
@@ -508,9 +547,9 @@ def build_calibrated_rating_curve(
             A, P = _wetted_properties(cs.station_m, cs.elevation_m, wse)
             R = A / P if P > 1e-4 else 0.0
 
-            if is_rajaram and pchip is not None:
-                # PCHIP from WRD anchors — covers full monsoon range accurately
-                q = float(np.maximum(0.0, pchip(wse)))
+            if anchors is not None:
+                # PCHIP from WRD anchors — both gauged sites match the WRD reference.
+                q = float(np.maximum(0.0, anchors(wse)))
             elif wse > bankfull and len(cs.elevation_m) > 0:
                 # Compound section: split at bankfull using Divided Channel Method
                 A_main, P_main = _wetted_properties(cs.station_m, cs.elevation_m, bankfull)

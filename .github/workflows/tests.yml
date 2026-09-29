@@ -1,0 +1,37 @@
+name: HydroCast Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  tests:
+    name: "Unit Tests & Production Entry Smoke Check"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt pytest
+
+      - name: Production Entry Import Smoke Check
+        run: python -c "import src.ecmwf.open_meteo; import src.hms.runner; import src.hydrology.ml_calibration"
+
+      - name: Run Test Suite
+        run: python -m pytest -q

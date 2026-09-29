@@ -38,7 +38,6 @@ def fetch_shivaji_live_telemetry(
         log.warning("No THINGSPEAK_CHANNEL_ID provided. Please configure channel ID to fetch live IoT sensor feeds.")
         return {
             "status": "AWAITING_CHANNEL_ID",
-            "api_key": key,
             "sensor_datum_msl": datum_msl,
             "stage_m": None,
             "raw_feet": None,

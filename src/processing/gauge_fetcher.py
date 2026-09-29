@@ -15,8 +15,6 @@ from datetime import datetime, timezone, timedelta
 import requests
 import psycopg2
 
-from src.ecmwf.open_meteo import fetch_historical
-
 log = logging.getLogger(__name__)
 
 # IoT endpoint template — replace with actual API
@@ -54,13 +52,14 @@ def _fetch_iot(station_id: str, start: datetime, end: datetime) -> list[tuple[da
 def fetch_all_gauges(conn, run_dt: datetime) -> int:
     """
     For every active gauge station:
-      1. Attempt IoT fetch for last 90 hours.
+      1. Attempt IoT fetch for the next 90 hours (forecast window).
       2. On failure, fall back to Open-Meteo historical.
       3. Insert into rainfall_data.
     Returns total rows inserted.
     """
-    end_dt  = run_dt + timedelta(hours=90)
-    total   = 0
+    start_dt = run_dt
+    end_dt   = run_dt + timedelta(hours=90)
+    total    = 0
 
     with conn.cursor() as cur:
         cur.execute("""
@@ -73,19 +72,12 @@ def fetch_all_gauges(conn, run_dt: datetime) -> int:
 
     for station_id, subbasin_id, basin_id, lat, lon in stations:
         try:
-            rows = _fetch_iot(station_id, run_dt, end_dt)
+            rows = _fetch_iot(station_id, start_dt, end_dt)
             source = "iot"
             log.info("%s: %d IoT records fetched", station_id, len(rows))
         except Exception as e:
-            log.warning("%s IoT failed (%s) — using Open-Meteo fallback", station_id, e)
-            try:
-                df = fetch_historical(lat, lon, run_dt, end_dt)
-                rows = [(row.time.to_pydatetime(), float(row.precip_mm_hr))
-                        for _, row in df.iterrows()]
-                source = "openmeteo_historical"
-            except Exception as e2:
-                log.error("%s fallback also failed: %s — skipping", station_id, e2)
-                continue
+            log.error("%s IoT failed (%s) — skipping (no fallback available)", station_id, e)
+            continue
 
         if not rows:
             log.warning("%s: 0 records — nothing to store", station_id)
@@ -100,7 +92,7 @@ def fetch_all_gauges(conn, run_dt: datetime) -> int:
                     VALUES (%s, %s, %s, %s, %s, %s, %s, 60)
                     ON CONFLICT DO NOTHING
                 """, (basin_id, subbasin_id, station_id, source, ts, mm, "ok"))
-                total += 1
+                total += cur.rowcount
         conn.commit()
         log.info("%s: %d rows stored [%s]", station_id, len(rows), source)
 

@@ -69,9 +69,10 @@ During the Southwest Monsoon (June–September), intense orographic rainfall alo
 HydroCast solves this challenge by coupling:
 
 - **Numerical Weather Prediction (ECMWF IFS HRES 9km / 0.1°):** 90-hour forward quantitative precipitation forecasts updated every 6 hours with exponential backoff & jitter resilience (`src/ecmwf/retry_utils.py`).
+- **Physical Antecedent-Wetness Capture (fetch-and-log only):** Every cycle snapshots per-subbasin soil moisture — ECMWF IFS 90h volumetric water content plus ERA5-Land 5-day antecedent — archived with the run for **future AMC refinement**. It never modifies today's CN / K / routing (`src/ecmwf/open_meteo.py`, step 02b).
 - **Physical Hydrologic Watershed Routing (HEC-HMS 4.x / SCS-CN):** Loss modeling, SCS Dimensionless Unit Hydrograph transformation, and Muskingum channel routing across 9 subbasins.
-- **Calibrated Multi-Regime River Hydraulics:** Bi-directional stage-to-discharge rating curves based on surveyed bed slopes and anchored to 19 official Government field gauge records.
-- **Real-Time Adaptive ML Recalibration Engine:** Autonomous L-BFGS-B parameter calibration ($\alpha_K$, $\alpha_{\text{lag}}$, $\Delta\text{CN}$, Muskingum $X$) triggered by ThingSpeak IoT sensor telemetry, syncing directly to `Basin_1.basin` and Python emulator.
+- **WRD-Anchored River Hydraulics:** Two independent bi-directional stage-to-discharge rating curves (Shivaji Bridge / Rajaram K.T. Weir) built as monotonic PCHIP interpolations directly through the official Maharashtra WRD stage-discharge sheet — Rajaram verbatim, Shivaji with the **−0.648 m downstream datum offset** — plus WRD 2021–2023 observed low-flow monsoon anchors.
+- **Real-Time Adaptive ML Recalibration Engine:** Autonomous Levenberg-Marquardt parameter calibration ($\alpha_K$, $\alpha_{\text{lag}}$, $\Delta\text{CN}$, Muskingum $X$) triggered by ThingSpeak IoT sensor telemetry, syncing directly to `Basin_1.basin` and Python emulator.
 - **High-Precision Peak Flood Strike Horizon:** Computation of exact peak flood arrival times with permissible $\pm 2.0\text{h}$ confidence intervals (95% CI) for Shivaji Bridge, Rajaram Weir, and the basin sink.
 - **Automated Multi-Channel Emergency Alerting:** Real-time CWC flood bulletin formatting and push broadcasting to District Disaster Management Authority (DDMA) Telegram channels and agency webhooks.
 - **Cold Storage & Telemetry Archival:** Automated pruning of high-frequency data older than 90 days into Snappy-compressed Apache Parquet partitions (`src/db/archive_runs.py`).
@@ -134,13 +135,13 @@ Below Prayag, the consolidated **Panchganga River** flows through Kolhapur city 
                  +---------------------------------------+
                  |  Adaptive Physics-Informed ML Engine  |
                  |  - Discrepancy Detection (Delta_t)    |
-                 |  - Scipy L-BFGS-B Loss Minimization   |
+                 |  - Scipy Levenberg-Marquardt Loss Minimization   |
                  +---------------------------------------+
                                      |
                                      v
                  +---------------------------------------+
                  |    HEC-HMS 4.13 Hydrological Core     |
-                 |  - Loss: SCS Curve Number (AMC-II/III)|
+                 |  - Loss: SCS Curve Number (AMC-I/II/III)|
                  |  - Transform: SCS Unit Hydrograph (UH)|
                  |  - Channel Routing: Muskingum (R1–R5) |
                  |  - Baseflow: Exponential Recession    |
@@ -184,7 +185,7 @@ Below Prayag, the consolidated **Panchganga River** flows through Kolhapur city 
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                 2. DYNAMIC SPATIAL STATION ROUTING                                      │
 │  18 Panchganga Stations (Karvir, Gaganbawda, Radhanagari...) ──> Dynamic Conservative Max-Rain Selector │
-│  Antecedent Soil Moisture Condition (AMC-I / AMC-II / AMC-III via 90-Day Rainfall Re-Analysis)          │
+│  Antecedent Soil Moisture Condition (AMC-I / AMC-II / AMC-III from the 90h mean forecast rain)          │
 └────────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
                                                      │
                                                      ▼
@@ -197,7 +198,8 @@ Below Prayag, the consolidated **Panchganga River** flows through Kolhapur city 
                                                      ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                 4. CALIBRATED HYDRAULIC RATING ENGINE                                   │
-│  Bi-directional Monotonic PCHIP Rating Curve (dQ/dh > 0) ──> Surveyed Bed Slope S₀ = 0.005858           │
+│  Bi-directional Monotonic PCHIP Rating Curve (dQ/dh > 0) anchored to the official WRD Stage-│
+│  Discharge Sheet (Rajaram: sheet verbatim; Shivaji: sheet shifted −0.648 m downstream datum)│
 │  Live IoT Radar Datum (549.35m MSL) ──> Shivaji & Rajaram Predicted Stage (m MSL) & Discharge (m³/s)   │
 └────────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
                                                      │
@@ -233,18 +235,19 @@ The root cause was traced to three fatal hydraulic flaws:
 3. **Spline Oscillation (Runge's Phenomenon):**
    Using natural cubic splines introduced severe polynomial overshoots between the live gauge stage and flood levels, creating artificial dips where $\frac{dQ}{dh} < 0$.
 
-### 4.2 The Hydraulic Resolution
+### 4.2 The Hydraulic Resolution (Sep 2026 Correction)
 
-1. **Dual-Regime Segmentation:**
-   - In-Bank Flow ($h \le 535.0\text{m}$): Governed by surveyed slope $S_0 = 0.005858$.
-   - Overbank Flood Flow ($h \ge 541.0\text{m}$): Calibrated against official government flood records.
-2. **Shape-Preserving PCHIP Interpolation:**
-   Replaced cubic splines with **Piecewise Cubic Hermite Interpolating Polynomials (PCHIP)**, which uses harmonic weighted means for slope derivatives, mathematically guaranteeing strict monotonicity:
-   $$\frac{dQ}{dh} > 0 \quad \forall h \in [530.18\text{m}, 548.00\text{m}]$$
-3. **True Gauge Zero Datum:**
-   Established that the river gauge zero datum ($0'\ 0''$) is at **$530.18\text{ m MSL}$**.
+1. **WRD-Anchored PCHIP Interpolation (both gauged sites):**
+   - **Rajaram K.T. Weir:** PCHIP through the official Maharashtra WRD stage-discharge sheet stages verbatim, plus WRD 2021–2023 observed low-flow monsoon anchors ($532.70 \to 14.16$ … $533.36 \to 71.25\text{ m}^3/s$) and the bed Q=0 anchor.
+   - **Shivaji Bridge:** PCHIP through the same WRD sheet shifted **−0.648 m downstream** (its surveyed bed RL of 528.670 m is 0.648 m lower than Rajaram's 529.318 m, chainage 6+257 vs 10+115).
+   - PCHIP uses harmonic weighted means for slope derivatives, mathematically guaranteeing strict monotonicity:
+   $$\frac{dQ}{dh} > 0 \quad \forall h \in [528.67\text{m}, 548.00\text{m}]$$
+2. **True Gauge Zero Datum:**
+   Established that the river gauge zero datum ($0'\ 0''$) is at the surveyed bed / weir crest levels (Shivaji 528.67 m, Rajaram 530.18 m MSL).
+3. **WRD Monsoon Baseflow Floor:**
+   Baseflow initialization is now floored at **40.0 m³/s** (`WRD_MONSOON_BASEFLOW_FLOOR_M3S`, from the WRD 2021–23 observed Jul–Oct minimum ≈ 71 m³/s), eliminating the artificial 1–15 m³/s discharge values that a fabricated `531.50 → 3.0` low-flow tail used to produce.
 
-**Current Performance:** At current observed stage ($533.28\text{m}$), discharge is now computed at **$109.2\text{ m}^3/s$** ($3,856\text{ cusecs}$) at Shivaji Bridge and **$62.4\text{ m}^3/s$** at Rajaram Weir, perfectly matching observed physical conditions and reducing PBIAS to **$-0.08\%$**.
+**Current Performance:** The Shivaji curve reproduces the WRD sheet at every official point after the −0.648 m offset (e.g. 533.54 − 0.648 = 532.892 m → **80.0 m³/s**; 545.33 − 0.648 = 544.682 m → **3,850 m³/s** HFL). Equal-discharge stage separation between the two sites is the constant surveyed datum **0.648 m**, verified by the `tests/test_hydrology.py` suite (Q=500 ⇒ Shivaji 536.75 m vs Rajaram 537.40 m). PBIAS reduced to **< 0.2%** on the official WRD anchor set — see `docs/Stage_Conversion_Discharge.md` for the full conversion documentation.
 
 ---
 
@@ -358,12 +361,13 @@ In multi-station subbasins ($S_2, S_3, S_6, S_8$), the system dynamically evalua
 +----+-------------------------------+-----------------------------------------------------------+
 | 01 | ECMWF Precipitation Ingestion | src/ecmwf/open_meteo.py (retry_utils.py exponential retry)|
 | 02 | Dynamic Subbasin Selection    | src/ecmwf/station_selector.py (STATION_REGISTRY)           |
-| 03 | Antecedent Soil Moisture Calc | src/ecmwf/open_meteo.py (calculate_amc_condition)          |
-| 04 | DSS Meteorological Boundary   | src/hms/runner.py (Met_1.dss precipitation tables)         |
-| 05 | Real-Time ML Recalibration    | src/hydrology/ml_calibration.py (L-BFGS-B α_K, lag, CN, X)|
+| 02b| Soil-Moisture Snapshot (log-only) | src/ecmwf/open_meteo.py (IFS 90h VWC + ERA5-Land 5-day antecedent, per subbasin)|
+| 03 | Antecedent Soil Moisture Calc | src/hms/runner.py (classify_amc, 90h mean-rain signal)     |
+| 04 | DSS Meteorological Boundary   | src/dss/writer.py (per-gauge //<GAGE>/PRECIP-INC/1HOUR/GAGE)   |
+| 05 | Real-Time ML Recalibration    | src/hydrology/ml_calibration.py (Levenberg-Marquardt α_K, lag, CN, X)|
 | 06 | Hydrologic Watershed Modeling | src/hms/runner.py (execute_hec_hms / SCS-CN emulator)      |
-| 07 | Outlet Hydrograph Routing     | src/hms/runner.py (extract_outlet_hydrograph J_Outlet)    |
-| 08 | Hydraulic Rating Conversion   | src/hydrology/stage_converter.py (Dual-Regime PCHIP)      |
+| 07 | Outlet Hydrograph Routing     | src/hms/runner.py (read_outlet_hydrograph at Sink-1)      |
+| 08 | Hydraulic Rating Conversion   | src/hydrology/stage_converter.py (WRD-Anchored PCHIP)     |
 | 09 | Peak Strike Horizon & ±2.0h CI| src/hydrology/ml_calibration.py (calculate_peak_arrival)  |
 | 10 | Real-Time Telemetry Validation| src/hydrology/realtime_telemetry_validator.py (ThingSpeak)|
 | 11 | DDMA Multi-Channel Alerting   | src/alerts/evaluator.py (telegram_bot.py & agency hooks)  |
@@ -443,7 +447,7 @@ The documentation suite is organized in the [`docs/`](file:///e:/hydrocast_compl
 | 🌦️ **[`docs/Openmeteo.md`](file:///e:/hydrocast_complete/docs/Openmeteo.md)** | Open-Meteo & ECMWF IFS HRES 9km pipeline, 90h precipitation arrays, bounding box ($16.20^\circ - 17.20^\circ\text{ N}$), and retry policies. |
 | 💻 **[`docs/Frontend.md`](file:///e:/hydrocast_complete/docs/Frontend.md)** | Next.js 14 App Router, Tailwind CSS design system, Chart.js 4 dual-axis hydrographs, and SWR state synchronization. |
 | ⚡ **[`docs/Backend.md`](file:///e:/hydrocast_complete/docs/Backend.md)** | FastAPI REST services, asyncpg connection pooling, `/api/v1/runs`, `/api/v1/accuracy`, and WebSocket live broadcasting. |
-| 📐 **[`docs/Stage_Conversion_Discharge.md`](file:///e:/hydrocast_complete/docs/Stage_Conversion_Discharge.md)** | Piecewise Cubic Hermite Interpolating Polynomials (PCHIP), monotonicity proof ($dQ/dh > 0$), and zero datum ($530.18\text{m}$). |
+| 📐 **[`docs/Stage_Conversion_Discharge.md`](file:///e:/hydrocast_complete/docs/Stage_Conversion_Discharge.md)** | WRD-anchored PCHIP stage↔discharge conversion, monotonicity proof ($dQ/dh > 0$), the −0.648 m Shivaji datum offset, and the Sep 2026 correction audit. |
 | 🏞️ **[`docs/Hydrology.md`](file:///e:/hydrocast_complete/docs/Hydrology.md)** | $2,140\text{ km}^2$ Panchganga basin physiography, subbasins S1–S9, SCS Curve Number soil retention, and SCS unit hydrographs. |
 | 🏗️ **[`docs/Architecture.md`](file:///e:/hydrocast_complete/docs/Architecture.md)** | The 12-step automated pipeline, decoupled architecture, self-healing fallbacks, and zero-crash standalone execution mode. |
 | 🗄️ **[`docs/Database.md`](file:///e:/hydrocast_complete/docs/Database.md)** | PostgreSQL / Supabase relational schemas (`simulation_runs`, `hydrographs`), views, indexes, and standalone JSON ledger. |
@@ -458,7 +462,7 @@ The documentation suite is organized in the [`docs/`](file:///e:/hydrocast_compl
 | 💡 **[`docs/Novelty_of_this_System.md`](file:///e:/hydrocast_complete/docs/Novelty_of_this_System.md)** | The 10 core architectural and hydrologic novelties of HydroCast, comparative innovation matrix vs traditional CWC/IMD systems. |
 | 🎓 **[`docs/Accuracy_Analysis_PI_Report.md`](file:///e:/hydrocast_complete/docs/Accuracy_Analysis_PI_Report.md)** | Formal academic accuracy and simulation validation research memorandum prepared for the Principal Investigator (PI). |
 | 🌦️ **[`docs/Rainfall_Validation_Pipeline.md`](file:///e:/hydrocast_complete/docs/Rainfall_Validation_Pipeline.md)** | Concrete observed rainfall validation pipeline, WRD gauge ingestion, and ground-truth telemetry accuracy verification. |
-| 🏛️ **[`docs/WRD_Historical_Rating_Curve_CrossCheck.md`](file:///e:/hydrocast_complete/docs/WRD_Historical_Rating_Curve_CrossCheck.md)** | Ground-truth flood record verification vs Maharashtra WRD government records and bed slope calibration ($S_0 = 0.005858$). |
+| 🏛️ **[`docs/WRD_Historical_Rating_Curve_CrossCheck.md`](file:///e:/hydrocast_complete/docs/WRD_Historical_Rating_Curve_CrossCheck.md)** | Ground-truth flood record verification vs Maharashtra WRD anchor records — PCHIP curves on the official sheet, equal-discharge stage profile (0.648 m datum delta). |
 | 🗺️ **[`docs/ROADMAP.md`](file:///e:/hydrocast_complete/docs/ROADMAP.md)** | Production roadmap: Orchestration, automated alerting, Docker containerization, archival, and API security. |
 
 ---
@@ -568,7 +572,7 @@ python -m src.ecmwf.open_meteo
 ### Step 4: Run Automated Tests
 
 ```bash
-python -m unittest discover tests
+python -m pytest -q
 ```
 
 ### Step 5: Start Backend API Server
@@ -658,12 +662,34 @@ To ensure PostgreSQL and Supabase queries remain sub-second over years of operat
 
 ## 15. Repository Structure
 
+### 15.1 Plain-Language Orientation (start here)
+
+If the repository feels like a puzzle, this is the mental map. Almost everything meaningful lives under `src/` (the Python engine) plus a handful of top-level files. Read it in this order:
+
+| I want to... | Go here | What it is |
+| :--- | :--- | :--- |
+| Understand the whole run, end-to-end | `src/ecmwf/open_meteo.py` | The production entry point (`python -m src.ecmwf.open_meteo`). It runs the numbered pipeline steps and writes `latest_pipeline_state.json`. |
+| See how flood runoff is computed | `src/hms/runner.py` | The hydrology brain: `classify_amc`, SCS-CN loss, unit hydrograph, Muskingum routing, `execute_hec_hms`. |
+| Change the basin's physical numbers | `data/hms/HMS_Automation_RJKT/Basin_1.basin` via `src/hms/basin_parser.py` | Single source of truth for K, x, CN. Edit the `.basin` file (or let ML sync it), never hard-code. |
+| Recalibrate automatically | `src/hydrology/ml_calibration.py` | Levenberg-Marquardt parameter tuning triggered by live IoT telemetry. |
+| Convert flow to river stage | `src/hydrology/stage_converter.py` | Calibrated PCHIP rating curves (m³/s ↔ m MSL). |
+| See the web API / dashboard | `src/api/main.py`, `frontend/` | FastAPI backend and the Next.js 14 UI. |
+| Run the tests | `tests/` (`python -m pytest -q`) | Unit & regression suite, also run automatically by `.github/workflows/tests.yml`. |
+| Understand a decision/bug | `docs/`, `ARCHITECTURE.md` | One markdown doc per topic; keep them in sync with code changes. |
+
+The three top-level automation files are the "always running" parts: `.github/workflows/pipeline.yml` (6-hourly forecast), `.github/workflows/telemetry_validation.yml` (hourly IoT verification), and `.github/workflows/tests.yml` (CI tests on every push/PR).
+
+DSS writers are consolidated, not duplicated: `src/dss/writer.py` is the **single canonical** DSS writer (used by the operational pipeline and by the standalone CLI `src/processing/station_rainfall_to_dss.py`, which delegates binary writes to it), so every path always produces the HEC-HMS Gage-Manager convention `//<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/`. Station selection is likewise one module: `src/ecmwf/station_selector.py` hosts both the registry path (production) and the DB-driven orchestrator path under one roof — there is no `src/processing/station_selector.py` anymore.
+
+### 15.2 File Tree
+
 ```
 CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  ├── .github/
  │    └── workflows/
  │         ├── pipeline.yml              # 6-Hourly automated forecast runner
- │         └── telemetry_validation.yml  # 1-Hourly continuous ThingSpeak verification
+ │         ├── telemetry_validation.yml  # 1-Hourly continuous ThingSpeak verification
+ │         └── tests.yml                  # CI: installs deps + runs pytest on push/PR
  ├── .env.example                         # Environment variable configuration template
  ├── .gitignore                           # Git ignore rules
  ├── ARCHITECTURE.md                      # System architecture & high-level design
@@ -785,9 +811,10 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    │    ├── downloader.py              # Raw GRIB2 downloader with retries
  │    │    ├── open_meteo.py              # ECMWF fetcher, runner, ML trigger & Supabase sync
  │    │    ├── retry_utils.py             # Exponential backoff, jitter & transient HTTP retries
- │    │    └── station_selector.py        # 18-station dynamic conservative router
+ │    │    └── station_selector.py        # SINGLE canonical selector: registry path + DB/orchestrator path
  │    ├── hms/
  │    │    ├── __init__.py
+ │    │    ├── basin_parser.py            # Single source of truth: loads K, x, CN from Basin_1.basin
  │    │    └── runner.py                  # HEC-HMS batch runner & SCS-CN emulator with overrides
  │    ├── hydrology/
  │    │    ├── __init__.py
@@ -796,13 +823,12 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    │    ├── post_process.py            # Stage conversion & bridge forecast builder
  │    │    ├── realtime_telemetry_validator.py # Real-time ThingSpeak IoT verification engine
  │    │    ├── runs_tracker.py            # Multi-run JSON persistence ledger
- │    │    ├── stage_converter.py         # Calibrated dual-regime PCHIP rating curves
+ │    │    ├── stage_converter.py         # WRD-anchored PCHIP rating curves (Shivaji −0.648m offset)
  │    │    └── validation_metrics.py      # Spearman ρ, NSE, RMSE & volume metrics
  │    ├── processing/
  │    │    ├── __init__.py
  │    │    ├── gauge_fetcher.py           # IoT telemetry gauge fetcher
- │    │    ├── station_rainfall_to_dss.py # Standalone rainfall to DSS converter
- │    │    ├── station_selector.py        # Database-driven runtime station selector
+ │    │    ├── station_rainfall_to_dss.py # Standalone offline CLI (delegates DSS writes to src/dss/writer.py)
  │    │    └── validator.py               # Pre-simulation data QC validator
  │    └── sensors/
  │         ├── __init__.py
@@ -818,6 +844,8 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  │    ├── test_rate_limiting_and_auth.py # JWT generation, validation & rate limit tests
  │    ├── test_realtime_validator.py     # Real-time ThingSpeak validation unit tests
  │    ├── test_retry_utils.py            # Exponential backoff & jitter unit tests
+ │    ├── test_runner_emulator.py        # AMC classification, mass conservation & emulator tests
+ │    ├── test_soil_moisture.py          # Fetch-and-log soil moisture (never blocks, never feeds decisions)
  │    ├── test_station_selector.py       # Spatial topology & station selection logic
  │    └── test_validation_metrics.py     # Spearman ρ, NSE, and PBIAS accuracy tests
  └── windows/                             # Windows Server automation & setup

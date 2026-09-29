@@ -55,6 +55,7 @@ def _get_bridge_metadata(conn, site_id: str) -> dict:
                     "hfl": float(row[3] or meta["hfl"]),
                 }
     except Exception as e:
+        conn.rollback()
         log.warning("Could not query bridge_sites for %s (using defaults): %s", site_id, e)
     return meta
 
@@ -84,18 +85,25 @@ def evaluate_and_notify(conn, cycle_id: str, bridge_forecasts: dict) -> int:
 
             continue
 
-        # Check if same-or-higher alert already active for this site
+        priority_map = {"watch": 1, "warning": 2, "emergency": 3}
+        target_priority = priority_map.get(_cwc_to_alert_type(level), 1)
+
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT alert_id FROM alert_events
+                SELECT alert_id, alert_type FROM alert_events
                 WHERE basin_id=%s
                   AND status='active'
-                  AND alert_type >= %s
-                ORDER BY issued_at DESC LIMIT 1
-            """, (site_id, _cwc_to_alert_type(level)))
+                ORDER BY CASE alert_type
+                    WHEN 'emergency' THEN 3
+                    WHEN 'warning'  THEN 2
+                    WHEN 'watch'    THEN 1
+                    ELSE 0 END DESC,
+                    issued_at DESC
+                LIMIT 1
+            """, (site_id,))
             existing = cur.fetchone()
-
-        if existing:
+            
+        if existing and priority_map.get(existing[1], 1) >= target_priority:
             log.info("Alert already active for %s [%s] — skipping duplicate", site_id, level)
             continue
 

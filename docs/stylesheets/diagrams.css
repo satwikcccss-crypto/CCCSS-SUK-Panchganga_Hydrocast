@@ -1,0 +1,118 @@
+/* ==========================================================================
+   HydroCast documentation — diagram & figure presentation layer
+   Makes the ASCII box-art, Mermaid flowcharts and MathJax formulas read
+   cleanly on both desktop and the field tablets used by district officials.
+   ========================================================================== */
+
+/* ── Mermaid containers ─────────────────────────────────────────────────── */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.4rem 0;
+  padding: 1rem;
+  background: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Keep diagram blocks readable inside admonitions and tabs. */
+.md-typeset .mermaid {
+  background: var(--md-default-bg-color);
+}
+
+/* ── ASCII box-art (plain fenced code blocks) ───────────────────────────── */
+.md-typeset pre > code {
+  font-family: "Roboto Mono", "Cascadia Mono", "Consolas", monospace;
+  font-size: 0.72rem;
+  line-height: 1.32;
+  tab-size: 4;
+}
+
+/* Blocks tagged as architecture figures: subtle frame + scroll on overflow. */
+.md-typeset pre.hydrocast-figure {
+  border-left: 4px solid var(--md-primary-fg-color);
+  border-radius: 0 6px 6px 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+.md-typeset pre.hydrocast-figure > code {
+  display: block;
+  overflow-x: auto;
+}
+
+/* ── Math ───────────────────────────────────────────────────────────────── */
+.md-typeset .arithmatex {
+  font-size: 1.02em;
+}
+
+.md-typeset div.arithmatex {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.4rem 0;
+}
+
+/* Numbered equation blocks get a soft background so they stand out. */
+.md-typeset .equation {
+  background: var(--md-code-bg-color);
+  border-left: 4px solid var(--md-accent-fg-color);
+  border-radius: 0 6px 6px 0;
+  padding: 0.5rem 0.9rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+.md-typeset table:not([class]) {
+  width: 100%;
+  font-size: 0.76rem;
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--md-default-fg-color--lightest);
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.md-typeset table:not([class]) td code {
+  white-space: nowrap;
+}
+
+/* ── Wider content column (the ASCII figures need the horizontal room) ──── */
+.md-grid {
+  max-width: 96vw;
+}
+
+.md-typeset {
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.md-typeset h2 {
+  font-size: 1.55rem;
+}
+
+.md-typeset h3 {
+  font-size: 1.22rem;
+}
+
+.md-typeset h4 {
+  font-size: 1.02rem;
+  color: var(--md-default-fg-color--light);
+}
+
+/* ── Legend chips used in the diagram atlas ────────────────────────────── */
+.md-typeset code.legend {
+  display: inline-block;
+  padding: 0.05em 0.45em;
+  border-radius: 4px;
+  font-size: 0.82em;
+  border: 1px solid currentColor;
+}

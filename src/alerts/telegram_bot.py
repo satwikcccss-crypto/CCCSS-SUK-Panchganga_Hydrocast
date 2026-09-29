@@ -46,11 +46,13 @@ def get_webhook_urls() -> List[str]:
 
 
 def get_severity_badge(level: str) -> str:
-    """Return colored emoji badge for CWC threshold tier."""
+    """Return colored emoji badge for CWC threshold tier or DB alert type."""
     return {
         "ALERT": "🟡 [ALERT / WATCH]",
+        "WATCH": "🟡 [ALERT / WATCH]",
         "WARNING": "🟠 [WARNING / ADVISORY]",
         "DANGER": "🔴 [DANGER / FLOOD EMERGENCY]",
+        "EMERGENCY": "🔴 [DANGER / FLOOD EMERGENCY]",
         "HFL_EXCEEDED": "🚨 [EXTREME FLOOD / HFL EXCEEDED]",
     }.get(level.upper(), "⚪ [INFORMATION]")
 
@@ -82,7 +84,7 @@ def format_telegram_alert(
 
     card = (
         f"🌊 <b>HYDROCAST FLOOD BULLETIN</b> 🌊\n"
-        f"<b>Authority:</b> District Disaster Management Authority (DDMA)\n"
+        f"<b>Authority:</b> Center for Climate Change and Sustainability Studies, Shivaji University Kolhapur\n"
         f"<b>Classification:</b> {badge}\n"
         f"━━━━━━━━━━━━━━━━━━━━━━\n"
         f"📍 <b>Site:</b> {site_name} (<code>{site_id}</code>)\n"
@@ -91,7 +93,7 @@ def format_telegram_alert(
         f"📏 <b>Current Water Level:</b> {current_stage:.2f} m MSL\n"
         f"{margin_str}\n"
         f"━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"🏛 <b>Official WRD Reference Datums:</b>\n"
+        f"🏛 <b>WRD Reference Datums:</b>\n"
         f"  • Warning Mark: {warning_stage:.2f} m\n"
         f"  • Danger Mark: {danger_stage:.2f} m\n"
         f"  • Historical Peak (HFL): {hfl_stage:.2f} m\n"
@@ -231,7 +233,7 @@ def build_telegram_application():
         try:
             pool = await get_db_pool()
             async with pool.acquire() as conn:
-                rows = await conn.fetch("SELECT * FROM v_active_alerts_enriched WHERE alert_type IN ('WARNING', 'DANGER', 'HFL_EXCEEDED')")
+                rows = await conn.fetch("SELECT * FROM v_active_alerts_enriched WHERE alert_type IN ('watch', 'warning', 'emergency')")
             
             if not rows:
                 await update.message.reply_text("✅ No active flood warnings.", parse_mode="HTML")

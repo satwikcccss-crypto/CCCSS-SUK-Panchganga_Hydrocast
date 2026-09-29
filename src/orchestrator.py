@@ -27,11 +27,12 @@ from typing import Optional
 
 import psycopg2
 import psycopg2.extras
+import numpy as np
 
 log = logging.getLogger(__name__)
 
 DB_URL   = os.getenv("DATABASE_URL", "")
-DSS_PATH = Path(os.getenv("DSS_PATH", "data/hms/rainfall_input.dss"))
+DSS_PATH = Path(os.getenv("DSS_PATH", "data/hms/HMS_Automation_RJKT/HMS_Automation_RJKT.dss"))
 
 
 # ── DB helpers ────────────────────────────────────────────────────────────────
@@ -94,8 +95,9 @@ def timed_step(conn, cycle_id, step_num, step_name):
 
 def step1_download_weather(conn, cycle_id, run_dt):
     with timed_step(conn, cycle_id, 1, "Open-Meteo Download"):
-        from src.ecmwf.open_meteo import run as om_run
-        ds = om_run(run_dt)
+        from src.ecmwf.downloader import run as ecmwf_run, latest_available_run
+        date_str, time_str = latest_available_run()
+        ds = ecmwf_run(date_str, time_str)
         step_done(conn, cycle_id, 1, {
             "grid_points": int(ds.latitude.size * ds.longitude.size),
             "lead_hours": 90,
@@ -122,7 +124,7 @@ def step3_validate(conn, cycle_id, run_dt):
 
 def step4_select_stations(conn, cycle_id, run_dt, ds_ecmwf):
     with timed_step(conn, cycle_id, 4, "Station Selection"):
-        from src.processing.station_selector import load_stations, select_stations, store_selection
+        from src.ecmwf.station_selector import load_stations, select_stations, store_selection
         stations = load_stations(conn)
         results = select_stations(ds_ecmwf, stations, conn, run_dt)
         store_selection(conn, results, run_dt, cycle_id)
@@ -153,14 +155,16 @@ def step6_check_params(conn, cycle_id, results):
 def step7_run_hms(conn, cycle_id, run_dt, results):
     with timed_step(conn, cycle_id, 7, "HEC-HMS Execute"):
         from src.hms.runner import run_hms
-        run_hms(run_dt, list(results.keys()))
+        hyetos = {sid: np.asarray(r.hyetograph, dtype=np.float32) for sid, r in results.items()}
+        run_hms(run_dt, list(results.keys()), subbasin_hyetographs=hyetos)
         step_done(conn, cycle_id, 7, {})
 
 
-def step8_extract_results(conn, cycle_id, run_dt):
+def step8_extract_results(conn, cycle_id, run_dt, results):
     with timed_step(conn, cycle_id, 8, "Result Extraction"):
         from src.hms.runner import read_outlet_hydrograph
-        hg = read_outlet_hydrograph(run_dt)
+        hyetos = {sid: np.asarray(r.hyetograph, dtype=np.float32) for sid, r in results.items()}
+        hg = read_outlet_hydrograph(run_dt, subbasin_hyetographs=hyetos)
         step_done(conn, cycle_id, 8, {
             "peak_q_m3s":       hg["peak_q"],
             "time_of_peak":     hg["time_of_peak"].isoformat(),
@@ -207,22 +211,14 @@ def create_cycle(conn, cycle_id: str, run_dt: datetime):
     with conn.cursor() as cur:
         cur.execute("""
             INSERT INTO simulation_runs
-                (run_id, basin_id, run_name, hms_project_path,
-                 control_spec_name, meteorologic_model,
-                 sim_start, sim_end, timestep_minutes,
-                 forecast_run_time, start_time, status)
+                (run_id, cycle_date, cycle_time, start_time, status)
             VALUES
-                (%s, 'MAIN_BASIN', %s,
-                 %s, 'ForecastControl', 'ECMWFMetModel',
-                 %s, %s, 60, %s, NOW(), 'running')
+                (%s, %s, %s, NOW(), 'running')
             ON CONFLICT (run_id) DO UPDATE SET status='running', start_time=NOW()
         """, (
             cycle_id,
-            f"Forecast {run_dt.strftime('%Y-%m-%d %Hz')}",
-            str(os.getenv("HMS_PROJECT_DIR", "data/hms/project")),
-            run_dt,
-            run_dt + timedelta(hours=90),
-            run_dt,
+            run_dt.date(),
+            f"{run_dt.hour:02d}z",
         ))
     conn.commit()
 
@@ -264,7 +260,7 @@ def run_pipeline(run_dt: Optional[datetime] = None, cycle_id: Optional[str] = No
         step5_write_dss(conn, cycle_id, run_dt, results)
         step6_check_params(conn, cycle_id, results)
         step7_run_hms(conn, cycle_id, run_dt, results)
-        hg      = step8_extract_results(conn, cycle_id, run_dt)
+        hg      = step8_extract_results(conn, cycle_id, run_dt, results)
         bfcasts = step9_stage_conversion(conn, cycle_id, run_dt, hg)
         step10_store_db(conn, cycle_id, run_dt, hg, bfcasts)
         step11_alerts(conn, cycle_id, bfcasts)
@@ -282,6 +278,7 @@ def run_pipeline(run_dt: Optional[datetime] = None, cycle_id: Optional[str] = No
 
 
 if __name__ == "__main__":
+    os.makedirs("logs", exist_ok=True)
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)-8s %(message)s",

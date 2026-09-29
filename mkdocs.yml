@@ -1,85 +1,273 @@
-site_name: HydroCast HEC-HMS Documentation
+site_name: HydroCast — Operational Flood Forecasting Documentation
+site_description: >-
+  Real-time rainfall-runoff, hydraulic rating and IoT telemetry documentation for
+  the Panchganga River catchment (Kolhapur, Maharashtra, India). Includes the full
+  hydrological continuum, HEC-HMS emulation, FastAPI reference and live API explorer.
 site_url: https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/
 repo_url: https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast
+edit_uri: edit/main/docs/
 
+# docs/  = hand-written Markdown source (git-tracked, reviewable in PRs)
+# site/  = generated HTML (git-ignored, rebuilt by CI, deployed to gh-pages)
+# Keeping the two names far apart avoids the docs/docs_src confusion.
+docs_dir: docs
+site_dir: site
+
+# ── Keep the generated site from ever being re-ingested as source ─────────────
+exclude_docs: |
+  README.md
+  __pycache__/
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PLUGINS
+# ══════════════════════════════════════════════════════════════════════════════
+plugins:
+  # Full-text search across every page (Material's built-in search UI).
+  - search:
+      lang: en
+      separator: '[\s\-\.\/_]+'
+
+  # API reference generated directly from the Python source tree.
+  # Any docstring written in src/** is rendered here — no manual duplication.
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: google
+            docstring_section_style: table
+            show_source: true
+            show_source_location: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_object_full_path: false
+            show_category_heading: true
+            show_bases: true
+            show_signature: true
+            signature_crossrefs: true
+            members_order: source
+            separate_signature: true
+            merge_init_into_class: true
+            show_if_no_docstring: false
+            heading_level: 1
+            filters:
+              - "!^_"
+              - "!^__"
+            watch:
+              - src
+
+  # Shrink the generated HTML/CSS/JS for faster page loads on field connections.
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+      cache_safe: true
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  THEME
+# ══════════════════════════════════════════════════════════════════════════════
 theme:
   name: material
+  language: en
+  logo: assets/hydrocast_main_banner.jpg
+  favicon: assets/hydrocast_main_banner.jpg
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+    admonition:
+      note: material/pencil-circle
+      tip: material/lightbulb-on
+      warning: material/alert
+      danger: material/skull-crossbones
   palette:
-    # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
+      primary: indigo
+      accent: cyan
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-    # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
+      primary: indigo
+      accent: cyan
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
   features:
+    # Navigation
     - navigation.instant
+    - navigation.instant.progress
     - navigation.tracking
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
+    - navigation.expand
+    - navigation.path
     - navigation.top
     - navigation.footer
+    - navigation.indexes
+    # Content
     - toc.integrate
-    - search.suggest
-    - search.highlight
+    - toc.follow
     - content.code.copy
     - content.code.annotate
+    - content.code.link
+    - content.tabs.link
+    - content.tooltips
+    - search.suggest
+    - search.highlight
+    - search.share
+    - header.autohide
 
+# ══════════════════════════════════════════════════════════════════════════════
+#  MARKDOWN EXTENSIONS
+# ══════════════════════════════════════════════════════════════════════════════
 markdown_extensions:
+  # ── Mathematics (KaTeX-style rendering via MathJax) ────────────────────────
   - pymdownx.arithmatex:
       generic: true
-  - pymdownx.superfences
+
+  # ── Fenced code blocks + custom diagram languages ─────────────────────────
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: dot
+          class: graphviz
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+  # ── Admonitions (callout boxes) ───────────────────────────────────────────
+  - admonition
   - pymdownx.details
+
+  # ── Code highlighting ─────────────────────────────────────────────────────
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      use_pygments: true
   - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path:
+        - .
+      check_paths: true
+
+  # ── Typographic niceties ──────────────────────────────────────────────────
   - pymdownx.magiclink
   - pymdownx.smartsymbols
-  - admonition
+  - pymdownx.tilde
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.caret
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - def_list
+  - footnotes
+  - abbr
   - tables
+  - md_in_html
   - toc:
       permalink: true
+      permalink_title: Anchor link to this section
+      toc_depth: 4
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  STATIC ASSETS
+# ══════════════════════════════════════════════════════════════════════════════
+extra_css:
+  - stylesheets/extra.css
+  - stylesheets/diagrams.css
 
 extra_javascript:
   - javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - javascripts/mermaid.js
+  - https://unpkg.com/leaflet@1.9.4/dist/leaflet.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
-extra_css:
-  - stylesheets/extra.css
+extra:
+  generator: true
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast
+      name: HydroCast on GitHub
+    - icon: fontawesome/brands/telegram
+      link: https://t.me/Hydrocast_Panchganga_Bot
+      name: HydroCast Telegram Bulletin Bot
 
-copyright: "Developed by Er. Satwik Udupi. Funded by DST-SERB, Government of India. Integrated with Panchganga HydroCast Telegram Bot."
+copyright: >-
+  Developed by Er. Satwik Udupi · Centre for Climate Change and Sustainability Studies,
+  Shivaji University Kolhapur. Funded by DST-SERB, Government of India.
 
+# ══════════════════════════════════════════════════════════════════════════════
+#  NAVIGATION
+# ══════════════════════════════════════════════════════════════════════════════
 nav:
-  - "Overview":
-    - "HydroCast Documentation": index.md
-    - "Project Background": Project_Background.md
-  - "Frontend":
-    - "Architecture & Design": Frontend.md
-  - "Backend":
-    - "Core Backend": Backend.md
-    - "Database & ORM": Database.md
-    - "Deployment": Deployment_Operations.md
-  - "Hydrology":
-    - "Runoff Computation": Runoff_Computation.md
-    - "HEC-HMS Engine": HMS.md
-    - "Hydraulics & River Routing": Hydraulics.md
-    - "Stage-Discharge Conversion": Stage_Conversion_Discharge.md
-    - "Rating Curve Cross-Check": WRD_Historical_Rating_Curve_CrossCheck.md
-  - "Engineering":
-    - "System Architecture": Architecture.md
-    - "IoT Telemetry": IoT_Telemetry.md
-    - "Raingauge Network": Raingauge_Station.md
-    - "OpenMeteo Integration": Openmeteo.md
-    - "Calibration & Validation": Calibration_Validation.md
-    - "Rainfall Validation Pipeline": Rainfall_Validation_Pipeline.md
-    - "Errors & Engineering Assumptions": Errors_Mistakes_Engineering_Assumptions.md
-    - "System Novelty": Novelty_of_this_System.md
-    - "GIS Shapefiles": Shpfiles.md
-    - "Future Roadmap": ROADMAP.md
+  - Home:
+      - index.md
+      - Project Background: project-background.md
+      - System Novelty: novelty-of-this-system.md
 
-docs_dir: docs_src
-site_dir: docs
+  - "System Diagrams":
+      - Architecture Atlas: architecture-atlas.md
+      - System Architecture: architecture.md
+
+  - "API Reference":
+      - api-reference/index.md
+      - "FastAPI Service":
+          - api-reference/backend.md
+          - api-reference/security.md
+      - "Hydrology Engine":
+          - api-reference/hydrology.md
+          - api-reference/hms.md
+          - api-reference/calibration.md
+      - "Data Ingestion":
+          - api-reference/ecmwf.md
+          - api-reference/sensors.md
+          - api-reference/processing.md
+      - "Alerts & Delivery":
+          - api-reference/alerts.md
+      - "Orchestration & Storage":
+          - api-reference/orchestrator.md
+          - api-reference/dss.md
+
+  - Hydrology:
+      - Runoff Computation: runoff-computation.md
+      - HEC-HMS Engine: hec-hms-engine.md
+      - Basin Hydrology: basin-hydrology.md
+      - Stage-Discharge Conversion: stage-discharge-conversion.md
+      - River Hydraulics: hydraulics.md
+      - WRD Rating Curve Cross-Check: wrd-rating-curve-cross-check.md
+
+  - Data & Validation:
+      - Open-Meteo / ECMWF: open-meteo-ecmwf.md
+      - Rainfall Validation Pipeline: rainfall-validation-pipeline.md
+      - Calibration & Validation: calibration-validation.md
+      - ML Calibration Engine: ml-calibration-engine.md
+      - PI Accuracy Report: accuracy-analysis-pi-report.md
+
+  - Field Systems:
+      - IoT Telemetry: iot-telemetry.md
+      - Raingauge Network: raingauge-network.md
+      - GIS Vector Layers: gis-vector-layers.md
+
+  - Engineering:
+      - Backend Services: backend.md
+      - Frontend Dashboard: frontend.md
+      - Database Architecture: database.md
+      - Deployment & Operations: deployment-operations.md
+      - Errors & Engineering Assumptions: errors-and-engineering-assumptions.md
+      - Production Roadmap: roadmap.md

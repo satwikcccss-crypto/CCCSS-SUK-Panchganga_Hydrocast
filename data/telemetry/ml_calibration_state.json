@@ -1,0 +1,13 @@
+{
+  "last_calibrated_at": null,
+  "is_recalibrated": false,
+  "trigger_reason": "INITIAL_BASELINE",
+  "timing_offset_hours": 0.0,
+  "stage_discrepancy_m": 0.0,
+  "alpha_k": 1.0,
+  "alpha_lag": 1.0,
+  "delta_cn": 0.0,
+  "muskingum_x": 0.25,
+  "confidence_pct": 95.0,
+  "history": []
+}

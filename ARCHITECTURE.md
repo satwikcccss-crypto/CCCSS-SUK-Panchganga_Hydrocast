@@ -3,7 +3,68 @@
 
 ---
 
-## 1. High-Level System Architecture
+## 1. Cloud Infrastructure & System Architecture
+
+```mermaid
+graph TD
+    %% Define Styles
+    classDef frontend fill:#000,stroke:#333,stroke-width:2px,color:#fff;
+    classDef database fill:#3ECF8E,stroke:#333,stroke-width:2px,color:#000;
+    classDef actions fill:#2088FF,stroke:#333,stroke-width:2px,color:#fff;
+    classDef python fill:#3776AB,stroke:#333,stroke-width:2px,color:#fff;
+    classDef external fill:#f9f9f9,stroke:#666,stroke-width:2px,stroke-dasharray: 5 5;
+
+    %% Components
+    subgraph "Vercel Cloud (Frontend)"
+        UI[Next.js 14 Dashboard<br/>React / Leaflet GIS]:::frontend
+    end
+
+    subgraph "GitHub Actions (CI/CD & Cron)"
+        Cron[Automated Forecast Cycle<br/>Runs every 6 hours]:::actions
+    end
+
+    subgraph "Python Backend Engine (Core)"
+        Orchestrator[Pipeline Orchestrator<br/>src/orchestrator.py]:::python
+        ECMWF[Open-Meteo SDK<br/>90h Weather Forecasts]:::python
+        Emulator[HEC-HMS Physics Emulator<br/>SCS-CN, Muskingum Routing]:::python
+        ML[Machine Learning Calibration<br/>Levenberg-Marquardt]:::python
+        Alerts[Telegram Alert Dispatcher]:::python
+    end
+
+    subgraph "Supabase (PostgreSQL)"
+        DB[(Relational Database<br/>Runs & Hydrographs)]:::database
+    end
+
+    subgraph "External Systems"
+        ThingSpeak[ThingSpeak IoT<br/>River Radar Sensor]:::external
+        OpenMeteoAPI[Open-Meteo API]:::external
+        Telegram[DDMA Telegram Channel]:::external
+    end
+
+    %% Connections
+    UI <-->|Reads Data via REST API| DB
+    
+    Cron -->|Triggers every 6 hours| Orchestrator
+    
+    Orchestrator -->|1. Fetch Weather| ECMWF
+    ECMWF <--> OpenMeteoAPI
+    
+    Orchestrator -->|2. Fetch Live Stage| ThingSpeak
+    Orchestrator -->|3. Auto-Calibrate| ML
+    ML <--> Emulator
+    
+    Orchestrator -->|4. Run Simulation| Emulator
+    Emulator -->|5. Save Results| DB
+    
+    Orchestrator -->|6. Check Danger Levels| Alerts
+    Alerts -->|Push Flood Warning| Telegram
+```
+
+---
+
+## 2. Detailed System Topology
+
+
 
 ```
 ====================================================================================================
@@ -25,13 +86,13 @@
                  +---------------------------------------+
                  |  Adaptive Physics-Informed ML Engine  |
                  |  - Discrepancy Detection (Delta_t)    |
-                 |  - Scipy L-BFGS-B Loss Minimization   |
+                 |  - Scipy Levenberg-Marquardt Loss Minimization   |
                  +---------------------------------------+
                                      |
                                      v
                  +---------------------------------------+
                  |    HEC-HMS 4.13 Hydrological Core     |
-                 |  - Loss: SCS Curve Number (AMC-II/III)|
+                 |  - Loss: SCS Curve Number (AMC-I/II/III)|
                  |  - Transform: SCS Unit Hydrograph (UH)|
                  |  - Channel Routing: Muskingum (R1–R5) |
                  |  - Baseflow: Exponential Recession    |
@@ -77,7 +138,7 @@ HydroCast is an enterprise-grade operational hydrologic forecasting and early wa
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                 2. SPATIAL TOPOLOGY & SOIL MOISTURE LAYER                              │
 │  18 Panchganga Stations (Karvir, Gaganbawda...) ──> Dynamic Conservative Maximum-Rainfall Selector     │
-│  90-Day Antecedent Re-Analysis ──> Dynamic SCS Curve Number (AMC-I / AMC-II / AMC-III)                 │
+│  90h Forecast Rain Signal ──> Dynamic SCS Curve Number (AMC-I / AMC-II / AMC-III)                 │
 └───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
                                                     │
                                                     ▼
@@ -89,16 +150,18 @@ HydroCast is an enterprise-grade operational hydrologic forecasting and early wa
                                                     │
                                                     ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                 4. CALIBRATED HYDRAULIC RATING ENGINE                                  │
-│  Dual-Regime Monotonic PCHIP Rating (dQ/dh > 0) ──> Bed Slope S₀ = 0.005858 (Shivaji) / 0.002318 (RJKT)│
-│  Anchored to 19 Official Maharashtra WRD Field Records (530.18m Datum to 545.33m HFL Benchmark)        │
+│                                 4. WRD-ANCHORED HYDRAULIC RATING ENGINE                                   │
+│  Monotonic PCHIP Rating (dQ/dh > 0) anchored on the official WRD Stage-Discharge Sheet               │
+│  (Rajaram: sheet verbatim; Shivaji: sheet −0.648 m downstream datum; + WRD 2021–23 low-flow anchors)  │
+│  Sheet Range: 530.18m Datum to 545.33m HFL Benchmark (3,850 m³/s)                                      │
 └───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
                                                     │
                                                     ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                           5. REAL-TIME ML ADAPTIVE RECALIBRATION & CONFIDENCE BAND                     │
 │  Discrepancy Detection vs ThingSpeak Ultrasonic Telemetry (|Δt| ≥ 1.0h or Δh > 0.25m)                  │
-│  L-BFGS-B Optimization: Muskingum α_K, Subbasin α_lag, ΔCN, Muskingum X ──> Syncs Basin_1.basin (.bak)│
+│  Levenberg-Marquardt Optimization: Muskingum α_K, Subbasin α_lag, ΔCN, Muskingum X ──> Basin_1.basin is  │
+│  the single source of truth; recalibration writes back atomically to a .bak snapshot. │
 │  Peak Flood Arrival Window Calculation: T_peak ± 2.0h (95% Confidence Interval) at Shivaji & Rajaram   │
 └───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
                                                     │
@@ -129,7 +192,7 @@ HydroCast is an enterprise-grade operational hydrologic forecasting and early wa
 | **Ingestion Resilience** | Python `requests`, `openmeteo-requests`, SQLite Cache | Exponential backoff, full jitter, physical rainfall bounds (250 mm/hr) |
 | **Hydrological Engine** | USACE HEC-HMS 4.x + Pure-Python Vectorized Emulator | Loss (SCS-CN), Transform (SCS-UH), Channel Routing (Muskingum) |
 | **Hydraulic Rating** | SciPy PCHIP (`scipy.interpolate.PchipInterpolator`) | Strictly monotonic rating curves ($dQ/dh > 0$), surveyed bed slopes |
-| **Real-Time ML Recalibration** | SciPy `optimize.minimize` (L-BFGS-B), NumPy | Dynamic optimization of $\alpha_K$, $\alpha_{\text{lag}}$, $\Delta\text{CN}$, $X$ based on ThingSpeak telemetry |
+| **Real-Time ML Recalibration** | SciPy `optimize.least_squares` (Levenberg-Marquardt), NumPy | Dynamic optimization of $\alpha_K$, $\alpha_{\text{lag}}$, $\Delta\text{CN}$, $X$ based on ThingSpeak telemetry |
 | **IoT Level Telemetry** | MathWorks ThingSpeak (Channel 3424513) | Solar-powered ultrasonic sensor at Shivaji Bridge deck ($549.35\text{ m MSL}$) |
 | **Database & Spatial** | PostgreSQL 15 + PostGIS + Supabase Pooler | Master cycle runs, hyetographs, hydrographs, step logs |
 | **Cold Storage Archival** | PyArrow + Apache Parquet (Snappy compression) | Columnar pruning of high-frequency telemetry older than 90 days |
@@ -157,16 +220,16 @@ The orchestrator ([`src/orchestrator.py`](file:///e:/hydrocast_complete/src/orch
 │    Dynamic conservative router selects maximum-threat station as governing hyetograph per subbasin.     │
 │                                                                                                         │
 │  STEP 3: ANTECEDENT SOIL MOISTURE (AMC) CLASSIFICATION                                                  │
-│    Evaluate 90-day precipitation history; compute 5-day antecedent rainfall (P5).                       │
+│    Classify wetness from mean 90h forecast rain (AMC-I <25, II 25-65, III >=65 mm).                     │
 │    Dynamically adjust SCS Curve Numbers between AMC-I (dry), AMC-II (normal), and AMC-III (saturated).   │
 │                                                                                                         │
 │  STEP 4: HEC-DSS METEOROLOGICAL BOUNDARY PREPARATION                                                    │
-│    Generate DSS binary input tables (/PANCHGANGA/S1..S9/PRECIP-INC/.../1HOUR/FORECAST/) via pydsstools.   │
+│    Generate per-gauge DSS input tables (//<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/) into HMS_Automation_RJKT.dss.│
 │                                                                                                         │
 │  STEP 5: REAL-TIME ML ADAPTIVE RECALIBRATION CHECK                                                      │
 │    Pull live ThingSpeak radar telemetry (Channel 3424513). Check previous cycle hydrograph vs observed. │
-│    If |Δt| ≥ 1.0h or Δh > 0.25m: solve L-BFGS-B loss for α_K, α_lag, ΔCN, Muskingum X.                 │
-│    Atomically update Basin_1.basin (with .bak backup) and Python emulator parameters.                   │
+│    If |Δt| ≥ 1.0h or Δh > 0.25m: solve Levenberg-Marquardt residuals for α_K, α_lag, ΔCN, Muskingum X.       │
+│    Backed-up atomic write-back to Basin_1.basin; current run also uses in-memory parameter overrides.  │
 │                                                                                                         │
 │  STEP 6: HYDROLOGICAL WATERSHED RUNOFF EXECUTION                                                        │
 │    Execute USACE HEC-HMS 4.x headless batch run (Control_1.control + Basin_1.basin + Met_1.met).        │
@@ -176,8 +239,8 @@ The orchestrator ([`src/orchestrator.py`](file:///e:/hydrocast_complete/src/orch
 │    Extract 90-point discharge hydrograph at basin sink (J_Outlet). Calculate peak Q, Tp, and volume.   │
 │                                                                                                         │
 │  STEP 8: MONOTONIC HYDRAULIC RATING STAGE CONVERSION                                                    │
-│    Apply surveyed bed slope S₀ = 0.005858 (Shivaji Bridge) and S₀ = 0.002318 (Rajaram Weir).            │
-│    Evaluate dual-regime PCHIP rating curves (dQ/dh > 0) to produce 90 hourly stage and flow forecasts.  │
+│    Evaluate WRD-anchored PCHIP rating curves (dQ/dh > 0): Rajaram = official WRD sheet verbatim;        │
+│    Shivaji = same sheet shifted −0.648 m downstream datum. Produce 90 hourly stage and flow forecasts.  │
 │                                                                                                         │
 │  STEP 9: PEAK FLOOD STRIKE HORIZON & CONFIDENCE INTERVAL COMPUTATION                                    │
 │    Calculate peak arrival time and permissible ±2.0h uncertainty window (95% CI) at Shivaji and Rajaram.│
@@ -218,13 +281,24 @@ The basin delineation is formalized in [`data/hms/HMS_Automation_RJKT/Basin_1.ba
 | **S9** | Radhanagari | 366.97 | 64.31 | 5,199.0 | KASABA_WALAWE (560m) |
 
 ### Muskingum Channel Reach Routing Parameters
+
+These are the **canonical committed values** read by
+`src/hms/basin_parser.py` from `data/hms/HMS_Automation_RJKT/Basin_1.basin` — the single
+parameter source consumed by both the emulator and the ML calibration engine, so there
+are no duplicated hard-coded tables that can drift apart. The values below are the
+official RJKT channel-storage constants; the historical trial-optimized values
+(4.50 / 16.50 / 9.48 / 8.08 / 18.34 at $X = 0.25$) have been removed. When recalibration
+is warranted, fitted values are written back through a timestamped `.bak` snapshot and
+an atomic `os.replace()` swap, and the current run additionally applies the overrides
+in memory.
+
 | Reach ID | River Reach Segment | Upstream Inflow Node | Downstream Outflow Node | Travel Time $K$ (hours) | Storage Factor $X$ |
 |---|---|---|---|---|---|
-| **R1** | Kasari Lower Reach | J_Kasari | J_Confluence | 4.50 | 0.25 |
-| **R2** | Kumbhi-Tulsi Middle | J_Kumbhi_Tulsi | J_Confluence | 16.50 | 0.25 |
-| **R3** | Bhogawati Main Canal | J_Bhogawati | J_Confluence | 9.48 | 0.25 |
-| **R4** | Confluence to Shivaji | J_Confluence | J_Shivaji | 8.08 | 0.25 |
-| **R5** | Shivaji to Rajaram Weir | J_Shivaji | J_Outlet (Rajaram) | 18.34 | 0.25 |
+| **R1** | Kasari Lower Reach | J_Kasari | J_Confluence | 2.899 | 0.20 |
+| **R2** | Kumbhi-Tulsi Middle | J_Kumbhi_Tulsi | J_Confluence | 11.827 | 0.20 |
+| **R3** | Bhogawati Main Canal | J_Bhogawati | J_Confluence | 3.829 | 0.20 |
+| **R4** | Confluence to Shivaji | J_Confluence | J_Shivaji | 1.224 | 0.20 |
+| **R5** | Shivaji to Rajaram Weir | J_Shivaji | J_Outlet (Rajaram) | 4.619 | 0.20 |
 
 ---
 

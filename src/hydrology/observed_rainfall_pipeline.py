@@ -126,10 +126,15 @@ def invert_hydrologic_rainfall_from_streamflow(
     if not observed_discharge_m3s:
         return {}
 
-    # Trapezoidal integration of discharge over hourly steps
-    q_arr = np.array(observed_discharge_m3s)
-    # Total volume in m3 over available hours (dt = 3600s)
-    v_runoff_m3 = np.sum(q_arr) * 3600.0
+    # Trapezoidal integration of discharge over hourly steps (dt = 3600 s).
+    # Using np.sum(q)*dt would treat every sample as a full-width rectangle and
+    # over-count the volume by roughly a factor of two versus the trapezoid rule.
+    q_arr = np.asarray(observed_discharge_m3s, dtype=np.float64)
+    if q_arr.size == 1:
+        v_runoff_m3 = float(q_arr[0]) * 3600.0
+    else:
+        v_runoff_m3 = float(np.trapezoid(q_arr, dx=3600.0)) if hasattr(np, "trapezoid") \
+            else float(np.trapz(q_arr, dx=3600.0))
 
     total_area_km2 = sum(subbasin_areas_km2.values())
     total_area_m2 = total_area_km2 * 1e6
@@ -176,6 +181,12 @@ def validate_station_rainfall(
     validated_stations = []
     total_pred = 0.0
     total_obs = 0.0
+    # Only stations backed by an INDEPENDENT observed source contribute to the
+    # basin-wide score. A station whose "observation" was copied from its own
+    # prediction is unverifiable and must not be reported as accurate.
+    independent_pred = 0.0
+    independent_obs = 0.0
+    unverifiable_count = 0
 
     for st in stations:
         st_id = st.get("station_id", "")
@@ -205,18 +216,33 @@ def validate_station_rainfall(
                 obs_vol = hydrologic_rainfall[sub]
                 source = "HYDROLOGIC_MASS_BALANCE"
             else:
-                # Graceful conservative estimate based on nearby station
-                obs_vol = pred_vol
-                source = "CONSERVATIVE_ESTIMATE"
+                # No independent observation available. obs_vol is left at 0.0 and
+                # the station is flagged UNVERIFIED below; it is NOT scored.
+                obs_vol = 0.0
+                source = "UNVERIFIED"
 
         # Quality Control: Clamp physically impossible negative or hurricane values
         obs_vol = max(0.0, min(800.0, round(obs_vol, 1)))
 
-        err_mm = round(pred_vol - obs_vol, 1)
-        err_pct = round((err_mm / (obs_vol + 1e-4)) * 100.0, 1) if obs_vol > 0 else 0.0
-        acc_pct = round(max(0.0, 100.0 - abs(err_pct)), 1)
+        is_independent = source in (
+            "WRD_GROUND_GAUGE",
+            "OPEN_METEO_RADAR_REANALYSIS",
+            "HYDROLOGIC_MASS_BALANCE",
+        )
 
-        status = "ACCURATE" if abs(err_pct) <= 10.0 else "MODERATE" if abs(err_pct) <= 20.0 else "DEVIATED"
+        if is_independent:
+            err_mm = round(pred_vol - obs_vol, 1)
+            err_pct = round((err_mm / (obs_vol + 1e-4)) * 100.0, 1) if obs_vol > 0 else 0.0
+            acc_pct = round(max(0.0, 100.0 - abs(err_pct)), 1)
+            status = "ACCURATE" if abs(err_pct) <= 10.0 else "MODERATE" if abs(err_pct) <= 20.0 else "DEVIATED"
+            independent_pred += pred_vol
+            independent_obs += obs_vol
+        else:
+            unverifiable_count += 1
+            err_mm = None
+            err_pct = None
+            acc_pct = None
+            status = "UNVERIFIED"
 
         total_pred += pred_vol
         total_obs += obs_vol
@@ -226,7 +252,7 @@ def validate_station_rainfall(
             "station_name": name,
             "subbasin_id": sub,
             "predicted_volume_mm": pred_vol,
-            "observed_volume_mm": obs_vol,
+            "observed_volume_mm": obs_vol if is_independent else None,
             "source": source,
             "error_mm": err_mm,
             "error_pct": err_pct,
@@ -234,15 +260,22 @@ def validate_station_rainfall(
             "status": status,
         })
 
-    basin_error_pct = round(((total_pred - total_obs) / (total_obs + 1e-4)) * 100.0, 1)
-    basin_accuracy_pct = round(max(0.0, 100.0 - abs(basin_error_pct)), 1)
+    # Basin score is computed ONLY over stations with an independent observation.
+    if independent_obs > 0:
+        basin_error_pct = round(((independent_pred - independent_obs) / independent_obs) * 100.0, 1)
+        basin_accuracy_pct = round(max(0.0, 100.0 - abs(basin_error_pct)), 1)
+    else:
+        basin_error_pct = None
+        basin_accuracy_pct = None
 
     summary = {
         "total_predicted_mm": round(total_pred, 1),
         "total_observed_mm": round(total_obs, 1),
         "basin_error_pct": basin_error_pct,
         "basin_accuracy_pct": basin_accuracy_pct,
-        "verified_stations_count": len(validated_stations),
+        "basin_accuracy_basis": "INDEPENDENT_STATIONS_ONLY" if independent_obs > 0 else "NO_INDEPENDENT_OBSERVATIONS",
+        "verified_stations_count": sum(1 for s in validated_stations if s["status"] != "UNVERIFIED"),
+        "unverifiable_stations_count": unverifiable_count,
         "wrd_ground_count": sum(1 for s in validated_stations if s["source"] == "WRD_GROUND_GAUGE"),
         "open_meteo_radar_count": sum(1 for s in validated_stations if s["source"] == "OPEN_METEO_RADAR_REANALYSIS"),
         "hydrologic_inversion_count": sum(1 for s in validated_stations if s["source"] == "HYDROLOGIC_MASS_BALANCE"),
