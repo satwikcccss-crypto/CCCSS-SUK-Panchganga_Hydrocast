@@ -20321,7 +20321,7 @@
       "upstream_weir": "Rajaram K.T. Weir (3,858 m upstream, bed datum +0.648 m)"
     },
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 3,
+    "verified_hours": 10,
     "total_forecast_hours": 90,
     "completion_pct": 3.3,
     "observation_gap": {
@@ -20371,7 +20371,49 @@
         "actual_stage": 530.37,
         "predicted_stage": 532.41,
         "lead_hours": 2,
-        "actual_distance_ft": 62.28
+        "actual_distance_ft": 62.32
+      },
+      {
+        "actual_stage": 530.33,
+        "predicted_stage": 530.21,
+        "lead_hours": 3,
+        "actual_distance_ft": 62.4
+      },
+      {
+        "actual_stage": 530.3,
+        "predicted_stage": 530.21,
+        "lead_hours": 4,
+        "actual_distance_ft": 62.51
+      },
+      {
+        "actual_stage": 530.31,
+        "predicted_stage": 530.21,
+        "lead_hours": 5,
+        "actual_distance_ft": 62.48
+      },
+      {
+        "actual_stage": 530.34,
+        "predicted_stage": 530.21,
+        "lead_hours": 6,
+        "actual_distance_ft": 62.38
+      },
+      {
+        "actual_stage": 530.33,
+        "predicted_stage": 530.21,
+        "lead_hours": 7,
+        "actual_distance_ft": 62.41
+      },
+      {
+        "actual_stage": 530.31,
+        "predicted_stage": 530.21,
+        "lead_hours": 8,
+        "actual_distance_ft": 62.46
+      },
+      {
+        "actual_stage": 530.35,
+        "predicted_stage": 530.2,
+        "lead_hours": 9,
+        "actual_distance_ft": 62.34
       }
     ],
     "actual_observed_series": [
@@ -20425,7 +20467,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 4,
@@ -20438,7 +20480,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 5,
@@ -20451,7 +20493,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 6,
@@ -20464,7 +20506,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 7,
@@ -20477,7 +20519,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 8,
@@ -20490,7 +20532,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 9,
@@ -20503,7 +20545,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 10,

@@ -20843,7 +20843,25 @@
         "actual_stage": 530.37,
         "predicted_stage": 532.36,
         "lead_hours": 86,
-        "actual_distance_ft": 62.28
+        "actual_distance_ft": 62.32
+      },
+      {
+        "actual_stage": 530.33,
+        "predicted_stage": 531.09,
+        "lead_hours": 87,
+        "actual_distance_ft": 62.4
+      },
+      {
+        "actual_stage": 530.3,
+        "predicted_stage": 531.09,
+        "lead_hours": 88,
+        "actual_distance_ft": 62.51
+      },
+      {
+        "actual_stage": 530.31,
+        "predicted_stage": 531.13,
+        "lead_hours": 89,
+        "actual_distance_ft": 62.48
       }
     ],
     "actual_observed_series": [
@@ -21989,7 +22007,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 88,
@@ -22002,7 +22020,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 89,
@@ -22015,7 +22033,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       }
     ]
   },
