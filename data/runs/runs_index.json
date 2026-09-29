@@ -16,9 +16,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.11,
+    "rmse": 0.116,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 5
+    "verified_hours": 6
   },
   {
     "cycle_id": "CYC_20260929_00z",
@@ -39,9 +39,9 @@
     "performance_grade": "BASEFLOW_STABLE",
     "spearman_rho": null,
     "nse": null,
-    "rmse": 2.083,
+    "rmse": 2.081,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 11
+    "verified_hours": 12
   },
   {
     "cycle_id": "CYC_20260928_18z",
@@ -62,9 +62,9 @@
     "performance_grade": "CALIBRATION_REQUIRED",
     "spearman_rho": null,
     "nse": null,
-    "rmse": 2.092,
+    "rmse": 2.09,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 17
+    "verified_hours": 18
   },
   {
     "cycle_id": "CYC_20260928_12z",
@@ -85,9 +85,9 @@
     "performance_grade": "BASEFLOW_STABLE",
     "spearman_rho": null,
     "nse": null,
-    "rmse": 2.099,
+    "rmse": 2.097,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 23
+    "verified_hours": 24
   },
   {
     "cycle_id": "CYC_20260928_06z",
@@ -108,9 +108,9 @@
     "performance_grade": "BASEFLOW_STABLE",
     "spearman_rho": null,
     "nse": null,
-    "rmse": 2.084,
+    "rmse": 2.083,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 29
+    "verified_hours": 30
   },
   {
     "cycle_id": "CYC_20260927_18z",
@@ -129,11 +129,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": 0.6274,
-    "nse": -1244.0642,
+    "spearman_rho": 0.6041,
+    "nse": -1273.7745,
     "rmse": 2.051,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 41
+    "verified_hours": 42
   },
   {
     "cycle_id": "CYC_20260927_12z",
@@ -152,11 +152,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": 0.6871,
-    "nse": -1182.1514,
-    "rmse": 2.044,
+    "spearman_rho": 0.671,
+    "nse": -1206.8849,
+    "rmse": 2.043,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 47
+    "verified_hours": 48
   },
   {
     "cycle_id": "CYC_20260927_06z",
@@ -175,11 +175,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": 0.679,
-    "nse": -715.1273,
+    "spearman_rho": 0.6715,
+    "nse": -727.6022,
     "rmse": 2.025,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 53
+    "verified_hours": 54
   },
   {
     "cycle_id": "CYC_20260926_18z",
@@ -198,11 +198,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": 0.8358,
-    "nse": -175.5297,
-    "rmse": 1.966,
+    "spearman_rho": 0.829,
+    "nse": -177.6262,
+    "rmse": 1.967,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 65
+    "verified_hours": 66
   },
   {
     "cycle_id": "CYC_20260925_18z",
@@ -221,11 +221,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": 0.9249,
-    "nse": -33.6854,
-    "rmse": 1.809,
-    "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 89
+    "spearman_rho": 0.9211,
+    "nse": -33.9096,
+    "rmse": 1.811,
+    "lifecycle_status": "LIFECYCLE_VERIFIED",
+    "verified_hours": 90
   },
   {
     "cycle_id": "CYC_20260925_12z",
