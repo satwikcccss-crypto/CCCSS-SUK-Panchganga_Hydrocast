@@ -5,7 +5,7 @@ title: FastAPI Service Reference
 # FastAPI Service Reference
 
 Rendered from the docstrings in `src/api/`. Every route below is also visible in the
-live [Swagger UI](../Backend.md#3-interactive-api-explorer).
+live [Swagger UI](../backend.md#3-interactive-api-explorer).
 
 ## Request lifecycle
 

@@ -14,7 +14,7 @@ computed the number in that answer".
     application. Every route is documented with live JSON schemas and a
     **Try it out** button — no client code required.
 
-    [Launch Swagger UI :octicons-arrow-right-24:](../Backend.md#3-interactive-api-explorer)
+    [Launch Swagger UI :octicons-arrow-right-24:](../backend.md#3-interactive-api-explorer)
 
 -   :material-file-tree: **Python Source Reference**
 
