@@ -14,11 +14,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.0,
-    "nse": -63.1143,
-    "rmse": 0.118,
+    "spearman_rho": null,
+    "nse": null,
+    "rmse": 0.11,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 4
+    "verified_hours": 5
   },
   {
     "cycle_id": "CYC_20260929_00z",
@@ -39,9 +39,9 @@
     "performance_grade": "BASEFLOW_STABLE",
     "spearman_rho": null,
     "nse": null,
-    "rmse": 2.06,
+    "rmse": 2.083,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 10
+    "verified_hours": 11
   },
   {
     "cycle_id": "CYC_20260928_18z",
@@ -60,11 +60,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": -0.5523,
-    "nse": -1731.8462,
-    "rmse": 2.096,
+    "spearman_rho": null,
+    "nse": null,
+    "rmse": 2.092,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 16
+    "verified_hours": 17
   },
   {
     "cycle_id": "CYC_20260928_12z",
@@ -85,9 +85,9 @@
     "performance_grade": "BASEFLOW_STABLE",
     "spearman_rho": null,
     "nse": null,
-    "rmse": 2.108,
+    "rmse": 2.099,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 22
+    "verified_hours": 23
   },
   {
     "cycle_id": "CYC_20260928_06z",
@@ -108,9 +108,9 @@
     "performance_grade": "BASEFLOW_STABLE",
     "spearman_rho": null,
     "nse": null,
-    "rmse": 2.087,
+    "rmse": 2.084,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 28
+    "verified_hours": 29
   },
   {
     "cycle_id": "CYC_20260927_18z",
@@ -129,11 +129,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": 0.6472,
-    "nse": -1066.3256,
-    "rmse": 2.048,
+    "spearman_rho": 0.6274,
+    "nse": -1244.0642,
+    "rmse": 2.051,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 40
+    "verified_hours": 41
   },
   {
     "cycle_id": "CYC_20260927_12z",
@@ -152,11 +152,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": 0.6737,
-    "nse": -1054.5943,
-    "rmse": 2.04,
+    "spearman_rho": 0.6871,
+    "nse": -1182.1514,
+    "rmse": 2.044,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 46
+    "verified_hours": 47
   },
   {
     "cycle_id": "CYC_20260927_06z",
@@ -175,11 +175,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": 0.6616,
-    "nse": -661.3842,
-    "rmse": 2.018,
+    "spearman_rho": 0.679,
+    "nse": -715.1273,
+    "rmse": 2.025,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 52
+    "verified_hours": 53
   },
   {
     "cycle_id": "CYC_20260926_18z",
@@ -198,11 +198,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": 0.841,
-    "nse": -164.816,
-    "rmse": 1.954,
+    "spearman_rho": 0.8358,
+    "nse": -175.5297,
+    "rmse": 1.966,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 64
+    "verified_hours": 65
   },
   {
     "cycle_id": "CYC_20260925_18z",
@@ -221,11 +221,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": 0.9267,
-    "nse": -32.4497,
-    "rmse": 1.784,
+    "spearman_rho": 0.9249,
+    "nse": -33.6854,
+    "rmse": 1.809,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 88
+    "verified_hours": 89
   },
   {
     "cycle_id": "CYC_20260925_12z",
@@ -244,11 +244,11 @@
     "has_validation": true,
     "resimulated": true,
     "performance_grade": "CALIBRATION_REQUIRED",
-    "spearman_rho": 0.9064,
-    "nse": -31.7748,
-    "rmse": 1.762,
-    "lifecycle_status": "AWAITING_OBSERVATIONS",
-    "verified_hours": 87
+    "spearman_rho": 0.9122,
+    "nse": -31.986,
+    "rmse": 1.772,
+    "lifecycle_status": "LIFECYCLE_VERIFIED",
+    "verified_hours": 90
   },
   {
     "cycle_id": "CYC_20260925_06z",
