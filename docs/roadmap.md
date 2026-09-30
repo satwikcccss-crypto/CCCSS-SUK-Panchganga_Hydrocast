@@ -1,95 +1,201 @@
-# HydroCast: Production Architecture Roadmap & Hardening Guide
+# Production Hardening Roadmap
 
-## Executive Architecture Evaluation
+## Where the system actually stands
 
-HydroCast implements an end-to-end, operational hydrologic and hydraulic intelligence continuum:
-1. **Meteorological Ingestion**: ECMWF IFS HRES 9km quantitative precipitation forecasts via Open-Meteo API v1.
-2. **Dynamic Station Selection**: Multi-gauge maximum-precipitation and centroid routing across 9 Panchganga subbasins.
-3. **Hydrologic Watershed Simulation**: Loss modeling, SCS unit hydrograph transform, and Muskingum reach routing via HEC-HMS 4.x (with pure-Python SCS-CN fallback).
-4. **WRD-Datum-Anchored River Hydraulics**: Bi-directional monotonic PCHIP rating curves interpolated directly through the official Maharashtra WRD stage-discharge sheet (Rajaram verbatim; Shivaji shifted −0.648 m downstream datum; WRD 2021–23 observed low-flow anchors).
-5. **Persistence & Presentation**: Resilient dual-layer persistence (immutable JSON multi-run ledger + Supabase/PostgreSQL) serving a Next.js 14 executive dashboard with live WebSocket broadcast.
+HydroCast runs end to end. Each 6-hourly cycle fetches ECMWF IFS HRES
+precipitation, selects a governing gauge per subbasin, simulates runoff and
+reach routing, converts discharge to stage at two sites, evaluates the alert
+ladder, persists the result, and pushes to Telegram and a live dashboard. The
+five "hardening pillars" below were originally written as a plan to get from a
+functional prototype to a production platform, and the bulk of them were
+delivered.
 
-To advance HydroCast from a **Functional Operational System** to a **Mission-Critical Production Platform**, five architectural hardening pillars are defined below.
+This page has been rewritten to reflect the code rather than the original plan.
+Several items previously listed as complete are not: the closed-loop
+recalibration trigger, the pipeline success flag, and result provenance all
+have integration gaps. Those gaps are what the roadmap is now actually about,
+and they are ordered by how much damage they do if left alone.
 
----
+## The gap that motivates everything
 
-## The 5 Production Hardening Pillars (100% Open Source)
+The system computes a forecast and publishes a warning. It does not currently
+reliably know whether that forecast was any good, and it does not reliably
+report what produced it. Those two facts are worth stating plainly, because
+everything below is a consequence of them.
 
+```mermaid
+flowchart LR
+    A["<b>Open question</b><br/>Did the last forecast<br/>predict the flood?"]
+    B["<b>Two blockers</b><br/>1. <code>pipeline_ok</code> is always false<br/>2. Telemetry never reaches<br/><code>validated</code> status"]
+
+    C["<b>Consequence 1</b><br/><code>last_run_ok</code> reports failure<br/>on every successful cycle<br/>Health endpoint is misleading"]
+    D["<b>Consequence 2</b><br/>ML recalibration gate needs<br/>2 validated observations<br/>Count is always 0<br/>Optimiser never runs"]
+    E["<b>Consequence 3</b><br/>Provenance claims EMULATOR_PYTHON<br/>even when binary says<br/><code>COMPLETED_BINARY</code>"]
+
+    A --> B
+    B --> C
+    B --> D
+    B --> E
+
+    classDef q     fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
+    classDef block fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#4a0d0d
+    classDef cons fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#3b2500
+
+    class A q
+    class B block
+    class C,D,E cons
 ```
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│                       HYDROCAST PRODUCTION PILLARS                       │
-├───────────────────┬───────────────────┬──────────────────┬───────────────────────┤
-│ 1. Orchestration  │ 2. Real-Time Alert│ 3. Docker        │ 4. Archival & Security│
-│    & Scheduling   │    & Telegram Bot │    Containers    │    Rate-Limiting      │
-└───────────────────┴───────────────────┴──────────────────┴───────────────────────┘
+
+## 1. Orchestration integrity — highest priority
+
+The orchestrator runs twelve steps and logs twelve. The success predicate
+checks for ten. `pipeline_ok` is therefore false on every cycle that completes
+cleanly, which makes `/api/v1/health` report a healthy system as failing and
+makes the Telegram status message wrong.
+
+This is a small change with an outsized effect on operational trust: the first
+thing any operator checks after deploying is whether the system says it ran.
+
+| Task | Status | Touches |
+| :--- | :---: | :--- |
+| Reconcile expected step count with the actual step list | Open | `src/orchestrator.py` |
+| Remove the duplicate execution of HMS steps 07 and 08 | Open | `src/orchestrator.py` |
+| Make `result_source` reflect the parsed DSS file, not the binary's exit code | Open | `src/hms/runner.py` |
+| Keep the exponential-backoff retry wrapper around Open-Meteo ingestion | Done | `src/ecmwf/open_meteo.py` |
+| Scheduled 4×/day workflow | Done | `.github/workflows/pipeline.yml` |
+
+!!! note "Why the count mismatch exists"
+        The step list grew as features landed — telemetry validation, archive
+        sync, step-log finalisation — and the constant used for the success
+        check did not move with it. The correct fix is to assert against
+        `len(STEPS)` rather than to edit the number, so the next feature cannot
+        reintroduce it.
+
+## 2. Telemetry status promotion
+
+The ML recalibration gate requires two observations with `status = 'validated'`.
+The pipeline writes `fresh`. Nothing in between exists.
+
+Closing this is what turns the closed loop from documentation into behaviour.
+The promotion needs a real quality check — range, rate-of-change, and
+cross-agreement against the forecast stage are reasonable gates — and the
+circularity noted below has to be resolved at the same time, because a loop
+that compares the rating curve to itself will converge to "always fine" and
+disable itself.
+
+| Task | Status | Touches |
+| :--- | :---: | :--- |
+| Add a `fresh → validated` promotion step with explicit acceptance criteria | Open | `src/hydrology/realtime_telemetry_validator.py` |
+| Compute recalibration discrepancy in stage domain, or from independent discharge | Open | `src/hydrology/ml_calibration.py` |
+| Add the hourly promotion workflow to the main pipeline, not only the telemetry workflow | Open | `.github/workflows/pipeline.yml` |
+| Five-gate admission check (range, rate, staleness, cross-site, NWP freshness) | Done | `src/hydrology/realtime_telemetry_validator.py` |
+| Atomic `.bak` + `os.replace` write-back | Done | `src/hydrology/ml_calibration.py` |
+| Hourly telemetry validation workflow | Done | `.github/workflows/telemetry_validation.yml` |
+
+## 3. Executable correctness checks
+
+A production system needs checks that fail loudly rather than degrade quietly.
+Most of the hydrologic core already has them; the integration layer mostly
+does not.
+
+```mermaid
+flowchart TB
+    T["<b>What is checked today</b>"]
+    T --> A["<b>Hydrology core</b><br/>~292 pytest cases<br/>PCHIP monotonicity, datum offset,<br/>Muskingum mass balance, subbasin areas,<br/>AMC transforms, alert thresholds"]
+    T --> B["<b>Integration layer</b><br/>No executable proof<br/>Step ordering, DB round-trip,<br/>API contract, scheduler behaviour"]
+    T --> C["<b>Consequence</b><br/>Unit-level confidence is high.<br/>Cycle-level confidence is<br/>unmeasured."]
+
+    A --> D["<b>Needed</b><br/>Cycle smoke test that runs the<br/>orchestrator end to end and<br/>asserts step logs, file outputs,<br/>and the run JSON document"]
+    B --> D
+
+    classDef have fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#052e16
+    classDef lack fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#4a0d0d
+    classDef need fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#3b2500
+
+    class A have
+    class B,C lack
+    class D need
 ```
 
-### 1. Robust Orchestration & Fault-Tolerant Scheduling
-- **Objective**: Prevent silent cycle skips caused by temporary API timeouts, network partitions, or compute crashes.
-- **Implementation Options**:
-  - **Option A (GitHub Actions Cron)**: Automated execution at 02:30, 08:30, 14:30, 20:30 UTC via `.github/workflows/pipeline.yml` with automated retry steps and centralized status alerts.
-  - **Option B (Airflow / Systemd Timers)**: Deploy systemd timer units on Linux hosts or Apache Airflow DAGs with retry-on-failure (`retries=3, retry_delay=timedelta(minutes=5)`).
-- **Milestones**:
-  - [x] Implement 12-step transactional pipeline orchestrator (`src/orchestrator.py`).
-  - [x] Configure GitHub Actions 6-hourly automated workflow.
-  - [x] Add exponential backoff retry wrappers around external weather ingestion.
+The highest-value addition is a single end-to-end cycle test that runs the
+orchestrator offline with fixture data and asserts on observable outputs: the
+step log, the DSS file, the run JSON, the alert evaluation, and the database
+rows. That one test would have caught items 1, 2 and 3 of this roadmap
+automatically.
 
-### 2. Automated Multi-Channel Emergency Alerting
-- **Objective**: Push immediate warning and evacuation bulletins when predicted stages breach Warning or Danger thresholds.
-- **Implementation**:
-  - **Telegram Bot API**: Free, zero-infrastructure messaging using `python-telegram-bot` (`src/alerts/evaluator.py`, `src/alerts/telegram_bot.py`).
-  - **FastAPI Webhooks**: Broadcast CWC alert events to disaster management agency dispatch endpoints.
-- **Milestones**:
-  - [x] Threshold evaluation engine (`src/alerts/evaluator.py`) with CWC warning tiers.
-  - [x] WebSocket live push stream (`/ws/live`) to dashboard.
-  - [x] Implement production Telegram bot dispatcher for District Disaster Management Authority (DDMA).
+## 4. Data integrity in the gauge layer
 
-### 3. Containerization (Docker & Compose)
-- **Objective**: Package Python 3.12, Java JDK 17 (for HEC-DSS / HEC-HMS), GDAL, and Next.js into standardized images to ensure complete reproducibility across any cloud VM or on-premise workstation.
-- **Architecture**:
-  - `docker-compose.yml` defining:
-    1. `hydrocast-backend`: FastAPI + HEC-DSS runtime with Python & Java.
-    2. `hydrocast-frontend`: Node.js 20 Next.js production SSR container.
-    3. `hydrocast-db`: Local PostgreSQL 15 + PostGIS container (for offline air-gapped deployments).
-- **Milestones**:
-  - [x] Author multi-stage `Dockerfile` for backend with OpenJDK 17 + GDAL.
-  - [x] Author standalone `Dockerfile` for Next.js frontend.
-  - [x] Provide unified `docker-compose.yml` for 1-command startup.
+Three defects in the station-selection path cause wrong input rather than
+failed input, which is why they survived.
 
-### 4. Cold Storage & Telemetry Archival Strategy
-- **Objective**: Keep the primary Supabase/PostgreSQL database responsive by pruning high-frequency time-series older than 90 days into compressed parquet archives.
-- **Strategy**:
-  - Maintain summary KPIs in `simulation_runs` indefinitely.
-  - Export granular 15-minute `hydrograph_results` and `rainfall_data` older than 30-90 days into Apache Parquet files stored in MinIO (self-hosted S3) or Cloud Storage.
-- **Milestones**:
-  - [x] Build automated weekly archival script (`src/db/archive_runs.py`).
-  - [x] Integrate Apache Parquet columnar compression for historical hydrographs.
+- `MET_1.met` contains static per-subbasin gauge assignments that the runtime
+  never reads; selection uses the registry instead. The file is misleading for
+  anyone reading the model configuration.
+- The S1 fallback station identifier is spelled `KARVIR` in the orchestrator,
+  `KARVEER` in the registry, and `Karvir` in the `.met` and `.gage` files. A
+  miss silently substitutes 90 zero-valued hours.
+- `KASABA_WALAWE` and `RADHANAGARI` are registered at identical coordinates, so
+  S9's six-candidate comparison contains one duplicated observation.
 
-### 5. API Security, JWT Authentication & Rate Limiting
-- **Objective**: Protect operational endpoints against scrapers, DDoS attacks, and unauthorized database writes.
-- **Strategy**:
-  - Standardize API key validation via `X-API-Key` headers on administrative endpoints.
-  - Implement IP-based rate-limiting using `slowapi` on public FastAPI endpoints.
-  - Implement JWT authentication for administrative manual run triggering.
-- **Milestones**:
-  - [x] Internal authorization header check for broadcast endpoints.
-  - [x] Enforce rate limits (100 req/min) on `/api/v1/runoff/*` endpoints.
-  - [x] Implement JWT authentication router and manual trigger endpoints (`/api/v1/admin/*`).
+| Task | Status | Touches |
+| :--- | :---: | :--- |
+| Reconcile the three station spellings; fail loudly on a lookup miss | Open | `src/orchestrator.py`, `src/ecmwf/station_selector.py` |
+| Correct or remove the duplicated S9 coordinate | Open | `src/ecmwf/station_selector.py` |
+| Either use `MET_1.met` or delete it and say so | Open | `data/hms/HMS_Automation_RJKT/Met_1.met` |
+| Make the zero-substitution path raise instead of returning zeros | Open | `src/orchestrator.py` |
 
----
+## 5. Model-level corrections
 
-## Implementation Progress Tracker
+These change computed values, so each needs a test that pins the new behaviour
+before and after.
 
-| Milestone | Area | Status | Target File |
-| :--- | :--- | :---: | :--- |
-| Dynamic 18-Station Selection | Hydrology | Completed | `src/ecmwf/station_selector.py` |
-| Monotonic PCHIP Rating Curves | Hydraulics | Completed | `src/hydrology/stage_converter.py` |
-| WRD Ground Truth Verification | Accuracy | Completed | `docs/wrd-rating-curve-cross-check.md` |
-| Observed Rainfall Pipeline | QC / Ingestion | Completed | `src/hydrology/observed_rainfall_pipeline.py` |
-| Pipeline Orchestrator | Execution | Completed | `src/orchestrator.py` |
-| Next.js Operational Dashboard | Presentation | Completed | `frontend/app/dashboard/page.tsx` |
-| Docker Multi-Container Compose | Operations | Completed | `docker-compose.yml` |
-| Weekly Parquet Data Pruning | Database | Completed | `src/db/archive_runs.py` |
-| DDMA Telegram Alert Dispatcher | Alerting | Completed | `src/alerts/telegram_bot.py` |
-| API Rate Limiting & Admin JWT | Security | Completed | `src/api/security.py` |
+| Task | Status | Touches |
+| :--- | :---: | :--- |
+| Replace the unconditional `+0.02·Pc` with the classical imperviousness deduction, which is zero at `Pc = 0` | Open | `src/hms/runner.py` |
+| Reconcile the 352-hour simulation with the 90-hour product horizon | Open | `src/hms/runner.py` |
+| Use the basin `X = 0.20` instead of the `0.25` initial-state default | Open | `src/hms/basin_model.py` |
+| Map `EXTREME` to a tier rather than degrading it to `watch` | Open | `src/hydrology/stage_converter.py` |
+| Implement `check_basin_parameters`, currently a stub | Open | `src/hms/basin_model.py` |
+| Apply the baseflow floor only on the live path, not in the library default | Open | `src/hms/runner.py` |
+| Align the 7 table and 4 view names in `database/supabase_schema.sql` with the sync script | Open | `database/supabase_schema.sql` |
 
+## 6. Operational surface
+
+These are the delivered capabilities, kept here so the roadmap is a complete
+picture rather than only a defect list.
+
+**Containerisation.** `docker-compose.yml` defines three services —
+`hydrocast-db` on `postgis/postgis:15-3.4`, `hydrocast-backend`, and
+`hydrocast-frontend` — on a private `hydrocast-net` bridge. Single-command
+startup for an air-gapped deployment.
+
+**API security.** `slowapi` applies a `100/minute` default limit keyed on
+remote address across the public endpoints, with a `RateLimitExceeded` handler.
+Administrative routes sit behind JWT authentication under `/api/v1/admin/*`;
+broadcast endpoints require an internal authorisation header. Public reads are
+gated by `verify_public_or_key`.
+
+**Cold storage.** `src/db/archive_runs.py` exports series older than 90 days
+into Parquet partitions via `pyarrow`. The retention window is
+`ARCHIVE_RETENTION_DAYS`, default 90.
+
+!!! warning "Archival is not scheduled"
+        The script is complete and runnable, but no workflow invokes it. It is
+        run manually via `python -m src.db.archive_runs --retention-days 90`.
+        Adding a weekly cron alongside the pipeline is a five-line change, and
+        until then the database will grow unbounded under a 4×/day cadence.
+
+## Priority order
+
+If only three things get fixed, fix them in this order.
+
+1. **`pipeline_ok` step count.** One constant, and every status surface becomes
+   truthful.
+2. **Telemetry `fresh → validated` promotion.** Without it the headline
+   capability does not run.
+3. **End-to-end cycle test.** Prevents the next two classes of defect from
+   reaching a scheduled 6-hourly job.
+
+The remaining items are correctness and hygiene, and can follow in whatever
+order the team finds useful. The full list with worked explanations is in the
+[Engineering Autopsy](errors-and-engineering-assumptions.md).

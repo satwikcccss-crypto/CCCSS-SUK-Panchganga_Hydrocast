@@ -116,18 +116,32 @@ This involves two consecutive transformations:
 
 ```mermaid
 flowchart LR
-    P["P(t)<br/>mm/hr"] -->|"SCS-CN<br/>AMC I/II/III"| PE["ΔP_e(t)<br/>mm excess"]
-    PE -->|"SCS UH<br/>convolution"| QS["Q_surf(t)<br/>m³/s"]
-    QS -->|"Muskingum<br/>R1…R5"| R["Q_routed(t)"]
-    R --> BF["+ Q_bf(t)<br/>e^(−0.002t)"] --> QT["Q_total(t)"]
-    QT -->|"PCHIP rating<br/>WRD anchors"| H["h(t)<br/>m MSL"]
+    P["<b>P(t)</b> · hyetograph<br/>mm/h · 90 hourly values"]
+    AMC{"<b>AMC class</b><br/>P̄ &lt; 25 → I<br/>25–65 → II<br/>≥ 65 → III"}
+    PE["<b>ΔP_e(t)</b> · excess<br/>mm/h<br/>S = 25400/CN − 254<br/>Ia = λS, λ = 0.20/0.15/0.08"]
+    QS["<b>Q_surf(t)</b> · direct runoff<br/>m³/s<br/>u(t) = (t/tp)^3.7 · e^(3.7(1−t/tp))<br/>tp = 0.5 + lag/60"]
+    R["<b>Q_routed(t)</b><br/>m³/s<br/>Muskingum R5→R4→R2→R3→R1<br/>C₀+C₁+C₂ ≡ 1"]
+    BF["<b>+ Q_bf(t)</b><br/>B₀·e^(−0.002t) m³/s<br/>B₀ = 91.1, floor 40.0"]
+    QT["<b>Q_total(t)</b><br/>m³/s · 352 points<br/>peak = argmax Q_total"]
+    H["<b>h(t)</b> · stage<br/>m MSL<br/>PCHIP over 27 WRD anchors<br/>Shivaji = Rajaram − 0.648 m"]
 
-    classDef loss fill:#0c4a6e,stroke:#38bdf8,color:#f0f9ff
-    classDef route fill:#4a044e,stroke:#e879f9,color:#fdf4ff
-    classDef stage fill:#7c2d12,stroke:#fb923c,color:#fff7ed
-    class P,PE loss
-    class QS,R,BF route
-    class QT,H stage
+    P --> AMC
+    AMC --> PE
+    PE -->|convolution with u| QS
+    QS -->|cascade, mass-conserving| R
+    R --> BF
+    BF --> QT
+    QT -->|monotone, invertible| H
+
+    classDef force   fill:#f1f5f9,stroke:#64748b,stroke-width:1.5px,color:#0f172a
+    classDef decide  fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#3b2500
+    classDef compute fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
+    classDef out     fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
+
+    class P force
+    class AMC decide
+    class PE,QS,R,BF compute
+    class QT,H out
 ```
 
 !!! note "Why PCHIP and not a straight line between anchors"
@@ -246,21 +260,31 @@ of the code:
 
 ```mermaid
 flowchart TD
-    S6["S6 Gaganbawda"] --> R5["R5<br/>K=4.619 h"]
-    S7["S7 Garivade"] --> R5
-    R5 --> R2["R2<br/>K=11.827 h"]
-    S9["S9 Radhanagari"] --> R4["R4<br/>K=1.224 h"]
+    S6["<b>S6 Gaganbawda</b><br/>227.72 km² · CN 61.78<br/>lag 3318 min"] --> R5["<b>R5</b> K 4.619 h · X 0.20<br/>2 routing passes"]
+    S7["<b>S7 Garivade</b><br/>195.39 km² · CN 61.28<br/>lag 3362 min"] --> R5
+    S9["<b>S9 Radhanagari</b><br/>366.97 km² · CN 64.31<br/>lag 5199 min"] --> R4["<b>R4</b> K 1.224 h · X 0.20<br/>1 routing pass"]
+    R5 --> R2["<b>R2</b> K 11.827 h · X 0.20<br/>5 routing passes"]
     R4 --> R2
-    S8["S8 Beed"] --> R2
-    R2 --> R1["R1<br/>K=2.899 h"]
-    S4["S4 Karanjphen"] --> R3["R3<br/>K=3.829 h"]
-    S5["S5 Padasali"] --> R3
+    S8["<b>S8 Beed</b><br/>177.44 km² · CN 65.76<br/>lag 3387 min"] --> R2
+    R2 --> R1["<b>R1</b> K 2.899 h · X 0.20<br/>2 routing passes"]
+    S4["<b>S4 Karanjphen</b><br/>262.00 km² · CN 61.89<br/>lag 3116 min"] --> R3["<b>R3</b> K 3.829 h · X 0.20<br/>2 routing passes"]
+    S5["<b>S5 Padasali</b><br/>106.39 km² · CN 60.97<br/>lag 2117 min"] --> R3
     R3 --> R1
-    S2["S2 Sangarul"] --> R1
-    S3["S3 Kotoli"] --> R1
-    R1 --> SINK(["Sink-1<br/>Rajaram outlet"])
-    S1["S1 Karveer"] --> SINK
-    SINK --> QT["Q_total(t)"]
+    S2["<b>S2 Sangarul</b><br/>153.77 km² · CN 65.74<br/>lag 3154 min"] --> R1
+    S3["<b>S3 Kotoli</b><br/>261.32 km² · CN 64.82<br/>lag 3998 min"] --> R1
+    R1 --> SINK(["<b>Sink-1</b><br/>Rajaram outlet<br/>+ observed gage 1"])
+    S1["<b>S1 Karveer</b><br/>86.21 km² · CN 74.85<br/>lag 2152 min"] --> SINK
+    SINK --> QT["<b>Q_total(t)</b> = routed surface<br/>+ B₀·e^(−0.002t)<br/>Σ area 1837.21 km²"]
+
+    classDef sub   fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#0c1a3a
+    classDef reach fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
+    classDef sink  fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#3b2500
+    classDef out   fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
+
+    class S1,S2,S3,S4,S5,S6,S7,S8,S9 sub
+    class R1,R2,R3,R4,R5 reach
+    class SINK sink
+    class QT out
 ```
 
 ---

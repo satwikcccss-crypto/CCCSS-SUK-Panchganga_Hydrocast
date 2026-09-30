@@ -1,6 +1,66 @@
-# Panchganga Rain Gauge Network & Subbasin Station Routing Topology
+# Panchganga Rain Gauge Network & Station Routing
 
-```
+The Panchganga catchment presents a rainfall field that is hostile to
+substitution. The western edge sits on the Sahyadri escarpment at Gaganbawda,
+680 m above sea level, taking roughly 5 000 mm of rain a year; the eastern
+outlet at Karveer sits on the Kolhapur plain at 550 m. Across a basin barely
+100 km wide, that gradient is steep enough that a single representative gauge
+would be meaningless — the difference between the crest and the valley floor is
+often a factor of three in storm totals, and it is the crest that generates the
+flood.
+
+That is the problem the gauge network solves. Twenty stations are registered
+across the catchment, nine subbasins are delineated to match, and on every
+forecast cycle the system decides *which* of those gauges governs each
+subbasin. The rule is deliberately one-sided, and understanding why it is
+one-sided is the whole point of this page.
+
+## 1. Station registry and subbasin assignment
+
+`STATION_REGISTRY` in `src/ecmwf/station_selector.py` holds all twenty
+stations. Nine are flagged `is_primary=True` — exactly one per subbasin — and
+eleven are alternates that exist to be *competed against* rather than to be
+used directly.
+
+| # | Station ID | Name | Subbasin | Subbasin Area | Elevation | Longitude | Latitude | Role |
+|---|---|---|---|---|---|---|---|---|
+| 01 | `KARVEER` | Karveer | S1 | 86.213 km² | 550 m | 74.248177° | 16.706369° | Primary governing |
+| 02 | `SANGARUL` | Sangarul | S2 | 153.770 km² | 572 m | 74.093163° | 16.684196° | Primary governing |
+| 03 | `BALINGA` | Balinga | S2 | — | 560 m | 74.170310° | 16.687844° | Alternate |
+| 04 | `KALE` | Kale | S2 | — | 580 m | 74.056450° | 16.722809° | Alternate |
+| 05 | `KOTOLI` | Kotoli | S3 | 261.320 km² | 585 m | 74.051871° | 16.782017° | Primary governing |
+| 06 | `BAJAR_BHOGAON` | Bajar Bhogaon | S3 | — | 590 m | 74.110782° | 16.808677° | Alternate |
+| 07 | `PADAL` | Padal | S3 | — | 575 m | 74.115187° | 16.744601° | Alternate |
+| 08 | `KARANJPHEN` | Karanjphen | S4 | 262.000 km² | 640 m | 73.903649° | 16.785097° | Primary governing |
+| 09 | `PADASALI` | Padasali | S5 | 106.390 km² | 620 m | 73.843584° | 16.701934° | Primary governing |
+| 10 | `SALWAN` | Salwan | S5 | — | 595 m | 73.973500° | 16.671200° | Alternate |
+| 11 | `GAGANBAWDA` | Gaganbawda | S6 | 227.720 km² | 680 m | 73.834674° | 16.546993° | Primary governing |
+| 12 | `GARIVADE` | Garivade | S7 | 195.390 km² | 610 m | 73.918419° | 16.520366° | Primary governing |
+| 13 | `BEED` | Beed | S8 | 177.440 km² | 565 m | 74.128896° | 16.647984° | Primary governing |
+| 14 | `SHIROLI_DHUMALA` | Shiroli-Dhumala | S8 | — | 560 m | 74.106283° | 16.616677° | Alternate |
+| 15 | `RADHANAGARI` | Radhanagari | S9 | 366.970 km² | 615 m | 73.997182° | 16.410210° | Primary governing |
+| 16 | `HALADI` | Haladi | S9 | — | 555 m | 74.156292° | 16.593263° | Alternate |
+| 17 | `RASHIWADE_BK` | Rashiwade Bk. | S9 | — | 570 m | 74.101973° | 16.547564° | Alternate |
+| 18 | `AAVALI_BK` | Aavali Bk. | S9 | — | 585 m | 74.054981° | 16.481009° | Alternate |
+| 19 | `KASABA_TARALE` | Kasaba Tarale | S9 | — | 595 m | 74.021589° | 16.447888° | Alternate |
+| 20 | `KASABA_WALAWE` | Kasaba Walawe | S9 | — | 615 m | 73.997182° | 16.410210° | Alternate |
+
+The nine subbasin areas sum to **1 837.213 km²** of gauged area. The catchment
+is not evenly sampled: S9 Radhanagari alone covers 20 % of the basin and has
+six candidate gauges, while S1, S4, S6 and S7 have one each and no alternate
+at all. For those four subbasins the "dynamic" selection has nothing to
+choose between, and the primary station governs by default.
+
+!!! note "KASABA_WALAWE duplicates RADHANAGARI's coordinates"
+    Both are registered at 73.9971822° E, 16.41021° N. The last row of the
+    table above is therefore not an independent observation — it is the same
+    physical location under a second identifier. In a cycle where RADHANAGARI
+    is the wettest station, the tie is broken by sort order, and both entries
+    report the same depth.
+
+## 2. The orographic gradient the network has to span
+
+```text
 ========================================================================================================================
                  PANCHGANGA BASIN RAIN GAUGE NETWORK & SUBBASIN ROUTING TOPOLOGY
 ========================================================================================================================
@@ -14,100 +74,123 @@
    550 +---------------------------------------------- [ KARVEER (550m) ] <-- Valley Floor / Outlet
        +----------------------------------------------------------------------------------------->
        West (Sahyadri Escarpment)                                          East (Kolhapur Plains)
-
-  Subbasin Spatial Hierarchy & Delineated Drainage Areas (Total Gauged Catchment: 1,837.21 km²):
-
-  ┌───────────────┬──────────────┬────────────────────────────────┬──────────────────────────────────────────┐
-  │ Subbasin ID   │ Area (km²)   │ Primary Raingauge Station      │ Alternate Station(s)                     │
-  ├───────────────┼──────────────┼────────────────────────────────┼──────────────────────────────────────────┤
-  │ S1            │ 86.213 km²   │ Karveer                        │ — (Centroid fallback to Karveer)         │
-  │ S2            │ 153.770 km²  │ Sangarul                       │ Balinga, Kale                            │
-  │ S3            │ 261.320 km²  │ Kotoli                         │ Bajar Bhogaon, Padal                     │
-  │ S4            │ 262.000 km²  │ Karanjphen                     │ — (High-altitude headwater gauge)        │
-  │ S5            │ 106.390 km²  │ Padasali                       │ Salwan                                   │
-  │ S6            │ 227.720 km²  │ Gaganbawda                     │ Gaganbawda (Crest Gauge)                 │
-  │ S7            │ 195.390 km²  │ Garivade                       │ — (Dudhganga-Panchganga ridge)           │
-  │ S8            │ 177.440 km²  │ Beed                           │ Shiroli-Dhumala                          │
-  │ S9            │ 366.970 km²  │ Radhanagari                    │ Haladi, Rashiwade Bk, Aavali Bk,         │
-  │               │              │                                │ Kasaba Tarale, Kasaba Walawe             │
-  └───────────────┴──────────────┴────────────────────────────────┴──────────────────────────────────────────┘
 ```
 
----
+The subbasin layout is not arbitrary. S6 Gaganbawda, on the crest, is the
+wettest subbasin in the basin and drains through R5; S1 Karveer, on the valley
+floor at the outlet, is the driest and drains straight to the sink with no
+reach routing at all. Between them the rainfall field varies by more than an
+order of magnitude in annual totals, which is why the router is allowed to
+choose a different governing station for the same subbasin on consecutive
+cycles.
 
-## 1. Official Subbasin Delineation & Station Registry
+## 3. Dynamic conservative station selection
 
-The rainfall network is configured to capture the steep spatial precipitation gradients across the Sahyadri range. The primary stations serve as the default input for each subbasin, with alternate stations evaluated dynamically:
+The selection rule is one line of intent: **for each subbasin, use the station
+with the largest 90-hour cumulative rainfall.** No averaging, no
+distance-weighted blend, no persistence of yesterday's choice.
 
-```
-+----+-------------------+----------+-------------+-----------+------------+------------+--------------------+
-| No | Station Name      | Subbasin | Subbasin km²| Elevation | Longitude  | Latitude   | Hierarchy Role     |
-+----+-------------------+----------+-------------+-----------+------------+------------+--------------------+
-| 01 | KARVEER           | S1       | 86.213 km²  | 550 m     | 74.248177° | 16.706369° | PRIMARY GOVERNING  |
-| 02 | SANGARUL          | S2       | 153.770 km² | 572 m     | 74.093163° | 16.684196° | PRIMARY GOVERNING  |
-| 03 | BALINGA           | S2       | —           | 560 m     | 74.170310° | 16.687844° | Alternate Backup   |
-| 04 | KALE              | S2       | —           | 580 m     | 74.056450° | 16.722809° | Alternate Backup   |
-| 05 | KOTOLI            | S3       | 261.320 km² | 585 m     | 74.051871° | 16.782017° | PRIMARY GOVERNING  |
-| 06 | BAJAR_BHOGAON     | S3       | —           | 590 m     | 74.110782° | 16.808677° | Alternate Backup   |
-| 07 | PADAL             | S3       | —           | 575 m     | 74.115187° | 16.744601° | Alternate Backup   |
-| 08 | KARANJPHEN        | S4       | 262.000 km² | 640 m     | 73.903649° | 16.785097° | PRIMARY GOVERNING  |
-| 09 | PADASALI          | S5       | 106.390 km² | 620 m     | 73.843584° | 16.701934° | PRIMARY GOVERNING  |
-| 10 | SALWAN            | S5       | —           | 595 m     | 73.973500° | 16.671200° | Alternate Backup   |
-| 11 | GAGANBAWDA        | S6       | 227.720 km² | 680 m     | 73.834674° | 16.546993° | PRIMARY GOVERNING  |
-| 12 | GARIVADE          | S7       | 195.390 km² | 610 m     | 73.918419° | 16.520366° | PRIMARY GOVERNING  |
-| 13 | BEED              | S8       | 177.440 km² | 565 m     | 74.128896° | 16.647984° | PRIMARY GOVERNING  |
-| 14 | SHIROLI_DHUMALA   | S8       | —           | 560 m     | 74.106283° | 16.616677° | Alternate Backup   |
-| 15 | RADHANAGARI       | S9       | 366.970 km² | 615 m     | 73.997182° | 16.410210° | PRIMARY GOVERNING  |
-| 16 | HALADI            | S9       | —           | 555 m     | 74.156292° | 16.593263° | Alternate Backup   |
-| 17 | RASHIWADE_BK      | S9       | —           | 570 m     | 74.101973° | 16.547564° | Alternate Backup   |
-| 18 | AAVALI_BK         | S9       | —           | 585 m     | 74.054981° | 16.481009° | Alternate Backup   |
-| 19 | KASABA_TARALE     | S9       | —           | 595 m     | 74.021589° | 16.447888° | Alternate Backup   |
-| 20 | KASABA_WALAWE     | S9       | —           | 615 m     | 73.997182° | 16.410210° | Alternate Backup   |
-+----+-------------------+----------+-------------+-----------+------------+------------+--------------------+
-|    | TOTAL GAUGED AREA | 9 SUBS   | 1,837.21 km²| —         | —          | —          | 20 STATIONS ACTIVE |
-+----+-------------------+----------+-------------+-----------+------------+------------+--------------------+
-```
+The justification is asymmetric risk. Under-predicting rainfall produces a
+hydrograph that arrives late, which means an evacuation ordered against it is
+ordered too late — the failure mode that kills people. Over-predicting rainfall
+produces a hydrograph that arrives early and peaks high, which produces a
+warning that was not needed. Of those two outcomes, one is a near-miss and the
+other is a disaster, so the router is biased hard toward the first.
 
----
+```mermaid
+flowchart TB
+    NWP["<b>ECMWF IFS grid</b><br/>90 h · 1 h step"]
+    OBS["<b>WRD gauge observations</b><br/>hourly depth, 20 stations"]
+    CUM["<b>90 h cumulative volume</b><br/>per station, mm<br/><i>gauge_fetcher → station_selector</i>"]
+    GRP["<b>Group by subbasin</b><br/>candidates = registry rows<br/>where subbasin_id matches"]
+    SORTS{"<b>Sort candidates</b><br/>by cumulative rainfall,<br/>descending"}
+    PICK["<b>Take index 0</b><br/>method = MAX_RAIN_VOLUME"]
+    FB{"<b>Row present in DB?</b>"}
+    FALL["<b>Distance fallback</b><br/>score = rainfall ÷ distance + 1<br/>NEAREST_HIGH_RAIN_FALLBACK"]
+    ZERO["<b>No data</b><br/>90 zero-valued hours substituted"]
+    OUT["<b>Governing gauge per subbasin</b><br/>{station_id, lat, lon,<br/>cumulative_mm, method}"]
+    DSS["<b>Drives the HEC-DSS write</b><br/>//STATION/PRECIP-INC/DDMMMYYYY/1HOUR/GAGE/"]
 
-## 2. Dynamic Conservative Station Selection Algorithm
+    NWP --> CUM
+    OBS --> CUM
+    CUM --> GRP --> SORTS --> PICK
+    PICK --> FB
+    FB -->|yes| OUT
+    FB -->|no| FALL
+    FALL --> OUT
+    FB -.->|station_id absent from registry| ZERO
+    ZERO --> DSS
+    OUT --> DSS
 
-In open-channel flood safety, under-predicting rainfall can lead to catastrophic late evacuations. For subbasins with multiple rain gauges ($S_2, S_3, S_5, S_8, S_9$), HydroCast implements **Dynamic Maximum Rainfall Selection**:
+    classDef force   fill:#f1f5f9,stroke:#64748b,stroke-width:1.5px,color:#0f172a
+    classDef compute fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
+    classDef decide  fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#3b2500
+    classDef out     fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
+    classDef fault   fill:#fee2e2,stroke:#dc2626,stroke-width:1.5px,color:#4a0d0d
 
-```python
-def select_active_subbasin_gages(
-    station_rainfall_90hr: Dict[str, float]
-) -> Dict[str, dict]:
-    """
-    Evaluates 90-hour rainfall across all primary and alternate stations in each subbasin.
-    Selects the maximum-precipitation station as the governing gauge.
-    """
-    by_subbasin = group_by_subbasin(STATION_REGISTRY)
-    selection_results = {}
-
-    for sub_id in ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"]:
-        candidates = by_subbasin.get(sub_id, [])
-        scored = [(station_rainfall_90hr.get(c.station_id, 0.0), c) for c in candidates]
-        scored.sort(key=lambda x: x[0], reverse=True)
-        best_rf, best_st = scored[0]
-
-        selection_results[sub_id] = {
-            "subbasin_id": sub_id,
-            "selected_station_id": best_st.station_id,
-            "station_name": best_st.name,
-            "lat": best_st.lat,
-            "lon": best_st.lon,
-            "cumulative_mm": round(best_rf, 2),
-            "method": "MAX_RAIN_VOLUME",
-            "candidates_count": len(candidates),
-        }
-    return selection_results
+    class NWP,OBS force
+    class CUM,GRP,SORTS,PICK compute
+    class FB decide
+    class OUT,DSS out
+    class FALL,ZERO fault
 ```
 
----
+The implementation in `select_active_subbasin_gages()` records, for each
+subbasin, the selected station's identity, coordinates, the cumulative depth
+that won the comparison, the method string `MAX_RAIN_VOLUME`, and the number of
+candidates it chose from. That record is written to `station_selection_log` so
+a forecast can be audited afterwards: given the cycle ID, you can recover which
+gauge drove which subbasin and why.
 
-## 3. Hydrologic Impact of the Station Update
+### When the primary station is not the right one
 
-1. **Orographic Catchment Alignment:** In Subbasin $S_5$ (Kumbhi Basin), switching to `Padasali` ($73.843584^\circ\text{ E}, 16.701934^\circ\text{ N}$, elevation $620\text{ m}$) captures the high-intensity storm front along the western ghats crest ($48.7\text{ mm}$ vs $16.5\text{ mm}$ at valley station Salwan).
-2. **Headwater Precision in $S_4$ & $S_7$:** Subbasin $S_4$ now directly links to `Karanjphen` ($262.00\text{ km}^2$), and $S_7$ links to `Garivade` ($195.39\text{ km}^2$), ensuring runoff generation from all 5 headwater tributaries (Kumbhi, Dhamani, Kasari, Bhogawati, and Tulsi) is faithfully integrated.
-3. **Conservative Subbasin $S_9$ Buffering:** Subbasin $S_9$ ($366.97\text{ km}^2$) contains the Radhanagari reservoir drainage zone with 6 active telemetry candidates (`Radhanagari`, `Haladi`, `Rashiwade Bk.`, `Aavali Bk.`, `Kasaba Tarale`, and `Kasaba Walawe`). The max-volume router automatically tracks the localized convective cloudburst clusters across the reservoir catchment.
+Three subbasins demonstrate why the alternates exist.
+
+**S5 Padasali** is the clearest case. Padasali sits at 620 m on the western
+crest; Salwan, the alternate, sits at 595 m on the valley side. During a
+western Ghats storm front the two can differ by a factor of three — 48.7 mm
+against 16.5 mm over the same 90-hour window. A static assignment to Salwan
+would under-runoff the Kumbhi basin by two thirds in exactly the events that
+matter.
+
+**S4 Karanjphen** and **S7 Garivade** are headwater subbasins with no
+alternate registered. Karanjphen at 640 m is the second-highest station in the
+network and drains 262 km² directly; Garivade at 610 m drains 195 km². Both
+feed headwater tributaries — Kumbhi, Dhamani, Kasari, Bhogawati and Tulsi — so
+a gauge failure here has nowhere to fall back to and the subbasin is fed a
+centroid-derived estimate instead.
+
+**S9 Radhanagari** is the opposite case: 366.97 km² including the reservoir
+drainage zone, with six candidate gauges spread across it. The maximum-volume
+router is what lets the model track a localised convective cloudburst over the
+reservoir catchment rather than averaging it away across the subbasin.
+
+## 4. The quality gate on gauge data
+
+Selection only runs on data that has already passed validation. The gate lives
+in `src/processing/validator.py` and applies four checks, any of which can mark
+a gauge degraded:
+
+| Check | Threshold | Rationale |
+|---|---|---|
+| Physical range | depth ≤ 500 mm/h | Values above this are instrument or transmission faults, not rain. The Panchganga record maximum is far below it. |
+| Coverage | ≥ 50 % of the 90 expected hourly records | A gauge reporting 20 hours cannot support a 90-hour hyetograph. |
+| Gauge lag | latest record ≤ 60 min old | A stale gauge is indistinguishable from a failed one, and its 90-hour total is a partial sum presented as a complete one. |
+| NWP freshness | ECMWF data ≤ 8 h old | The forecast must not be built on a superseded model run. |
+
+!!! warning "A failed gauge does not abort the cycle"
+    Only a *critical* validation failure raises `ValueError` in step 3 of the
+    orchestrator and takes the whole run down. Coverage and lag failures are
+    recorded as warnings in the validation report and the cycle continues,
+    because a partially-degraded catchment is more useful than no forecast at
+    all during a flood. The distinction is deliberate and is the reason the
+    physical-range check is separated from the rest.
+
+!!! warning "The S1 fallback references a station that does not exist"
+    The per-subbasin fallback in the orchestrator pipeline defaults
+    `selected_station_id` to `"KARVIR"`. That identifier is not in
+    `STATION_REGISTRY`, which uses `KARVEER`; `Met_1.met` and the `.gage` file
+    use a third spelling, `Karvir`. When the fallback path is taken for S1, the
+    lookup misses and `station_time_series.get("KARVIR", np.zeros(90))` silently
+    substitutes 90 zero-valued hours — 45 mm of phantom rainfall attributed to
+    the outlet subbasin, with no error raised.

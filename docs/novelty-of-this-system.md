@@ -1,195 +1,235 @@
-# Technological Novelty & Innovation Architecture of HydroCast
+# System Novelty
 
-```
-========================================================================================
-             HYDROCAST INNOVATION THESIS: BEYOND TRADITIONAL FLOOD SYSTEMS
-========================================================================================
+## What "novel" means here
 
-  [ Traditional Flood Systems ]                       [ HydroCast Operational Platform ]
-  - Desktop-bound, manual click GUI                   - Fully autonomous 6-hourly headless runner
-  - Monolithic single-point rating curves             - Dual-regime shape-preserving monotonic PCHIP
-  - Naive arithmetic station averaging                - Dynamic conservative maximum-rain router
-  - Static Curve Numbers (fixed CN)                   - Continuous AMC-I/II/III tracking (90h rain signal)
-  - No automated post-run validation                  - Real-time Spearman ρ, NSE, & volume audits
-  - Ephemeral runs (overwritten each cycle)           - Immutable git-like runs ledger & run inspector
-  - Fragile database dependencies                     - Zero-crash PostgreSQL + JSON dual engine
-  - Page-refresh HTML tables                          - Event-driven WebSocket push & SVG cross-section
-```
+Most of the individually available pieces — a rainfall-runoff model, a rating
+curve, a database, a chart — are decades old. The novelty of HydroCast is not
+in any one of them. It is in four *combinations* that are unusual together, and
+in the operational contract that makes them usable by a district officer
+rather than only by the person who built them.
 
----
+This page is deliberately written against the source code, not against the
+original design intent. Several claims that appeared in earlier drafts of this
+page could not be reproduced in the repository and have been corrected or
+removed; the [Engineering Autopsy](errors-and-engineering-assumptions.md) page
+records the full list. Where a design goal is not yet implemented, that is said
+plainly.
 
-## 1. Executive Innovation Thesis
+## 1. The rating curve is anchored to the record, not fitted to it
 
-Conventional flood early warning in developing river basins typically suffers from a deep operational disconnect:
+The most consequential design decision is that the discharge-to-stage
+conversion is not a regression. It is a shape-preserving interpolation through
+the Maharashtra WRD stage-discharge sheet: 27 anchored pairs for the Rajaram
+weir, spanning 528.67 m to 548.00 m, fitted with a monotone Piecewise Cubic
+Hermite Interpolating Polynomial.
 
-1. **Academic / Hydraulic Models (e.g., HEC-RAS, MIKE 11, Delft3D):** Highly detailed 1D/2D hydrodynamic solvers that require specialized desktop workstations, manual user interaction, and hours of computation time, making them unviable for automated 6-hourly operational early warning.
-2. **Government Agency Portals (e.g., CWC / IMD bulletins):** Rely on static daily bullet reports, coarse regional forecasts, and single-point regression curves that fail to capture localized Western Ghats cloudburst dynamics or subbasin hydrograph travel lags.
-3. **Generic IoT Dashboard Tools (e.g., Grafana, ThingSpeak):** Pure telemetry visualizers that show what *has already happened* at a gauge, with zero forward predictive hydrologic simulation capability.
+PCHIP is chosen specifically because it enforces
 
-**HydroCast pioneers a new paradigm:** an autonomous, physics-grounded, self-auditing operational platform that bridges numerical weather prediction, watershed hydrology, open-channel hydraulics, and real-time IoT sensor telemetry into a zero-touch 90-hour predictive continuum.
+$$
+\frac{dQ}{dh} > 0 \quad \text{for all } h \in [528.67, 548.00]
+$$
 
----
+without the operator intervention a Manning or power-law fit requires. A single
+unsegmented Manning exponent across a compound channel produces non-physical
+behaviour — overbank stages get steeper than the channel implies, and
+freeboard stages can come out *below* bankfull discharge. Those are not small
+errors; they are the curve becoming non-monotonic, which means the same
+discharge maps to two stages and the alert ladder stops being a function.
 
-## 2. The 10 Core Architectural & Hydrological Novelties
+The second site, Chhatrapati Shivaji Maharaj Bridge, uses the same anchor set
+shifted by the surveyed bed difference. Because the shift is a pure constant
+offset, the relationship
 
----
+$$
+\text{Stage}_{\text{Rajaram}} - \text{Stage}_{\text{Shivaji}} = 0.648 \ \text{m}
+$$
 
-### Novelty 1: Government-Datum-Anchored Monotonic PCHIP Hydraulic Solver
-- **The Breakthrough:** Solves the "compound channel wetted-perimeter collapse" and Manning slope-calibration problems by anchoring the rating curve **directly on the official WRD stage-discharge sheet** — no 2D hydrodynamic solver and no fragile slope fitting required.
-- **How It Works:** Rather than forcing an unsegmented (or dual-regime) Manning slope across all river stages, HydroCast PCHIP-interpolates **through the Maharashtra WRD government sheet** for both gauged sites: Rajaram verbatim, Shivaji shifted **−0.648 m downstream datum** (its bed is 0.648 m lower), with WRD 2021–23 observed low-flow anchors below the gauged range.
-- **Mathematical Guarantee:** Employs **Piecewise Cubic Hermite Interpolating Polynomials (PCHIP)** to enforce strict monotonicity:
-  $$\frac{dQ}{dh} > 0 \quad \forall h \in [528.67\text{m}, 548.00\text{m}]$$
-  This completely eliminates non-physical discharge dips, polynomial overshoots, and the 2.6×/deficit biases of pure Manning, while guaranteeing exact agreement with the government sheet.
+holds exactly at every anchor, and this is asserted in the hydrology test
+suite. Two sites, 3.8 km apart, one government record.
 
----
+!!! note "A Manning / divided-channel fallback exists but is unreachable"
+    `src/hydrology/rating_curves.py` contains a full Divided Channel Method
+    implementation for deriving a curve from surveyed cross-sections where no
+    government rating exists. It is real code and it is tested. It is also
+    never invoked: `compute_stage_from_discharge` takes the PCHIP path for both
+    sites unconditionally, and the Manning branch behind it is unreachable in
+    the current call graph. Earlier revisions of this page described the
+    system as using a "dual-regime PCHIP with Manning fallback". It does not.
 
-### Novelty 2: Zero-Downtime Dual-Engine Architecture (USACE HEC-HMS + Pure Python Emulator)
-- **The Breakthrough:** Total operational resilience against missing native Java or DSS dependencies.
-- **How It Works:** In production environments with USACE HEC-HMS 4.x installed, the system generates automated Jython batch control scripts and executes native headless hydrologic simulations. If Java, HEC-HMS binaries, or DSS C-libraries are missing or fail, HydroCast seamlessly switches in **$< 1\text{ millisecond}$** to an internal, pure-Python vectorized hydrologic continuum (`runner.py`).
-- **Performance:** The internal emulator computes the complete 90-hour runoff convolution across all 9 subbasins in **$< 20\text{ milliseconds}$**, matching native HEC-HMS results within a $\pm 0.4\%$ tolerance.
+## 2. The station router is biased toward over-warning, on purpose
 
----
+Conventional gauge-to-subbasin assignment averages, or applies static Thiessen
+weights. Both are wrong in the Western Ghats for the same reason: the rainfall
+field is orographic, so a subbasin draining from a 680 m crest and a subbasin
+draining to a 550 m plain should not receive the same depth.
 
-### Novelty 3: Dynamic Conservative Maximum-Rainfall Spatial Station Routing
-- **The Breakthrough:** Protects emergency disaster management cells from localized flash floods caused by orographic cloudbursts along the Sahyadri crest.
-- **How It Works:** Traditional systems take arithmetic averages or static Thiessen polygon weights across rain gauges. In mountainous terrain where Gaganbawda ($680\text{m}$) can receive $160\text{ mm/day}$ while Karvir ($550\text{m}$) receives only $40\text{ mm/day}$, averaging dilutes the flood wave. HydroCast dynamically evaluates cumulative precipitation across candidate stations in each subbasin and assigns the **maximum-precipitation station** as the governing boundary condition for that cycle.
+HydroCast takes the maximum 90-hour cumulative depth among the stations
+assigned to each subbasin, and uses that station as the governing boundary
+condition for the cycle. The [Rain Gauge Network](raingauge-network.md) page
+has the full algorithm; the relevant point here is the *asymmetry*. Averaging
+is unbiased. The maximum is not. It is chosen because the two error modes are
+not symmetric in consequence: a forecast that peaks high and early is a
+withdrawn warning, and a forecast that peaks low and late is a flood that
+arrived after the evacuation order was placed. The router is deliberately
+conservative.
 
----
+Nine subbasins and 20 stations make this tractable. It also means a single
+misreporting gauge can dominate a subbasin — which is why the physical-range and
+coverage gates in `src/processing/validator.py` run *before* selection rather
+than after.
 
-### Novelty 4: Autonomous 90-Day Antecedent Soil Moisture (AMC) Re-Analysis
-- **The Breakthrough:** Dynamically shifts watershed runoff potential between dry and saturated soil conditions without manual user intervention.
-- **How It Works:** On every simulation cycle, the pipeline classifies catchment moisture from the cumulative mean-90-hour forecast rainfall signal (`classify_amc`): **AMC-I (Dry, $<25\text{ mm}$)**, **AMC-II (Average, $25$–$65\text{ mm}$)**, or **AMC-III (Wet, $\ge 65\text{ mm}$)**, dynamically updating Curve Numbers ($CN$) and initial abstraction ($I_a$) using the TR-55 transforms:
-  $$CN_{III} = \frac{23 \cdot CN_{II}}{10 + 0.13 \cdot CN_{II}}, \qquad CN_{I} = \frac{4.2 \cdot CN_{II}}{10 - 0.058 \cdot CN_{II}}$$
-  During saturated monsoon spells, this ensures that virtually 100% of excess rainfall converts immediately into surface runoff.
+## 3. The model is calibrated continuously against a live sensor
 
----
+The third combination is a closed loop between a hydrologic forecast and a
+physical level measurement at the point of interest. An ultrasonic sensor on
+the Shivaji Bridge deck publishes water level hourly to ThingSpeak channel
+`3424513`; `src/hydrology/realtime_telemetry_validator.py` reads it, applies a
+five-gate admission check, and stores accepted observations in
+`run_telemetry`; `src/hydrology/ml_calibration.py` then compares the observed
+stage against what the current model predicted and, when they disagree, refits
+the parameters and writes them back for the next cycle.
 
-### Novelty 5: Direct Grounding in 19 Official Maharashtra WRD Benchmark Records
-- **The Breakthrough:** Elimination of theoretical rating curve abstractions by hard-anchoring the mathematical solver to official government field-gauged telemetry.
-- **How It Works:** Integrates 19 historical benchmark observations recorded by the Maharashtra Water Resources Department (WRD) spanning from **Gauge Zero Datum ($530.18\text{m}$ MSL / $0'\ 0''$)** up to **Highest Flood Level ($545.33\text{m}$ MSL / $49'\ 8''$ / $3,850\text{ m}^3/s$)**. The system converts between meters MSL, feet-inches, cusecs, and $\text{m}^3/s$ bidirectionally with zero rounding drift.
+The gate is deliberately narrow, because a feedback loop on a noisy signal
+learns noise. Recalibration fires only when the timing error exceeds **1.0 h**
+or the rising-limb stage error exceeds **0.25 m**. Either one alone is a
+signature of a structural model error rather than of measurement jitter.
 
----
+The optimiser is bounded on every parameter, and the bounds are the point:
 
-### Novelty 6: Self-Auditing Validation Engine (Real-Time Spearman $\rho$ & NSE Computation)
-- **The Breakthrough:** Transparent, real-time accuracy scoring embedded directly into every forecast cycle.
-- **How It Works:** Unlike black-box models that predict numbers without measuring their own performance, HydroCast continuously computes:
-  - **Spearman Rank Correlation ($\rho$):** Measures non-linear monotonic alignment between predicted flood waves and physical radar telemetry.
-  - **Nash-Sutcliffe Efficiency (NSE):** International gold-standard metric of hydrograph energy correspondence.
-  - **Volumetric PBIAS (%):** Assesses conservation of mass.
-  - **18-Station Rainfall Volume Fidelity (%):** Audits simulated storm depth against actual station hits.
-  Metrics are permanently logged in the cycle payload and displayed via live visual KPI badges on the dashboard.
+| Parameter | Bound | Physical meaning of the bound |
+|---|---|---|
+| Runoff scale α | [0.50, 1.80] | Loss terms cannot be scaled below half or doubled |
+| Lag scale β | [0.50, 1.80] | Travel time is similarly constrained |
+| Curve Number Δ | ±8.0 | A single event cannot rewrite the catchment's soil character |
+| Reach X (fall factor) | [0.15, 0.40] | Physically meaningful channel friction range |
 
----
+An unbounded fit on a 90-hour hydrograph with two free parameters will happily
+drive a Curve Number to 20 or 95 and call it a better model. The bounds exist so
+that the closed loop can correct drift without becoming the drift. Writes are
+atomic — a `.bak` copy is taken and replaced via `os.replace`, so a crash
+mid-write leaves the previous state intact rather than a truncated file.
 
-### Novelty 7: Immutable Historical Simulation Runs Ledger & "Run Inspector"
-- **The Breakthrough:** Full auditability and time-travel inspection for post-disaster inquiries and model validation.
-- **How It Works:** Every forecast execution is archived as an immutable, timestamped JSON document under `data/runs/{cycle_id}.json`.
-- **The User Experience:** On the **Accuracy & Run Log** dashboard, operators can scroll through a ledger of past cycles (`CYC_20260901_06z`, `CYC_20260902_18z`, etc.) and click **"Inspect Run"**. SWR instantly reloads that historical run into all hydrographs, scatter plots, and prediction tables without a full page refresh, allowing operators to verify what the model predicted 72 hours ago versus what physically occurred.
+!!! warning "The closed loop cannot trigger in a live deployment"
+    The gate requires **two** accepted stage observations above 520.0 m. Fresh
+    telemetry is written to `run_telemetry` with a `status` of `fresh`, and the
+    gate queries only for `status = 'validated'`. Nothing in the current
+    pipeline promotes a `fresh` row to `validated`, so the count is always zero
+    and the optimiser never runs. The ML calibration path is therefore
+    currently exercised by tests and not by the scheduler. The write-back logic
+    is sound; the trigger needs a validation step wired into step 08.
 
----
+!!! warning "Observed discharge is currently circular"
+    The discrepancy is computed by converting *observed stage* to discharge
+    through the forecast rating curve and comparing it against forecast
+    discharge. That comparison asks the rating curve whether the rating curve is
+    right. An independent discharge measurement — or a stage-domain comparison
+    against the forecast stage — is needed for the loop to be informative.
 
-### Novelty 8: Zero-Dependency Dual-Mode Data Persistence
-- **The Breakthrough:** The platform cannot crash due to database outages during extreme storms.
-- **How It Works:** When connected to PostgreSQL / Supabase, the backend utilizes asynchronous connection pooling (`asyncpg`). If the database server is unreachable, connection drops, or credentials are unconfigured, HydroCast automatically and silently falls back to an internal **atomic JSON ledger storage engine**. The entire API and Next.js frontend continue to function with 100% feature parity.
+## 4. The pipeline cannot take the flood offline
 
----
+Three failure modes have historically killed flood forecasting systems, and each
+has a specific countermeasure here.
 
-### Novelty 9: Event-Driven WebSocket Live Hub & Interactive 2D SVG River Cross-Section
-- **The Breakthrough:** Sub-second situational awareness for Municipal Emergency Operations Centers (EOC).
-- **How It Works:** 
-  - **WebSocket Hub (`/ws/live`):** Pushes new simulation completions and emergency CWC threshold breaches to all connected screens instantly, eliminating continuous polling.
-  - **Interactive 2D SVG Cross-Section Viewer:** A native vector graphics canvas rendering surveyed bed topometry at Shivaji Bridge and Rajaram Weir. Operators can manually drag a water level slider from $530.18\text{m}$ to $546.00\text{m}$ to observe simulated floodplain inundation, wetted area ($A$), wetted perimeter ($P$), and conveyance discharge ($Q$) recalculating in real time.
+**Missing native hydrologic binaries.** HEC-HMS is a Java application; its DSS
+output libraries are harder still to install. If Java, the HEC-HMS install, or
+the DSS libraries are missing, the runner falls back to a pure-Python
+vectorised implementation of the same model. The cycle completes, and the
+provenance of every result is recorded.
 
----
+**Database outage.** `src/db/connection.py` tries the Supabase pooler host
+before the direct host, because GitHub Actions runners are frequently
+IPv6-only. A cycle that cannot reach Postgres does not crash the API — the
+backend reads archived run documents from `data/runs/`.
 
-### Novelty 10: Explicit Dual Regulatory Bridge Hydraulic Coupling
-- **The Breakthrough:** Discontinuous reach modeling between two critical urban flood bottlenecks separated by $3.8\text{ km}$ of river channel.
-- **How It Works:** Rather than treating Kolhapur as a single point, HydroCast independently models:
-  - **Chhatrapati Shivaji Maharaj Bridge:** WRD-sheet PCHIP shifted −0.648 m (bed 528.670 m, lower datum), urban ghat constriction, historical reference gauge.
-  - **Rajaram K.T. Weir:** WRD-sheet PCHIP verbatim, broad-crested weir hydraulics, needle-gate removal mechanics, and weir drowning transitions.
-  The two curves are the same official sheet separated by the surveyed datum **0.648 m** — at equal discharge, `Stage_Rajaram − Stage_Shivaji = 0.648 m` (verified for every anchor in `tests/test_hydrology.py`).
+**Silent degradation.** A run that quietly produced nothing is more dangerous
+than one that failed. The step-log contract requires **10** successful steps for
+`pipeline_ok`, the API health check surfaces `last_run_ok`, and
+`pipeline_step_log` records per-step status with JSON detail.
 
----
+!!! note "The degradation paths currently disagree with each other"
+    The fallback emulator is genuinely used — CI installs neither Java nor
+    HEC-HMS, so every automated run exercises it. But the orchestrator's own
+    step-log expectation does not match what the orchestrator writes: it
+    requires 10 successes while the step list contains 12 entries, so
+    `pipeline_ok` is false on every cycle that actually completed. Separately,
+    `data/hms/compute/Run_1.dss` is never parsed; the emulator result is
+    returned with `result_source` set to `EMULATOR_PYTHON` even when the binary
+    reports `COMPLETED_BINARY`. The resilience is real; the bookkeeping that
+    describes it is not yet correct.
 
-### Novelty 11: Real-Time Closed-Loop Physics-Informed ML Recalibration & Disk Sync
-- **The Breakthrough:** Dynamically bridges the gap between static calibration and changing real-world catchment dynamics without model drift or unphysical parameter explosion.
-- **How It Works:** On every simulation cycle, the ML calibration engine (`src/hydrology/ml_calibration.py`) queries real-time ultrasonic stage telemetry from ThingSpeak Channel `2418579`. It computes the empirical Nash-Sutcliffe Efficiency (NSE) and volumetric discrepancy against the current forecast hydrograph. If discrepancy $> 10\%$ or NSE $< 0.85$:
-  - A bounded SciPy Levenberg-Marquardt / Nelder-Mead optimizer solves for optimal parameter scaling vectors:
-    $$\min_{\alpha, \beta} \sum_{t} \left( Q_{\text{sim}}(t; \alpha \cdot CN, \beta \cdot T_{\text{lag}}) - Q_{\text{obs}}(t) \right)^2$$
-  - Parameters are strictly constrained to physically valid ranges ($\alpha \in [0.85, 1.15]$, $\beta \in [0.80, 1.20]$).
-  - The updated parameters are atomically persisted to `data/telemetry/ml_calibration_state.json` and synchronized into the hydrologic model configuration for subsequent cycles.
+## 5. What the system scores itself on
 
----
+A forecast system that does not measure its own accuracy is not auditable.
+Metrics are computed every cycle in `src/processing/metrics.py`:
 
-### Novelty 12: High-Precision Peak Flood Strike Horizon with ±2.0h Permissible Error Window
-- **The Breakthrough:** Translates raw discharge hydrographs into actionable, emergency-grade operational time windows with rigorous uncertainty bounds.
-- **How It Works:** Rather than stating an ambiguous peak time, HydroCast analyzes the first and second derivatives ($\frac{dQ}{dt}, \frac{d^2Q}{dt^2}$) around the hydrograph crest and synthesizes them with the cumulative rainfall hyetograph centroid lag:
-  - Determines the nominal peak flood arrival time $T_{\text{peak}}$.
-  - Applies empirical Western Ghats cloudburst variance $(\sigma_t \approx 1.02\text{ hr})$ to establish a **95% Confidence Interval ($\pm 2.0\text{ hours}$)**:
-    $$[T_{\text{earliest}}, T_{\text{latest}}] = [T_{\text{peak}} - 2.0\text{h}, T_{\text{peak}} + 2.0\text{h}]$$
-  - Dispatches this exact window to the Next.js visual alert banner, REST API summaries, and automated DDMA Telegram early warning bulletins.
+- **Spearman rank correlation** between the forecast stage series and the
+  validated observed stage series. Rank-based, so it is insensitive to the
+  scale error that dominates the first version of any rating curve.
+- **Nash-Sutcliffe Efficiency** on the stage hydrograph.
+- **Volumetric bias** as a percentage of simulated volume against observed.
+- **Rainfall fidelity** across the gauge network, reported per station and per
+  subbasin so that a single dominant subbasin cannot hide inside a basin-wide
+  average.
 
----
+These are logged into the cycle payload and surfaced on the dashboard as KPI
+badges. The intent is that a reader can see not just what the model predicted
+but how well it has been predicting, on the same screen, without running a
+notebook.
 
-## 3. Comprehensive Comparative Innovation Matrix
+## 6. The run ledger
 
-```
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Capability Feature          | Traditional CWC/IMD| Academic 2D Models | Generic IoT Dash.  | HYDROCAST v3.0     |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Forecast Lead Time          | 12 - 24 hours      | 48 - 72 hours      | 0 hours (Past only)| 90 HOURS           |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Operational Automation      | Manual bulletins   | Manual click HEC   | Automated (IoT)    | FULLY AUTONOMOUS   |
-|                             | (PDF / Paper)      | (Desktop engineer) | (Telemetry only)   | (6-Hourly Cron)    |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Execution Latency           | Several hours      | 45 min - 4 hours   | < 1 second         | < 37 SECONDS       |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Hydraulic Rating Curve      | Static 1D Table    | Complex 2D Grid    | None (Raw levels)  | DUAL-REGIME PCHIP  |
-| Formulation                 | (Prone to dips)    | (Too slow for ops) |                    | (Strict dQ/dh > 0) |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Mountain Station Routing    | Arithmetic mean    | Thiessen polygons  | Single sensor      | DYNAMIC CONSERVAT. |
-|                             |                    |                    |                    | (Max-Precip Threat)|
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Soil Moisture Adaptation    | Fixed seasonal CN  | Manual soil input  | None               | AUTONOMOUS 90-DAY  |
-|                             |                    |                    |                    | ANTECEDENT AMC     |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Adaptive Recalibration      | Manual recalib.    | Offline batch fits | None               | REAL-TIME CLOSED-  |
-|                             | (every few years)  | (months of study)  |                    | LOOP ML OPTIMIZER  |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Peak Arrival Estimation     | Coarse date/day    | Single peak timestamp| None             | ±2.0h CONFIDENCE   |
-|                             |                    | (no error window)  |                    | INTERVAL HORIZON   |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Ground Truth Calibration    | Approximate gauges | Academic surveys   | Single station     | 19 GOVT WRD FIELD  |
-|                             |                    |                    |                    | BENCHMARKS         |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Real-Time Validation Metric | None published     | Post-hoc papers    | None               | LIVE SPEARMAN ρ &  |
-|                             |                    |                    |                    | NASH-SUTCLIFFE NSE |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Historical Run Auditability | Fragmented logs    | Overwritten files  | Time-series graph  | GIT-LIKE RUNS      |
-|                             |                    |                    |                    | LEDGER & INSPECTOR |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Offline Resilience          | Paper fallback     | High failure rate  | Cloud dependent    | ZERO-CRASH DUAL    |
-|                             |                    | (Licensing/DLLs)   |                    | POSTGRES/JSON MODE |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Emergency Alert Dispatch    | Manual VHF/Fax     | None               | SMS threshold only | TELEGRAM BOT +     |
-|                             |                    |                    |                    | WEBSOCKET LIVE PUSH|
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Containerized Deployment    | Non-containerized  | Proprietary Windows| Cloud-hosted SaaS  | MULTI-CONTAINER    |
-|                             | desktop install    | workstation license|                    | DOCKER COMPOSE     |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-| Decision Support UI         | Static tables      | Heavy desktop GUI  | Basic graphs       | NEXT.JS 14 + SVG   |
-|                             |                    |                    |                    | CROSS-SECTION + WS |
-+-----------------------------+--------------------+--------------------+--------------------+--------------------+
-```
+Every cycle writes an immutable, timestamped JSON document to
+`data/runs/{cycle_id}.json`. The dashboard's Accuracy & Run Log view lists past
+cycles and can load any one back into the hydrographs, scatter plot and
+prediction tables.
 
----
+This is the least technically sophisticated feature in the system and the one
+that matters most in a post-disaster inquiry. A flood system that overwrites
+its previous state cannot be questioned — including by the people who operate
+it. The ledger means a question like "what did the model say 72 hours before
+the 2021 event, and how far off was it?" has an answer that is recoverable
+from disk rather than reconstructed from memory.
 
-## 4. Impact on Disaster Risk Reduction (DRR) in Kolhapur
+## 7. The comparison
 
-The innovations embedded within HydroCast transform disaster management from **reactive crisis response** to **predictive early action**:
+The table below is scoped to what the code does. Where a capability is planned
+rather than implemented, that is stated.
 
-1. **48-Hour Evacuation Window & ±2.0h Strike Horizon:** By projecting stage exceedance at Shivaji Bridge ($542.1\text{m}$ Alert, $543.3\text{m}$ Danger) up to 90 hours in advance with a precise $\pm 2.0\text{h}$ arrival window, district disaster authorities can evacuate low-lying wards (Shahupuri, Kumbhar Galli, Bapat Camp) before river water enters city stormwater outfalls.
-2. **K.T. Weir Needle Gate Management:** Provides accurate forward discharge volumes allowing irrigation engineers to remove weir needle gates and open barrages before the arrival of the flood peak.
-3. **Automated Incident Commander Dispatch:** The integrated Telegram Alert Dispatcher guarantees that the moment a forecast breaches threshold levels, a formatted disaster bulletin with peak discharge, arrival time window, and affected subbasins is pushed directly to District Disaster Management Authority (DDMA) command channels.
-4. **Institutional Accountability & Data Hygiene:** The persistent runs ledger, Parquet cold storage pruning, and automated validation engine create an unalterable, transparent record of what was forecasted, when it was forecasted, and how accurately the physical flood wave was captured.
+| Capability | Traditional CWC/IMD | Academic desktop model | Generic IoT dashboard | HydroCast |
+|---|---|---|---|---|
+| Forecast lead time | 12–24 h | 48–72 h | 0 h (observed only) | 90 h |
+| Operational automation | Manual bulletins | Manual desktop run | Automated telemetry only | Autonomous 6-hourly schedule |
+| Runoff solver | — | Native HEC-HMS / MIKE 11 | — | Native with Python fallback |
+| Rating curve | Static 1D table | 2D grid or fitted | None (raw levels) | Monotone PCHIP on 27 WRD anchors |
+| Mountain station routing | Arithmetic mean | Thiessen polygons | Single sensor | Max-precipitation governor |
+| Soil moisture adaptation | Fixed seasonal CN | Manual input | None | AMC-I/II/III from 90-h forecast signal |
+| Adaptive recalibration | Manual, multi-year | Offline batch | None | Bounded closed loop, currently gated off |
+| Peak arrival estimate | Day resolution | Single timestamp | None | Peak ± 2.0 h fixed window |
+| Ground truth calibration | Approximate gauges | Academic survey | Single station | 27 official WRD anchors |
+| Self-reported accuracy | Not published | Post-hoc papers | None | Live Spearman ρ and NSE |
+| Historical audit | Fragmented logs | Overwritten files | Time-series graph | Immutable run ledger + inspector |
+| Offline resilience | Paper fallback | Licence- and DLL-bound | Cloud-dependent | Python solver + archived run reads |
+| Alert dispatch | Manual VHF/fax | None | SMS threshold | Telegram bulletin + WebSocket push |
+| Deployment | Installed on desktops | Proprietary workstation | Cloud SaaS | Docker Compose, scheduled |
 
+## 8. Honest limits
+
+Four things are not yet true, and are listed here so that a reader does not
+have to discover them.
+
+- **Recalibration does not run in production.** The telemetry status promotion
+  described in novelty 3 is not wired into the pipeline.
+- **The `pipeline_ok` flag is always false.** The expected step count and the
+  actual step list disagree.
+- **Result provenance is not always truthful.** `result_source` reports the
+  emulator even when HEC-HMS reports a completed binary, because the DSS file
+  is never read.
+- **The peak window is a constant.** The ±2.0 h margin in
+  `src/processing/alert_generator.py` is a fixed `margin_hours` value applied
+  symmetrically around the argmax of the discharge series. It is not derived
+  from a forecast-error distribution. It is a defensible default, and it is
+  documented as a confidence interval in places it should be documented as an
+  assumption.
+
+None of these are modelling errors. They are integration gaps, and they are
+tracked in the [Engineering Autopsy](errors-and-engineering-assumptions.md).

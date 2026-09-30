@@ -384,7 +384,8 @@ During the v3.0 operational production hardening, several systemic risks were di
 |                                   | during Open-Meteo queries             | nearest-neighbor fallback (retry_utils.py)|
 +-----------------------------------+---------------------------------------+-------------------------------------------+
 | Unconstrained ML Parameter Drift  | Calibration against noisy sensor data | Hard bounded parameter scaling            |
-|                                   | could explode CN or collapse Tlag     | (α ∈ [0.85, 1.15], β ∈ [0.80, 1.20])      |
+|                                   | could explode CN or collapse Tlag     | (α ∈ [0.50, 1.80], β ∈ [0.50, 1.80],    |
+|                                   |                                       | ΔCN ∈ [−8, +8], X ∈ [0.15, 0.40])        |
 +-----------------------------------+---------------------------------------+-------------------------------------------+
 | PostgreSQL Time-Series Bloat      | Accumulation of millions of 15-min    | Scheduled weekly pruning to compressed    |
 |                                   | hydrograph rows degrading DB queries  | Apache Parquet cold storage (archive_runs)|
@@ -398,17 +399,177 @@ During the v3.0 operational production hardening, several systemic risks were di
 ```
 
 ### 1. The Fallacy of Scalar Peak Flood Prediction
-In early releases, the system reported peak flood arrival as a single scalar timestamp (e.g. `2026-09-11T16:30:00Z`). In real-world Western Ghats hydrology, variations in spatial rainfall distribution, soil heterogeneity, and tributary confluence backwaters introduce non-deterministic travel lags ($\sigma \approx 1.02\text{ hours}$). Reporting a single minute led emergency personnel to expect mathematical precision that nature does not exhibit. In v3.0, the system strictly defines peak arrival as a **$\pm 2.0\text{h}$ operational window** $[T_{\text{peak}} - 2\text{h}, T_{\text{peak}} + 2\text{h}]$ at 95% confidence.
+In early releases, the system reported peak flood arrival as a single scalar timestamp (e.g. `2026-09-11T16:30:00Z`). In real-world Western Ghats hydrology, variations in spatial rainfall distribution, soil heterogeneity, and tributary confluence backwaters introduce non-deterministic travel lags. Reporting a single minute led emergency personnel to expect mathematical precision that nature does not exhibit. In v3.0, the system reports peak arrival as a **±2.0 h operational window** $[T_{\text{peak}} - 2\text{h}, T_{\text{peak}} + 2\text{h}]$, read from `PEAK_ARRIVAL_CI_HOURS` with a default of 2.0.
+
+!!! note "The window is an assumption, not a computed confidence interval"
+    The margin is a constant applied symmetrically around the argmax of the
+    discharge series. No forecast-error distribution is estimated, so the
+    "95% confidence" label used in earlier revisions of this page is not
+    supported by the implementation. It is a defensible default and should be
+    described as such. The corresponding stage margin *is* stage-dependent:
+    `0.12 + 0.03·(h_peak − 535)` metres, with discharge bounded to ±6 %.
 
 ### 2. Guardrails Against ML Parameter Runaway
 When calibrating against live ultrasonic radar telemetry, acoustic echoes from debris or transient sensor dropout can produce artificial stage spikes. If an unconstrained optimizer attempts to fit these anomalies, it might calculate an unphysical Curve Number ($CN > 98$) or an impossible lag time ($T_{\text{lag}} \to 0$), corrupting subsequent cycles. HydroCast enforces:
-- Hard physical clipping bounds: $\alpha \in [0.85, 1.15]$ and $\beta \in [0.80, 1.20]$.
+- Hard physical clipping bounds: $\alpha \in [0.50, 1.80]$, $\beta \in [0.50, 1.80]$, $\Delta CN \in [-8, +8]$, and $X \in [0.15, 0.40]$.
 - Regularized cost functions that penalize deviations from baseline parameters.
-- Discrepancy gating: recalibration only runs when true volumetric divergence exceeds 10% or NSE drops below 0.85.
+- Discrepancy gating: recalibration runs only when $|\Delta t| \geq 1.0$ h or the rising-limb stage error exceeds $0.25$ m, and only when at least two validated observations above 520.0 m exist.
+
+!!! note "The gate is stricter than a volume test, and is currently unreachable"
+    An earlier revision of this page described the trigger as "volumetric
+    divergence exceeds 10 % or NSE drops below 0.85". The implemented gate is a
+    *timing and stage* test, not a volume test. It also requires observations
+    with `status = 'validated'`, while the pipeline writes `fresh` and nothing
+    promotes between the two — so in a live deployment the optimiser does not
+    run at all. See Part VI, item 2.
 
 ---
 
 ## Part V: Operational Summary
 
 By identifying past mistakes, replacing unsegmented regressions and pure-Manning stage conversion with WRD-anchored PCHIP rating curves, and establishing clear physical boundaries for engineering assumptions, HydroCast operates with high technical transparency. It delivers robust early warning projections while clearly defining the limits of its predictive certainty.
+
+---
+
+## Part VI: Open Defects Found in Source Review
+
+Parts I–IV record modelling mistakes that have been diagnosed and, in most
+cases, fixed. The items below are different: they were found by reading the
+repository rather than by observing a failure, and they are still open. Each is
+stated as *what the code does* versus *what the documentation or an adjacent
+component expects*, because in every case the documentation was the thing that
+was wrong.
+
+These are the register referenced by the [Architecture Atlas](architecture-atlas.md).
+
+### 1. `pipeline_ok` can never be true
+
+`src/orchestrator.py` writes twelve entries to `pipeline_step_log` per cycle,
+but the success predicate checks for **ten**. A cycle that completes every
+step without error is therefore reported as failed, which propagates to
+`/api/v1/health` as `last_run_ok: false` and to the Telegram status message.
+
+*Fix:* assert against the length of the step list rather than a literal, so the
+next added feature cannot reintroduce the mismatch.
+
+### 2. The recalibration gate is unreachable
+
+`src/hydrology/ml_calibration.py` requires at least two observations with
+`status = 'validated'` and stage above 520.0 m. The pipeline writes telemetry
+with `status = 'fresh'`, and no code path promotes it. The count is always
+zero, so the bounded optimiser never executes outside of tests.
+
+### 3. Discrepancy is measured circularly
+
+To decide whether the model needs recalibrating, observed *stage* is converted
+to discharge through the forecast rating curve and compared against forecast
+discharge. This asks the rating curve whether the rating curve is correct, so
+a systematic rating bias will never be detected — the loop would converge to
+"no discrepancy" precisely when it matters most.
+
+*Fix:* compare in the stage domain against forecast stage, or use an
+independent discharge measurement.
+
+### 4. Result provenance is reported incorrectly
+
+`src/hms/runner.py` never parses `data/hms/compute/Run_1.dss`. When HEC-HMS
+reports `COMPLETED_BINARY`, the runner still returns the Python emulator output
+with `result_source = EMULATOR_PYTHON`. Two consequences: the native solver is
+never validated against anything, and persisted runs misstate how they were
+produced.
+
+### 5. HMS steps 07 and 08 execute twice
+
+The orchestrator body invokes the sink-extraction and stage-conversion steps a
+second time outside the step-list loop, which both wastes work and inflates the
+step log that item 1 depends on.
+
+### 6. Imperviousness deduction contradicts the basin model
+
+`src/hms/runner.py` adds `0.02 · P_cum` to every increment regardless of
+imperviousness. For S2 and S5 the basin file declares an imperviousness of
+**zero**, so adding to it is both physically wrong and inconsistent with the
+declared catchment. The classical form is a deduction from potential retention,
+which vanishes at zero imperviousness by construction.
+
+### 7. Initial Muskingum X overwrites the basin value
+
+`src/hms/basin_model.py` defaults reach X to `0.25`, while `Basin_1.basin`
+declares `0.20` for all five reaches. Depending on which path populates the
+model, the routing parameter differs from the configured value.
+
+### 8. `check_basin_parameters` is a stub
+
+The parameter-validation entry point returns without asserting anything, so a
+malformed basin file passes silently.
+
+### 9. Simulation length contradicts the product horizon
+
+The emulator produces 352 hourly points while the forecast is a 90-hour
+product. Volume and baseflow computations over the full series do not
+correspond to the published window, and the baseflow floor is applied across
+all 352 steps rather than the 90 published ones.
+
+### 10. Static gauge assignments are dead configuration
+
+`Met_1.met` declares a fixed primary gauge per subbasin. The runtime does not
+read it — selection is driven entirely by `STATION_REGISTRY` in
+`src/ecmwf/station_selector.py`. Anyone reading the HMS model configuration to
+understand station routing is reading something inert.
+
+### 11. Station identifiers are spelled three ways
+
+The outlet subbasin is `KARVEER` in the registry, `KARVIR` in the orchestrator's
+fallback path, and `Karvir` in `Met_1.met` and the `.gage` file. The fallback
+therefore misses and `station_time_series.get("KARVIR", np.zeros(90))`
+substitutes **90 zero-valued hours** for S1 — 45 mm of rainfall invented at the
+outlet, with no error raised.
+
+### 12. `EXTREME` is not mapped to an alert tier
+
+`classify_alert` has no branch for `EXTREME`, so the most severe modelled state
+falls through and is reported as `watch`. The condition is reachable, since the
+HFL threshold is 545.33 m and the rating curve extends to 548.00 m.
+
+### 13. Two tables are written but never created
+
+`src/db/store_results.py` inserts into `peak_discharge_events` and
+`runoff_summary`. Neither appears in `database/supabase_schema.sql`, which
+defines ten tables and three views, nor in the `sync_all_to_supabase` bootstrap.
+Those two inserts fail against a database initialised from the shipped schema.
+
+### 14. Archival is not scheduled
+
+`src/db/archive_runs.py` is complete and runnable, but no GitHub Actions
+workflow invokes it. Documentation describing "scheduled weekly pruning" is
+not true of the repository; the script is run manually.
+
+### 15. The scheduled command is not the orchestrator
+
+`.github/workflows/pipeline.yml` invokes `python -m src.ecmwf.open_meteo` and
+the downstream modules directly. The twelve-step orchestrator described
+throughout the documentation is not what runs on the 6-hourly schedule, which
+also means items 1, 5 and 9 above do not currently affect the scheduled
+production path — only manual and API-triggered runs.
+
+### 16. Duplicate station coordinates in S9
+
+`RADHANAGARI` and `KASABA_WALAWE` are registered at identical coordinates
+(73.9971822° E, 16.41021° N). S9's six-candidate maximum comparison therefore
+contains one duplicated observation.
+
+### 17. A documented fallback is unreachable
+
+`src/hydrology/rating_curves.py` implements the Divided Channel Method for
+deriving a rating from surveyed cross-sections. `compute_stage_from_discharge`
+takes the PCHIP path for both sites unconditionally, so the DCM branch is never
+reached. Documentation describing a dual-regime PCHIP-with-Manning-fallback
+configuration does not match the call graph.
+
+### 18. Peak detection across the full series
+
+The published 90-hour window is a slice of a 352-point series. Where the peak
+is located relative to the slice boundary affects which discharge is reported as
+the forecast peak, and the baseflow recession is applied to all 352 steps before
+slicing.
 

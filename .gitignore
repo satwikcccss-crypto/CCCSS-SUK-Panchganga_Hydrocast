@@ -65,3 +65,8 @@ package-lock.json
 package.json
 *.docx
 docs_site/
+
+# MkDocs build output and generated assets
+/site/
+/docs/assets/javascripts/
+.cache/
