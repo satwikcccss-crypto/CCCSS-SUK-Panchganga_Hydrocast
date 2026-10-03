@@ -23762,7 +23762,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260930_06z",
-    "validation_timestamp": "2026-10-03T18:10:55.708593+00:00",
+    "validation_timestamp": "2026-10-03T18:32:20.014288+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -23789,22 +23789,22 @@
       "status": "VALIDATED",
       "sample_size_hours": 85,
       "matched_pairs": 85,
-      "observed_stage_std_m": 0.3584,
+      "observed_stage_std_m": 0.3577,
       "skill_metrics_reliable": true,
       "rmse_stage_m": 1.525,
-      "mae_stage_m": 1.478,
-      "nse_stage": -17.1085,
+      "mae_stage_m": 1.479,
+      "nse_stage": -17.1815,
       "pbias_stage_pct": 0.28,
       "spearman_rho": -0.9509,
-      "pearson_r2": 0.9066,
+      "pearson_r2": 0.9074,
       "discharge_metrics_source": "RATING_IMPLIED_DERIVED",
       "discharge_metrics_note": "Observed discharge is derived from the observed stage via the same rating curve used for the forecast; it is NOT an independent discharge measurement.",
       "rmse_q_m3s": 32.03,
       "mae_q_m3s": 31.82,
-      "nse_discharge": -245.831,
-      "pbias_discharge_pct": 609.05,
+      "nse_discharge": -247.7858,
+      "pbias_discharge_pct": 609.53,
       "spearman_rho_q": -0.9641,
-      "pearson_r2_q": 0.9156,
+      "pearson_r2_q": 0.9171,
       "basin_rainfall_accuracy_pct": null,
       "performance_grade": "CALIBRATION_REQUIRED"
     },
@@ -24314,10 +24314,10 @@
         "actual_distance_ft": 58.31
       },
       {
-        "actual_stage": 531.61,
+        "actual_stage": 531.58,
         "predicted_stage": 532.36,
         "lead_hours": 84,
-        "actual_distance_ft": 58.2
+        "actual_distance_ft": 58.29
       }
     ],
     "actual_observed_series": [
@@ -25418,11 +25418,11 @@
         "timestamp": "2026-10-03T18:00:00+00:00",
         "predicted_stage_m": 532.36,
         "predicted_discharge_m3s": 34.3,
-        "observed_stage_m": 531.61,
-        "observed_distance_ft": 58.2,
-        "observed_discharge_m3s": 9.9,
-        "error_delta_m": 0.75,
-        "error_delta_ft": 2.46,
+        "observed_stage_m": 531.58,
+        "observed_distance_ft": 58.29,
+        "observed_discharge_m3s": 9.6,
+        "error_delta_m": 0.78,
+        "error_delta_ft": 2.56,
         "alert_level": "NORMAL",
         "has_observation": true
       },

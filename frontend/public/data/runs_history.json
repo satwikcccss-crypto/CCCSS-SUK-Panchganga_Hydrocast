@@ -16,7 +16,7 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.81,
+    "rmse": 0.84,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 1
   },
@@ -37,7 +37,7 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.864,
+    "rmse": 0.868,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 7
   },
@@ -56,9 +56,9 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": -0.722,
-    "nse": -46.8562,
-    "rmse": 1.153,
+    "spearman_rho": -0.7221,
+    "nse": -47.856,
+    "rmse": 1.154,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 37
   },
@@ -78,7 +78,7 @@
     "status": "completed",
     "has_validation": true,
     "spearman_rho": -0.9509,
-    "nse": -17.1085,
+    "nse": -17.1815,
     "rmse": 1.525,
     "lifecycle_status": "IN_PROGRESS",
     "verified_hours": 85
