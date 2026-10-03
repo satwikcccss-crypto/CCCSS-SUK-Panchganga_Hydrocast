@@ -20276,7 +20276,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260921_12z",
-    "validation_timestamp": "2026-10-03T05:54:08.672574+00:00",
+    "validation_timestamp": "2026-10-03T10:44:53.888679+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20295,7 +20295,7 @@
     "observation_gap": {
       "is_gap": true,
       "missing_hours": 23,
-      "hours_past_window": 192.9,
+      "hours_past_window": 197.7,
       "grace_hours": 12.0,
       "note": "The full 90-hour forecast window has elapsed and the missing telemetry has not arrived within the grace period, so this cycle is permanently unverifiable against ground truth. Metrics are reported only for the hours that were observed."
     },
