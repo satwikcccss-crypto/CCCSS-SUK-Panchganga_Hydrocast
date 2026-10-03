@@ -1,5 +1,26 @@
 [
   {
+    "cycle_id": "CYC_20261003_18z",
+    "run_date": "03 Oct 2026",
+    "cycle_time": "18z",
+    "start_time": "2026-10-03T18:00:00+00:00",
+    "duration_seconds": 5.2,
+    "peak_discharge_m3s": 40.0,
+    "lead_hours_to_peak": 0,
+    "total_volume_mcm": 11.9,
+    "total_rainfall_mm": 6.6,
+    "shivaji_peak_stage_m": 532.42,
+    "rajaram_peak_stage_m": 533.06,
+    "alert_level": "NORMAL",
+    "status": "completed",
+    "has_validation": true,
+    "spearman_rho": null,
+    "nse": null,
+    "rmse": 0.81,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
+  },
+  {
     "cycle_id": "CYC_20261003_12z",
     "run_date": "03 Oct 2026",
     "cycle_time": "12z",
@@ -16,9 +37,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.9,
+    "rmse": 0.864,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 3
+    "verified_hours": 7
   },
   {
     "cycle_id": "CYC_20261002_06z",
@@ -35,11 +56,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": -0.6189,
-    "nse": -78.8162,
-    "rmse": 1.188,
+    "spearman_rho": -0.722,
+    "nse": -46.8562,
+    "rmse": 1.153,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 33
+    "verified_hours": 37
   },
   {
     "cycle_id": "CYC_20260930_06z",
@@ -56,11 +77,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": -0.9479,
-    "nse": -20.6057,
-    "rmse": 1.553,
+    "spearman_rho": -0.9509,
+    "nse": -17.1085,
+    "rmse": 1.525,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 81
+    "verified_hours": 85
   },
   {
     "cycle_id": "CYC_20260929_18z",
