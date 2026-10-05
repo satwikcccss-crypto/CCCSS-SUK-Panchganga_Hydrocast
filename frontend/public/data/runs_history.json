@@ -1,5 +1,26 @@
 [
   {
+    "cycle_id": "CYC_20261005_06z",
+    "run_date": "05 Oct 2026",
+    "cycle_time": "06z",
+    "start_time": "2026-10-05T06:00:00+00:00",
+    "duration_seconds": 7.9,
+    "peak_discharge_m3s": 40.0,
+    "lead_hours_to_peak": 0,
+    "total_volume_mcm": 11.9,
+    "total_rainfall_mm": 5.9,
+    "shivaji_peak_stage_m": 532.42,
+    "rajaram_peak_stage_m": 533.06,
+    "alert_level": "NORMAL",
+    "status": "completed",
+    "has_validation": true,
+    "spearman_rho": null,
+    "nse": null,
+    "rmse": 0.84,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 4
+  },
+  {
     "cycle_id": "CYC_20261004_18z",
     "run_date": "04 Oct 2026",
     "cycle_time": "18z",
@@ -16,9 +37,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.759,
+    "rmse": 0.788,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 9
+    "verified_hours": 16
   },
   {
     "cycle_id": "CYC_20261004_12z",
@@ -37,9 +58,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.764,
+    "rmse": 0.782,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 15
+    "verified_hours": 22
   },
   {
     "cycle_id": "CYC_20261004_06z",
@@ -58,9 +79,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.777,
+    "rmse": 0.786,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 21
+    "verified_hours": 28
   },
   {
     "cycle_id": "CYC_20261003_18z",
@@ -79,9 +100,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.78,
+    "rmse": 0.785,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 33
+    "verified_hours": 40
   },
   {
     "cycle_id": "CYC_20261003_12z",
@@ -100,9 +121,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.792,
+    "rmse": 0.793,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 39
+    "verified_hours": 46
   },
   {
     "cycle_id": "CYC_20261002_06z",
@@ -119,11 +140,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": -0.9087,
-    "nse": -19.3369,
-    "rmse": 0.987,
+    "spearman_rho": -0.8303,
+    "nse": -19.6618,
+    "rmse": 0.97,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 69
+    "verified_hours": 76
   },
   {
     "cycle_id": "CYC_20260930_06z",
