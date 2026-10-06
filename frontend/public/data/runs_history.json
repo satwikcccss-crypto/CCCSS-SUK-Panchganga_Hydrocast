@@ -16,9 +16,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.765,
+    "rmse": 0.801,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 2
+    "verified_hours": 7
   },
   {
     "cycle_id": "CYC_20261005_18z",
@@ -37,9 +37,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.753,
+    "rmse": 0.777,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 8
+    "verified_hours": 13
   },
   {
     "cycle_id": "CYC_20261005_06z",
@@ -58,9 +58,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.772,
+    "rmse": 0.779,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 20
+    "verified_hours": 25
   },
   {
     "cycle_id": "CYC_20261004_18z",
@@ -79,9 +79,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.766,
+    "rmse": 0.77,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 32
+    "verified_hours": 37
   },
   {
     "cycle_id": "CYC_20261004_12z",
@@ -100,9 +100,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.764,
+    "rmse": 0.767,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 38
+    "verified_hours": 43
   },
   {
     "cycle_id": "CYC_20261004_06z",
@@ -121,9 +121,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.768,
+    "rmse": 0.769,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 44
+    "verified_hours": 49
   },
   {
     "cycle_id": "CYC_20261003_18z",
@@ -142,9 +142,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.768,
+    "rmse": 0.769,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 56
+    "verified_hours": 61
   },
   {
     "cycle_id": "CYC_20261003_12z",
@@ -165,7 +165,7 @@
     "nse": null,
     "rmse": 0.775,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 62
+    "verified_hours": 67
   },
   {
     "cycle_id": "CYC_20261002_06z",
