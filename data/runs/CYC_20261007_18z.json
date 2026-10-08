@@ -23762,7 +23762,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20261007_18z",
-    "validation_timestamp": "2026-10-08T15:53:16.654980+00:00",
+    "validation_timestamp": "2026-10-08T17:04:23.679641+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -23775,34 +23775,34 @@
       "upstream_weir": "Rajaram K.T. Weir (3,858 m upstream, bed datum +0.648 m)"
     },
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 22,
+    "verified_hours": 24,
     "total_forecast_hours": 90,
-    "completion_pct": 24.4,
+    "completion_pct": 26.7,
     "observation_gap": {
       "is_gap": false,
-      "missing_hours": 68,
+      "missing_hours": 66,
       "hours_past_window": null,
       "grace_hours": 12.0,
       "note": null
     },
     "metrics": {
       "status": "VALIDATED",
-      "sample_size_hours": 22,
-      "matched_pairs": 22,
-      "observed_stage_std_m": 0.1081,
+      "sample_size_hours": 24,
+      "matched_pairs": 24,
+      "observed_stage_std_m": 0.1126,
       "skill_metrics_reliable": true,
-      "rmse_stage_m": 0.869,
-      "mae_stage_m": 0.862,
-      "nse_stage": -63.5366,
+      "rmse_stage_m": 0.882,
+      "mae_stage_m": 0.875,
+      "nse_stage": -60.3161,
       "pbias_stage_pct": 0.16,
-      "spearman_rho": 0.8589,
-      "pearson_r2": 0.5648,
+      "spearman_rho": 0.8729,
+      "pearson_r2": 0.6117,
       "discharge_metrics_source": "RATING_IMPLIED_DERIVED",
       "discharge_metrics_note": "Observed discharge is derived from the observed stage via the same rating curve used for the forecast; it is NOT an independent discharge measurement.",
-      "rmse_q_m3s": 29.81,
-      "mae_q_m3s": 29.8,
+      "rmse_q_m3s": 29.84,
+      "mae_q_m3s": 29.83,
       "nse_discharge": null,
-      "pbias_discharge_pct": 318.15,
+      "pbias_discharge_pct": 322.09,
       "spearman_rho_q": null,
       "pearson_r2_q": null,
       "basin_rainfall_accuracy_pct": null,
@@ -23939,7 +23939,19 @@
         "actual_stage": 531.33,
         "predicted_stage": 532.4,
         "lead_hours": 21,
-        "actual_distance_ft": 59.13
+        "actual_distance_ft": 59.11
+      },
+      {
+        "actual_stage": 531.4,
+        "predicted_stage": 532.4,
+        "lead_hours": 22,
+        "actual_distance_ft": 58.9
+      },
+      {
+        "actual_stage": 531.37,
+        "predicted_stage": 532.4,
+        "lead_hours": 23,
+        "actual_distance_ft": 58.99
       }
     ],
     "actual_observed_series": [
@@ -24222,7 +24234,7 @@
         "predicted_stage_m": 532.4,
         "predicted_discharge_m3s": 38.4,
         "observed_stage_m": 531.33,
-        "observed_distance_ft": 59.13,
+        "observed_distance_ft": 59.11,
         "observed_discharge_m3s": 7.7,
         "error_delta_m": 1.07,
         "error_delta_ft": 3.51,
@@ -24234,26 +24246,26 @@
         "timestamp": "2026-10-08T16:00:00+00:00",
         "predicted_stage_m": 532.4,
         "predicted_discharge_m3s": 38.3,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 531.4,
+        "observed_distance_ft": 58.9,
+        "observed_discharge_m3s": 8.2,
+        "error_delta_m": 1.0,
+        "error_delta_ft": 3.28,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 23,
         "timestamp": "2026-10-08T17:00:00+00:00",
         "predicted_stage_m": 532.4,
         "predicted_discharge_m3s": 38.2,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 531.37,
+        "observed_distance_ft": 58.99,
+        "observed_discharge_m3s": 8.0,
+        "error_delta_m": 1.03,
+        "error_delta_ft": 3.38,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 24,
