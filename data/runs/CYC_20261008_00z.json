@@ -23762,7 +23762,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20261008_00z",
-    "validation_timestamp": "2026-10-08T00:25:56.144481+00:00",
+    "validation_timestamp": "2026-10-08T02:23:16.060601+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -23775,34 +23775,34 @@
       "upstream_weir": "Rajaram K.T. Weir (3,858 m upstream, bed datum +0.648 m)"
     },
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 1,
+    "verified_hours": 3,
     "total_forecast_hours": 90,
-    "completion_pct": 1.1,
+    "completion_pct": 3.3,
     "observation_gap": {
       "is_gap": false,
-      "missing_hours": 89,
+      "missing_hours": 87,
       "hours_past_window": null,
       "grace_hours": 12.0,
       "note": null
     },
     "metrics": {
       "status": "ACCUMULATING_TELEMETRY",
-      "sample_size_hours": 1,
-      "matched_pairs": 1,
-      "observed_stage_std_m": 0.0,
+      "sample_size_hours": 3,
+      "matched_pairs": 3,
+      "observed_stage_std_m": 0.0047,
       "skill_metrics_reliable": false,
-      "rmse_stage_m": 0.8,
-      "mae_stage_m": 0.8,
+      "rmse_stage_m": 0.797,
+      "mae_stage_m": 0.797,
       "nse_stage": null,
       "pbias_stage_pct": 0.15,
       "spearman_rho": null,
       "pearson_r2": null,
       "discharge_metrics_source": "RATING_IMPLIED_DERIVED",
       "discharge_metrics_note": "Observed discharge is derived from the observed stage via the same rating curve used for the forecast; it is NOT an independent discharge measurement.",
-      "rmse_q_m3s": 30.0,
-      "mae_q_m3s": 30.0,
+      "rmse_q_m3s": 29.93,
+      "mae_q_m3s": 29.93,
       "nse_discharge": null,
-      "pbias_discharge_pct": 300.0,
+      "pbias_discharge_pct": 300.33,
       "spearman_rho_q": null,
       "pearson_r2_q": null,
       "basin_rainfall_accuracy_pct": null,
@@ -23813,7 +23813,19 @@
         "actual_stage": 531.62,
         "predicted_stage": 532.42,
         "lead_hours": 0,
-        "actual_distance_ft": 58.16
+        "actual_distance_ft": 58.18
+      },
+      {
+        "actual_stage": 531.61,
+        "predicted_stage": 532.41,
+        "lead_hours": 1,
+        "actual_distance_ft": 58.2
+      },
+      {
+        "actual_stage": 531.62,
+        "predicted_stage": 532.41,
+        "lead_hours": 2,
+        "actual_distance_ft": 58.18
       }
     ],
     "actual_observed_series": [
@@ -23823,7 +23835,7 @@
         "predicted_stage_m": 532.42,
         "predicted_discharge_m3s": 40.0,
         "observed_stage_m": 531.62,
-        "observed_distance_ft": 58.16,
+        "observed_distance_ft": 58.18,
         "observed_discharge_m3s": 10.0,
         "error_delta_m": 0.8,
         "error_delta_ft": 2.62,
@@ -23835,26 +23847,26 @@
         "timestamp": "2026-10-08T01:00:00+00:00",
         "predicted_stage_m": 532.41,
         "predicted_discharge_m3s": 39.9,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 531.61,
+        "observed_distance_ft": 58.2,
+        "observed_discharge_m3s": 9.9,
+        "error_delta_m": 0.8,
+        "error_delta_ft": 2.62,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 2,
         "timestamp": "2026-10-08T02:00:00+00:00",
         "predicted_stage_m": 532.41,
         "predicted_discharge_m3s": 39.8,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 531.62,
+        "observed_distance_ft": 58.18,
+        "observed_discharge_m3s": 10.0,
+        "error_delta_m": 0.79,
+        "error_delta_ft": 2.59,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 3,
