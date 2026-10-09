@@ -152,164 +152,7 @@
     "delta_cn": 0.0,
     "muskingum_x": 0.25,
     "confidence_pct": 95.0,
-    "history": [],
-    "baseline_sub_models": {
-      "S6": {
-        "name": "Gaganbawda",
-        "area_km2": 227.72,
-        "cn": 61.783,
-        "lag_min": 3318.1
-      },
-      "S7": {
-        "name": "Garivade",
-        "area_km2": 195.39,
-        "cn": 61.281,
-        "lag_min": 3362.3
-      },
-      "S9": {
-        "name": "Radhanagari",
-        "area_km2": 366.97,
-        "cn": 64.306,
-        "lag_min": 5199.0
-      },
-      "S8": {
-        "name": "Beed",
-        "area_km2": 177.44,
-        "cn": 65.765,
-        "lag_min": 3387.1
-      },
-      "S4": {
-        "name": "Karanjphen",
-        "area_km2": 262.0,
-        "cn": 61.891,
-        "lag_min": 3115.5
-      },
-      "S5": {
-        "name": "Padasali",
-        "area_km2": 106.39,
-        "cn": 60.967,
-        "lag_min": 2117.1
-      },
-      "S3": {
-        "name": "Kotoli",
-        "area_km2": 261.32,
-        "cn": 64.817,
-        "lag_min": 3997.7
-      },
-      "S2": {
-        "name": "Sangarul",
-        "area_km2": 153.77,
-        "cn": 65.744,
-        "lag_min": 3154.3
-      },
-      "S1": {
-        "name": "Karveer",
-        "area_km2": 86.213,
-        "cn": 74.849,
-        "lag_min": 2152.0
-      }
-    },
-    "baseline_reaches": {
-      "R5": {
-        "k_hr": 4.619,
-        "x": 0.2
-      },
-      "R4": {
-        "k_hr": 1.224,
-        "x": 0.2
-      },
-      "R2": {
-        "k_hr": 11.827,
-        "x": 0.2
-      },
-      "R3": {
-        "k_hr": 3.829,
-        "x": 0.2
-      },
-      "R1": {
-        "k_hr": 2.899,
-        "x": 0.2
-      }
-    },
-    "active_sub_models": {
-      "S6": {
-        "name": "Gaganbawda",
-        "area_km2": 227.72,
-        "cn": 61.783,
-        "lag_min": 3318.1
-      },
-      "S7": {
-        "name": "Garivade",
-        "area_km2": 195.39,
-        "cn": 61.281,
-        "lag_min": 3362.3
-      },
-      "S9": {
-        "name": "Radhanagari",
-        "area_km2": 366.97,
-        "cn": 64.306,
-        "lag_min": 5199.0
-      },
-      "S8": {
-        "name": "Beed",
-        "area_km2": 177.44,
-        "cn": 65.765,
-        "lag_min": 3387.1
-      },
-      "S4": {
-        "name": "Karanjphen",
-        "area_km2": 262.0,
-        "cn": 61.891,
-        "lag_min": 3115.5
-      },
-      "S5": {
-        "name": "Padasali",
-        "area_km2": 106.39,
-        "cn": 60.967,
-        "lag_min": 2117.1
-      },
-      "S3": {
-        "name": "Kotoli",
-        "area_km2": 261.32,
-        "cn": 64.817,
-        "lag_min": 3997.7
-      },
-      "S2": {
-        "name": "Sangarul",
-        "area_km2": 153.77,
-        "cn": 65.744,
-        "lag_min": 3154.3
-      },
-      "S1": {
-        "name": "Karveer",
-        "area_km2": 86.213,
-        "cn": 74.849,
-        "lag_min": 2152.0
-      }
-    },
-    "active_reaches": {
-      "R5": {
-        "k_hr": 4.619,
-        "x": 0.2
-      },
-      "R4": {
-        "k_hr": 1.224,
-        "x": 0.2
-      },
-      "R2": {
-        "k_hr": 11.827,
-        "x": 0.2
-      },
-      "R3": {
-        "k_hr": 3.829,
-        "x": 0.2
-      },
-      "R1": {
-        "k_hr": 2.899,
-        "x": 0.2
-      }
-    },
-    "peak_discharge_error_m3s": 0.0
+    "history": []
   },
   "ecmwf": {
     "S1": [
@@ -20433,7 +20276,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260914_18z",
-    "validation_timestamp": "2026-09-30T06:45:00.803266+00:00",
+    "validation_timestamp": "2026-10-09T10:10:52.582493+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20452,7 +20295,7 @@
     "observation_gap": {
       "is_gap": true,
       "missing_hours": 72,
-      "hours_past_window": 283.8,
+      "hours_past_window": 503.2,
       "grace_hours": 12.0,
       "note": "The full 90-hour forecast window has elapsed and the missing telemetry has not arrived within the grace period, so this cycle is permanently unverifiable against ground truth. Metrics are reported only for the hours that were observed."
     },
@@ -20476,6 +20319,11 @@
       "pbias_discharge_pct": 0.78,
       "spearman_rho_q": null,
       "pearson_r2_q": null,
+      "baseflow_stage_offset_m": 0.009,
+      "observed_ungauged_fraction": 1.0,
+      "rating_extrapolated": true,
+      "constant_baseflow_bias": false,
+      "baseflow_note": null,
       "basin_rainfall_accuracy_pct": null,
       "performance_grade": "BASEFLOW_STABLE"
     },
