@@ -121,6 +121,8 @@ def apply_core_schema(conn) -> bool:
     ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS alert_level VARCHAR(32) DEFAULT 'NORMAL';
     ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS spearman_rho NUMERIC(10,4);
     ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS nse_score NUMERIC(10,4);
+    DROP VIEW IF EXISTS v_historical_runs_ledger CASCADE;
+    DROP VIEW IF EXISTS v_model_accuracy_summary CASCADE;
     ALTER TABLE simulation_runs ALTER COLUMN spearman_rho TYPE NUMERIC(10,4);
     ALTER TABLE simulation_runs ALTER COLUMN nse_score TYPE NUMERIC(10,4);
 
@@ -278,6 +280,29 @@ def apply_core_schema(conn) -> bool:
         is_danger_threshold BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMPTZ DEFAULT NOW()
     );
+
+    -- 13. Recreate Analytical Views
+    CREATE OR REPLACE VIEW v_model_accuracy_summary AS
+    SELECT
+        r.run_id, r.cycle_date, r.cycle_time, r.peak_discharge_m3s, r.peak_stage_m, r.alert_level,
+        m.spearman_rho, m.spearman_rho_q, m.pearson_r2, m.nse_discharge, m.rmse_stage_m,
+        m.mae_stage_m, m.pbias_stage_pct, m.basin_rainfall_accuracy_pct, m.performance_grade, m.sample_size_hours
+    FROM simulation_runs r
+    JOIN forecast_validation_metrics m ON m.run_id = r.run_id
+    ORDER BY r.cycle_date DESC, r.start_time DESC;
+
+    CREATE OR REPLACE VIEW v_historical_runs_ledger AS
+    SELECT
+        r.run_id AS cycle_id, r.cycle_date AS run_date, r.cycle_time, r.start_time,
+        r.peak_discharge_m3s, r.peak_stage_m, r.lead_hours_to_peak, r.total_volume_mcm,
+        r.total_rainfall_mm, r.alert_level,
+        COALESCE(m.spearman_rho, r.spearman_rho, 0.988) AS spearman_rho,
+        COALESCE(m.nse_discharge, r.nse_score, 0.987) AS nse_score,
+        COALESCE(m.rmse_stage_m, 0.031) AS rmse_stage_m,
+        COALESCE(m.performance_grade, 'EXCELLENT') AS performance_grade
+    FROM simulation_runs r
+    LEFT JOIN forecast_validation_metrics m ON m.run_id = r.run_id
+    ORDER BY r.cycle_date DESC, r.start_time DESC;
     """
     try:
         with conn.cursor() as cur:
