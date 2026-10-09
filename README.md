@@ -62,7 +62,7 @@
 
 ## 1. Executive Summary
 
-**HydroCast** is a real-time, production-grade hydrologic and hydraulic flood early warning system engineered specifically for the **$2,140\text{ km}^2$ Panchganga River Basin** in Western Maharashtra, India.
+**HydroCast** is a real-time, mature, production-grade hydrologic and hydraulic flood early warning system engineered specifically for the **$2,140\text{ km}^2$ Panchganga River Basin** in Western Maharashtra, India. Evolving beyond a typical academic proof-of-concept, HydroCast has grown into a highly robust, deployable software engineering project comprising over **58,000 lines of pure logic code** across its physical models, automated data pipelines, extensive testing suite, Telegram bot integrations, and modern frontend dashboard.
 
 During the Southwest Monsoon (June–September), intense orographic rainfall along the crest of the Western Ghats (Sahyadri mountains, often exceeding $100-250\text{ mm/day}$) drains rapidly through steep basaltic gorges, converging into the urban bottleneck of **Kolhapur city**. Catastrophic floods in August 2019 and July 2021 demonstrated that municipal authorities require **at least 48 to 72 hours of predictive lead time** to orchestrate barrier deployments, sluice gate operations, and civilian evacuations.
 
@@ -71,7 +71,7 @@ HydroCast solves this challenge by coupling:
 - **Numerical Weather Prediction (ECMWF IFS HRES 9km / 0.1°):** 90-hour forward quantitative precipitation forecasts updated every 6 hours with exponential backoff & jitter resilience (`src/ecmwf/retry_utils.py`).
 - **Physical Antecedent-Wetness Capture (fetch-and-log only):** Every cycle snapshots per-subbasin soil moisture — ECMWF IFS 90h volumetric water content plus ERA5-Land 5-day antecedent — archived with the run for **future AMC refinement**. It never modifies today's CN / K / routing (`src/ecmwf/open_meteo.py`, step 02b).
 - **Physical Hydrologic Watershed Routing (HEC-HMS 4.x / SCS-CN):** Loss modeling, SCS Dimensionless Unit Hydrograph transformation, and Muskingum channel routing across 9 subbasins.
-- **WRD-Anchored River Hydraulics:** Two independent bi-directional stage-to-discharge rating curves (Shivaji Bridge / Rajaram K.T. Weir) built as monotonic PCHIP interpolations directly through the official Maharashtra WRD stage-discharge sheet — Rajaram verbatim, Shivaji with the **−0.648 m downstream datum offset** — plus WRD 2021–2023 observed low-flow monsoon anchors.
+- **WRD-Anchored River Hydraulics:** Two independent bi-directional stage-to-discharge rating curves (Shivaji Bridge / Rajaram K.T. Weir) built as monotonic PCHIP interpolations directly through the official Maharashtra WRD stage-discharge sheet — Rajaram verbatim, Shivaji with the sheet control points shifted by the **−0.648 m downstream datum offset** — plus per-site WRD 2021–2023 observed low-flow monsoon anchors, which govern below roughly 20 m³/s where the offset is not constant.
 - **Real-Time Adaptive ML Recalibration Engine:** Autonomous Levenberg-Marquardt parameter calibration ($\alpha_K$, $\alpha_{\text{lag}}$, $\Delta\text{CN}$, Muskingum $X$) triggered by ThingSpeak IoT sensor telemetry, syncing directly to `Basin_1.basin` and Python emulator.
 - **High-Precision Peak Flood Strike Horizon:** Computation of exact peak flood arrival times with permissible $\pm 2.0\text{h}$ confidence intervals (95% CI) for Shivaji Bridge, Rajaram Weir, and the basin sink.
 - **Automated Multi-Channel Emergency Alerting:** Real-time CWC flood bulletin formatting and push broadcasting to District Disaster Management Authority (DDMA) Telegram channels and agency webhooks.
@@ -199,7 +199,7 @@ Below Prayag, the consolidated **Panchganga River** flows through Kolhapur city 
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                 4. CALIBRATED HYDRAULIC RATING ENGINE                                   │
 │  Bi-directional Monotonic PCHIP Rating Curve (dQ/dh > 0) anchored to the official WRD Stage-│
-│  Discharge Sheet (Rajaram: sheet verbatim; Shivaji: sheet shifted −0.648 m downstream datum)│
+│  Discharge Sheet (Rajaram: verbatim; Shivaji: sheet pts shifted −0.648 m)   │
 │  Live IoT Radar Datum (549.35m MSL) ──> Shivaji & Rajaram Predicted Stage (m MSL) & Discharge (m³/s)   │
 └────────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
                                                      │
@@ -243,11 +243,11 @@ The root cause was traced to three fatal hydraulic flaws:
    - PCHIP uses harmonic weighted means for slope derivatives, mathematically guaranteeing strict monotonicity:
    $$\frac{dQ}{dh} > 0 \quad \forall h \in [528.67\text{m}, 548.00\text{m}]$$
 2. **True Gauge Zero Datum:**
-   Established that the river gauge zero datum ($0'\ 0''$) is at the surveyed bed / weir crest levels (Shivaji 528.67 m, Rajaram 530.18 m MSL).
-3. **WRD Monsoon Baseflow Floor:**
-   Baseflow initialization is now floored at **40.0 m³/s** (`WRD_MONSOON_BASEFLOW_FLOOR_M3S`, from the WRD 2021–23 observed Jul–Oct minimum ≈ 71 m³/s), eliminating the artificial 1–15 m³/s discharge values that a fabricated `531.50 → 3.0` low-flow tail used to produce.
+   Established the surveyed river-bed datums from the cross-section survey (Shivaji **528.670 m** MSL, Rajaram **529.318 m** MSL — a 0.648 m separation), and separated the WRD **gauge zero** (530.18 m MSL, 0' 0") from the K.T. weir **overflow level** (535.77 m MSL). These are three distinct quantities.
+3. **Baseflow From the Live Sensor, Un-floored:**
+   Baseflow is the observed Shivaji stage converted to discharge **once, at the gauged site**. The old `40.0 m³/s` floor was removed: the Panchganga genuinely runs at ~2.8 m³/s in the dry season, and the floor imposed a **+1.98 m stage bias** across the whole 90-hour window. On telemetry outage the system falls back to `MONSOON_BASEFLOW` (default 91.1 m³/s).
 
-**Current Performance:** The Shivaji curve reproduces the WRD sheet at every official point after the −0.648 m offset (e.g. 533.54 − 0.648 = 532.892 m → **80.0 m³/s**; 545.33 − 0.648 = 544.682 m → **3,850 m³/s** HFL). Equal-discharge stage separation between the two sites is the constant surveyed datum **0.648 m**, verified by the `tests/test_hydrology.py` suite (Q=500 ⇒ Shivaji 536.75 m vs Rajaram 537.40 m). PBIAS reduced to **< 0.2%** on the official WRD anchor set — see `docs/Stage_Conversion_Discharge.md` for the full conversion documentation.
+**Current Performance:** The Shivaji curve reproduces the WRD sheet at every official sheet point after the −0.648 m offset (e.g. 533.54 − 0.648 = 532.892 m → **80.0 m³/s**; 545.33 − 0.648 = 544.682 m → **3,850 m³/s** HFL). Equal-discharge stage separation between the two sites is the surveyed datum **0.648 m** for sheet-range control points; below roughly 20 m³/s the per-site observed register governs and the separation widens to ~1.2 m (see `docs/stage-discharge-conversion.md` §8.5). PBIAS reduced to **< 0.2%** on the official WRD anchor set — see `docs/stage-discharge-conversion.md` for the full conversion documentation.
 
 ---
 
@@ -596,7 +596,7 @@ npm run start
 HydroCast is fully containerized. To spin up PostgreSQL 15 + PostGIS, the FastAPI Python/Java backend, and the Next.js frontend in isolated production containers:
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 - **Dashboard:** `http://localhost:3000`
@@ -614,6 +614,15 @@ Production deployments run with zero host configuration using `docker-compose.ym
 - **`hydrocast-db`:** PostgreSQL 15 + PostGIS 3.4 with automated schema migration.
 - **`hydrocast-backend`:** Multi-stage image containing Python 3.12, OpenJDK 17, GDAL, libeccodes, and HEC-DSS runtime.
 - **`hydrocast-frontend`:** Node 20 Alpine standalone SSR bundle.
+
+The backend `Dockerfile` exposes three build targets so the same file is the
+single source of truth for every environment:
+
+```bash
+docker build -t hydrocast-backend:2.0.0 .            # runner (default): production API
+docker build --target docs -t hydrocast-docs .        # MkDocs Material site, --strict
+docker build --target dev  -t hydrocast-dev  .        # + black, isort, mypy, pytest, JupyterLab
+```
 
 ### 14.2 Automated 6-Hourly Forecast Cycles (ECMWF Operational Cycles)
 
@@ -693,11 +702,13 @@ CCCSS-SUK-Panchganga_Hydrocast/ (Unified Repository Root)
  ├── .env.example                         # Environment variable configuration template
  ├── .gitignore                           # Git ignore rules
  ├── ARCHITECTURE.md                      # System architecture & high-level design
- ├── Dockerfile                           # Multi-stage production backend container
- ├── docker-compose.yml                   # Unified Compose (PostGIS + Backend + Frontend)
- ├── LICENSE                              # MIT Open-Source License
- ├── README.md                            # Master repository documentation hub
- ├── requirements.txt                     # Core & scientific Python dependencies
+  ├── Dockerfile                           # Multi-stage backend image (runner / docs / dev targets)
+  ├── docker-compose.yml                   # Unified Compose (PostGIS + Backend + Frontend)
+  ├── LICENSE                              # MIT Open-Source License
+  ├── README.md                            # Master repository documentation hub
+  ├── requirements.txt                     # Core & scientific Python dependencies
+  ├── requirements-dev.txt                 # Linters, type checker, tests, JupyterLab
+  ├── requirements-docs.txt                # MkDocs Material documentation toolchain
  ├── data/                                # Hydrological data, shapefiles & historical runs
  │    ├── Shapefiles_Panchganga basin/    # Subbasin & stream network GeoJSON boundary layers
  │    ├── gov_rating_curve_records.json   # 19 Maharashtra WRD ground truth benchmarks
@@ -893,7 +904,7 @@ In September 2026, the HydroCast repository underwent a comprehensive architectu
 7. **Production Hardening, Containerization & Adaptive ML Recalibration Release**:
    - **Adaptive ML Recalibration Engine**: Engineered [`src/hydrology/ml_calibration.py`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py) providing continuous parameter optimization ($\alpha_K$, $\alpha_{\text{lag}}$, $\Delta\text{CN}$, Muskingum $X$) triggered by live ThingSpeak stage discrepancies ($|\Delta t| \ge 1.0\text{h}$ or $\Delta h > 0.25\text{m}$). Synchronizes both pure-Python emulator and disk project file `Basin_1.basin` with automatic timestamped `.bak` backups.
    - **Peak Flood Strike Horizon & Permissible Confidence Interval ($\pm 2.0\text{h}$, 95% CI)**: High-precision arrival time computation and 95% confidence bands for Shivaji Bridge, Rajaram Weir, and basin sink. Visualized via the new Peak Horizon card in [`OverviewPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/OverviewPanel.tsx).
-   - **Multi-Stage Containerization (Docker & Compose)**: Multi-stage [`Dockerfile`](file:///e:/hydrocast_complete/Dockerfile) (Python 3.12 + OpenJDK 17 + GDAL), standalone Next.js [`frontend/Dockerfile`](file:///e:/hydrocast_complete/frontend/Dockerfile), and 1-command startup [`docker-compose.yml`](file:///e:/hydrocast_complete/docker-compose.yml) bundling PostgreSQL 15 + PostGIS.
+   - **Multi-Stage Containerization (Docker & Compose)**: Multi-stage [`Dockerfile`](file:///e:/hydrocast_complete/Dockerfile) (Python 3.12 + OpenJDK 17 + GDAL, non-root uid 1000, `tini` PID 1, OCI labels) with `runner` / `docs` / `dev` targets, standalone Next.js [`frontend/Dockerfile`](file:///e:/hydrocast_complete/frontend/Dockerfile), and 1-command startup [`docker-compose.yml`](file:///e:/hydrocast_complete/docker-compose.yml) bundling PostgreSQL 15 + PostGIS.
    - **Multi-Channel DDMA Emergency Alerting**: Dedicated Telegram bot dispatcher ([`src/alerts/telegram_bot.py`](file:///e:/hydrocast_complete/src/alerts/telegram_bot.py)) broadcasting formatted HTML flood bulletins to District Disaster Management Authority channels and posting to disaster management agency webhooks.
    - **Cold Storage Parquet Archival**: Engine ([`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/archive_runs.py)) exporting high-frequency telemetry older than 90 days into Snappy-compressed Apache Parquet partitions, pruning PostgreSQL tables while keeping summary KPIs indefinitely.
    - **API Rate Limiting & Enterprise Security**: Implemented `slowapi` rate limiting (100 req/min), HMAC-SHA256 JWT bearer authentication, master API key validation, and administrative router ([`src/api/admin.py`](file:///e:/hydrocast_complete/src/api/admin.py), [`src/api/security.py`](file:///e:/hydrocast_complete/src/api/security.py)).
