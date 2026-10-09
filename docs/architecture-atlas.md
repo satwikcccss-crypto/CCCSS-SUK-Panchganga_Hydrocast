@@ -67,8 +67,8 @@ everywhere.
           ▼                        ▼                          ▼
    ┌──────────────┐        ┌──────────────┐         ┌──────────────┐
    │  Open-Meteo  │        │  Rain gauge  │         │  ThingSpeak  │
-   │   forecast   │        │   network    │         │  channel      │
-   │  20 stations │        │  20 stations │         │  3424513      │
+   │   forecast   │        │   network    │         │  channel     │
+   │  20 stations │        │  20 stations │         │  3424513     │
    └──────┬───────┘        └──────┬───────┘         └──────┬───────┘
           │                       │                          │
           └───────────┬───────────┘                          │
@@ -94,14 +94,14 @@ everywhere.
                       ▼                                      │
    ┌──────────────────────────────────────────┐              │
    │        HYDROLOGIC ENGINE  (emulator)     │              │
-   │  ┌────────┐  ┌────────┐  ┌───────────┐  │              │
-   │  │SCS-CN  │─►│SCS-UH  │─►│Muskingum  │  │              │
-   │  │  loss  │  │convolve│  │  routing  │  │              │
-   │  └────────┘  └────────┘  └───────────┘  │              │
+   │  ┌────────┐  ┌────────┐  ┌───────────┐  │               │
+   │  │SCS-CN  │─►│SCS-UH  │─►│Muskingum  │  │               │
+   │  │  loss  │  │convolve│  │  routing  │  │               │
+   │  └────────┘  └────────┘  └───────────┘  │               │
    │            + AMC-I / II / III            │              │
-   │            + baseflow recession           │              │
+   │            + baseflow recession           │             │
    └────────────────────┬─────────────────────┘              │
-                        │ Q_total (352 pts)                   │
+                        │ Q_total (352 pts)                  │
                         ▼                                    │
    ┌──────────────────────────────────────────┐              │
    │   HYDRAULIC RATING  (WRD-anchored PCHIP) │              │
@@ -109,15 +109,15 @@ everywhere.
    └────────────────────┬─────────────────────┘              │
                         │ stage_m                            │
                         ▼                                    │
-              ┌───────────────────┐                           │
-              │  Alert evaluator  │◄──────────────────────────┘
+              ┌───────────────────┐                          │
+              │  Alert evaluator  │◄─────────────────────────┘
               │  6-level ladder   │   ▲ discrepancy |Δt| ≥ 1 h
               │  NORMAL…HFL_EXC.  │   │           Δh > 0.25 m
               └─────────┬─────────┘   │
                         │             │
                         ▼             │
               ┌───────────────────┐   │        ┌────────────────────────┐
-              │  Telegram flood   │   └────────│  ML recalibration     │
+              │  Telegram flood   │   └────────│  ML recalibration      │
               │  bulletin bot     │            │  Levenberg–Marquardt   │
               └───────────────────┘            │  → Basin_1.basin (.bak)│
                         │                     └────────────────────────┘
@@ -175,7 +175,7 @@ flowchart TB
         LOSS["<b>SCS-CN loss</b> S = 25400/CN − 254<br/>Ia = λS, λ = 0.20/0.15/0.08"]
         UH["<b>SCS unit hydrograph</b><br/>u(t) = (t/tp)^3.7 · e^(3.7(1−t/tp))<br/>tp = 0.5 + lag/60"]
         MUSK["<b>Muskingum routing</b><br/>R5→R4→R2→R3→R1<br/>C₀+C₁+C₂ = 1 exactly"]
-        BF["<b>Baseflow recession</b><br/>Q_bf = B₀·e^(−0.002t)<br/>B₀ = 91.1 default, floor 40.0"]
+        BF["<b>Baseflow recession</b><br/>Q_bf = B₀·e^(−0.002t)<br/>B₀ from live sensor<br/>91.1 only when telemetry absent"]
     end
 
     subgraph S4["4 · STAGE CONVERSION &amp; ALERTING"]
@@ -292,26 +292,26 @@ are strictly sequential and share one database connection.
 
 ```text
  ┌────────────────────────────────────────────────────────────────────────────────┐
- │  CRON: 30 02:00 / 08:00 / 14:00 / 20:00 UTC   (00z, 06z, 12z, 18z cycles)     │
+ │  CRON: 30 02:00 / 08:00 / 14:00 / 20:00 UTC   (00z, 06z, 12z, 18z cycles)      │
  └──────────────────────────────────┬─────────────────────────────────────────────┘
                                     ▼
  ╔═══════════════════════════════════════════════════════════════════════════════╗
- ║  STEP  NAME                       SOURCE MODULE              TIME           ║
+ ║  STEP  NAME                       SOURCE MODULE              TIME             ║
  ╠═══════════════════════════════════════════════════════════════════════════════╣
- ║  01   Download ECMWF IFS QPF       src/ecmwf/downloader       ~ 8 s         ║
- ║  02   Select governing gauges      src/ecmwf/station_selector ~ 2 s         ║
- ║  02b  Soil-moisture snapshot       src/ecmwf/open_meteo       ~ 4 s         ║
+ ║  01   Download ECMWF IFS QPF       src/ecmwf/downloader       ~ 8 s           ║
+ ║  02   Select governing gauges      src/ecmwf/station_selector ~ 2 s           ║
+ ║  02b  Soil-moisture snapshot       src/ecmwf/open_meteo       ~ 4 s           ║
  ║       (observability only — never feeds CN, K, x or routing)                  ║
- ║  03   Live telemetry fetch         src/sensors/thingspeak_gauge ~ 2 s        ║
- ║  04   Real-time ML recalibration   src/hydrology/ml_calibration ~ 6 s        ║
- ║  05   HEC-HMS / emulator run       src/hms/runner             ~15 ms*       ║
- ║  06   Stage conversion             src/hydrology/stage_converter ~ 1 s       ║
- ║  07   Peak detection & CI          src/hms/runner             < 1 s         ║
- ║  08   Accuracy evaluation          src/hydrology/validation_metrics ~ 2 s   ║
- ║  09   DSS write + run archive      src/dss/writer, runs_tracker  ~ 1 s       ║
- ║  10   Database persistence         src/orchestrator            ~ 1 s        ║
- ║  11   Alert evaluation & dispatch  src/alerts/                 ~ 1 s         ║
- ║  12   Dashboard broadcast          ws_manager.broadcast()      < 1 s         ║
+ ║  03   Live telemetry fetch         src/sensors/thingspeak_gauge ~ 2 s         ║
+ ║  04   Real-time ML recalibration   src/hydrology/ml_calibration ~ 6 s         ║
+ ║  05   HEC-HMS / emulator run       src/hms/runner             ~15 ms*         ║
+ ║  06   Stage conversion             src/hydrology/stage_converter ~ 1 s        ║
+ ║  07   Peak detection & CI          src/hms/runner             < 1 s           ║
+ ║  08   Accuracy evaluation          src/hydrology/validation_metrics ~ 2 s     ║
+ ║  09   DSS write + run archive      src/dss/writer, runs_tracker  ~ 1 s        ║
+ ║  10   Database persistence         src/orchestrator            ~ 1 s          ║
+ ║  11   Alert evaluation & dispatch  src/alerts/                 ~ 1 s          ║
+ ║  12   Dashboard broadcast          ws_manager.broadcast()      < 1 s          ║
  ╚═══════════════════════════════════════════════════════════════════════════════╝
      * 15 ms with the pure-Python emulator; up to 300 s with a native HEC-HMS batch run.
 ```
@@ -430,7 +430,7 @@ not identifiers present in the model.
       ┌──────────────────┐         │                             │
       │  Reach R4        │         │                             │
       │  Bhogavati Trunk │         │                             │
-      │  K = 1.224 hr     │         │                             │
+      │  K = 1.224 hr     │         │                            │
       │  X = 0.200       │         │                             │
       └────────┬─────────┘         │                             │
                │ (R4 outflow)      │                             │
@@ -446,25 +446,26 @@ not identifiers present in the model.
                \                 │       /
                 v                v      v
           ┌───────────────────────────────────────────────────┐
-          │   Reach R3   Kasari River Main                     │
-          │   K = 3.829 hr     X = 0.200                        │
-          └───────────────────────┬─────────────────────────────┘
+          │   Reach R3   Kasari River Main                    │
+          │   K = 3.829 hr     X = 0.200                      │
+          └───────────────────────┬───────────────────────────┘
                                   │  (R3 outflow)
       S2 Sangarul (153.77 km²)    │    S3 Kotoli (261.32 km²)
               \                  │          /
                v                 v         v
           ┌───────────────────────────────────────────────────┐
-          │   Reach R1   Lower Panchganga Trunk                 │
-          │   K = 2.899 hr     X = 0.200                        │◄──── S2, S3 direct
-          └───────────────────────┬─────────────────────────────┘
+          │   Reach R1   Lower Panchganga Trunk               │
+          │   K = 2.899 hr     X = 0.200                      │◄──── S2, S3 direct
+          └───────────────────────┬───────────────────────────┘
                                   │  (R1 outflow)
                                   v
           ┌───────────────────────────────────────────────────┐
-          │   Sink-1   Panchganga Basin Outlet (Rajaram)        │
-          │                                                     │
-          │   + S1 Karveer direct  (86.213 km², CN 74.85)       │
+          │   Sink-1   Panchganga Basin Outlet (Rajaram)      │
+          │                                                   │
+          │   + S1 Karveer direct  (86.213 km², CN 74.85)     │
           │   + Exponential baseflow  Q_bf(t) = Q₀·e^(−0.002t)   │
-          │   + WRD monsoon floor  Q_bf ≥ 40.0 m³/s             │
+          │   Q₀ = discharge of the live sensor (converted once) │
+          │   no floor; 91.1 m³/s only if telemetry absent      │
           │   = Q_total(t)  [ T+0 … T+89 h ]                    │
           └───────────────────────────────────────────────────┘
 ```
@@ -595,7 +596,8 @@ read from `src/hms/runner.py`.
    │ ④ BASEFLOW RECESSION                       at Sink-1           │
    │                                                                 │
    │    Q_bf(t) = Q_bf(0) · exp( −0.002 · t )                        │
-   │    Q_bf(0) ≥ 40.0 m³/s   (WRD-grounded monsoon floor)          │
+   │    Q_bf(0) = PCHIP(observed Shivaji stage)  — no floor          │
+   │             91.1 m³/s only when telemetry is absent             │
    │                                                                 │
    │    Q_total(t) = Q_surface(t) + Q_bf(t)                          │
    │                                                                 │
@@ -627,7 +629,7 @@ flowchart TB
     MUSK["<b>Muskingum routing</b> in order R5 → R4 → R2 → R3 → R1<br/>C₀ = (Δt−2K′X)/denom · C₁ = (Δt+2K′X)/denom · C₂ = (2K′(1−X)−Δt)/denom<br/>denom = 2K′(1−X) + Δt, so C₀+C₁+C₂ = 1 identically"]
     STAB["<b>Stability band</b><br/>Δt/[2(1−X)] ≤ K′ ≤ Δt/(2X)<br/>at X = 0.20, Δt = 1 h → K′ ∈ [0.625, 2.5]<br/>passes: R5 2 · R4 1 · R2 5 · R3 2 · R1 2"]
 
-    BF["<b>Baseflow recession at Sink-1</b><br/>Q_bf(t) = B₀ · e^(−0.002t)<br/>B₀ = 91.1 m³/s default<br/>floored at 40.0 m³/s on the live-stage path"]
+    BF["<b>Baseflow recession at Sink-1</b><br/>Q_bf(t) = B₀ · e^(−0.002t)<br/>B₀ = discharge of the live sensor<br/>91.1 m³/s only if telemetry absent"]
     QT["<b>Q_total(t) = Q_surface(t) + Q_bf(t)</b><br/>352 points"]
     PK["<b>Peak</b> = argmax Q_total(t)<br/>never overridden"]
     EV["<b>Event label only</b><br/>storm rise &gt; max(1.0, 0.10·B₀)<br/>does not move the peak"]
@@ -765,7 +767,7 @@ flowchart TB
 
     subgraph ANCH["STAGE–DISCHARGE ANCHORS · src/hydrology/stage_converter.py"]
         direction LR
-        RJ["<b>RAJARAM · 27 anchors</b><br/>529.318 → 0.00<br/>530.180 → 0.00 &nbsp;<i>weir crest</i><br/>533.360 → 71.25<br/>535.770 → 274.39<br/>541.500 → 1480.0<br/>545.330 → 3850.0"]
+        RJ["<b>RAJARAM · 26 anchors</b><br/>529.318 → 0.00 &nbsp;<i>surveyed bed</i><br/>532.700 → 14.16 &nbsp;<i>lowest WRD obs</i><br/>533.360 → 71.25<br/>535.770 → 274.39<br/>541.500 → 1480.0<br/>545.330 → 3850.0"]
         SV["<b>SHIVAJI · 26 anchors</b><br/>= Rajaram stage − 0.648 m<br/>bed RL 528.670 vs 529.318<br/>reach 3858 m downstream<br/>Q values unchanged"]
     end
 
@@ -1235,7 +1237,7 @@ the timing is discoverable, but it is a constant rather than a measurement.
 ## 9. Symbol legend
 
 | Symbol | Meaning |
-|:---:|:---|
+| :---: | :--- |
 | Slate fill | External forcing outside our control |
 | Blue fill | Ingestion and quality control |
 | Amber fill, diamond outline | Decision point with a real branch |
@@ -1249,7 +1251,7 @@ the timing is discoverable, but it is a constant rather than a measurement.
 | `λ` | Antecedent moisture initial-abstraction ratio (0.20 / 0.15 / 0.08) |
 | `P̄` | Catchment-mean 90-hour rainfall, the AMC classifier input |
 | `Q_bf` | Baseflow component of total discharge |
-| `B₀` | Baseflow at T+0, default 91.1 m³/s, floored at 40.0 m³/s |
+| `B₀` | Baseflow at T+0, from the live sensor reading; 91.1 m³/s only if telemetry is absent |
 | `K′` | Sub-divided Muskingum travel time, K/n |
 | `σ(obs)` | Standard deviation of the observed series, skill-metric gate |
 | `RATING_IMPLIED_DERIVED` | Observed discharge obtained by pushing observed stage back through the forecast rating curve |

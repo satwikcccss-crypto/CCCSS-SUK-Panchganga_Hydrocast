@@ -108,6 +108,13 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
   const isMeteoOnline = comps.open_meteo ? comps.open_meteo.toLowerCase().includes("online") : true;
   const isRatingOnline = comps.stage_rating ? comps.stage_rating.toLowerCase().includes("online") : true;
   const isThingSpeakOnline = Boolean(validationData?.sensor_source || status?.last_cycle?.lifecycle_status);
+  const isMlTuned = comps.ml_calibration
+    ? comps.ml_calibration.toLowerCase().includes("tuned")
+    : false;
+  const mlConfidence = (() => {
+    const m = /conf=([0-9.]+)%/.exec(String(comps.ml_calibration ?? ""));
+    return m ? Math.round(parseFloat(m[1])) : 100;
+  })();
 
   const dataSources = [
     {
@@ -147,10 +154,10 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
     },
     {
       name: "Adaptive ML Recalibration Engine",
-      type: "L-BFGS-B Loss Minimization (Muskingum & SCS-CN)",
-      status: "online",
+      type: "Levenberg–Marquardt Loss Minimization (Muskingum & SCS-CN)",
+      status: isMlTuned ? "online" : "baseline",
       lag: "Real-Time",
-      qc: 100,
+      qc: mlConfidence,
     },
     {
       name: "Telegram Bot & DDMA Emergency Dispatcher",

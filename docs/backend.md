@@ -58,7 +58,7 @@
         |  - SCS-CN Loss Method with Dynamic AMC-I/II/III
         |  - SCS Dimensionless Unit Hydrograph (SCS-UH)
         |  - Muskingum Reach Routing Network (R1–R5) with Sub-stepping
-        |  - Exponential Baseflow Recession (k=0.002/hr, Min Floor >= 40 m3/s)
+        |  - Exponential Baseflow Recession (k=0.002/hr; Q₀ from live sensor, no floor)
         v
  [ Stage 07: WRD-Anchored PCHIP Hydraulic Rating Curve Conversion (Shivaji & Rajaram) ]
         |

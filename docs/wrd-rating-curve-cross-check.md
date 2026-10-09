@@ -23,8 +23,8 @@ The root cause was twofold:
 WRD stage-discharge sheet** — no Manning slope fitting required. Rajaram uses sheet stages
 verbatim; Shivaji applies the **−0.648 m downstream datum offset** (its surveyed bed RL is 0.648 m
 lower, chainage 6+257 vs 10+115). Sub-of-gauged low-flow anchors come from the recorded
-WRD 2021–2023 monsoon register, and a `WRD_MONSOON_BASEFLOW_FLOOR_M3S = 40.0 m³/s` floor prevents
-physically impossible discharges for the 2,140 km² catchment.
+WRD 2021–2023 monsoon register. Baseflow is the sensor-derived discharge itself, with no
+floor on live data.
 
 ### 2. Correction of the Stage-Offset Assumption
 Legacy code used **one** rating curve for both sites, applying an arbitrary `stage − 0.12 m` offset.
@@ -32,10 +32,13 @@ The Sep 2026 fix replaces this with two **independent WRD-anchored curves** rela
 bed-datum separation:
 
 - **Shivaji Bridge:** bed 528.670 m MSL ⇒ anchors = WRD sheet stages **− 0.648 m**.
-- **Rajaram K.T. Weir:** bed 529.318 m MSL, weir crest 530.18 m ⇒ anchors = WRD sheet stages verbatim.
+- **Rajaram K.T. Weir:** bed 529.318 m MSL, gauge zero 530.18 m MSL, weir overflow level 535.77 m MSL ⇒ anchors = WRD sheet stages verbatim.
 
-At the **same discharge**, `Stage_Rajaram − Stage_Shivaji = 0.648 m` (equal-conveyance datum
-recovery). At the **same stage**, Shivaji carries more flow because its channel is 0.648 m deeper.
+At the **same discharge**, `Stage_Rajaram − Stage_Shivaji = 0.648 m` for the WRD sheet
+control points (equal-conveyance datum recovery). At the **same stage**, Shivaji carries
+more flow because its channel is 0.648 m deeper. Below roughly 20 m³/s the low-flow tail
+comes from the per-site WRD register rather than the shifted sheet, and the offset widens
+to ~1.2 m — see `stage-discharge-conversion.md` §8.5.
 
 ### 3. Calibrated Rating Curves Comparison
 
@@ -174,7 +177,7 @@ Shivaji curves:
       - Weir Crest / Datum: 530.18 m MSL; Bed Thalweg: 529.318 m MSL
       - Rating Curve: WRD sheet verbatim (PCHIP)
       - Low-flow anchors: WRD 2021–23 observed monsoon register
-      - Baseflow floor: 40.0 m³/s (WRD monsoon minimum)
+      - Baseflow: from live sensor; 91.1 m³/s fallback only if telemetry absent
 ```
 
 ### Multi-Run Continuous Lifecycle Tracking

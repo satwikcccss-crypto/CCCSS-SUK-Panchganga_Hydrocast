@@ -395,7 +395,9 @@ Natural groundwater recession:
 
 $$Q_{\text{bf}}(t) = Q_{\text{bf0}} \cdot \exp(-0.002 \cdot t)$$
 
-Enforced baseline floor: $\ge 40.0\text{ m}^3/\text{s}$ minimum discharge (WRD 2021–23 observed Jul–Oct minimum ≈ 71 m³/s; conservative floor 40.0).
+Baseflow $B_0$ is taken from the live ultrasonic sensor reading: the observed Shivaji stage is converted to discharge once, at the gauged site, and that discharge enters the sink. Discharge is conserved along a reach whereas stage is not, so no cross-site stage transfer is applied. If no telemetry is available the system falls back to `MONSOON_BASEFLOW` (default 91.1 m³/s).
+
+An earlier revision imposed a hard floor of 40.0 m³/s on the sensor-derived value. Field verification showed this was wrong: the Panchganga genuinely runs at ~2.8 m³/s in the dry season, and the floor imposed a **+1.98 m stage bias across the whole 90-hour window**, amplified by the fact that the rating curve is ~150× steeper at low flow than at flood peak. The 40.0 m³/s floor has been removed entirely; on telemetry outage the system falls back to `MONSOON_BASEFLOW` (default 91.1 m³/s). See the [Engineering Autopsy](errors-and-engineering-assumptions.md), items 19–20.
 
 ### 7.5 Subbasin Catchment Parameters (1,837.213 km² Total)
 

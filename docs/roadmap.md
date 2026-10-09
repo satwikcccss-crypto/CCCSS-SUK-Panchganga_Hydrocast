@@ -101,7 +101,7 @@ does not.
 ```mermaid
 flowchart TB
     T["<b>What is checked today</b>"]
-    T --> A["<b>Hydrology core</b><br/>~292 pytest cases<br/>PCHIP monotonicity, datum offset,<br/>Muskingum mass balance, subbasin areas,<br/>AMC transforms, alert thresholds"]
+    T --> A["<b>Hydrology core</b><br/>125 pytest cases<br/>PCHIP monotonicity, datum offset,<br/>surveyed cross-sections, baseflow vs level,<br/>Muskingum mass balance, subbasin areas,<br/>AMC transforms, alert thresholds"]
     T --> B["<b>Integration layer</b><br/>No executable proof<br/>Step ordering, DB round-trip,<br/>API contract, scheduler behaviour"]
     T --> C["<b>Consequence</b><br/>Unit-level confidence is high.<br/>Cycle-level confidence is<br/>unmeasured."]
 
@@ -156,7 +156,7 @@ before and after.
 | Use the basin `X = 0.20` instead of the `0.25` initial-state default | Open | `src/hms/basin_model.py` |
 | Map `EXTREME` to a tier rather than degrading it to `watch` | Open | `src/hydrology/stage_converter.py` |
 | Implement `check_basin_parameters`, currently a stub | Open | `src/hms/basin_model.py` |
-| Apply the baseflow floor only on the live path, not in the library default | Open | `src/hms/runner.py` |
+| Drop the artificial 40 m³/s baseflow floor on the live path; convert the sensor stage once, at the gauged site | **Done** | `src/hms/runner.py` |
 | Align the 7 table and 4 view names in `database/supabase_schema.sql` with the sync script | Open | `database/supabase_schema.sql` |
 
 ## 6. Operational surface

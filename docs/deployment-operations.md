@@ -29,10 +29,70 @@
 
 HydroCast is fully containerized for reproducible 1-command deployment across cloud virtual machines (AWS EC2, GCP Compute Engine, Azure VM, DigitalOcean) and on-premise workstations:
 
-### 1.1 Architecture & Services (`docker-compose.yml`)
+### 1.1 Image Build Targets (`Dockerfile`)
+
+The backend image is a single multi-stage Dockerfile. Compilers, GDAL headers
+and the full JDK exist only in the `builder` stage; the runtime stage ships the
+JRE, the shared libraries and a dedicated `hydrocast` user (uid/gid 1000), with
+`tini` as PID 1 so `docker stop` reaches uvicorn and in-flight requests drain.
+
+| Target | Purpose | Base |
+|:---|:---|:---|
+| `runner` *(default)* | Production FastAPI service on `:8000` | `python:3.12-slim-bookworm` + JRE 17, GDAL, eccodes |
+| `docs` | MkDocs Material site, built with `--strict` to `/app/site` | `python:3.12-slim-bookworm` + `requirements-docs.txt` |
+| `dev` | `runner` + black, isort, mypy, pytest, JupyterLab | production runtime |
+
+```bash
+# Production image (embeds OCI labels: version, git SHA, build date)
+docker build -t hydrocast-backend:2.0.0 \
+  --build-arg APP_VERSION=2.0.0 \
+  --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
+  --build-arg BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)" .
+
+# Multi-architecture release (buildx is required for cross-platform builds)
+docker buildx build --platform linux/amd64,linux/arm64 --push \
+  -t ghcr.io/satwikcccss-crypto/hydrocast-backend:2.0.0 .
+
+# Documentation site — `--strict` fails the build on a broken anchor,
+# a missing nav entry or an unresolved mkdocstrings identifier
+docker build --target docs -t hydrocast-docs .
+
+# Developer image: interactive shell with the full toolchain
+docker build --target dev -t hydrocast-dev .
+```
+
+The runtime honours four optional environment variables, all defaulted inside
+the image so the container starts with no configuration:
+
+| Variable | Default | Purpose |
+|:---|:---|:---|
+| `PORT` | `8000` | HTTP listen port (also used by `HEALTHCHECK`) |
+| `WEB_CONCURRENCY` | `2` | uvicorn worker processes |
+| `GRACEFUL_TIMEOUT` | `30` | Seconds to finish in-flight requests on `SIGTERM` |
+| `FORWARDED_ALLOW_IPS` | `127.0.0.1` | Trusted proxies for `X-Forwarded-For` |
+
+!!! warning "`FORWARDED_ALLOW_IPS` and rate limiting"
+    Rate limiting keys on the client IP, so setting `FORWARDED_ALLOW_IPS=*`
+    would let any caller spoof `X-Forwarded-For` and bypass its quota. Set it
+    to the load balancer address only when a trusted proxy is actually in front.
+
+### 1.2 Architecture & Services (`docker-compose.yml`)
 
 ```yaml
-version: "3.8"
+# Obsolete top-level `version:` key intentionally omitted — Compose v2 selects
+# the current schema itself and warns when the key is present.
+x-hydrocast-env: &hydrocast-env
+  DATABASE_URL: postgresql://hms_app:${POSTGRES_PASSWORD}@hydrocast-db:5432/rainfall_runoff
+  API_KEY: ${API_KEY}
+  INTERNAL_KEY: ${INTERNAL_KEY}
+  API_BASE_URL: http://hydrocast-backend:8000
+  RATE_LIMIT_PUBLIC: 100/minute
+  JWT_SECRET: ${JWT_SECRET}
+  ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+  ARCHIVE_RETENTION_DAYS: 90
+  ARCHIVE_DIR: /app/data/archives
+  RAW_DIR: /app/data/raw
 
 services:
   hydrocast-db:
@@ -44,7 +104,7 @@ services:
     environment:
       POSTGRES_DB: rainfall_runoff
       POSTGRES_USER: hms_app
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/supabase_schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
@@ -58,6 +118,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: runner
     container_name: hydrocast-backend
     restart: unless-stopped
     ports:
@@ -66,22 +127,24 @@ services:
       hydrocast-db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://hms_app:password@hydrocast-db:5432/rainfall_runoff
-      API_KEY: Hydrocast_PCH
-      INTERNAL_KEY: internal_secret
-      API_BASE_URL: http://hydrocast-backend:8000
-      RATE_LIMIT_PUBLIC: 100/minute
-      JWT_SECRET: your_production_jwt_secret_min_32_chars
-      ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: your_strong_admin_password
-      ARCHIVE_RETENTION_DAYS: 90
+      <<: *hydrocast-env
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-127.0.0.1}
     volumes:
-      - hydrocast_data:/app/data
+      - hydrocast_runs:/app/data/runs
+      - hydrocast_telemetry:/app/data/telemetry
+      - hydrocast_forecast:/app/data/openmeteo_dss
+      - hydrocast_raw:/app/data/raw
+      - hydrocast_archives:/app/data/archives
+      - hydrocast_logs:/app/data/logs
+    stop_grace_period: 45s
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      test: ["CMD", "curl", "-fsS", "--max-time", "4", "http://localhost:8000/api/v1/health"]
       interval: 15s
       timeout: 5s
       retries: 3
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
 
   hydrocast-frontend:
     build:
@@ -102,21 +165,71 @@ services:
       interval: 20s
       timeout: 5s
       retries: 3
+
+  hydrocast-docs:      # opt-in: docker compose --profile docs up docs
+    build:
+      context: .
+      target: docs
+    profiles: ["docs"]
+    ports: ["8001:8001"]
+    volumes:
+      - ./docs:/app/docs:ro
+      - ./src:/app/src:ro
+      - ./mkdocs.yml:/app/mkdocs.yml:ro
+
+  hydrocast-dev:       # opt-in: docker compose --profile dev up dev
+    build:
+      context: .
+      target: dev
+    profiles: ["dev"]
+    ports: ["8000:8000", "8888:8888"]
+    environment:
+      <<: *hydrocast-env
+    command: ["bash"]
 ```
 
-### 1.2 Startup & Management Commands
+### 1.3 Persistent State: Why Volumes Are Mounted Per Directory
+
+`/app/data` holds two different kinds of content, and only one of them is
+mutable:
+
+| Path | Kind | Mounted? |
+|:---|:---|:---|
+| `data/hms/HMS_Automation_RJKT/` | versioned HEC-HMS basin project | baked into the image |
+| `data/Shapefiles_Panchganga basin/`, `data/wrd_cross_sections/`, `data/stations/` | GIS, rating and gauge reference data | baked into the image |
+| `data/runs/` | cycle ledger served by `/api/v1/runs` | named volume, seeded from the image |
+| `data/telemetry/`, `data/openmeteo_dss/` | ThingSpeak cache, forecast DSS output | named volume |
+| `data/raw/`, `data/archives/`, `data/logs/` | GRIB downloads, parquet cold storage, logs | named volume |
+
+!!! danger "A single `hydrocast_data:/app/data` mount hides the reference data"
+    A volume mounted over `/app/data` **shadows** everything baked into the
+    image at build time. The HEC-HMS basin files, the GIS layers and the entire
+    historical run ledger would vanish and the API would answer
+    `/api/v1/runs` with an empty list. Compose therefore mounts the six mutable
+    subdirectories individually; Docker seeds each empty named volume from the
+    image, so the first `docker compose up` still starts with a populated
+    ledger and keeps accumulating cycles from then on.
+
+### 1.4 Startup & Management Commands
 ```bash
 # Build images and start all services in detached mode
-docker-compose up -d --build
+docker compose up -d --build
 
 # Inspect container health and port bindings
-docker-compose ps
+docker compose ps
 
 # Stream unified application logs
-docker-compose logs -f
+docker compose logs -f
 
 # Stop and gracefully shut down services
-docker-compose down
+docker compose down
+
+# Local documentation preview with live reload (http://localhost:8001)
+docker compose --profile docs up docs
+
+# Interactive backend with black / mypy / pytest / JupyterLab
+docker compose --profile dev up dev
+docker compose --profile dev run --rm dev pytest -q
 ```
 
 ---

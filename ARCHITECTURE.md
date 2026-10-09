@@ -175,7 +175,7 @@ HydroCast is an enterprise-grade operational hydrologic forecasting and early wa
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                 4. WRD-ANCHORED HYDRAULIC RATING ENGINE                                   │
 │  Monotonic PCHIP Rating (dQ/dh > 0) anchored on the official WRD Stage-Discharge Sheet               │
-│  (Rajaram: sheet verbatim; Shivaji: sheet −0.648 m downstream datum; + WRD 2021–23 low-flow anchors)  │
+│  (Rajaram: sheet verbatim; Shivaji: sheet −0.648 m on sheet pts; + per-site WRD 2021–23 low-flow anchors)  │
 │  Sheet Range: 530.18m Datum to 545.33m HFL Benchmark (3,850 m³/s)                                      │
 └───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
                                                     │
@@ -266,7 +266,8 @@ The orchestrator ([`src/orchestrator.py`](file:///e:/hydrocast_complete/src/orch
 │                                                                                                         │
 │  STEP 8: MONOTONIC HYDRAULIC RATING STAGE CONVERSION                                                    │
 │    Evaluate WRD-anchored PCHIP rating curves (dQ/dh > 0): Rajaram = official WRD sheet verbatim;        │
-│    Shivaji = same sheet shifted −0.648 m downstream datum. Produce 90 hourly stage and flow forecasts.  │
+│    Shivaji = same sheet shifted −0.648 m downstream datum (sheet points only; below  │
+│    ~20 m³/s the per-site WRD register governs). Produce 90 hourly stage and Q.      │
 │                                                                                                         │
 │  STEP 9: PEAK FLOOD STRIKE HORIZON & CONFIDENCE INTERVAL COMPUTATION                                    │
 │    Calculate peak arrival time and permissible ±2.0h uncertainty window (95% CI) at Shivaji and Rajaram.│
@@ -454,10 +455,13 @@ services:
 ```
 
 - **Backend Multi-Stage Build ([`Dockerfile`](file:///e:/hydrocast_complete/Dockerfile)):**
-  - Stage 1 (Builder): Installs C/C++ compilers, OpenJDK 17, `libgdal-dev`, `libeccodes-dev`, and builds Python wheels.
-  - Stage 2 (Runner): Minimal runtime image with OpenJDK 17 JRE, `libgdal32`, non-root user `hydrocast`, and health check probe at `/api/v1/health`.
+  - Stage 1 (Builder): Installs C/C++ compilers, OpenJDK 17, `libgdal-dev`, `libeccodes-dev`, and builds the wheels into a relocatable venv at `/opt/venv`.
+  - Stage 2 (Runner, default): Minimal runtime image with OpenJDK 17 JRE, `libgdal32`, `libeccodes0`, non-root user `hydrocast` (uid/gid 1000), `tini` as PID 1, OCI build labels, and health check probe at `/api/v1/health`.
+  - Stage 3 (Docs): MkDocs Material toolchain that builds `site/` with `--strict`; no hydrology wheels required because mkdocstrings reads `src/` statically.
+  - Stage 4 (Dev): Runner plus `requirements-dev.txt` (black, isort, mypy, pytest, JupyterLab).
 - **Frontend Standalone Build ([`frontend/Dockerfile`](file:///e:/hydrocast_complete/frontend/Dockerfile)):**
   - Node.js 20 Alpine multi-stage builder packaging static assets and standalone server bundle.
 - **Unified Orchestration ([`docker-compose.yml`](file:///e:/hydrocast_complete/docker-compose.yml)):**
-  - 1-command startup: `docker-compose up -d`.
+  - 1-command startup: `docker compose up -d`.
   - Automated database initialization with [`database/supabase_schema.sql`](file:///e:/hydrocast_complete/database/supabase_schema.sql).
+  - Mutable state is mounted per subdirectory (`/app/data/runs`, `/app/data/archives`, …) so the versioned HEC-HMS basin, GIS layers and reference data baked into the image are never shadowed by a volume mount; Docker seeds each empty named volume from the image.

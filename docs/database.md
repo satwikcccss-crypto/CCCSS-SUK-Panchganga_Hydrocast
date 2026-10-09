@@ -373,4 +373,4 @@ hydrocast-db:
     - postgres_data:/var/lib/postgresql/data
     - ./database/supabase_schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
 ```
-Upon first launch (`docker-compose up -d`), PostgreSQL boots, mounts `database/supabase_schema.sql`, and automatically bootstraps all tables, views, indexes, and initial benchmark data.
+Upon first launch (`docker compose up -d`), PostgreSQL boots, mounts `database/supabase_schema.sql`, and automatically bootstraps all tables, views, indexes, and initial benchmark data.

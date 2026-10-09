@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 
@@ -22,6 +23,17 @@ function getLatestData() {
 }
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
+
+// Constant-time validation of Telegram's X-Telegram-Bot-Api-Secret-Token header.
+// Disabled (returns true) when no secret is configured.
+function isValidWebhookSecret(provided: string | null): boolean {
+  if (!TELEGRAM_WEBHOOK_SECRET) return true;
+  if (!provided) return false;
+  const a = Buffer.from(provided);
+  const b = Buffer.from(TELEGRAM_WEBHOOK_SECRET);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
 
 async function sendMessage(chatId: number, text: string) {
   if (!TELEGRAM_BOT_TOKEN) {
@@ -47,6 +59,10 @@ async function sendMessage(chatId: number, text: string) {
 
 export async function POST(req: Request) {
   try {
+    if (!isValidWebhookSecret(req.headers.get("x-telegram-bot-api-secret-token"))) {
+      return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
 
     // Respond immediately if not a text message

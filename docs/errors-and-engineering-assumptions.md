@@ -573,3 +573,193 @@ is located relative to the slice boundary affects which discharge is reported as
 the forecast peak, and the baseflow recession is applied to all 352 steps before
 slicing.
 
+### 19. A hard baseflow floor overrode a live sensor measurement
+
+*(Found 2026-09-30 and fixed.)* `src/hms/runner.py` applied
+`baseflow = max(sensor_baseflow, WRD_MONSOON_BASEFLOW_FLOOR_M3S)` unconditionally,
+so a 40 m³/s floor overrode the ultrasonic reading whenever the river was below
+that. The floor's own comment justified it as *"WRD 2021-23 observed July-Oct min
+~71 m³/s"* and *"unphysical for 2140 km²"*, reasoning that predates the telemetry
+link.
+
+Field verification confirmed the sensor: the Panchganga genuinely runs at
+2.8 m³/s at 530.44 m MSL in the dry season, which is 0.26 m above gauge zero.
+The floor produced a **+1.98 m stage bias across the entire 90-hour window**,
+because the rating curve is roughly 150× steeper at low flow than at flood peak
+(0.63 m per m³/s below 2.8 m³/s against 0.004 m per m³/s above 1 480 m³/s).
+
+*Fix:* the floor now applies only when no telemetry is available. A live reading
+is treated as ground truth.
+
+### 20. Stage was transferred across a reach in order to derive discharge
+
+*(Found 2026-09-30 and fixed.)* Baseflow was derived by shifting the observed
+Shivaji stage by the surveyed 0.648 m bed drop and inverting the result at
+Rajaram — that is, transferring a *stage* in order to obtain a *discharge*.
+
+Two things were wrong with this. First, the KT weir ponding term was included,
+and impoundment raises the water surface without adding conveyance, so
+inverting an artificially raised surface double-counted the ponding. Second, and
+more seriously, the two rating curves are a constant 0.648 m datum shift **only
+from about 20 m³/s upward**. Below that, each curve is pinned to its own surveyed
+bed level and the offset widens to 1.02 m at Q = 2.8 m³/s, contradicting the
+documented claim that the offset holds at every anchor.
+
+*Fix:* discharge is conserved along a reach whereas stage is not, so the
+observed stage is now converted to discharge once, at the site where it was
+measured, and no cross-site transfer is performed. `infer_rajaram_stage_from_shivaji`
+gained an explicit `apply_backwater` flag, defaulting to the previous behaviour
+so callers that genuinely want a stage are unaffected.
+
+Combined effect on the reported case: mean absolute stage error **1.019 m →
+0.003 m** across a low-flow sample, with flood-period output unchanged to within
+0.5 m³/s. Covered by `tests/test_low_flow_stage_bias.py`.
+
+### 21. The weir crest constant was the gauge zero datum
+
+*(Found 2026-09-30 and fixed.)* `RAJARAM_KT_WEIR_CREST_RL_M` was set to 530.18 m,
+which is the WRD gauge zero datum, not the weir crest. The documented weir
+overflow level is 535.77 m. Because the value only appeared in one comparison,
+the bug was silent. `RAJARAM_GAUGE_ZERO_M` and `RAJARAM_KT_WEIR_CREST_RL_M` are
+now separate constants with distinct values.
+
+### 22. The embedded cross-sections were unverified against the ground survey
+
+*(Verified 2026-09-30.)* `stage_converter.py` embeds the two surveyed
+cross-sections as literal coordinate arrays, with no runtime dependency on the
+survey files. Because they were literals, nothing checked them against the
+official WRD ground survey, so a transcription edit could drift silently.
+
+Both sections were checked point-by-point against the surveyed data:
+
+| Site | X-Section | Embedded points | Survey points | Bed RL | Match |
+| :--- | :--- | ---: | ---: | ---: | :--- |
+| Shivaji Bridge | 17, chainage 6+257 | 146 | 146 | 528.670 m | exact |
+| Rajaram K.T. Weir | 29, chainage 10+115 | 193 | 193 | 529.318 m | exact |
+
+No coordinate differed, so nothing needed replacing — the embedded geometry was
+already the surveyed section. The survey has since been promoted to a tracked
+location (`data/wrd_cross_sections/`) and `tests/test_cross_section_survey.py`
+(17 cases) now asserts exact equality, the bed levels, the section widths, and
+that discharge is zero at the surveyed bed and grows monotonically with the
+wetted area and perimeter.
+
+The same test initially recorded that the wetted geometry "cannot set the
+discharge magnitude", citing Manning with $n = 0.031$ and $S = 1{:}4641$
+returning ~210 m³/s against a government-gauged 80 m³/s at 533.54 m. **That
+comparison was wrong and has been withdrawn** — see item 24.
+
+### 23. The baseflow rule was untested in the runner and only mirrored in tests
+
+*(Fixed 2026-09-30.)* The corrected baseflow derivation lived inline inside
+`_execute_hec_hms_core`, and `tests/test_low_flow_stage_bias.py` exercised a
+hand-written *copy* of it. A later edit to the runner would not have failed any
+test. The rule is now the module-level function
+`src.hms.runner.derive_baseflow_m3s(live_stage_m)`, called by the runner and by
+the tests, so the tested path is the shipped path.
+
+Its documented consequences, all asserted: discharge is exactly 0 at the
+surveyed bed level; it rises monotonically with the wetted area and perimeter;
+and 40 m³/s is a legitimate baseflow at 532.42 m MSL (533.06 m at Rajaram) but
+never a floor to apply at every level.
+
+
+### 24. The reach bed slope was used as the friction slope
+
+*(Found 2026-09-30. The conclusion it supported has been withdrawn.)*
+
+The Shivaji→Rajaram reach was checked by applying Manning with $n = 0.031$ and
+the **survey bed slope** $1{:}4641$ to the surveyed sections. That returned
+~21 m³/s at the live stage against ~2.8 m³/s from the WRD rating curve, and the
+project concluded that the wetted geometry over-predicted by a factor of ~7.6.
+
+That comparison is invalid. The bed slope is not the friction slope. The single
+matched pair in the official record — $Q = 1800$ m³/s at Shivaji 542.10 m and
+Rajaram 542.70 m — gives a **water-surface drop of 0.600 m** over a 0.648 m bed
+drop, i.e. the reach is in backwater and the surface gradient is flatter than the
+bed gradient. The effective conveyance measured from the lowest WRD gauge is
+$K = 0.0539$, an effective $n\sqrt{S}$ of 18.5, against 2197 implied by the bed
+slope.
+
+Redone with measured quantities only, the surveyed wetted area and the WRD
+record agree:
+
+| Closure | Basis | Q at Shivaji 530.44 m |
+| :--- | :--- | ---: |
+| Velocity $v\cdot A$ | $v = 0.0767$ m/s measured at the lowest WRD gauge | 3.36 m³/s |
+| Conveyance $K\cdot A\cdot R^{2/3}$ | $K = 0.0539$ measured at the same gauge | 2.42 m³/s |
+| Production PCHIP | WRD anchors with the −0.648 m transfer | 2.80 m³/s |
+
+The production value lies inside the geometry bracket, and the operator's
+independent estimate of 2.90 m³/s does too.
+
+Two further defects found and fixed in the same pass:
+
+- **The `530.18 → Q = 0` rating anchor was fabricated.** 530.18 m is the WRD
+  zero-gauge *datum*, not a crest and not a level at which flow ceases. Anchoring
+  $Q = 0$ there created a 2.52 m linear ramp whose slope was set by the next
+  anchor rather than by any observation. Removed; only the surveyed bed
+  (529.318 m) now carries $Q = 0$.
+- **The site transfer was documented as WRD-attested.** It is not. The measured
+  surface drop is 0.600 m, not 0.648 m. The 0.648 m bed drop is retained as the
+  uniform-flow transfer, and the measured value is now recorded separately in
+  `SHIVAJI_MEASURED_SURFACE_DROP_M`.
+
+Removing the fabricated anchor also revealed that two tests
+(`test_offset_widens_below_20_m3s`, `test_shifting_low_stage_understates_discharge`)
+were asserting an artefact of it: the two curves are exact translates, so the
+offset is a uniform 0.648 m at every discharge and the stage round trip is an
+identity. Both were replaced with tests of the corrected invariant.
+
+### 25. The WRD register contains transcription errors
+
+*(Found and corrected 2026-09-30.)* The hourly register is a wide multi-day
+sheet; `stage_m` is derived from the staff-gauge reading, not measured
+independently. Recomputing `ft_dec × 0.3048 + 530.18` for every row keeps
+**2350 of 2406** rows and exposes **56** that disagree by more than 0.03 m,
+including one 2023-07-08 column that is off by exactly 1.00 m. Those rows
+produced duplicate stages carrying wildly different discharges and made the
+roughness back-calculation meaningless (193 % coefficient of variation).
+
+After the filter the register reproduces the official WRD sheet to within
+**±0.3 %** across 533.54–539.02 m, which confirms the sheet anchors. Above
+541.50 m the two diverge by up to **−50 %**, so the sheet's upper limb is a
+published extension rather than a measurement.
+
+The official sheet is also a clean compound rating:
+
+$$Q = 1.5\,(H - 529.318)^{2.778}, \qquad R^2 = 0.99858$$
+
+fitted on 15 sheet points over 533.54–541.50 m with a maximum residual of
+7.3 %. It is **valid only inside that band and must not be extrapolated below
+533.54 m**.
+
+### 26. The lowest-flow discharge is an extrapolation, not an observation
+
+*(Open constraint, recorded 2026-09-30.)* After cleaning, the WRD record
+contains **no observation below 532.70 m** — the lowest reading in three years is
+532.70 m at 14.16 m³/s. The live Shivaji reading of 530.44 m sits 2.26 m below
+it, and the rating exponent in the observed low band is $b \approx 10$, so the
+curve is extremely steep there and a multi-metre downward extrapolation is not
+benign.
+
+The production PCHIP value at the live stage is therefore a shape extrapolation,
+and the ~0.648 m site transfer is the survey bed drop rather than a measured low-
+flow surface drop. `estimate_low_flow_discharge()` and `is_ungauged_stage()` now
+return the geometry bracket (2.42–3.36 m³/s at 530.44 m) and an explicit
+`is_ungauged` flag so the uncertainty travels with the number.
+
+Of the 60 archived cycles replayed from 2026-09-10, **35 are anchored on an
+un-gauged stage** and must be re-run if official WRD low-flow data below
+532.70 m is obtained.
+
+### 27. Replay guardrails
+
+*(Added 2026-09-30.)* `scratch/resim_and_revalidate_all.py` rewrites every
+archived cycle in place and rebuilds the ledger. It had no date filter, no
+backup, and no record of which rating basis produced a run. It now accepts
+`--since`, `--dry-run` and `--no-backup`, writes a timestamped
+`data/runs/_backup_<stamp>/` snapshot before any overwrite, carries forward
+ledger entries for out-of-scope cycles so a narrow replay cannot truncate the
+history, and stamps each replayed run with a `rating_curve_fingerprint` and a
+`low_flow_basis` provenance block.

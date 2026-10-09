@@ -241,14 +241,22 @@ This reduces the final container image footprint to $< 180\text{ MB}$ and ensure
 
 ---
 
-## 8. Interactive Telegram Bot Serverless Webhook (`/api/telegram/webhook`)
+## 8. Interactive Telegram Bot & Tiered RBAC System
 
-HydroCast integrates an edge-ready serverless Next.js API route (`frontend/app/api/telegram/webhook/route.ts`) providing direct two-way disaster intelligence to citizens and emergency authorities:
-- `/start` or `/help`: Command documentation
-- `/status`: System health, cycle ID, runtime SLA
-- `/stage`: Current water level and peak stage forecast for Shivaji Bridge and Rajaram Weir
-- `/alerts`: Active warning and danger alerts
-- `/bulletin`: Full official CWC emergency flood bulletin
+HydroCast integrates an edge-ready serverless Next.js API route (`frontend/app/api/telegram/webhook/route.ts`) and a Python background service (`src/alerts/telegram_bot.py`) providing two-way disaster intelligence with Role-Based Access Control (RBAC):
+
+### Public Commands (Open to Everyone):
+- `/start` or `/help`: Welcome message, public overview, and official onboarding guide
+- `/stage`: Current water level, alert thresholds, and peak stage forecasts for Shivaji Bridge and Rajaram Weir
+- `/alerts`: Active warning, danger, and evacuation safety advisories
+- `/bulletin`: Full official CWC / DDMA emergency flood bulletin
+- `/id`: Shows the caller's Telegram Chat & User ID for access requests
+
+### Official Commands (Restricted to CCCSS, SUK, WRD, & DDMA Personnel):
+- `/status`: System diagnostics, engine health, database status, and cycle step execution timings
+- `/rainfall`: Catchment precipitation breakdown across the 18 stations and 13 subbasins
+- `/curvenumbers` (alias `/calibration`): Calibrated SCS Curve Numbers ($\Delta CN$) and Muskingum routing parameters ($K, X$)
+- `/logs`: Recent pipeline diagnostic and operational warning/error logs
 
 ---
 

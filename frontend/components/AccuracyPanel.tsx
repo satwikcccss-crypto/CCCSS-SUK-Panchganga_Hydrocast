@@ -1125,30 +1125,57 @@ export default function AccuracyPanel() {
         const lastCalibratedAt = recal?.last_calibrated_at || "Physics Baseline Active";
         const timingOffset = recal?.timing_offset_hours ?? 0.0;
         const stageDiscrepancy = recal?.stage_discrepancy_m ?? 0.0;
+        const peakQError = recal?.peak_discharge_error_m3s ?? 0.0;
         const alphaK = recal?.alpha_k ?? 1.0;
         const alphaLag = recal?.alpha_lag ?? 1.0;
         const deltaCn = recal?.delta_cn ?? 0.0;
         const muskingumX = recal?.muskingum_x ?? 0.25;
+        const confidencePct = isRecalibrated ? recal?.confidence_pct ?? 0 : 0;
 
-        const subbasins = [
-          { id: "S1", name: "Karveer", baseCn: 74.85, baseLagMin: 2152.0, areaKm2: 86.213 },
-          { id: "S2", name: "Sangarul", baseCn: 65.74, baseLagMin: 3154.3, areaKm2: 153.77 },
-          { id: "S3", name: "Kotoli", baseCn: 64.82, baseLagMin: 3997.7, areaKm2: 261.32 },
-          { id: "S4", name: "Karanjphen", baseCn: 61.89, baseLagMin: 3115.5, areaKm2: 262.00 },
-          { id: "S5", name: "Padasali", baseCn: 60.97, baseLagMin: 2117.1, areaKm2: 106.39 },
-          { id: "S6", name: "Gaganbawda", baseCn: 61.78, baseLagMin: 3318.1, areaKm2: 227.72 },
-          { id: "S7", name: "Garivade", baseCn: 61.28, baseLagMin: 3362.3, areaKm2: 195.39 },
-          { id: "S8", name: "Beed", baseCn: 65.76, baseLagMin: 3387.1, areaKm2: 177.44 },
-          { id: "S9", name: "Radhanagari", baseCn: 64.31, baseLagMin: 5199.0, areaKm2: 366.97 },
-        ];
+        // Absolute parameters are read straight from the persisted calibration
+        // state (immutable baseline + offsets applied exactly once). Nothing is
+        // hardcoded here, so the dashboard can never disagree with the engine.
+        const baselineSub: Record<string, any> = recal?.baseline_sub_models ?? {};
+        const activeSub: Record<string, any> = recal?.active_sub_models ?? baselineSub;
+        const baselineRch: Record<string, any> = recal?.baseline_reaches ?? {};
+        const activeRch: Record<string, any> = recal?.active_reaches ?? baselineRch;
 
-        const reaches = [
-          { id: "R5", routing: "S6 + S7 → R2", baseK: 18.338, baseLagHr: 18.338 },
-          { id: "R4", routing: "S9 → R2", baseK: 8.085, baseLagHr: 8.085 },
-          { id: "R2", routing: "R5 + R4 + S8 → R1", baseK: 16.500, baseLagHr: 16.500 },
-          { id: "R3", routing: "S4 + S5 → R1", baseK: 9.484, baseLagHr: 9.484 },
-          { id: "R1", routing: "R2 + R3 + S3 + S2 → Sink-1", baseK: 4.500, baseLagHr: 4.500 },
-        ];
+        const byNumericId = (a: string, b: string) =>
+          a.localeCompare(b, undefined, { numeric: true });
+
+        const subbasins = Object.keys(baselineSub).sort(byNumericId).map((id) => {
+          const base = baselineSub[id] ?? {};
+          const active = activeSub[id] ?? base;
+          return {
+            id,
+            name: base.name ?? id,
+            areaKm2: Number(base.area_km2 ?? 0),
+            baseCn: Number(base.cn ?? 0),
+            baseLagMin: Number(base.lag_min ?? 0),
+            activeCn: Number(active.cn ?? base.cn ?? 0),
+            activeLagMin: Number(active.lag_min ?? base.lag_min ?? 0),
+          };
+        });
+
+        const ROUTING: Record<string, string> = {
+          R1: "R2 + R3 + S3 + S2 → Sink-1",
+          R2: "R5 + R4 + S8 → R1",
+          R3: "S4 + S5 → R1",
+          R4: "S9 → R2",
+          R5: "S6 + S7 → R2",
+        };
+
+        const reaches = Object.keys(baselineRch).sort(byNumericId).map((id) => {
+          const base = baselineRch[id] ?? {};
+          const active = activeRch[id] ?? base;
+          return {
+            id,
+            routing: ROUTING[id] ?? id,
+            baseK: Number(base.k_hr ?? 0),
+            activeK: Number(active.k_hr ?? base.k_hr ?? 0),
+            activeX: Number(active.x ?? base.x ?? muskingumX),
+          };
+        });
 
         return (
           <div className="flex flex-col gap-5">
@@ -1170,7 +1197,7 @@ export default function AccuracyPanel() {
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 font-medium">
-                    Continuous feedback loop matching simulated flood waves to observed ThingSpeak sensor hydrographs via Scipy L-BFGS-B optimization.
+                    Continuous feedback loop matching simulated flood waves to observed ThingSpeak sensor hydrographs via Scipy Levenberg–Marquardt optimization.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-mono">
@@ -1178,7 +1205,7 @@ export default function AccuracyPanel() {
                     Status: <strong className="text-gray-900">{triggerReason}</strong>
                   </span>
                   <span className="px-2.5 py-1 bg-gray-100 rounded text-gray-700">
-                    Confidence: <strong className="text-indigo-600">{recal?.confidence_pct ?? 95}%</strong>
+                    Confidence: <strong className="text-indigo-600">{confidencePct.toFixed(1)}%</strong>
                   </span>
                 </div>
               </div>
@@ -1247,8 +1274,12 @@ export default function AccuracyPanel() {
                     <strong className="font-mono text-gray-900">{timingOffset > 0 ? `+${timingOffset.toFixed(1)}h (Late)` : timingOffset < 0 ? `${timingOffset.toFixed(1)}h (Early)` : "0.0h (Synchronized)"}</strong>
                   </div>
                   <div className="flex justify-between py-1 border-b border-gray-100">
-                    <span>Maximum Stage Discrepancy (Δh):</span>
-                    <strong className="font-mono text-gray-900">{stageDiscrepancy.toFixed(3)} m MSL</strong>
+                    <span>Signed Stage Discrepancy (Δh):</span>
+                    <strong className="font-mono text-gray-900">{stageDiscrepancy > 0 ? `+${stageDiscrepancy.toFixed(3)}` : stageDiscrepancy.toFixed(3)} m MSL</strong>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-gray-100">
+                    <span>Peak Discharge Error (ΔQ_peak):</span>
+                    <strong className="font-mono text-gray-900">{peakQError > 0 ? `+${peakQError.toFixed(1)}` : peakQError.toFixed(1)} m³/s</strong>
                   </div>
                   <div className="flex justify-between py-1 border-b border-gray-100">
                     <span>Trigger Thresholds:</span>
@@ -1263,7 +1294,7 @@ export default function AccuracyPanel() {
 
               <div className={CARD}>
                 <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                  L-BFGS-B Objective Cost Formulation
+                  Levenberg–Marquardt Objective Cost Formulation
                 </div>
                 <div className="text-xs text-gray-600 space-y-1.5 font-mono bg-slate-50 p-3 rounded-lg border border-slate-200">
                   <div>L(θ) = w_nse·(1 - NSE) + w_time·(Δt / 2.0)²</div>
@@ -1302,18 +1333,16 @@ export default function AccuracyPanel() {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {subbasins.map((s) => {
-                      const calCn = Math.min(95.0, Math.max(45.0, s.baseCn + deltaCn));
-                      const calLag = s.baseLagMin * alphaLag;
-                      const tp = 0.5 + (calLag / 60.0);
+                      const tp = 0.5 + (s.activeLagMin / 60.0);
                       return (
                         <tr key={s.id} className="hover:bg-gray-50">
                           <td className="px-3 py-2 font-mono font-bold text-indigo-700">{s.id}</td>
                           <td className="px-3 py-2 font-medium text-gray-900">{s.name}</td>
                           <td className="px-3 py-2 font-mono">{s.areaKm2.toFixed(1)}</td>
                           <td className="px-3 py-2 font-mono text-gray-500">{s.baseCn.toFixed(2)}</td>
-                          <td className="px-3 py-2 font-mono font-bold text-emerald-700">{calCn.toFixed(2)}</td>
+                          <td className="px-3 py-2 font-mono font-bold text-emerald-700">{s.activeCn.toFixed(2)}</td>
                           <td className="px-3 py-2 font-mono text-gray-500">{s.baseLagMin.toFixed(0)}</td>
-                          <td className="px-3 py-2 font-mono font-bold text-blue-700">{calLag.toFixed(0)}</td>
+                          <td className="px-3 py-2 font-mono font-bold text-blue-700">{s.activeLagMin.toFixed(0)}</td>
                           <td className="px-3 py-2 font-mono font-bold text-purple-700">{tp.toFixed(1)}h</td>
                         </tr>
                       );
@@ -1347,15 +1376,14 @@ export default function AccuracyPanel() {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {reaches.map((r) => {
-                      const calK = r.baseK * alphaK;
-                      const subSteps = Math.max(1, Math.round(calK / Math.max(0.1, 2.0 * calK * muskingumX)));
+                      const subSteps = Math.max(1, Math.round(r.activeK / Math.max(0.1, 2.0 * r.activeK * r.activeX)));
                       return (
                         <tr key={r.id} className="hover:bg-gray-50">
                           <td className="px-3 py-2 font-mono font-bold text-purple-700">{r.id}</td>
                           <td className="px-3 py-2 font-mono text-gray-800">{r.routing}</td>
                           <td className="px-3 py-2 font-mono text-gray-500">{r.baseK.toFixed(3)}</td>
-                          <td className="px-3 py-2 font-mono font-bold text-indigo-700">{calK.toFixed(3)}</td>
-                          <td className="px-3 py-2 font-mono font-bold text-emerald-700">{muskingumX.toFixed(3)}</td>
+                          <td className="px-3 py-2 font-mono font-bold text-indigo-700">{r.activeK.toFixed(3)}</td>
+                          <td className="px-3 py-2 font-mono font-bold text-emerald-700">{r.activeX.toFixed(3)}</td>
                           <td className="px-3 py-2 font-mono text-sky-700 font-semibold">{subSteps} step{subSteps > 1 ? "s" : ""}</td>
                         </tr>
                       );

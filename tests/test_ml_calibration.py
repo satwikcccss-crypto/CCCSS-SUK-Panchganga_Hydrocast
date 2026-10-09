@@ -178,6 +178,59 @@ End:
         ml_mod.BASIN_FILE = orig_basin
 
 
+def test_discrepancy_detector_returns_signed_stage_error():
+    """The detector must return a dict with a SIGNED stage error and peaks.
+
+    Historically it returned ``max(abs(error))`` which is always >= 0, so the
+    downstream ΔCN correction could only ever move one way.
+    """
+    cal = AdaptiveHydrologicCalibrator()
+    start = datetime(2026, 9, 10, 0, 0, 0, tzinfo=timezone.utc)
+
+    # Observed rising limb, forecast is consistently 0.30 m TOO HIGH.
+    observed = {}
+    forecast = []
+    for h in range(6):
+        t = start + timedelta(hours=h)
+        obs_stage = 531.0 + 0.10 * h
+        observed[t.isoformat()] = {"observed_stage_m": obs_stage}
+        forecast.append({
+            "forecast_time": t.isoformat(),
+            "stage_m": obs_stage + 0.30,
+        })
+
+    res = cal.detect_timing_and_stage_discrepancy(forecast, observed)
+
+    assert isinstance(res, dict)
+    assert res["signed_stage_error_m"] > 0.0, "over-prediction must be positive"
+    assert res["max_stage_error_m"] == pytest.approx(0.30, abs=0.05)
+    assert res["forecast_peak_stage_m"] > res["observed_peak_stage_m"]
+    assert res["warranted"] is True
+    assert "reason" in res
+
+
+def test_recalibration_marks_state_and_snapshots_params():
+    """``is_recalibrated`` must flip True and the active params must be stored."""
+    cal = AdaptiveHydrologicCalibrator()
+    assert cal.state["is_recalibrated"] is False
+
+    res = cal.recalibrate_parameters(
+        timing_offset_hours=-2.0,
+        stage_error_m=-0.30,
+        peak_discharge_error_m3s=45.0,
+    )
+
+    assert cal.state["is_recalibrated"] is True
+    assert 50.0 <= cal.state["confidence_pct"] <= 99.9
+    assert cal.state["peak_discharge_error_m3s"] == 45.0
+    assert cal.state["active_sub_models"] == res["sub_models"]
+    assert cal.state["active_reaches"] == res["reaches"]
+    # Baseline snapshot must remain pristine (not overwritten by active values).
+    assert cal.state["baseline_sub_models"]["S1"]["cn"] == pytest.approx(
+        BASE_SUB_MODELS["S1"]["cn"], abs=1e-3
+    )
+
+
 def test_runner_accepts_parameter_overrides():
     """Verify execute_hec_hms runs with parameter overrides."""
     now_dt = datetime(2026, 9, 10, 6, 0, 0, tzinfo=timezone.utc)

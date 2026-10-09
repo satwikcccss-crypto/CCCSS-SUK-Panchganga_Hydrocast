@@ -44,8 +44,10 @@ $$
 \text{Stage}_{\text{Rajaram}} - \text{Stage}_{\text{Shivaji}} = 0.648 \ \text{m}
 $$
 
-holds exactly at every anchor, and this is asserted in the hydrology test
-suite. Two sites, 3.8 km apart, one government record.
+holds exactly at every **WRD sheet** anchor, and this is asserted in the hydrology test
+suite for those control points. Two sites, 3.8 km apart, one government record. Below
+roughly 20 m³/s the curves are driven by the per-site observed register and the offset
+widens to ~1.2 m, so the identity is a sheet-scale relation, not a universal one.
 
 !!! note "A Manning / divided-channel fallback exists but is unreachable"
     `src/hydrology/rating_curves.py` contains a full Divided Channel Method

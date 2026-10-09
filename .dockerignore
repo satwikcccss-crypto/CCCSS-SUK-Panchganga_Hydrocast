@@ -1,16 +1,63 @@
+# ==============================================================================
+# Docker build context exclusions
+# Every pattern below shrinks the context that is uploaded to the daemon; nothing
+# listed here is required by any stage of the Dockerfile (runner/docs/dev).
+# ==============================================================================
+
+# ── VCS, CI and IDE metadata ─────────────────────────────────────────────────
 .git
+.github
 .gitignore
+.gitattributes
+.vscode
+.idea
+
+# ── Python artefacts & local state ───────────────────────────────────────────
 __pycache__
 *.pyc
 *.pyo
 *.pyd
 .pytest_cache
-.cache.sqlite
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+*.egg-info
+.venv
+venv
+
+# ── Secrets (never bake credentials into a layer) ────────────────────────────
 .env
-.env.local
+.env.*
+!.env.example
+
+# ── Local Node / frontend build output ───────────────────────────────────────
+node_modules
+package-lock.json
+frontend/
+site/
+package.json
+
+# ── Logs, scratch and OS noise ───────────────────────────────────────────────
 *.log
+logs/
+data/logs/
+data/raw/
+data/archives/
 scratch/
 windows/
-frontend/node_modules/
-frontend/.next/
+.DS_Store
+Thumbs.db
+
+# ── Local databases / report binaries ────────────────────────────────────────
+.cache.sqlite
+*.sqlite-journal
 *.docx
+*.parquet
+
+# ── Heavy regenerable simulation artefacts ───────────────────────────────────
+# Levenberg-Marquardt optimiser scratch files (~53 MB each). They are rewritten
+# by src/hydrology/ml_calibration.py on every calibration run and are never read
+# by the API, so shipping them would triple the image for nothing.
+data/hms/**/Optimization_*.dss
+data/hms/**/optimizer/

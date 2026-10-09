@@ -322,6 +322,13 @@ def compute_pure_metrics(
         rho_q = None
         r2_q = None
 
+    # Low-flow representativeness guard. A constant baseflow offset is a
+    # datum/anchor bias (not a calibration error) and observed stages below the
+    # lowest WRD gauge make the rating an extrapolation. Surfaced explicitly so
+    # a ~2 m baseflow bias is never graded as ordinary skill.
+    from src.hydrology.stage_converter import assess_low_flow_guard
+    low_flow_guard = assess_low_flow_guard(pred_stages, obs_stages)
+
     # Performance grade. Absolute-error bands (Moriasi et al., 2007) apply ONLY
     # when the skill metrics are reliable. When NSE is unavailable, the grade is
     # driven by the error bands alone and is explicitly labelled as such. A
@@ -342,7 +349,7 @@ def compute_pure_metrics(
         grade = "ACCUMULATING_TELEMETRY"
     elif obs_std_s < MIN_OBS_STAGE_STD_M:
         # Genuinely stable baseflow: error is meaningful, skill is not defined.
-        grade = "BASEFLOW_STABLE"
+        grade = "BASEFLOW_MISMATCH" if low_flow_guard["constant_bias_detected"] else "BASEFLOW_STABLE"
     else:
         # Not enough matched hours yet to rank the series.
         grade = "ACCUMULATING_TELEMETRY"
@@ -380,6 +387,11 @@ def compute_pure_metrics(
         "pbias_discharge_pct": round(pbias_q, 2) if pbias_q is not None else None,
         "spearman_rho_q": round(rho_q, 4) if rho_q is not None else None,
         "pearson_r2_q": round(r2_q, 4) if r2_q is not None else None,
+        "baseflow_stage_offset_m": low_flow_guard["baseflow_stage_offset_m"],
+        "observed_ungauged_fraction": low_flow_guard["ungauged_fraction"],
+        "rating_extrapolated": low_flow_guard["rating_extrapolated"],
+        "constant_baseflow_bias": low_flow_guard["constant_bias_detected"],
+        "baseflow_note": low_flow_guard["note"],
         "basin_rainfall_accuracy_pct": None,
         "performance_grade": grade,
     }

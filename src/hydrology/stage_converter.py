@@ -422,19 +422,30 @@ def _wetted_properties(station: np.ndarray, elevation: np.ndarray, wse: float):
 # NOTE ON RAJARAM KT WEIR ANCHOR POINTS (official WRD Maharashtra rating sheet + 2021–2023 record)
 # The rating anchors ARE the official Maharashtra WRD stage-discharge sheet values.
 # 529.318 m = actual thalweg/bed from X-Section 29 survey (Q=0 physically)
-# 530.18  m = Kolhapur-type (KT) weir crest elevation — summer ponding gives Q=0 at crest
 # 532.70–533.36 m = observed low-flow monsoon points from WRD 2021–2023 hourly record
 #                   (532.70→14.16, 532.83→22.65, 532.88→28.32, 532.98→32.56,
 #                    533.00→34.0, 533.36→71.25) — monotonic subset; replaces the old
 #                    fabricated 531.50→3.0 tail which collapsed baseflow to 1–15 m³/s.
+#
+# REMOVED 2026-09-30: the 530.18 → Q=0 anchor.  530.18 m is the WRD zero-gauge
+# DATUM, not a weir crest and not a stage at which flow ceases (see
+# RAJARAM_GAUGE_ZERO_M).  Anchoring Q=0 there fabricated a 2.52 m linear ramp
+# whose slope was set by the next anchor, not by any observation.
+#
+# VERIFIED 2026-09-30 against the raw WRD register (see data/cleanup in
+# docs/errors-and-engineering-assumptions.md): cross-checking every hourly
+# reading as ft_dec*0.3048 + 530.18 == stage_m keeps 2350 of 2406 rows and
+# exposes 56 transcription errors (one 2023-07-08 column is off by exactly
+# 1.00 m).  After that filter the register reproduces this official sheet to
+# within ±0.3 % over 533.54–539.02 m, confirming the anchors below.
 RAJARAM_ANCHORS_STAGE = np.array([
-    529.318, 530.18,  532.70,  532.83,  532.88,  532.98,  533.00,  533.36,
+    529.318, 532.70,  532.83,  532.88,  532.98,  533.00,  533.36,
     533.54,  533.56,  533.59,  533.64,  533.66,  533.69,  533.71,  533.99,
     535.21,  535.59,  535.77,  536.41,  538.16,  539.02,  541.50,  542.10,
     542.70,  543.30,  545.33
 ])
 RAJARAM_ANCHORS_Q = np.array([
-    0.0,     0.0,     14.16,   22.65,   28.32,   32.56,   34.00,   71.25,
+    0.0,     14.16,   22.65,   28.32,   32.56,   34.00,   71.25,
     80.00,   81.24,   82.49,   85.01,   86.25,   87.50,   88.74,   110.49,
     217.59,  253.66,  274.39,  370.58,  613.06,  800.52,  1480.00, 1800.00,
     2200.00, 2675.00, 3850.00
@@ -442,13 +453,20 @@ RAJARAM_ANCHORS_Q = np.array([
 
 # ── SHIVAJI BRIDGE WRD-ANCHORED RATING (downstream offset −0.648 m) ────────────
 # Shivaji Bridge is 3,858 m DOWNSTREAM of the Rajaram gauge.  Its bed RL is
-# 0.648 m lower (528.670 vs 529.318 m MSL).  At the SAME discharge the water
-# surface at Shivaji sits ~0.648 m below the WRD gauge stage.  WRD officially
-# recorded the Shivaji ALERT stage (542.10 m) at the same 1800 m³/s as the
-# Rajaram WARNING — exactly the +0.648 m datum separation.
-# Therefore:  Shivaji_stage_for_Q = WRD_sheet_stage − 0.648  (same Q value).
-# Low-flow points mirror the observed Rajaram monsoon pairs, shifted −0.648 m.
-SHIVAJI_RC_OFFSET_M = 0.648  # Rajaram bed 529.318 − Shivaji bed 528.670
+# 0.648 m lower (528.670 vs 529.318 m MSL).  The transfer used here is the
+# SURVEY BED DROP, which is exact for uniform (normal-depth) flow.
+#
+# CORRECTION 2026-09-30: an earlier version of this comment claimed WRD
+# attested the 0.648 m separation.  It does not.  The single matched pair in
+# the official record is Q = 1800 m³/s at Shivaji 542.10 m and Rajaram
+# 542.70 m, i.e. a surface drop of 0.600 m over a 0.648 m bed drop.  The
+# reach is therefore in BACKWATER: the water-surface drop is flatter than the
+# bed drop, so 0.648 m is an upper bound on the transfer, not a measurement.
+# Consequences are carried in LOW_FLOW_UNCERTAINTY_M3S rather than silently
+# folded into the anchors.
+SHIVAJI_RC_OFFSET_M = 0.648  # bed RL difference, survey-measured
+SHIVAJI_MEASURED_SURFACE_DROP_M = 0.600  # measured at Q = 1800 m³/s (WRD sheet)
+SHIVAJI_MEASURED_SURFACE_DROP_Q_M3S = 1800.0
 SHIVAJI_ANCHORS_STAGE = np.array([
     528.670, 532.052, 532.182, 532.232, 532.332, 532.352, 532.712, 532.892,
     532.912, 532.942, 532.992, 533.012, 533.042, 533.062, 533.342, 534.562,
@@ -488,11 +506,226 @@ SHIVAJI_LATITUDE    = 16.707274
 SHIVAJI_CHAINAGE_M  = 6257.0
 RAJARAM_CHAINAGE_M  = 10115.0
 SHIVAJI_RAJARAM_DIST_M = RAJARAM_CHAINAGE_M - SHIVAJI_CHAINAGE_M  # 3858 m
-RAJARAM_KT_WEIR_CREST_RL_M = 530.18   # m MSL — KT weir crest (anchored from WRD records)
+# Gauge zero datum (the WRD 0'0" reference mark at Rajaram). This is a
+# *datum*, not the weir crest: the documented weir overflow level is 535.77 m
+# MSL. Kept as a separate constant so the two are never conflated again.
+RAJARAM_GAUGE_ZERO_M = 530.18   # m MSL — WRD zero gauge datum (0' 0")
+RAJARAM_KT_WEIR_CREST_RL_M = 535.77  # m MSL — weir overflow level (WRD)
 # Bed slope: (529.318 - 528.670) / 3858 = 0.0001680 (survey-measured)
 # Report slope for Prayag Chikhali → Rajaram reach: 1:4641 = 0.0002155
 # Use survey-measured value as it is computed from the two actual XS bed RLs.
 PANCHGANGA_BED_SLOPE = (RAJARAM_BED_RL_M - SHIVAJI_BED_RL_M) / SHIVAJI_RAJARAM_DIST_M  # 1:5954
+
+# ── LOWEST WRD OBSERVATION (defines the edge of the gauged domain) ────────────
+# After the ft_dec cross-check (see RAJARAM_ANCHORS_STAGE comment) the WRD
+# 2021–2023 hourly register contains NO observation below this stage.  Anything
+# below it is extrapolation and must be reported as un-gauged.
+WRD_LOWEST_GAUGE_STAGE_M = 532.70   # m MSL at Rajaram
+WRD_LOWEST_GAUGE_Q_M3S = 14.16       # m³/s at that stage
+# Verified this way: 2350/2406 register rows satisfy
+# ft_dec * 0.3048 + RAJARAM_GAUGE_ZERO_M == stage_m; the register spans
+# 532.70–547.33 m and 2406 rows contain no lower stage.
+WRD_REGISTER_LOWEST_STAGE_M = 532.70
+
+# Low-flow regime character.  Fitting Q = C*(H - bed)^b by log-linear
+# regression over the observed low band gives b ~= 10, versus b ~= 2.78 over the
+# official sheet.  The rating is therefore extremely steep just above the
+# lowest gauge, which makes a multi-metre downward extrapolation unsafe to
+# present as a precise number.
+WRD_LOW_FLOW_EXPONENT = 10.08
+WRD_SHEET_EXPONENT = 2.778           # official sheet 533.54–541.50 m, R^2 = 0.99858
+WRD_SHEET_COEFFICIENT = 1.5          # Q = C * (H - RAJARAM_BED_RL_M)^b
+WRD_SHEET_FIT_RANGE_M = (533.54, 541.50)
+
+
+def _low_flow_reference() -> tuple:
+    """Measured velocity and conveyance taken from the lowest WRD observation.
+
+    Returns (velocity_mps, conveyance) where
+        velocity    = Q / A                at the lowest gauged stage
+        conveyance  = Q / (A * R**(2/3))   at the lowest gauged stage
+
+    Both are *measured* quantities from the WRD register combined with the
+    surveyed Rajaram section -- neither assumes a roughness or a bed slope.
+    They are the only hydraulically defensible anchors available below
+    WRD_LOWEST_GAUGE_STAGE_M.
+    """
+    A = _rajaram_area_at(WRD_LOWEST_GAUGE_STAGE_M)
+    P = _rajaram_perimeter_at(WRD_LOWEST_GAUGE_STAGE_M)
+    R = A / P if P > 1e-4 else 0.0
+    q = WRD_LOWEST_GAUGE_Q_M3S
+    return q / A, q / (A * R ** (2 / 3))
+
+
+def _rajaram_area_at(stage_m: float) -> float:
+    return _wetted_properties(_rajaram_station_m(), _rajaram_elevation_m(), stage_m)[0]
+
+
+def _rajaram_perimeter_at(stage_m: float) -> float:
+    return _wetted_properties(_rajaram_station_m(), _rajaram_elevation_m(), stage_m)[1]
+
+
+def _shivaji_station_m() -> np.ndarray:
+    return _station_from_points(SHIVAJI_SURVEY)
+
+
+def _shivaji_elevation_m() -> np.ndarray:
+    return SHIVAJI_SURVEY[:, 2]
+
+
+def _rajaram_station_m() -> np.ndarray:
+    return _station_from_points(RAJARAM_SURVEY)
+
+
+def _rajaram_elevation_m() -> np.ndarray:
+    return RAJARAM_SURVEY[:, 2]
+
+
+def _station_from_points(points: np.ndarray) -> np.ndarray:
+    """Cumulative chainage along a surveyed cross-section."""
+    north, east = points[:, 0], points[:, 1]
+    return np.concatenate(
+        [[0.0], np.cumsum(np.hypot(np.diff(east), np.diff(north)))]
+    )
+
+
+def estimate_low_flow_discharge(
+    stage_m: float,
+    site_id: str = "SHIVAJI_BRIDGE",
+) -> dict:
+    """Geometry-derived discharge with an explicit uncertainty band.
+
+    The production rating curve is a PCHIP through the official WRD anchors.
+    Below WRD_LOWEST_GAUGE_STAGE_M that curve is a shape extrapolation, because
+    WRD has published no observation there at all.  This function brackets the
+    same answer using only measured quantities, so the uncertainty is visible
+    rather than hidden.
+
+    Two defensible closures are carried side by side:
+
+    ``velocity``
+        Assumes the impounded pool drains with near-uniform velocity, i.e. the
+        discharge is set by the outlet rather than by local conveyance.  This is
+        the natural regime for a gated barrage at low stage.
+    ``conveyance``
+        Assumes Manning conveyance, Q = K*A*R**(2/3), i.e. flow is friction
+        controlled.  This is the conservative closure.
+
+    The production value is expected to sit inside the returned band.
+
+    Returns a dict with ``stage_m``, ``q_m3s``, ``q_low_m3s``, ``q_high_m3s``,
+    ``method`` and ``is_ungauged``.
+    """
+    stage = float(stage_m)
+    velocity, conveyance = _low_flow_reference()
+
+    if site_id in ("RAJARAM_WEIR", "RAJARAM_BRIDGE"):
+        A = _rajaram_area_at(stage)
+        P = _rajaram_perimeter_at(stage)
+    else:
+        A, P = _wetted_properties(_shivaji_station_m(), _shivaji_elevation_m(), stage)
+
+    R = A / P if P > 1e-4 else 0.0
+    q_velocity = velocity * A
+    q_conveyance = conveyance * A * R ** (2 / 3) if A > 0 else 0.0
+
+    q_production = convert_stage_to_discharge_manning(stage, site_id)
+    low = min(q_velocity, q_conveyance, q_production)
+    high = max(q_velocity, q_conveyance, q_production)
+
+    return {
+        "stage_m": round(stage, 3),
+        "q_m3s": round(q_production, 2),
+        "q_velocity_m3s": round(q_velocity, 2),
+        "q_conveyance_m3s": round(q_conveyance, 2),
+        "q_low_m3s": round(low, 2),
+        "q_high_m3s": round(high, 2),
+        "measured_velocity_mps": round(velocity, 4),
+        "measured_conveyance": round(conveyance, 4),
+        "is_ungauged": bool(stage < (WRD_LOWEST_GAUGE_STAGE_M
+                                     + (0.0 if site_id in ("RAJARAM_WEIR", "RAJARAM_BRIDGE")
+                                        else SHIVAJI_RC_OFFSET_M))),
+    }
+
+
+def is_ungauged_stage(stage_m: float, site_id: str = "SHIVAJI_BRIDGE") -> bool:
+    """True when a stage sits below every WRD observation for that site."""
+    if site_id in ("RAJARAM_WEIR", "RAJARAM_BRIDGE"):
+        return bool(float(stage_m) < WRD_LOWEST_GAUGE_STAGE_M)
+    return bool(float(stage_m) < WRD_LOWEST_GAUGE_STAGE_M - SHIVAJI_RC_OFFSET_M)
+
+
+# A persistent, near-constant stage offset during stable baseflow is a
+# datum/anchor bias, not a calibration error. Above this magnitude the run is
+# labelled BASEFLOW_MISMATCH instead of being graded as if it were skilled.
+MAX_BASEFLOW_STAGE_OFFSET_M = 0.5
+
+
+def assess_low_flow_guard(
+    predicted_stages,
+    observed_stages,
+    site_id: str = "SHIVAJI_BRIDGE",
+    max_offset_m: float = MAX_BASEFLOW_STAGE_OFFSET_M,
+) -> dict:
+    """Characterise a low-flow (baseflow) stage comparison.
+
+    Returns a dict with:
+
+      * ``baseflow_stage_offset_m``  mean signed (predicted - observed) stage,
+      * ``ungauged_fraction``        fraction of observed points below the
+        lowest WRD-gauged stage (rating is a shape extrapolation there),
+      * ``rating_extrapolated``      whether *any* observed point is un-gauged,
+      * ``constant_bias_detected``   stable baseflow with a large offset,
+      * ``note``                     human-readable explanation (or ``None``).
+
+    A constant bias during baseflow cannot be removed by tuning CN / lag / K:
+    the whole forecast is shifted, so it is surfaced explicitly rather than
+    reported as an ordinary MAE.
+    """
+    pred = np.asarray(predicted_stages, dtype=float)
+    obs = np.asarray(observed_stages, dtype=float)
+    n = int(min(pred.size, obs.size))
+    if n == 0:
+        return {
+            "baseflow_stage_offset_m": None,
+            "ungauged_fraction": None,
+            "rating_extrapolated": False,
+            "constant_bias_detected": False,
+            "note": None,
+        }
+
+    pred = pred[:n]
+    obs = obs[:n]
+    ungauged = [is_ungauged_stage(float(s), site_id) for s in obs]
+    ungauged_fraction = float(sum(ungauged)) / n
+    offset = float(np.mean(pred - obs))
+    obs_std = float(np.std(obs))
+
+    constant_bias = bool(obs_std < 0.05 and abs(offset) > max_offset_m)
+    rating_extrapolated = bool(any(ungauged))
+
+    note = None
+    if constant_bias:
+        note = (
+            f"Constant baseflow stage offset of {offset:+.2f} m "
+            f"(observed spread {obs_std:.3f} m). This is a datum/baseflow anchor "
+            "bias, not a runoff-coefficient error; it cannot be fixed by tuning "
+            "CN / lag / K."
+        )
+        if rating_extrapolated:
+            note += (
+                f" {ungauged_fraction * 100:.0f}% of observed hours sit below the "
+                "lowest WRD-gauged stage, where the rating curve is a shape "
+                "extrapolation."
+            )
+
+    return {
+        "baseflow_stage_offset_m": round(offset, 3),
+        "ungauged_fraction": round(ungauged_fraction, 3),
+        "rating_extrapolated": rating_extrapolated,
+        "constant_bias_detected": constant_bias,
+        "note": note,
+    }
 
 
 def build_calibrated_rating_curve(
@@ -972,7 +1205,11 @@ def convert_stage_to_discharge_manning(stage_m: float, site_id: str = "SHIVAJI_B
     return float(round(max(0.0, q), 1))
 
 
-def infer_rajaram_stage_from_shivaji(shivaji_stage_m: float, q_m3s: Optional[float] = None) -> float:
+def infer_rajaram_stage_from_shivaji(
+    shivaji_stage_m: float,
+    q_m3s: Optional[float] = None,
+    apply_backwater: bool = True,
+) -> float:
     """Infer Rajaram K.T. Weir water surface elevation from Shivaji Bridge IoT sensor reading.
 
     Spatial relationship (from survey & Krishna Basin Flood 2019 Vol.1):
@@ -985,27 +1222,34 @@ def infer_rajaram_stage_from_shivaji(shivaji_stage_m: float, q_m3s: Optional[flo
       Under uniform/normal flow:
           WSE_Rajaram ≈ WSE_Shivaji + bed_drop_between_sites
       KT Weir backwater correction (summer, low Q):
-          The KT weir impounds water above its crest (530.18 m) for irrigation.
-          When Q < ~100 m³/s, weir backwater raises Rajaram stage by an additional
-          0.3–0.9 m above the uniform-flow estimate.
+          The KT weir impounds water above its overflow level (535.77 m MSL).
+          When Q < ~100 m³/s and the surface sits well below the crest, weir
+          ponding raises the Rajaram surface above the uniform-flow estimate.
 
     Args:
         shivaji_stage_m: Live observed water level at Shivaji Bridge sensor (m MSL)
         q_m3s:           Estimated discharge (m³/s) — used for KT weir correction.
                          If None, no backwater correction applied.
+        apply_backwater: Whether to include the KT weir impoundment head.
 
     Returns:
         Estimated water surface elevation at Rajaram KT Weir (m MSL)
+
+    IMPORTANT: set ``apply_backwater=False`` whenever this stage estimate is
+    going to be inverted back into a discharge (for example to derive baseflow
+    for the runoff model). Impoundment raises the water *surface*; it does not
+    add conveyance. Inverting a surface that has been artificially raised
+    double-counts the ponding and overestimates the flow passing the weir. The
+    correction is only appropriate when a stage is wanted for its own sake.
     """
     bed_diff = RAJARAM_BED_RL_M - SHIVAJI_BED_RL_M  # = 0.648 m
     rajaram_stage = shivaji_stage_m + bed_diff
 
-    # KT Weir backwater correction: in low-flow / dry season the weir ponds the reach.
-    # When stage at Rajaram is near the weir crest (530.18 m) and Q is low,
-    # add a physically-calibrated backwater head above uniform-flow estimate.
-    if q_m3s is not None:
-        weir_crest = RAJARAM_KT_WEIR_CREST_RL_M  # 530.18 m
-        if q_m3s < 100.0 and rajaram_stage < weir_crest + 2.0:
+    # KT Weir ponding correction. Impoundment raises the water surface without
+    # adding conveyance, so this is only applied when a stage is wanted in its
+    # own right. Callers that invert back to discharge must opt out.
+    if apply_backwater and q_m3s is not None:
+        if q_m3s < 100.0 and rajaram_stage < RAJARAM_KT_WEIR_CREST_RL_M + 2.0:
             # Backwater correction: decays from 0.8m at zero flow to 0m at 100 m3/s
             backwater_m = 0.8 * max(0.0, 1.0 - q_m3s / 100.0)
             rajaram_stage += backwater_m

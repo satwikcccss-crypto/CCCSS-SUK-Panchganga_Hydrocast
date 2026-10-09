@@ -14,6 +14,7 @@ Source of truth:
     the subbasins to the reaches".
 """
 
+import json
 import logging
 import re
 from pathlib import Path
@@ -23,6 +24,16 @@ log = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BASIN_FILE = PROJECT_ROOT / "data" / "hms" / "HMS_Automation_RJKT" / "Basin_1.basin"
+
+# Frozen, never-overwritten snapshot of the pristine physics parameters.
+# ``Basin_1.basin`` is the *mutable* file that recalibration writes to (and that
+# HEC-HMS executes); the snapshot below is what calibration and the emulator
+# must always treat as the fixed baseline, so repeated recalibrations accumulate
+# against the same origin instead of drifting, and parameters are never applied
+# twice.
+BASELINE_SNAPSHOT_FILE = (
+    PROJECT_ROOT / "data" / "telemetry" / "calibration_baseline.json"
+)
 
 SUBBASIN_NAMES: Dict[str, str] = {
     "S1": "Karveer",
@@ -132,8 +143,55 @@ def parse_basin_file(path: Path = BASIN_FILE) -> Tuple[Dict[str, Dict[str, Any]]
 
 
 def load_basin_parameters() -> Tuple[Dict[str, Dict[str, Any]], Dict[str, Dict[str, Any]]]:
-    """Public helper: authoritative subbasin + reach parameters."""
+    """Public helper: authoritative subbasin + reach parameters.
+
+    Reads the *active* ``Basin_1.basin`` file — the same file HEC-HMS executes.
+    Use :func:`load_immutable_baseline` when you need the frozen origin that
+    calibration offsets are defined against.
+    """
     return parse_basin_file()
+
+
+def save_baseline_snapshot(
+    sub_models: Dict[str, Dict[str, Any]],
+    reaches: Dict[str, Dict[str, Any]],
+) -> None:
+    """Persist the pristine physics baseline snapshot to disk."""
+    try:
+        BASELINE_SNAPSHOT_FILE.parent.mkdir(parents=True, exist_ok=True)
+        payload = {"sub_models": sub_models, "reaches": reaches}
+        tmp = BASELINE_SNAPSHOT_FILE.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        import os as _os
+        _os.replace(tmp, BASELINE_SNAPSHOT_FILE)
+        log.info("Wrote immutable calibration baseline snapshot to %s", BASELINE_SNAPSHOT_FILE.name)
+    except Exception as exc:  # pragma: no cover - best-effort persistence
+        log.warning("Could not persist calibration baseline snapshot: %s", exc)
+
+
+def load_immutable_baseline() -> Tuple[Dict[str, Dict[str, Any]], Dict[str, Dict[str, Any]]]:
+    """
+    Return the frozen, pristine physics baseline.
+
+    On first call (no snapshot yet) the current ``Basin_1.basin`` is parsed,
+    snapshotted to ``data/telemetry/calibration_baseline.json`` and returned.
+    Every later call reads the snapshot, so the origin of the calibration
+    offsets never changes even though recalibration rewrites ``Basin_1.basin``.
+    """
+    if BASELINE_SNAPSHOT_FILE.exists():
+        try:
+            data = json.loads(BASELINE_SNAPSHOT_FILE.read_text(encoding="utf-8"))
+            sub_models = data.get("sub_models")
+            reaches = data.get("reaches")
+            if sub_models and reaches:
+                return sub_models, reaches
+            log.warning("Baseline snapshot %s is incomplete — regenerating", BASELINE_SNAPSHOT_FILE.name)
+        except Exception as exc:
+            log.warning("Could not read baseline snapshot (%s) — regenerating", exc)
+
+    sub_models, reaches = parse_basin_file()
+    save_baseline_snapshot(sub_models, reaches)
+    return sub_models, reaches
 
 
 def _deepcopy_fallback():

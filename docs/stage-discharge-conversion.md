@@ -84,10 +84,17 @@ slope that produced:
   **3,850 m³/s** — because the DCM floodplain roughness model could not reproduce the
   WRD-observed compound conveyance at high stages.
 
-The root cause: Manning's equation requires an accurate slope $S_0$ AND cross-section
-topometry at every single stage. Any error in $S_0$ scales as $\sqrt{S_0}$, and the
-wide-floodplain geometry collapses the hydraulic radius above bankfull. The government
-rating sheet already encodes the total conveyance — so we anchor the curve to it instead.
+The root cause: Manning's equation requires an accurate friction slope $S_f$ AND
+cross-section topometry at every single stage. Any error in $S_f$ scales as
+$\sqrt{S_f}$, and the wide-floodplain geometry collapses the hydraulic radius above
+bankfull. The government rating sheet already encodes the total conveyance — so we
+anchor the curve to it instead.
+
+> **Important.** $S_0$ here is the *friction slope*, not the survey bed slope. Using the
+> bed slope of the 3,858 m Shivaji→Rajaram reach instead of the friction slope was a
+> real error that produced a spurious "the geometry over-predicts by 7.6×" finding; the
+> reach is in backwater (measured surface drop 0.600 m against a 0.648 m bed drop).
+> See item 24 in [errors-and-engineering-assumptions.md](errors-and-engineering-assumptions.md#24-the-reach-bed-slope-was-used-as-the-friction-slope).
 
 ---
 
@@ -131,7 +138,7 @@ from the WRD 2021–2023 hourly register.
 +----+-------------------+--------------+-----------------+-----------------+------------------------+
 | No | Rajaram Stage (m) | Discharge    | Discharge (m³/s)| In Code As     | Hydraulic Regime       |
 +----+-------------------+--------------+-----------------+-----------------+------------------------+
-| 01 | 529.318 / 530.18  | 0 cusecs     | 0.00 (Q=0)      | RAJARAM_ANCHORS | Bed thalweg / weir crest |
+| 01 | 529.318            | 0 cusecs     | 0.00 (Q=0)      | RAJARAM_ANCHORS | Surveyed bed thalweg   |
 | 02 | 532.70            | 500 cusecs   | 14.16           | observed 2021-23| In-bank low flow        |
 | 03 | 532.83            | 800 cusecs   | 22.65           | observed 2021-23| In-bank low flow        |
 | 04 | 532.98            | 1,150 cusecs | 32.56           | observed 2021-23| In-bank low flow        |
@@ -236,9 +243,9 @@ now the area is exact geometry while the discharge is the WRD-anchored conveyanc
 
 | # | Problem (observed in real runs) | Root Cause | Fix |
 | :--- | :--- | :--- | :--- |
-| 1 | Shivaji discharge wrong for a 2,140 km² catchment: 209.9 m³/s at 533.54 m vs WRD 80 m³/s; only 2,797 m³/s at HFL vs WRD 3,850 m³/s | Pure Manning/DCM with a mismatched slope; wide-floodplain hyd-raulic-radius collapse above bankfull | Anchor Shivaji PCHIP **directly onto the official WRD sheet**, applying the **−0.648 m downstream datum offset** (`Shivaji_stage_for_Q = WRD_sheet_stage − 0.648`). Matches WRD at every official point. |
+| 1 | Shivaji discharge wrong for a 2,140 km² catchment: 209.9 m³/s at 533.54 m vs WRD 80 m³/s; only 2,797 m³/s at HFL vs WRD 3,850 m³/s | Pure Manning/DCM with a mismatched slope; wide-floodplain hyd-raulic-radius collapse above bankfull | Anchor Shivaji PCHIP **directly onto the official WRD sheet**, applying the **−0.648 m downstream datum offset** (`Shivaji_stage_for_Q = WRD_sheet_stage − 0.648`). Matches WRD at every official sheet point; the offset is **not** constant below ~20 m³/s (see §8.5). |
 | 2 | Erratic real-run baseflow: sometimes 13, 1, 7.5, 15 m³/s | Fabricated low-flow anchor `531.50 → 3.0` collapsed the Rajaram curve below the gauged WRD range | Replace fabricated tail with **observed WRD 2021–2023 monsoon low-flow anchors** (532.70→14.16 … 533.36→71.25) — monotonic, government-recorded. |
-| 3 | Discharge floored by an arbitrary 15 m³/s | `max(baseflow, 15.0)` was unphysical for a 2,140 km² monosoon river (WRD 2021–23 Jul–Oct min ≈ 71 m³/s) | New `WRD_MONSOON_BASEFLOW_FLOOR_M3S = 40.0` (conservative WRD-derived minimum). |
+| 3 | Discharge floored by an arbitrary 15 m³/s | `max(baseflow, 15.0)` was unphysical, but the replacement `40.0` floor was worse still — see §8.3 | Baseflow is now the **observed sensor discharge**, un-floored. |
 
 ### 8.2 Verification of the Corrected Shivaji Curve
 
@@ -257,33 +264,46 @@ Resulting interpolated checks:
 
 > At the **same stage** Shivaji carries slightly more than Rajaram because its bed is
 > 0.648 m lower (deeper section). At the **same discharge** the two curves agree
-> exactly via the offset — verified in `tests/test_hydrology.py`.
+> exactly via the offset **for the WRD sheet control points** — verified in
+> `tests/test_hydrology.py`. Below roughly 20 m³/s the two curves are related by the
+> WRD 2021–2023 observed register instead, and the offset widens; see §8.5.
 
-### 8.3 Baseflow Initialization (the "13 / 1 / 7.5 / 15" fix)
+### 8.3 Baseflow Initialization — the Final Correction
 
-`runner.py` initialises baseflow as:
+`runner.py` now initialises baseflow from the sensor reading **once, at the gauged site**:
 
 ```python
-q_shivaji_est = convert_stage_to_discharge_manning(live_stage_m, "SHIVAJI_BRIDGE")
-rajaram_stage_m = infer_rajaram_stage_from_shivaji(live_stage_m, q_m3s=q_shivaji_est)
-baseflow = convert_stage_to_discharge_manning(rajaram_stage_m, "RAJARAM_BRIDGE")
-baseflow = max(baseflow, WRD_MONSOON_BASEFLOW_FLOOR_M3S)   # 40.0 m³/s
+if live_stage_m is not None:
+    # Stage -> discharge at the site the sensor actually measures.
+    baseflow = convert_stage_to_discharge_manning(live_stage_m, "SHIVAJI_BRIDGE")
+else:
+    baseflow = MONSOON_BASEFLOW_DEFAULT_M3S   # 91.1
 ```
+
+The two intermediate steps that used to be here are both gone:
+
+| Removed step | Why it was wrong |
+| :--- | :--- |
+| `infer_rajaram_stage_from_shivaji(...)` | Moved the observed stage 3 858 m upstream and added KT-weir ponding. Discharge is conserved along a reach; **stage is not**. It fabricated a Rajaram stage and then re-derived a discharge from it. |
+| `max(baseflow, WRD_MONSOON_BASEFLOW_FLOOR_M3S)` | The Panchganga genuinely runs at ~2.8 m³/s in the dry season. Forcing ≥ 40 m³/s imposed a **+1.98 m stage bias over the whole 90-hour window**, because the rating curve is ~150× steeper at low flow than at flood peak. |
 
 Verified values after the fix:
 
-| Live Shivaji (m) | Rajaram inferred (m) | Rajaram baseflow (m³/s) | After 40.0 floor |
-| :--- | :--- | :---: | :---: |
-| 530.20 | 531.632 | 3.8 | 40.0 |
-| 531.00 | 532.404 | 10.4 | 40.0 |
-| 531.30 | 532.688 | 14.0 | 40.0 |
-| 532.60 (fallback) | 533.248 | 61.2 | 61.2 |
-| 533.00 | 533.648 | 85.4 | 85.4 |
+| Live Shivaji (m) | Sensor discharge (m³/s) | Stage round-trip (m) | Stage error (m) |
+| :--- | :---: | :---: | :---: |
+| 530.20 | 2.00 | 530.210 | +0.010 |
+| 530.44 | 2.80 | 530.440 | +0.000 |
+| 531.00 | 5.50 | 531.000 | +0.000 |
+| 532.60 | 61.20 | 532.600 | +0.000 |
+| 533.00 | 85.60 | 533.000 | +0.000 |
 
-The earlier "sometimes 13 / 1 / 7.5" oscillation came from the fabricated `531.50→3.0`
-anchor: a sub-metre sensor jitter flipped the discharge between 1 and 15 m³/s. With the
-WRD-observed low-flow anchors and the 40.0 monsoon floor, the emulator can no longer
-report a physically impossible discharge for a 2,140 km² perennial monsoon river.
+Sample low-flow mean absolute stage error over this set: **0.002 m** (previously 1.019 m).
+Flood-period discharge is unchanged within 0.5 m³/s, because above ~20 m³/s the removed
+floor and ponding terms were both inactive.
+
+Regression coverage: `tests/test_low_flow_stage_bias.py` (26 cases, calling the production
+`derive_baseflow_m3s`) and `tests/test_cross_section_survey.py` (17 cases, pinning the
+embedded geometry to the surveyed sections in `data/wrd_cross_sections/`). Full suite: 125 passing.
 
 ### 8.4 Geometry Still Comes From the Survey
 
@@ -291,6 +311,30 @@ The `area_m2 / wp_m / hyd_radius` values remain trapezoidal/topometry integratio
 the embedded cross-sections (`_wetted_properties`). Only the discharge assignment
 switched from Manning→DCM to **WRD-anchored PCHIP**, so both wetted area (from
 ThingSpeak × XS) and discharge (from WRD × stage) are now correct.
+
+### 8.5 The Datum Offset Is Not Constant Below ~20 m³/s
+
+`0.648 m` is the difference between the two **surveyed bed levels** (Shivaji 528.670 m,
+Rajaram 529.318 m), and it is applied as a rigid shift to every WRD **sheet** control
+point. The low-flow tail is *not* built from the sheet: it comes from the WRD 2021–2023
+hourly register, and those observed pairs were entered per site. The consequence is a
+widening offset as flow falls below about 20 m³/s:
+
+| Discharge (m³/s) | Rajaram stage (m) | Shivaji stage (m) | Offset (m) |
+| ---: | ---: | ---: | ---: |
+| 220 | 535.21 | 534.56 | 0.65 |
+| 80 | 533.54 | 532.89 | 0.65 |
+| 40 | 533.06 | 532.42 | 0.64 |
+| 15 | 532.72 | 532.07 | 0.65 |
+| 10 | 532.44 | 531.69 | 0.75 |
+| 2.8 | 531.46 | 530.44 | 1.02 |
+| 1.0 | 530.99 | 529.81 | 1.18 |
+
+So the two curves are related by a constant 0.648 m only from roughly 20 m³/s upward.
+Below that the observed-register anchors dominate and the offset grows to ~1.2 m. Any
+claim that the shift "holds at every anchor" is true only of the official sheet points.
+The dense low-flow anchors are deliberately kept monotonic and government-recorded in
+preference to enforcing a rigid shift that the field data contradicts.
 
 ---
 

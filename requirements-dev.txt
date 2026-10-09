@@ -1,0 +1,32 @@
+# ==============================================================================
+# HydroCast Development Toolchain
+# ------------------------------------------------------------------------------
+# Everything needed to lint, type-check, test and run the tutorial notebooks.
+# NOT installed into the production image - see the `dev` stage of the
+# Dockerfile, which layers this file on top of the runtime image.
+#
+#   pip install -r requirements.txt -r requirements-dev.txt
+# ==============================================================================
+
+# ── Static analysis & formatting (mirrored by .pre-commit-config.yaml) ───────
+black>=25.1
+isort>=6.0
+mypy>=1.14
+types-requests>=2.32
+pre-commit>=4.0
+
+# ── Test suite ──────────────────────────────────────────────────────────────
+pytest>=8.3
+pytest-asyncio>=0.25
+pytest-cov>=6.0
+
+# ── Tutorial notebooks (notebooks/*.ipynb) ──────────────────────────────────
+# jupyterlab pulls in the full server, notebook kernel, nbconvert and widgets
+# that `jupyter nbconvert --execute` needs for the docs build.
+jupyterlab>=4.3
+notebook>=7.3
+nbconvert>=7.16
+nbformat>=5.10
+ipykernel>=6.29
+matplotlib>=3.9
+seaborn>=0.13

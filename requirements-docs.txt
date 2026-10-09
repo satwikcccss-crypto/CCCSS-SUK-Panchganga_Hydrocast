@@ -1,0 +1,24 @@
+# ==============================================================================
+# HydroCast Documentation Toolchain (MkDocs Material)
+# ------------------------------------------------------------------------------
+# Builds the `site/` documentation published to GitHub Pages. The API reference
+# pages are generated from the Google-style docstrings in `src/**` by
+# mkdocstrings, so this file must stay in sync with `mkdocs.yml`.
+#
+#   pip install -r requirements-docs.txt && mkdocs serve
+#   docker build --target docs .
+# ==============================================================================
+
+mkdocs>=1.6
+mkdocs-material>=9.5
+
+# Renders `::: src.module.Class` references in docs/api-reference/*.md straight
+# from the Python source tree.
+mkdocstrings[python]>=0.27
+
+# Required by the Material theme for admonitions, tabbed code, arithmatex and
+# the custom `mermaid` / `graphviz` superfences declared in mkdocs.yml.
+pymdown-extensions>=10.11
+
+# Minifies the generated HTML/CSS/JS (see the `minify` plugin block).
+mkdocs-minify-plugin>=0.8

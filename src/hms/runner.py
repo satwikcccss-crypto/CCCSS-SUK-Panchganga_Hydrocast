@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
-from src.hms.basin_parser import load_basin_parameters
+from src.hms.basin_parser import load_immutable_baseline
 
 log = logging.getLogger(__name__)
 
@@ -377,6 +377,61 @@ def compute_emulator_hydrograph(
     }
 
 
+def derive_baseflow_m3s(live_stage_m: Optional[float]) -> float:
+    """Initial sink baseflow from the live ultrasonic stage at Shivaji Bridge.
+
+    The observed stage is converted to discharge **once, at the gauged site**
+    where it was measured, using the WRD-gauged PCHIP rating curve:
+
+        baseflow = PCHIP(live_stage, SHIVAJI_BRIDGE)
+
+    Why this is a rating-curve lookup and not a cross-site transfer:
+      * Discharge is conserved along a reach, stage is not. The two gauging
+        sites are 3 858 m apart with surveyed beds 528.670 m and 529.318 m MSL,
+        so moving the stage upstream and inverting it there compounds errors
+        exactly where the curve is steepest.
+      * The surveyed wetted geometry cannot supply the magnitude either: the
+        surveyed section at the WRD alert stage 533.54 m gives A = 228 m2,
+        P = 84 m, R = 2.71 m, and Manning (n = 0.031, S = 1:4641) returns
+        210 m3/s against the government-gauged 80 m3/s. The WRD PCHIP anchors
+        are therefore authoritative for discharge; the survey supplies the
+        wetted area and perimeter for geometry.
+
+    Consequences of using the rating curve directly, all verified in
+    tests/test_low_flow_stage_bias.py and tests/test_cross_section_survey.py:
+      * Q = 0 at the surveyed bed level (528.670 m) and grows monotonically
+        with the wetted area / perimeter as the stage rises.
+      * Q = 40 m3/s occurs at 532.42 m MSL at Shivaji (533.06 m at Rajaram),
+        so 40 m3/s is a legitimate baseflow *at that level* - it was never a
+        valid floor to apply at every level.
+      * The 40.0 m3/s floor previously applied on the live path imposed a
+        +1.98 m stage bias over the whole 90-hour window during the dry season.
+
+    When telemetry is unavailable, fall back to the WRD-grounded monsoon figure
+    (``MONSOON_BASEFLOW``, default 91.1 m3/s).
+    """
+    from src.hydrology.stage_converter import (
+        convert_stage_to_discharge_manning,
+        WRD_MONSOON_BASEFLOW_FLOOR_M3S,
+    )
+
+    if live_stage_m is not None:
+        baseflow = convert_stage_to_discharge_manning(live_stage_m, "SHIVAJI_BRIDGE")
+        log.info(
+            "Baseflow from live sensor: stage %.2f m -> %.2f m3/s",
+            live_stage_m, baseflow,
+        )
+        return float(baseflow)
+
+    baseflow = float(os.getenv("MONSOON_BASEFLOW", "91.1"))
+    log.warning(
+        "No live stage reading; baseflow set to fallback %.1f m3/s "
+        "(WRD monsoon floor is %.1f m3/s)",
+        baseflow, WRD_MONSOON_BASEFLOW_FLOOR_M3S,
+    )
+    return baseflow
+
+
 def _execute_hec_hms_core(
     run_dt: datetime,
     subbasin_hyetographs: Optional[Dict[str, np.ndarray]] = None,
@@ -420,11 +475,13 @@ def _execute_hec_hms_core(
         log.info("HEC-HMS 4.13 binary not present in environment (%s). Running calibrated Panchganga RJKT physical engine...", ver)
         runtime_seconds = 14.8
 
-    # Authoritative catchment parameters straight from Basin_1.basin — the same
-    # file HEC-HMS executes. HEC-HMS cannot run on the Linux production box, so
-    # the emulator must perfectly mirror it: exact same CN / lag / area from
-    # the subbasins and exact same K / x from the Muskingum reaches.
-    sub_models, reaches = load_basin_parameters()
+    # Catchment parameters start from the IMMUTABLE baseline snapshot, not from
+    # the live Basin_1.basin file.  Basin_1.basin is rewritten in place by
+    # sync_to_hec_hms_basin(), so reading it here and then applying the persisted
+    # calibration offsets again would apply every offset twice (and compound on
+    # each subsequent cycle).  Baseline + offsets applied exactly once keeps the
+    # emulator and HEC-HMS in agreement.
+    sub_models, reaches = load_immutable_baseline()
 
     # Apply real-time parameter overrides if provided or from active calibration state
     cal_metadata = {
@@ -485,27 +542,11 @@ def _execute_hec_hms_core(
 
     total_area_km2 = sum(s["area_km2"] for s in sub_models.values())  # 1837.213 km²
 
-    # Physical baseline baseflow: IoT sensor is at Shivaji Bridge, HMS sink is at Rajaram KT Weir.
-    # Step 1: Infer Rajaram stage from Shivaji using surveyed bed gradient (0.648m over 3858m)
-    #         + KT weir backwater correction in low-flow (dry season / summer impoundment).
-    # Step 2: Convert Rajaram stage to discharge using WRD-anchored PCHIP rating curve.
-    from src.hydrology.stage_converter import (
-        convert_stage_to_discharge_manning, infer_rajaram_stage_from_shivaji
-    )
-    if live_stage_m is not None:
-        # live_stage_m is the Shivaji Bridge IoT sensor reading (m MSL)
-        # Get a first-pass discharge estimate at Shivaji to use in KT weir correction
-        q_shivaji_est = convert_stage_to_discharge_manning(live_stage_m, "SHIVAJI_BRIDGE")
-        # Transfer WSE upstream to Rajaram using bed gradient + KT weir backwater
-        rajaram_stage_m = infer_rajaram_stage_from_shivaji(live_stage_m, q_m3s=q_shivaji_est)
-        # Convert Rajaram stage to discharge using WRD PCHIP anchored rating curve
-        baseflow = convert_stage_to_discharge_manning(rajaram_stage_m, "RAJARAM_BRIDGE")
-        # WRD-grounded monsoon floor: WRD 2021-23 observed July-Oct min ~71 m3/s;
-        # 15.0 previously let the emulator report 1-15 m3/s (unphysical for 2140 km²).
-        from src.hydrology.stage_converter import WRD_MONSOON_BASEFLOW_FLOOR_M3S
-        baseflow = max(baseflow, WRD_MONSOON_BASEFLOW_FLOOR_M3S)
-    else:
-        baseflow = float(os.getenv("MONSOON_BASEFLOW", "91.1"))
+    # Physical baseline baseflow: the IoT sensor is at Shivaji Bridge while the
+    # HMS sink is at Rajaram KT Weir. See derive_baseflow_m3s() for why the
+    # observed stage is converted once, at the gauged site, with no cross-site
+    # stage transfer and no floor on live data.
+    baseflow = derive_baseflow_m3s(live_stage_m)
 
     # Full physical emulation — SCS loss -> SCS unit hydrograph -> Muskingum
     # reach network -> Sink-1, with the identical element topology and

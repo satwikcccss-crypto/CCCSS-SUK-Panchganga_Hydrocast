@@ -270,6 +270,10 @@ class RecalibrationRequest(BaseModel):
         0.0,
         description="Signed mean stage error. Positive means the model over-predicts stage.",
     )
+    peak_discharge_error_m3s: float = Field(
+        0.0,
+        description="Signed peak discharge error (observed − forecast). Positive means the model under-predicts peak flow.",
+    )
     sync_basin_file: bool = Field(
         True,
         description=(
@@ -304,6 +308,7 @@ async def trigger_recalibration(
     cal_params = calibrator.recalibrate_parameters(
         timing_offset_hours=req.timing_offset_hours,
         stage_error_m=req.stage_error_m,
+        peak_discharge_error_m3s=req.peak_discharge_error_m3s,
     )
     synced = False
     if req.sync_basin_file:
@@ -313,6 +318,7 @@ async def trigger_recalibration(
         "triggered_by": auth.get("sub"),
         "timing_offset_hours": req.timing_offset_hours,
         "stage_error_m": req.stage_error_m,
+        "peak_discharge_error_m3s": req.peak_discharge_error_m3s,
         "parameters": {
             "alpha_k": cal_params["alpha_k"],
             "alpha_lag": cal_params["alpha_lag"],

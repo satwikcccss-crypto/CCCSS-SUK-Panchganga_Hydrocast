@@ -38,7 +38,10 @@ openmeteo = openmeteo_requests.Client(session=retry_session)
 from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_gages, SUBBASIN_AREAS_KM2
 from src.hms.runner import execute_hec_hms
 from src.sensors.thingspeak_gauge import fetch_shivaji_live_telemetry
-from src.hydrology.stage_converter import convert_discharge_to_stage_manning
+from src.hydrology.stage_converter import (
+    convert_discharge_to_stage_manning,
+    convert_stage_to_discharge_manning,
+)
 from src.hydrology.runs_tracker import save_computation_run, list_computation_runs, get_computation_run
 from src.hydrology.validation_metrics import evaluate_forecast_accuracy
 from src.hydrology.ml_calibration import calibrator, calculate_peak_arrival_window
@@ -273,6 +276,34 @@ def sync_to_supabase(state: dict, db_url: str):
             raise
 
 
+def _latest_cached_observation() -> Optional[Dict[str, object]]:
+    """Most recent *observed* hourly stage from the telemetry cache, or None.
+
+    Used as the baseflow anchor when the live ThingSpeak read fails. Never
+    invent a stage: a hardcoded "last-known" value is a normal-monsoon guess
+    that sits ~2 m above the dry-season water level and biases the entire
+    90-hour baseflow by that constant amount.
+    """
+    try:
+        cache = load_telemetry_cache()
+    except Exception as exc:
+        log.warning("Could not read telemetry cache for baseflow fallback: %s", exc)
+        return None
+    if not cache:
+        return None
+    for key in sorted(cache.keys(), reverse=True):
+        obs = cache.get(key) or {}
+        stage = obs.get("observed_stage_m")
+        if stage is None:
+            continue
+        return {
+            "stage_m": float(stage),
+            "distance_ft": obs.get("observed_distance_ft"),
+            "timestamp": key,
+        }
+    return None
+
+
 def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     """
     Executes a complete forecast cycle:
@@ -429,10 +460,35 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
     shivaji_telemetry = fetch_shivaji_live_telemetry()
     raw_feet = shivaji_telemetry.get("raw_feet")
     live_stage = shivaji_telemetry.get("stage_m")
+    telemetry_source = "LIVE"
     if raw_feet is None or live_stage is None:
-        record_log("WARN", "ThingSpeak Shivaji telemetry unavailable/abnormal — using last-known fallback (532.60 m / 54.83 ft)")
-        raw_feet = 54.83
-        live_stage = 532.60
+        # NEVER fabricate a stage. Anchor baseflow to the most recent *observed*
+        # cached reading so a sensor outage does not inject a constant bias.
+        cached = _latest_cached_observation()
+        if cached is not None:
+            live_stage = cached["stage_m"]
+            raw_feet = cached.get("distance_ft")
+            telemetry_source = "CACHED_FALLBACK"
+            shivaji_telemetry = {
+                "status": "CACHED_FALLBACK",
+                "stage_m": live_stage,
+                "raw_feet": raw_feet,
+                "timestamp": cached["timestamp"],
+            }
+            record_log(
+                "WARN",
+                f"ThingSpeak Shivaji telemetry unavailable — using last cached observation "
+                f"({live_stage:.2f} m MSL @ {cached['timestamp']})",
+            )
+        else:
+            live_stage = None
+            raw_feet = None
+            telemetry_source = "NO_OBSERVATION"
+            record_log(
+                "WARN",
+                "ThingSpeak Shivaji telemetry unavailable and no cached observation exists — "
+                "baseflow uses the climatological fallback and this cycle is baseflow-unverified",
+            )
     else:
         record_log("INFO", f"ThingSpeak Shivaji Live Ground Truth: Distance={raw_feet:.2f} ft -> Water Level={live_stage:.2f} m MSL")
     _end_step(s3)
@@ -456,20 +512,37 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         if last_run_data:
             prev_forecast = last_run_data.get("bridgeShivaji", {}).get("forecast", [])
 
-    warranted, delta_t, max_err, trigger_reason = calibrator.detect_timing_and_stage_discrepancy(
-        prev_forecast, obs_cache
-    )
+    discrepancy = calibrator.detect_timing_and_stage_discrepancy(prev_forecast, obs_cache)
+    warranted = discrepancy["warranted"]
+    delta_t = discrepancy["timing_offset_hours"]
+    signed_stage_err = discrepancy["signed_stage_error_m"]
+    trigger_reason = discrepancy["reason"]
 
     cal_params = None
     if warranted:
+        # Convert the observed vs forecast peak stages into an independent peak
+        # discharge error through the site rating curve.  This is the sign and
+        # magnitude the objective's peak term was written for but never received
+        # (it was hardwired to 0.0).
+        peak_q_err = 0.0
+        if discrepancy["observed_peak_stage_m"] > 0.0:
+            try:
+                peak_q_err = (
+                    convert_stage_to_discharge_manning(discrepancy["observed_peak_stage_m"], "SHIVAJI_BRIDGE")
+                    - convert_stage_to_discharge_manning(discrepancy["forecast_peak_stage_m"], "SHIVAJI_BRIDGE")
+                )
+            except Exception as exc:
+                record_log("WARN", f"Peak discharge error could not be derived from rating curve: {exc}")
+
         record_log("WARNING", f"Real-Time ML Recalibration Triggered: {trigger_reason}")
         cal_params = calibrator.recalibrate_parameters(
             timing_offset_hours=delta_t,
-            stage_error_m=max_err,
+            stage_error_m=signed_stage_err,
+            peak_discharge_error_m3s=peak_q_err,
             subbasin_hyetographs=subbasin_arrays,
         )
         calibrator.sync_to_hec_hms_basin(cal_params)
-        record_log("INFO", f"HEC-HMS & Emulator Synchronized: α_K={cal_params['alpha_k']}, α_lag={cal_params['alpha_lag']}, ΔCN={cal_params['delta_cn']}, X={cal_params['muskingum_x']}")
+        record_log("INFO", f"HEC-HMS & Emulator Synchronized: α_K={cal_params['alpha_k']}, α_lag={cal_params['alpha_lag']}, ΔCN={cal_params['delta_cn']}, X={cal_params['muskingum_x']}, ΔQpeak={peak_q_err:+.1f} m³/s")
     else:
         record_log("INFO", f"Hydrologic Calibration Baseline Stable: {trigger_reason}")
     _end_step(s4)
@@ -560,6 +633,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         },
         "forecast": shivaji_forecast,
         "live_sensor": shivaji_telemetry,
+        "telemetry_source": telemetry_source,
     }
 
     bridge_rajaram = {
@@ -686,8 +760,16 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             "components": {
                 "open_meteo": "ONLINE (18 STATIONS)",
                 "stage_rating": "ONLINE",
-                "database": "CONNECTED" if os.getenv("DATABASE_URL") else "STANDALONE",
+                "database": "CONNECTED" if os.environ.get("DATABASE_URL") else "STANDALONE",
                 "hec_hms": "CALIBRATED_RJKT (COMPUTED)",
+                "ml_calibration": (
+                    "TUNED (Δt={:+.1f}h, conf={:.1f}%)".format(
+                        float(calibrator.state.get("timing_offset_hours", 0.0)),
+                        float(calibrator.state.get("confidence_pct", 0.0)),
+                    )
+                    if calibrator.state.get("is_recalibrated")
+                    else "BASELINE (PHYSICS PRIOR)"
+                ),
             },
             "steps": step_timings,
             "metrics": {

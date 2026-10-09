@@ -5,16 +5,29 @@ Unit tests for the DDMA multi-channel Telegram dispatcher and disaster webhooks.
 """
 
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch, MagicMock
 
+from src.alerts import telegram_bot
 from src.alerts.telegram_bot import (
+    esc,
     format_telegram_alert,
     get_severity_badge,
     send_telegram_broadcast,
     dispatch_agency_webhooks,
     get_target_chat_ids,
     get_webhook_urls,
+    is_authorized,
+    is_rate_limited,
+    validate_webhook_secret,
 )
+
+
+def _update(chat_id=111, user_id=222, username=None):
+    return SimpleNamespace(
+        effective_chat=SimpleNamespace(id=chat_id),
+        effective_user=SimpleNamespace(id=user_id, username=username),
+    )
 
 
 class TestAlertsDispatcher(unittest.TestCase):
@@ -81,6 +94,71 @@ class TestAlertsDispatcher(unittest.TestCase):
         mock_post.assert_called_once()
 
 
+class TestTelegramSecurity(unittest.TestCase):
+
+    def test_esc_escapes_html(self):
+        self.assertEqual(esc("<b>Shivaji & Co</b>"), "&lt;b&gt;Shivaji &amp; Co&lt;/b&gt;")
+        self.assertEqual(esc(None), "")
+
+    @patch.object(telegram_bot, "ALLOWED_CHAT_IDS_ENV", "")
+    @patch.object(telegram_bot, "ALLOWED_USERNAMES_ENV", "")
+    def test_open_when_no_allowlist(self):
+        self.assertTrue(is_authorized(_update(chat_id=999)))
+
+    @patch.object(telegram_bot, "ALLOWED_USERNAMES_ENV", "")
+    @patch.object(telegram_bot, "ALLOWED_CHAT_IDS_ENV", "111,333")
+    def test_allowlist_enforced(self):
+        self.assertTrue(is_authorized(_update(chat_id=111)))
+        self.assertFalse(is_authorized(_update(chat_id=999, user_id=999)))
+
+    @patch.object(telegram_bot, "ALLOWED_CHAT_IDS_ENV", "")
+    @patch.object(telegram_bot, "ALLOWED_USERNAMES_ENV", "ops_user")
+    def test_username_allowlist(self):
+        self.assertTrue(is_authorized(_update(username="ops_user")))
+        self.assertFalse(is_authorized(_update(username="stranger")))
+
+    @patch.object(telegram_bot, "RATE_LIMIT_WINDOW", 60)
+    @patch.object(telegram_bot, "RATE_LIMIT_MAX", 2)
+    def test_rate_limit(self):
+        telegram_bot._rate_buckets.clear()
+        self.assertFalse(is_rate_limited("chat-1"))
+        self.assertFalse(is_rate_limited("chat-1"))
+        self.assertTrue(is_rate_limited("chat-1"))
+        self.assertFalse(is_rate_limited("chat-2"))
+
+    @patch.object(telegram_bot, "WEBHOOK_SECRET", "")
+    def test_webhook_secret_disabled(self):
+        self.assertTrue(validate_webhook_secret(None))
+
+    @patch.object(telegram_bot, "WEBHOOK_SECRET", "s3cret")
+    def test_webhook_secret_enforced(self):
+        self.assertTrue(validate_webhook_secret("s3cret"))
+        self.assertFalse(validate_webhook_secret("wrong"))
+        self.assertFalse(validate_webhook_secret(None))
+
+    @patch.object(telegram_bot, "ALLOWED_CHAT_IDS_ENV", "111")
+    @patch.object(telegram_bot, "ALLOWED_USERNAMES_ENV", "")
+    def test_tiered_guards(self):
+        telegram_bot._rate_buckets.clear()
+        # Public users are never blocked by _rate_guard even if not on the allowlist
+        public_update = _update(chat_id=999)
+        self.assertIsNone(telegram_bot._rate_guard(public_update))
+
+        # Official guard denies non-allowlisted public users
+        official_denial = telegram_bot._guard(public_update)
+        self.assertIsNotNone(official_denial)
+        self.assertIn("Access Restricted", official_denial)
+
+        # Official guard permits allowlisted users
+        authorized_update = _update(chat_id=111)
+        self.assertIsNone(telegram_bot._guard(authorized_update))
+
+    def test_load_latest_pipeline_state(self):
+        state = telegram_bot.load_latest_pipeline_state()
+        self.assertIsNotNone(state)
+        self.assertIn("cycle_id", state)
+
 
 if __name__ == "__main__":
     unittest.main()
+

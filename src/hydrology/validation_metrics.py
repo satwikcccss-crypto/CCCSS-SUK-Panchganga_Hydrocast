@@ -147,19 +147,29 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
     else:
         pred_q = obs_q = None
 
+    from src.hydrology.stage_converter import assess_low_flow_guard
+
+    # Low-flow representativeness. During stable baseflow a constant offset is a
+    # datum/anchor bias, and observed stages below the lowest WRD gauge make the
+    # rating a shape extrapolation. Both are surfaced so a ~2 m baseflow bias is
+    # never reported as an ordinary, well-behaved MAE.
+    low_flow_guard = assess_low_flow_guard(pred_stages, obs_stages)
+
     # Flat-flow guard: during baseflow-only (no active storm), both predicted and observed
     # series are nearly constant. NSE and Spearman are undefined/meaningless in this case.
     obs_std = float(np.std(obs_stages))
     if obs_std < 0.05:  # less than 5cm variance -> baseflow stable
         rmse_stage, mae_stage = compute_rmse_mae(pred_stages, obs_stages)
         rmse_q, mae_q = compute_rmse_mae(pred_q, obs_q)
+        baseflow_mismatch = bool(low_flow_guard["constant_bias_detected"])
         return {
-            "status": "BASEFLOW_STABLE",
+            "status": "BASEFLOW_MISMATCH" if baseflow_mismatch else "BASEFLOW_STABLE",
             "lifecycle_status": "BASEFLOW_STABLE",
             "verified_hours": len(valid_points),
             "total_forecast_hours": len(shivaji_fc),
-            "performance_grade": "BASEFLOW_STABLE",
-            "badge_color": "sky",
+            "performance_grade": "BASEFLOW_MISMATCH" if baseflow_mismatch else "BASEFLOW_STABLE",
+            "badge_color": "rose" if baseflow_mismatch else "sky",
+            "low_flow_guard": low_flow_guard,
             "metrics": {
                 "sample_size_hours": len(valid_points),
                 "spearman_rho": None,
@@ -171,6 +181,11 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
                 "pbias_stage_pct": None,
                 "pearson_r2": None,
                 "basin_rainfall_accuracy_pct": None,
+                "baseflow_stage_offset_m": low_flow_guard["baseflow_stage_offset_m"],
+                "observed_ungauged_fraction": low_flow_guard["ungauged_fraction"],
+                "rating_extrapolated": low_flow_guard["rating_extrapolated"],
+                "constant_baseflow_bias": baseflow_mismatch,
+                "baseflow_note": low_flow_guard["note"],
             },
             "station_volume_accuracy": [],
             "scatter_points": [],
@@ -331,6 +346,7 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
         "matched_pairs": len(valid_points),
         "performance_grade": performance_grade,
         "badge_color": badge_color,
+        "low_flow_guard": low_flow_guard,
         "metrics": {
             "spearman_rho": spearman_rho_stage,
             "spearman_rho_q": spearman_rho_q,
@@ -347,6 +363,11 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
             "pbias_discharge_pct": pbias_q,
             "skill_metrics_reliable": bool(nse_reliable),
             "observed_stage_std_m": round(obs_std, 4),
+            "baseflow_stage_offset_m": low_flow_guard["baseflow_stage_offset_m"],
+            "observed_ungauged_fraction": low_flow_guard["ungauged_fraction"],
+            "rating_extrapolated": low_flow_guard["rating_extrapolated"],
+            "constant_baseflow_bias": low_flow_guard["constant_bias_detected"],
+            "baseflow_note": low_flow_guard["note"],
             "discharge_metrics_source": "RATING_IMPLIED_DERIVED" if pred_q is not None else None,
             "discharge_metrics_note": (
                 "Observed discharge is the observed stage pushed through the same "

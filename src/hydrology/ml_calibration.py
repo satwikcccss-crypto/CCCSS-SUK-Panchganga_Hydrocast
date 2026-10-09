@@ -47,7 +47,7 @@ import numpy as np
 from scipy import optimize
 
 from src.hms import runner as hms_runner
-from src.hms.basin_parser import load_basin_parameters
+from src.hms.basin_parser import load_immutable_baseline
 
 log = logging.getLogger(__name__)
 
@@ -61,10 +61,31 @@ CALIBRATION_STATE_FILE = TELEMETRY_DIR / "ml_calibration_state.json"
 # Permissible uncertainty margin for peak arrival (default ±2.0 hours)
 CONFIDENCE_INTERVAL_HOURS = float(os.getenv("PEAK_ARRIVAL_CI_HOURS", "2.0"))
 
-# Baseline Subbasin Catchment Parameters — loaded directly from the official
-# Basin_1.basin model (the same file HEC-HMS executes).  The emulator reads the
-# same source, so calibration and production can never drift apart.
-BASE_SUB_MODELS, BASE_REACHES = load_basin_parameters()
+# Immutable physics baseline.  ``Basin_1.basin`` is rewritten in place whenever a
+# recalibration is synced, so it must NOT be used as the calibration origin —
+# otherwise every offset would compound on top of the previous offset and drift
+# without bound.  The frozen snapshot (``calibration_baseline.json``) is the
+# single origin: calibration subtracts from it, and the emulator adds the
+# persisted offsets back on top of it exactly once.
+BASE_SUB_MODELS, BASE_REACHES = load_immutable_baseline()
+
+
+def _baseline_active_dicts() -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """Baseline (pristine) subbasin/reach dicts shaped for the dashboard state."""
+    baseline_sub = {
+        sid: {
+            "name": p["name"],
+            "area_km2": p["area_km2"],
+            "cn": round(float(p["cn"]), 3),
+            "lag_min": round(float(p["lag_min"]), 1),
+        }
+        for sid, p in BASE_SUB_MODELS.items()
+    }
+    baseline_rch = {
+        rid: {"k_hr": round(float(p["k_hr"]), 3), "x": round(float(p["x"]), 3)}
+        for rid, p in BASE_REACHES.items()
+    }
+    return baseline_sub, baseline_rch
 
 
 def calculate_peak_arrival_window(
@@ -201,26 +222,48 @@ class AdaptiveHydrologicCalibrator:
 
     @staticmethod
     def load_calibration_state() -> Dict[str, Any]:
-        """Loads persistent calibration state from JSON."""
-        if CALIBRATION_STATE_FILE.exists():
-            try:
-                with open(CALIBRATION_STATE_FILE, "r", encoding="utf-8") as f:
-                    return json.load(f)
-            except Exception as e:
-                log.warning("Failed to load calibration state: %s", e)
-        return {
+        """Loads persistent calibration state from JSON, backfilling any fields
+        added since the file was last written (e.g. the dashboard parameter
+        snapshots) so an upgrade never silently drops them."""
+        baseline_sub, baseline_rch = _baseline_active_dicts()
+
+        state: Dict[str, Any] = {
             "last_calibrated_at": None,
             "is_recalibrated": False,
             "trigger_reason": "INITIAL_BASELINE",
             "timing_offset_hours": 0.0,
             "stage_discrepancy_m": 0.0,
+            "peak_discharge_error_m3s": 0.0,
             "alpha_k": 1.0,
             "alpha_lag": 1.0,
             "delta_cn": 0.0,
             "muskingum_x": 0.25,
             "confidence_pct": 95.0,
+            "baseline_sub_models": baseline_sub,
+            "baseline_reaches": baseline_rch,
+            "active_sub_models": baseline_sub,
+            "active_reaches": baseline_rch,
             "history": [],
         }
+
+        if CALIBRATION_STATE_FILE.exists():
+            try:
+                with open(CALIBRATION_STATE_FILE, "r", encoding="utf-8") as f:
+                    loaded = json.load(f)
+                if isinstance(loaded, dict):
+                    state.update(loaded)
+            except Exception as e:
+                log.warning("Failed to load calibration state: %s", e)
+
+        # Backfill baseline/active params for state files written before these
+        # fields existed, or after a baseline snapshot regeneration.
+        state["baseline_sub_models"] = baseline_sub
+        state["baseline_reaches"] = baseline_rch
+        if not state.get("active_sub_models"):
+            state["active_sub_models"] = baseline_sub
+        if not state.get("active_reaches"):
+            state["active_reaches"] = baseline_rch
+        return state
 
     def save_calibration_state(self) -> None:
         """Persists calibration state to JSON (skipped under pytest to keep the
@@ -242,13 +285,29 @@ class AdaptiveHydrologicCalibrator:
     ) -> Tuple[bool, float, float, str]:
         """
         Compares recent forecast against observed ThingSpeak telemetry.
-        Returns (recalibration_warranted, timing_offset_hours, max_stage_error_m, reason).
+        Returns a dict:
+          {
+            "warranted": bool,
+            "timing_offset_hours": float,        # <0 early, >0 late
+            "signed_stage_error_m": float,       # forecast - observed (signed mean)
+            "max_stage_error_m": float,          # max |forecast - observed|
+            "observed_peak_stage_m": float,
+            "forecast_peak_stage_m": float,
+            "is_rising": bool,
+            "reason": str,
+          }
         """
+        empty = {
+            "warranted": False,
+            "timing_offset_hours": 0.0,
+            "signed_stage_error_m": 0.0,
+            "max_stage_error_m": 0.0,
+            "observed_peak_stage_m": 0.0,
+            "forecast_peak_stage_m": 0.0,
+            "is_rising": False,
+        }
         if not recent_forecast or not observed_telemetry:
-            return False, 0.0, 0.0, "INSUFFICIENT_DATA"
-
-        stage_diffs: List[float] = []
-        timing_diffs: List[float] = []
+            return {**empty, "reason": "INSUFFICIENT_DATA"}
 
         obs_points: List[Tuple[datetime, float]] = []
         for ts_str, obs in observed_telemetry.items():
@@ -261,10 +320,13 @@ class AdaptiveHydrologicCalibrator:
                 continue
 
         if len(obs_points) < 2:
-            return False, 0.0, 0.0, "TELEMETRY_SPARSE"
+            return {**empty, "reason": "TELEMETRY_SPARSE"}
 
         obs_points.sort(key=lambda x: x[0])
 
+        stage_diffs: List[float] = []
+        observed_matched: List[float] = []
+        forecast_matched: List[float] = []
         for fc in recent_forecast:
             fc_time_str = fc.get("forecast_time") or fc.get("timestamp")
             if not fc_time_str:
@@ -280,13 +342,23 @@ class AdaptiveHydrologicCalibrator:
                 diff_secs = abs((fc_dt - o_dt).total_seconds())
                 if diff_secs <= 1800:
                     stage_diffs.append(fc_stage - o_stage)
+                    observed_matched.append(o_stage)
+                    forecast_matched.append(fc_stage)
                     break
 
         if not stage_diffs:
-            return False, 0.0, 0.0, "NO_ALIGNED_TIMESTAMPS"
+            return {**empty, "reason": "NO_ALIGNED_TIMESTAMPS"}
 
         max_err = float(np.max(np.abs(stage_diffs)))
+        # Signed mean: positive => model over-predicts stage, negative => model
+        # under-predicts.  The sign must be preserved so the CN correction moves
+        # in the physically correct direction.
         mean_err = float(np.mean(stage_diffs))
+
+        # Peaks over the aligned window (stage domain — avoids the circular test
+        # of converting observed stage to discharge through the forecast rating).
+        observed_peak = float(np.max(observed_matched))
+        forecast_peak = float(np.max(forecast_matched))
 
         # Check rate of rise (rising limb detection)
         recent_obs_stages = [p[1] for p in obs_points[-4:]]
@@ -303,12 +375,21 @@ class AdaptiveHydrologicCalibrator:
 
         warranted = (abs(delta_t_hours) >= 1.0) or (max_err > 0.25 and is_rising)
         reason = (
-            f"Wave timing offset Δt={delta_t_hours:+.1f}h, max stage error={max_err:.2f}m (rising={is_rising})"
+            f"Wave timing offset Δt={delta_t_hours:+.1f}h, signed stage error={mean_err:+.2f}m, max={max_err:.2f}m (rising={is_rising})"
             if warranted
-            else f"Within tolerances (Δt={delta_t_hours:+.1f}h, max_err={max_err:.2f}m)"
+            else f"Within tolerances (Δt={delta_t_hours:+.1f}h, signed={mean_err:+.2f}m, max={max_err:.2f}m)"
         )
 
-        return warranted, delta_t_hours, max_err, reason
+        return {
+            "warranted": warranted,
+            "timing_offset_hours": delta_t_hours,
+            "signed_stage_error_m": round(mean_err, 3),
+            "max_stage_error_m": round(max_err, 3),
+            "observed_peak_stage_m": round(observed_peak, 2),
+            "forecast_peak_stage_m": round(forecast_peak, 2),
+            "is_rising": is_rising,
+            "reason": reason,
+        }
 
     def recalibrate_parameters(
         self,
@@ -426,6 +507,7 @@ class AdaptiveHydrologicCalibrator:
             dlag = (a_lag - lag_shift) / 0.20
             return np.concatenate([resid, [dwell, dstage, dx, dk, dlag]])
 
+        opt_res = None
         try:
             opt_res = optimize.least_squares(
                 hydrologic_residuals,
@@ -442,6 +524,16 @@ class AdaptiveHydrologicCalibrator:
         except Exception as e:
             log.warning("Levenberg-Marquardt recalibration fell back to analytical physics: %s", e)
             final_p = initial_params
+
+        # Confidence is derived from the normalized RMS of the final residual
+        # vector: a perfect fit (rms -> 0) yields ~100%, a poor fit trends to the
+        # 50% floor. This replaces the previously hardcoded 95%.
+        try:
+            resid_vec = np.asarray(getattr(opt_res, "fun", []), dtype=np.float64)
+            rms = float(np.sqrt(np.mean(resid_vec ** 2))) if resid_vec.size else 1.0
+            confidence_pct = float(np.clip(100.0 * (1.0 - rms / (rms + 1.0)), 50.0, 99.9))
+        except Exception:
+            confidence_pct = 50.0
 
         alpha_k = round(float(final_p[0]), 3)
         alpha_lag = round(float(final_p[1]), 3)
@@ -476,33 +568,44 @@ class AdaptiveHydrologicCalibrator:
                 "x": muskingum_x,
             }
 
-        # Update and persist internal state
+        # Update and persist internal state.  ``is_recalibrated`` MUST be set
+        # here — previously it stayed False forever, so the dashboard always
+        # rendered the engine as "baseline" even after a real recalibration.
         now_iso = datetime.now(timezone.utc).isoformat()
+        self.state["is_recalibrated"] = True
         self.state["last_calibrated_at"] = now_iso
         self.state["trigger_reason"] = (
             f"Offset Δt={timing_offset_hours:+.1f}h, stage_err={stage_error_m:+.2f}m"
         )
         self.state["timing_offset_hours"] = timing_offset_hours
         self.state["stage_discrepancy_m"] = stage_error_m
+        self.state["peak_discharge_error_m3s"] = peak_discharge_error_m3s
         self.state["alpha_k"] = alpha_k
         self.state["alpha_lag"] = alpha_lag
         self.state["delta_cn"] = delta_cn
         self.state["muskingum_x"] = muskingum_x
+        self.state["confidence_pct"] = round(confidence_pct, 1)
+        # Snapshot the absolute parameters actually in force so the dashboard
+        # can display them without re-deriving (and without hardcoding).
+        self.state["active_sub_models"] = calibrated_params["sub_models"]
+        self.state["active_reaches"] = calibrated_params["reaches"]
         self.state["history"].append({
             "timestamp": now_iso,
             "timing_offset_hours": timing_offset_hours,
             "stage_error_m": stage_error_m,
+            "peak_discharge_error_m3s": peak_discharge_error_m3s,
             "alpha_k": alpha_k,
             "alpha_lag": alpha_lag,
             "delta_cn": delta_cn,
             "muskingum_x": muskingum_x,
+            "confidence_pct": round(confidence_pct, 1),
         })
         self.state["history"] = self.state["history"][-50:]
         self.save_calibration_state()
 
         log.info(
-            "ML Recalibration Completed: α_K=%.3f, α_lag=%.3f, ΔCN=%+.2f, X=%.3f (Δt=%+.1fh)",
-            alpha_k, alpha_lag, delta_cn, muskingum_x, timing_offset_hours
+            "ML Recalibration Completed: α_K=%.3f, α_lag=%.3f, ΔCN=%+.2f, X=%.3f, ΔQpeak=%+.1f m³/s, conf=%.1f%% (Δt=%+.1fh)",
+            alpha_k, alpha_lag, delta_cn, muskingum_x, peak_discharge_error_m3s, confidence_pct, timing_offset_hours
         )
 
         return calibrated_params

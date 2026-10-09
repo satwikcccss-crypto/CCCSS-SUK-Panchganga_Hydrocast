@@ -50,7 +50,8 @@ The Panchganga river system in Kolhapur features two primary regulatory hydrauli
 [ Shivaji Bridge Gauge ]  ====== 3.8 km Reach ======>  [ Rajaram K.T. Weir ]
 Elevation: 528.67 - 549.35m MSL                       Elevation: 529.318 - 545.33m MSL
 Datum separation: +0.648 m (Rajaram higher)            Rating: PCHIP on WRD sheet (verbatim)
-Rating: PCHIP on WRD sheet minus 0.648 m               Sheet anchors: 530.18 (weir crest) … 545.33 HFL
+Rating: PCHIP on WRD sheet − 0.648 m (sheet points)    Sheet anchors: 530.18 gauge zero … 545.33 HFL     Weir overflow level: 535.77 m MSL
+                                                       (< ~20 m³/s: per-site WRD register, offset widens)
 ```
 
 ### 2.1 Surveyed Cross-Section Topometry
@@ -114,7 +115,22 @@ Three severe hydraulic flaws caused this:
 To resolve this, we re-engineered the rating curve engine in [`stage_converter.py`](file:///e:/hydrocast_complete/src/hydrology/stage_converter.py). Both gauged sites are now **PCHIP-interpolated directly through the official Maharashtra WRD stage-discharge sheet** instead of a pure Manning/DCM curve:
 
 1. **Rajaram K.T. Weir:** PCHIP through the WRD sheet stages verbatim plus WRD 2021–2023 observed low-flow anchors ($532.70 \to 14.16$ … $533.36 \to 71.25\text{ m}^3/s$), removing the old fabricated $531.50 \to 3.0$ tail.
-2. **Shivaji Bridge:** PCHIP through the same sheet shifted **−0.648 m downstream** (its bed RL is 0.648 m lower than Rajaram, chainage 6+257 vs 10+115) plus its bed anchor $528.67 \to 0$. At the same stage Shivaji carries slightly more flow (deeper section); at the same discharge the two curves agree exactly via the offset.
+2. **Shivaji Bridge:** PCHIP through the same sheet shifted **−0.648 m downstream** (its bed RL is 0.648 m lower than Rajaram, chainage 6+257 vs 10+115) plus its bed anchor $528.67 \to 0$. At the same stage Shivaji carries slightly more flow (deeper section). At the same discharge the two curves agree via the offset **above roughly 40 m³/s**, where the shift is exact to within 0.005 m.
+
+   !!! warning "The offset is not constant at low flow"
+       Below about 40 m³/s each curve is pinned to its own bed level rather than
+       to a shifted copy of the sheet, so the implied offset widens as discharge
+       falls: 0.648 m at 40 m³/s, 0.905 m at 5 m³/s, 1.019 m at 2.8 m³/s and
+       1.175 m at 1 m³/s. Earlier revisions of this page stated the 0.648 m
+       shift "holds at every anchor", which is not true at the low end.
+
+       This matters because the low-flow end is where the curve is steepest
+       (about 0.63 m of stage per m³/s below 2.8 m³/s, against 0.004 m per m³/s
+       above 1 480 m³/s). Shifting a low stage by 0.648 m and inverting it at
+       the other site compounds two errors and understated the observed flow by
+       more than half. Baseflow is therefore derived directly at the gauged site
+       rather than by transferring stage across the 3.858 km reach. See the
+       [Engineering Autopsy](errors-and-engineering-assumptions.md), item 20.
 3. **Monotonic PCHIP Spline Interpolation:**
    Replaced standard cubic splines with **Piecewise Cubic Hermite Interpolating Polynomials (PCHIP)**, which preserves shape and mathematically guarantees strict monotonicity:
    $$\frac{dQ}{dh} > 0 \quad \forall h \in [528.67\text{m}, 548.00\text{m}]$$

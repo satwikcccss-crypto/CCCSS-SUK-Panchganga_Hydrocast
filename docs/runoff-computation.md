@@ -67,7 +67,8 @@
                         |
                         +---> [ Exponential Baseflow Recession ]
                          |     Q_bf(t) = Q_bf0 * exp(-0.002 * t)
-                         |     Floor >= 40.0 m3/s (WRD monsoon minimum, 2021-23)
+                         |     Q_bf0 = discharge of the live sensor (converted once)
+                         |     no floor; 91.1 m3/s only if telemetry absent
                         v
       Total Hydrograph at Rajaram K.T. Weir: Q_total(t) = Q_surface(t) + Q_bf(t)
                         |
@@ -75,8 +76,11 @@
           [ WRD-Anchored PCHIP Rating Curve Engine ]
           - Both gauged sites: PCHIP interpolation through the official
             Maharashtra WRD stage-discharge sheet (monotone, no overshoot)
-          - Shivaji stage = Rajaram stage - 0.648 m (downstream bed datum,
-            cross-checked against the WRD alert pair at 1800 m3/s)
+          - Shivaji stage = Rajaram stage - 0.648 m on the WRD sheet
+            control points (cross-checked against the WRD alert pair
+            at 1800 m3/s). Below ~20 m3/s the two curves are instead
+            related by the WRD 2021-23 observed register, so the
+            offset is NOT constant - see stage-discharge-conversion.md
           - Surveyed X-section still supplies wetted area A for any stage
           - Non-anchored sites fall back to compound-section Manning DCM
             (main n=0.035, overbank sugarcane/paddy n=0.055)
@@ -121,9 +125,9 @@ flowchart LR
     PE["<b>ΔP_e(t)</b> · excess<br/>mm/h<br/>S = 25400/CN − 254<br/>Ia = λS, λ = 0.20/0.15/0.08"]
     QS["<b>Q_surf(t)</b> · direct runoff<br/>m³/s<br/>u(t) = (t/tp)^3.7 · e^(3.7(1−t/tp))<br/>tp = 0.5 + lag/60"]
     R["<b>Q_routed(t)</b><br/>m³/s<br/>Muskingum R5→R4→R2→R3→R1<br/>C₀+C₁+C₂ ≡ 1"]
-    BF["<b>+ Q_bf(t)</b><br/>B₀·e^(−0.002t) m³/s<br/>B₀ = 91.1, floor 40.0"]
+    BF["<b>+ Q_bf(t)</b><br/>B₀·e^(−0.002t) m³/s<br/>B₀ from live sensor reading"]
     QT["<b>Q_total(t)</b><br/>m³/s · 352 points<br/>peak = argmax Q_total"]
-    H["<b>h(t)</b> · stage<br/>m MSL<br/>PCHIP over 27 WRD anchors<br/>Shivaji = Rajaram − 0.648 m"]
+    H["<b>h(t)</b> · stage<br/>m MSL<br/>PCHIP over 27 WRD anchors<br/>Shivaji = Rajaram − 0.648 m on the sheet<br/>low-flow points use the WRD register"]
 
     P --> AMC
     AMC --> PE
@@ -253,9 +257,9 @@ of the code:
    S2 Sangarul ──────────────────────────────────────────────────────────┘
    S3 Kotoli   ──────────────────────────────────────────────────────────┘
                                                                             │
-                                                        + Q_bf(t), floor 40 m³/s
-                                                                            ▼
-                                                                  Q_total(t)  [90 pts]
++ Q_bf(t) from live sensor
+                                                                             ▼
+                                                                   Q_total(t)  [90 pts]
 ```
 
 ```mermaid
@@ -414,7 +418,7 @@ $$CN_{\text{effective}} = \min(98.0, \max(50.0, \alpha \cdot CN))$$
 
 $$T_{\text{lag, effective}} = \max(1.0, \beta \cdot T_{\text{lag}})$$
 
-Where $\alpha \in [0.85, 1.15]$ is the Curve Number scaling coefficient and $\beta \in [0.80, 1.20]$ is the SCS Unit Hydrograph lag time scaling coefficient determined by minimizing observed residual error:
+Where $\alpha \in [0.50, 1.80]$ is the Curve Number scaling coefficient and $\beta \in [0.50, 1.80]$ is the SCS Unit Hydrograph lag time scaling coefficient determined by minimizing observed residual error:
 
 $$\mathcal{L}(\alpha, \beta) = \sum_{t=1}^{N} \left[ Q_{\text{sim}}(t; \alpha, \beta) - Q_{\text{obs}}(t) \right]^2 + \lambda \left[ (1 - \alpha)^2 + (1 - \beta)^2 \right]$$
 
