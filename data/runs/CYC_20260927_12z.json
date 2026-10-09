@@ -20320,22 +20320,22 @@
       "travel_time_from_hms_outlet_hours": 1.5,
       "upstream_weir": "Rajaram K.T. Weir (3,858 m upstream, bed datum +0.648 m)"
     },
-    "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 61,
+    "lifecycle_status": "LIFECYCLE_VERIFIED",
+    "verified_hours": 90,
     "total_forecast_hours": 90,
-    "completion_pct": 67.8,
+    "completion_pct": 100.0,
     "observation_gap": {
       "is_gap": false,
-      "missing_hours": 29,
-      "hours_past_window": null,
+      "missing_hours": 0,
+      "hours_past_window": 2.9,
       "grace_hours": 12.0,
       "note": null
     },
     "metrics": {
       "status": "VALIDATED",
-      "sample_size_hours": 61,
-      "matched_pairs": 61,
-      "observed_stage_std_m": 0.0551,
+      "sample_size_hours": 90,
+      "matched_pairs": 90,
+      "observed_stage_std_m": 0.08,
       "skill_metrics_reliable": true,
       "rmse_stage_m": 0.107,
       "mae_stage_m": 0.094,
@@ -20720,6 +20720,180 @@
         "predicted_stage": 530.44,
         "lead_hours": 60,
         "actual_distance_ft": 62.05
+      },
+      {
+        "actual_stage": 530.43,
+        "predicted_stage": 532.37,
+        "lead_hours": 61,
+        "actual_distance_ft": 62.07
+      },
+      {
+        "actual_stage": 530.43,
+        "predicted_stage": 532.37,
+        "lead_hours": 62,
+        "actual_distance_ft": 62.09
+      },
+      {
+        "actual_stage": 530.42,
+        "predicted_stage": 532.37,
+        "lead_hours": 63,
+        "actual_distance_ft": 62.11
+      },
+      {
+        "actual_stage": 530.37,
+        "predicted_stage": 532.37,
+        "lead_hours": 64,
+        "actual_distance_ft": 62.28
+      },
+      {
+        "actual_stage": 530.35,
+        "predicted_stage": 532.37,
+        "lead_hours": 65,
+        "actual_distance_ft": 62.33
+      },
+      {
+        "actual_stage": 530.36,
+        "predicted_stage": 532.37,
+        "lead_hours": 66,
+        "actual_distance_ft": 62.3
+      },
+      {
+        "actual_stage": 530.35,
+        "predicted_stage": 532.36,
+        "lead_hours": 67,
+        "actual_distance_ft": 62.35
+      },
+      {
+        "actual_stage": 530.35,
+        "predicted_stage": 532.36,
+        "lead_hours": 68,
+        "actual_distance_ft": 62.32
+      },
+      {
+        "actual_stage": 530.36,
+        "predicted_stage": 532.36,
+        "lead_hours": 69,
+        "actual_distance_ft": 62.32
+      },
+      {
+        "actual_stage": 530.37,
+        "predicted_stage": 532.36,
+        "lead_hours": 70,
+        "actual_distance_ft": 62.26
+      },
+      {
+        "actual_stage": 530.35,
+        "predicted_stage": 532.36,
+        "lead_hours": 71,
+        "actual_distance_ft": 62.33
+      },
+      {
+        "actual_stage": 530.4,
+        "predicted_stage": 532.36,
+        "lead_hours": 72,
+        "actual_distance_ft": 62.18
+      },
+      {
+        "actual_stage": 530.48,
+        "predicted_stage": 532.36,
+        "lead_hours": 73,
+        "actual_distance_ft": 61.91
+      },
+      {
+        "actual_stage": 530.52,
+        "predicted_stage": 532.36,
+        "lead_hours": 74,
+        "actual_distance_ft": 61.77
+      },
+      {
+        "actual_stage": 530.52,
+        "predicted_stage": 532.36,
+        "lead_hours": 75,
+        "actual_distance_ft": 61.77
+      },
+      {
+        "actual_stage": 530.52,
+        "predicted_stage": 532.36,
+        "lead_hours": 76,
+        "actual_distance_ft": 61.79
+      },
+      {
+        "actual_stage": 530.54,
+        "predicted_stage": 532.36,
+        "lead_hours": 77,
+        "actual_distance_ft": 61.71
+      },
+      {
+        "actual_stage": 530.54,
+        "predicted_stage": 532.36,
+        "lead_hours": 78,
+        "actual_distance_ft": 61.7
+      },
+      {
+        "actual_stage": 530.53,
+        "predicted_stage": 532.36,
+        "lead_hours": 79,
+        "actual_distance_ft": 61.75
+      },
+      {
+        "actual_stage": 530.56,
+        "predicted_stage": 532.36,
+        "lead_hours": 80,
+        "actual_distance_ft": 61.64
+      },
+      {
+        "actual_stage": 530.58,
+        "predicted_stage": 532.36,
+        "lead_hours": 81,
+        "actual_distance_ft": 61.57
+      },
+      {
+        "actual_stage": 530.59,
+        "predicted_stage": 532.36,
+        "lead_hours": 82,
+        "actual_distance_ft": 61.56
+      },
+      {
+        "actual_stage": 530.59,
+        "predicted_stage": 532.36,
+        "lead_hours": 83,
+        "actual_distance_ft": 61.56
+      },
+      {
+        "actual_stage": 530.48,
+        "predicted_stage": 532.36,
+        "lead_hours": 84,
+        "actual_distance_ft": 61.92
+      },
+      {
+        "actual_stage": 530.45,
+        "predicted_stage": 532.36,
+        "lead_hours": 85,
+        "actual_distance_ft": 62.0
+      },
+      {
+        "actual_stage": 530.48,
+        "predicted_stage": 532.36,
+        "lead_hours": 86,
+        "actual_distance_ft": 61.91
+      },
+      {
+        "actual_stage": 530.49,
+        "predicted_stage": 532.36,
+        "lead_hours": 87,
+        "actual_distance_ft": 61.87
+      },
+      {
+        "actual_stage": 530.48,
+        "predicted_stage": 532.36,
+        "lead_hours": 88,
+        "actual_distance_ft": 61.92
+      },
+      {
+        "actual_stage": 530.51,
+        "predicted_stage": 532.36,
+        "lead_hours": 89,
+        "actual_distance_ft": 61.81
       }
     ],
     "actual_observed_series": [
@@ -21527,7 +21701,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 62,
@@ -21540,7 +21714,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 63,
@@ -21553,7 +21727,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 64,
@@ -21566,7 +21740,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 65,
@@ -21579,7 +21753,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 66,
@@ -21592,7 +21766,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 67,
@@ -21605,7 +21779,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 68,
@@ -21618,7 +21792,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 69,
@@ -21631,7 +21805,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 70,
@@ -21644,7 +21818,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 71,
@@ -21657,7 +21831,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 72,
@@ -21670,7 +21844,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 73,
@@ -21683,7 +21857,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 74,
@@ -21696,7 +21870,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 75,
@@ -21709,7 +21883,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 76,
@@ -21722,7 +21896,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 77,
@@ -21735,7 +21909,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 78,
@@ -21748,7 +21922,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 79,
@@ -21761,7 +21935,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 80,
@@ -21774,7 +21948,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 81,
@@ -21787,7 +21961,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 82,
@@ -21800,7 +21974,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 83,
@@ -21813,7 +21987,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 84,
@@ -21826,7 +22000,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 85,
@@ -21839,7 +22013,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 86,
@@ -21852,7 +22026,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 87,
@@ -21865,7 +22039,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 88,
@@ -21878,7 +22052,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 89,
@@ -21891,7 +22065,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       }
     ]
   },

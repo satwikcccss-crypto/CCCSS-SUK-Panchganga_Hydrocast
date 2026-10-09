@@ -23933,14 +23933,14 @@
       "travel_time_from_hms_outlet_hours": 1.5,
       "upstream_weir": "Rajaram K.T. Weir (3,858 m upstream, bed datum +0.648 m)"
     },
-    "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 13,
+    "lifecycle_status": "LIFECYCLE_VERIFIED",
+    "verified_hours": 90,
     "total_forecast_hours": 90,
-    "completion_pct": 14.4,
+    "completion_pct": 100.0,
     "observation_gap": {
       "is_gap": false,
-      "missing_hours": 77,
-      "hours_past_window": null,
+      "missing_hours": 0,
+      "hours_past_window": 0.9,
       "grace_hours": 12.0,
       "note": null
     },
@@ -23965,7 +23965,7 @@
       "spearman_rho_q": null,
       "pearson_r2_q": null,
       "basin_rainfall_accuracy_pct": null,
-      "performance_grade": "BASEFLOW_STABLE"
+      "performance_grade": "CALIBRATION_REQUIRED"
     },
     "scatter_points": [
       {
@@ -24045,6 +24045,468 @@
         "predicted_stage": 530.33,
         "lead_hours": 12,
         "actual_distance_ft": 62.05
+      },
+      {
+        "actual_stage": 530.43,
+        "predicted_stage": 532.41,
+        "lead_hours": 13,
+        "actual_distance_ft": 62.07
+      },
+      {
+        "actual_stage": 530.43,
+        "predicted_stage": 532.4,
+        "lead_hours": 14,
+        "actual_distance_ft": 62.09
+      },
+      {
+        "actual_stage": 530.42,
+        "predicted_stage": 532.4,
+        "lead_hours": 15,
+        "actual_distance_ft": 62.11
+      },
+      {
+        "actual_stage": 530.37,
+        "predicted_stage": 532.4,
+        "lead_hours": 16,
+        "actual_distance_ft": 62.28
+      },
+      {
+        "actual_stage": 530.35,
+        "predicted_stage": 532.4,
+        "lead_hours": 17,
+        "actual_distance_ft": 62.33
+      },
+      {
+        "actual_stage": 530.36,
+        "predicted_stage": 532.4,
+        "lead_hours": 18,
+        "actual_distance_ft": 62.3
+      },
+      {
+        "actual_stage": 530.35,
+        "predicted_stage": 532.4,
+        "lead_hours": 19,
+        "actual_distance_ft": 62.35
+      },
+      {
+        "actual_stage": 530.35,
+        "predicted_stage": 532.4,
+        "lead_hours": 20,
+        "actual_distance_ft": 62.32
+      },
+      {
+        "actual_stage": 530.36,
+        "predicted_stage": 532.4,
+        "lead_hours": 21,
+        "actual_distance_ft": 62.32
+      },
+      {
+        "actual_stage": 530.37,
+        "predicted_stage": 532.4,
+        "lead_hours": 22,
+        "actual_distance_ft": 62.26
+      },
+      {
+        "actual_stage": 530.35,
+        "predicted_stage": 532.4,
+        "lead_hours": 23,
+        "actual_distance_ft": 62.33
+      },
+      {
+        "actual_stage": 530.4,
+        "predicted_stage": 532.4,
+        "lead_hours": 24,
+        "actual_distance_ft": 62.18
+      },
+      {
+        "actual_stage": 530.48,
+        "predicted_stage": 532.4,
+        "lead_hours": 25,
+        "actual_distance_ft": 61.91
+      },
+      {
+        "actual_stage": 530.52,
+        "predicted_stage": 532.4,
+        "lead_hours": 26,
+        "actual_distance_ft": 61.77
+      },
+      {
+        "actual_stage": 530.52,
+        "predicted_stage": 532.39,
+        "lead_hours": 27,
+        "actual_distance_ft": 61.77
+      },
+      {
+        "actual_stage": 530.52,
+        "predicted_stage": 532.39,
+        "lead_hours": 28,
+        "actual_distance_ft": 61.79
+      },
+      {
+        "actual_stage": 530.54,
+        "predicted_stage": 532.39,
+        "lead_hours": 29,
+        "actual_distance_ft": 61.71
+      },
+      {
+        "actual_stage": 530.54,
+        "predicted_stage": 532.39,
+        "lead_hours": 30,
+        "actual_distance_ft": 61.7
+      },
+      {
+        "actual_stage": 530.53,
+        "predicted_stage": 532.39,
+        "lead_hours": 31,
+        "actual_distance_ft": 61.75
+      },
+      {
+        "actual_stage": 530.56,
+        "predicted_stage": 532.39,
+        "lead_hours": 32,
+        "actual_distance_ft": 61.64
+      },
+      {
+        "actual_stage": 530.58,
+        "predicted_stage": 532.39,
+        "lead_hours": 33,
+        "actual_distance_ft": 61.57
+      },
+      {
+        "actual_stage": 530.59,
+        "predicted_stage": 532.39,
+        "lead_hours": 34,
+        "actual_distance_ft": 61.56
+      },
+      {
+        "actual_stage": 530.59,
+        "predicted_stage": 532.39,
+        "lead_hours": 35,
+        "actual_distance_ft": 61.56
+      },
+      {
+        "actual_stage": 530.48,
+        "predicted_stage": 532.39,
+        "lead_hours": 36,
+        "actual_distance_ft": 61.92
+      },
+      {
+        "actual_stage": 530.45,
+        "predicted_stage": 532.39,
+        "lead_hours": 37,
+        "actual_distance_ft": 62.0
+      },
+      {
+        "actual_stage": 530.48,
+        "predicted_stage": 532.39,
+        "lead_hours": 38,
+        "actual_distance_ft": 61.91
+      },
+      {
+        "actual_stage": 530.49,
+        "predicted_stage": 532.39,
+        "lead_hours": 39,
+        "actual_distance_ft": 61.87
+      },
+      {
+        "actual_stage": 530.48,
+        "predicted_stage": 532.39,
+        "lead_hours": 40,
+        "actual_distance_ft": 61.92
+      },
+      {
+        "actual_stage": 530.51,
+        "predicted_stage": 532.39,
+        "lead_hours": 41,
+        "actual_distance_ft": 61.81
+      },
+      {
+        "actual_stage": 530.49,
+        "predicted_stage": 532.39,
+        "lead_hours": 42,
+        "actual_distance_ft": 61.89
+      },
+      {
+        "actual_stage": 530.52,
+        "predicted_stage": 532.39,
+        "lead_hours": 43,
+        "actual_distance_ft": 61.77
+      },
+      {
+        "actual_stage": 530.6,
+        "predicted_stage": 532.39,
+        "lead_hours": 44,
+        "actual_distance_ft": 61.52
+      },
+      {
+        "actual_stage": 530.66,
+        "predicted_stage": 532.39,
+        "lead_hours": 45,
+        "actual_distance_ft": 61.32
+      },
+      {
+        "actual_stage": 530.7,
+        "predicted_stage": 532.39,
+        "lead_hours": 46,
+        "actual_distance_ft": 61.2
+      },
+      {
+        "actual_stage": 530.74,
+        "predicted_stage": 532.39,
+        "lead_hours": 47,
+        "actual_distance_ft": 61.05
+      },
+      {
+        "actual_stage": 530.79,
+        "predicted_stage": 532.39,
+        "lead_hours": 48,
+        "actual_distance_ft": 60.91
+      },
+      {
+        "actual_stage": 530.83,
+        "predicted_stage": 532.39,
+        "lead_hours": 49,
+        "actual_distance_ft": 60.76
+      },
+      {
+        "actual_stage": 530.84,
+        "predicted_stage": 532.39,
+        "lead_hours": 50,
+        "actual_distance_ft": 60.71
+      },
+      {
+        "actual_stage": 530.81,
+        "predicted_stage": 532.39,
+        "lead_hours": 51,
+        "actual_distance_ft": 60.82
+      },
+      {
+        "actual_stage": 530.82,
+        "predicted_stage": 532.38,
+        "lead_hours": 52,
+        "actual_distance_ft": 60.78
+      },
+      {
+        "actual_stage": 530.83,
+        "predicted_stage": 532.38,
+        "lead_hours": 53,
+        "actual_distance_ft": 60.75
+      },
+      {
+        "actual_stage": 530.85,
+        "predicted_stage": 532.38,
+        "lead_hours": 54,
+        "actual_distance_ft": 60.7
+      },
+      {
+        "actual_stage": 530.85,
+        "predicted_stage": 532.38,
+        "lead_hours": 55,
+        "actual_distance_ft": 60.69
+      },
+      {
+        "actual_stage": 530.87,
+        "predicted_stage": 532.38,
+        "lead_hours": 56,
+        "actual_distance_ft": 60.63
+      },
+      {
+        "actual_stage": 530.83,
+        "predicted_stage": 532.38,
+        "lead_hours": 57,
+        "actual_distance_ft": 60.77
+      },
+      {
+        "actual_stage": 530.85,
+        "predicted_stage": 532.38,
+        "lead_hours": 58,
+        "actual_distance_ft": 60.7
+      },
+      {
+        "actual_stage": 530.86,
+        "predicted_stage": 532.38,
+        "lead_hours": 59,
+        "actual_distance_ft": 60.66
+      },
+      {
+        "actual_stage": 530.87,
+        "predicted_stage": 532.38,
+        "lead_hours": 60,
+        "actual_distance_ft": 60.62
+      },
+      {
+        "actual_stage": 530.87,
+        "predicted_stage": 532.38,
+        "lead_hours": 61,
+        "actual_distance_ft": 60.65
+      },
+      {
+        "actual_stage": 530.85,
+        "predicted_stage": 532.38,
+        "lead_hours": 62,
+        "actual_distance_ft": 60.69
+      },
+      {
+        "actual_stage": 530.86,
+        "predicted_stage": 532.38,
+        "lead_hours": 63,
+        "actual_distance_ft": 60.67
+      },
+      {
+        "actual_stage": 530.86,
+        "predicted_stage": 532.38,
+        "lead_hours": 64,
+        "actual_distance_ft": 60.68
+      },
+      {
+        "actual_stage": 530.9,
+        "predicted_stage": 532.38,
+        "lead_hours": 65,
+        "actual_distance_ft": 60.52
+      },
+      {
+        "actual_stage": 530.97,
+        "predicted_stage": 532.38,
+        "lead_hours": 66,
+        "actual_distance_ft": 60.31
+      },
+      {
+        "actual_stage": 531.03,
+        "predicted_stage": 532.38,
+        "lead_hours": 67,
+        "actual_distance_ft": 60.12
+      },
+      {
+        "actual_stage": 531.06,
+        "predicted_stage": 532.38,
+        "lead_hours": 68,
+        "actual_distance_ft": 60.02
+      },
+      {
+        "actual_stage": 531.09,
+        "predicted_stage": 532.38,
+        "lead_hours": 69,
+        "actual_distance_ft": 59.91
+      },
+      {
+        "actual_stage": 531.13,
+        "predicted_stage": 532.38,
+        "lead_hours": 70,
+        "actual_distance_ft": 59.79
+      },
+      {
+        "actual_stage": 531.14,
+        "predicted_stage": 532.38,
+        "lead_hours": 71,
+        "actual_distance_ft": 59.74
+      },
+      {
+        "actual_stage": 531.18,
+        "predicted_stage": 532.38,
+        "lead_hours": 72,
+        "actual_distance_ft": 59.6
+      },
+      {
+        "actual_stage": 531.18,
+        "predicted_stage": 532.38,
+        "lead_hours": 73,
+        "actual_distance_ft": 59.6
+      },
+      {
+        "actual_stage": 531.21,
+        "predicted_stage": 532.37,
+        "lead_hours": 74,
+        "actual_distance_ft": 59.53
+      },
+      {
+        "actual_stage": 531.2,
+        "predicted_stage": 532.37,
+        "lead_hours": 75,
+        "actual_distance_ft": 59.56
+      },
+      {
+        "actual_stage": 531.22,
+        "predicted_stage": 532.37,
+        "lead_hours": 76,
+        "actual_distance_ft": 59.47
+      },
+      {
+        "actual_stage": 531.22,
+        "predicted_stage": 532.37,
+        "lead_hours": 77,
+        "actual_distance_ft": 59.5
+      },
+      {
+        "actual_stage": 531.21,
+        "predicted_stage": 532.37,
+        "lead_hours": 78,
+        "actual_distance_ft": 59.53
+      },
+      {
+        "actual_stage": 531.21,
+        "predicted_stage": 532.37,
+        "lead_hours": 79,
+        "actual_distance_ft": 59.52
+      },
+      {
+        "actual_stage": 531.21,
+        "predicted_stage": 532.37,
+        "lead_hours": 80,
+        "actual_distance_ft": 59.52
+      },
+      {
+        "actual_stage": 531.22,
+        "predicted_stage": 532.37,
+        "lead_hours": 81,
+        "actual_distance_ft": 59.48
+      },
+      {
+        "actual_stage": 531.19,
+        "predicted_stage": 532.37,
+        "lead_hours": 82,
+        "actual_distance_ft": 59.57
+      },
+      {
+        "actual_stage": 531.2,
+        "predicted_stage": 532.37,
+        "lead_hours": 83,
+        "actual_distance_ft": 59.55
+      },
+      {
+        "actual_stage": 531.2,
+        "predicted_stage": 532.37,
+        "lead_hours": 84,
+        "actual_distance_ft": 59.54
+      },
+      {
+        "actual_stage": 531.21,
+        "predicted_stage": 532.37,
+        "lead_hours": 85,
+        "actual_distance_ft": 59.5
+      },
+      {
+        "actual_stage": 531.18,
+        "predicted_stage": 532.37,
+        "lead_hours": 86,
+        "actual_distance_ft": 59.62
+      },
+      {
+        "actual_stage": 531.15,
+        "predicted_stage": 532.37,
+        "lead_hours": 87,
+        "actual_distance_ft": 59.71
+      },
+      {
+        "actual_stage": 531.15,
+        "predicted_stage": 532.36,
+        "lead_hours": 88,
+        "actual_distance_ft": 59.72
+      },
+      {
+        "actual_stage": 531.13,
+        "predicted_stage": 532.36,
+        "lead_hours": 89,
+        "actual_distance_ft": 59.78
       }
     ],
     "actual_observed_series": [
@@ -24228,7 +24690,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 14,
@@ -24241,7 +24703,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 15,
@@ -24254,7 +24716,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 16,
@@ -24267,7 +24729,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 17,
@@ -24280,7 +24742,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 18,
@@ -24293,7 +24755,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 19,
@@ -24306,7 +24768,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 20,
@@ -24319,7 +24781,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 21,
@@ -24332,7 +24794,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 22,
@@ -24345,7 +24807,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 23,
@@ -24358,7 +24820,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 24,
@@ -24371,7 +24833,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 25,
@@ -24384,7 +24846,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 26,
@@ -24397,7 +24859,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 27,
@@ -24410,7 +24872,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 28,
@@ -24423,7 +24885,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 29,
@@ -24436,7 +24898,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 30,
@@ -24449,7 +24911,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 31,
@@ -24462,7 +24924,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 32,
@@ -24475,7 +24937,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 33,
@@ -24488,7 +24950,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 34,
@@ -24501,7 +24963,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 35,
@@ -24514,7 +24976,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 36,
@@ -24527,7 +24989,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 37,
@@ -24540,7 +25002,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 38,
@@ -24553,7 +25015,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 39,
@@ -24566,7 +25028,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 40,
@@ -24579,7 +25041,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 41,
@@ -24592,7 +25054,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 42,
@@ -24605,7 +25067,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 43,
@@ -24618,7 +25080,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 44,
@@ -24631,7 +25093,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 45,
@@ -24644,7 +25106,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 46,
@@ -24657,7 +25119,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 47,
@@ -24670,7 +25132,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 48,
@@ -24683,7 +25145,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 49,
@@ -24696,7 +25158,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 50,
@@ -24709,7 +25171,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 51,
@@ -24722,7 +25184,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 52,
@@ -24735,7 +25197,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 53,
@@ -24748,7 +25210,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 54,
@@ -24761,7 +25223,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 55,
@@ -24774,7 +25236,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 56,
@@ -24787,7 +25249,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 57,
@@ -24800,7 +25262,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 58,
@@ -24813,7 +25275,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 59,
@@ -24826,7 +25288,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 60,
@@ -24839,7 +25301,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 61,
@@ -24852,7 +25314,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 62,
@@ -24865,7 +25327,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 63,
@@ -24878,7 +25340,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 64,
@@ -24891,7 +25353,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 65,
@@ -24904,7 +25366,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 66,
@@ -24917,7 +25379,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 67,
@@ -24930,7 +25392,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 68,
@@ -24943,7 +25405,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 69,
@@ -24956,7 +25418,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 70,
@@ -24969,7 +25431,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 71,
@@ -24982,7 +25444,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 72,
@@ -24995,7 +25457,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 73,
@@ -25008,7 +25470,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 74,
@@ -25021,7 +25483,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 75,
@@ -25034,7 +25496,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 76,
@@ -25047,7 +25509,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 77,
@@ -25060,7 +25522,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 78,
@@ -25073,7 +25535,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 79,
@@ -25086,7 +25548,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 80,
@@ -25099,7 +25561,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 81,
@@ -25112,7 +25574,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 82,
@@ -25125,7 +25587,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 83,
@@ -25138,7 +25600,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 84,
@@ -25151,7 +25613,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 85,
@@ -25164,7 +25626,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 86,
@@ -25177,7 +25639,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 87,
@@ -25190,7 +25652,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 88,
@@ -25203,7 +25665,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 89,
@@ -25216,7 +25678,7 @@
         "error_delta_m": null,
         "error_delta_ft": null,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       }
     ]
   },
