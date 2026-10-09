@@ -20278,7 +20278,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20260917_12z",
-    "validation_timestamp": "2026-09-30T06:45:01.214402+00:00",
+    "validation_timestamp": "2026-10-09T10:11:54.962796+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -20297,7 +20297,7 @@
     "observation_gap": {
       "is_gap": true,
       "missing_hours": 89,
-      "hours_past_window": 217.8,
+      "hours_past_window": 437.2,
       "grace_hours": 12.0,
       "note": "The full 90-hour forecast window has elapsed and the missing telemetry has not arrived within the grace period, so this cycle is permanently unverifiable against ground truth. Metrics are reported only for the hours that were observed."
     },
@@ -20321,8 +20321,13 @@
       "pbias_discharge_pct": 446.88,
       "spearman_rho_q": null,
       "pearson_r2_q": null,
+      "baseflow_stage_offset_m": 1.22,
+      "observed_ungauged_fraction": 1.0,
+      "rating_extrapolated": true,
+      "constant_baseflow_bias": true,
+      "baseflow_note": "Constant baseflow stage offset of +1.22 m (observed spread 0.000 m). This is a datum/baseflow anchor bias, not a runoff-coefficient error; it cannot be fixed by tuning CN / lag / K. 100% of observed hours sit below the lowest WRD-gauged stage, where the rating curve is a shape extrapolation.",
       "basin_rainfall_accuracy_pct": null,
-      "performance_grade": "BASEFLOW_STABLE"
+      "performance_grade": "BASEFLOW_MISMATCH"
     },
     "scatter_points": [
       {
