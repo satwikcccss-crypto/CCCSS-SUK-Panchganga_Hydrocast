@@ -107,8 +107,8 @@ def apply_core_schema(conn) -> bool:
         total_rainfall_mm NUMERIC(8,2),
         total_rainfall_volume_mcm NUMERIC(10,2),
         alert_level VARCHAR(32) DEFAULT 'NORMAL',
-        spearman_rho NUMERIC(6,4),
-        nse_score NUMERIC(6,4),
+        spearman_rho NUMERIC(10,4),
+        nse_score NUMERIC(10,4),
         created_at TIMESTAMPTZ DEFAULT NOW()
     );
 
@@ -119,20 +119,22 @@ def apply_core_schema(conn) -> bool:
     ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS total_rainfall_mm NUMERIC(8,2);
     ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS total_rainfall_volume_mcm NUMERIC(10,2);
     ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS alert_level VARCHAR(32) DEFAULT 'NORMAL';
-    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS spearman_rho NUMERIC(6,4);
-    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS nse_score NUMERIC(6,4);
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS spearman_rho NUMERIC(10,4);
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS nse_score NUMERIC(10,4);
+    ALTER TABLE simulation_runs ALTER COLUMN spearman_rho TYPE NUMERIC(10,4);
+    ALTER TABLE simulation_runs ALTER COLUMN nse_score TYPE NUMERIC(10,4);
 
     -- 5. Forecast validation metrics
     CREATE TABLE IF NOT EXISTS forecast_validation_metrics (
         id BIGSERIAL PRIMARY KEY,
         run_id VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
-        spearman_rho NUMERIC(6,4),
-        spearman_rho_q NUMERIC(6,4),
-        pearson_r2 NUMERIC(6,4),
-        nse_stage NUMERIC(6,4),
-        nse_discharge NUMERIC(6,4),
-        rmse_stage_m NUMERIC(6,4),
-        mae_stage_m NUMERIC(6,4),
+        spearman_rho NUMERIC(10,4),
+        spearman_rho_q NUMERIC(10,4),
+        pearson_r2 NUMERIC(10,4),
+        nse_stage NUMERIC(10,4),
+        nse_discharge NUMERIC(10,4),
+        rmse_stage_m NUMERIC(10,4),
+        mae_stage_m NUMERIC(10,4),
         rmse_q_m3s NUMERIC(8,2),
         mae_q_m3s NUMERIC(8,2),
         pbias_stage_pct NUMERIC(6,2),
@@ -145,13 +147,20 @@ def apply_core_schema(conn) -> bool:
         created_at TIMESTAMPTZ DEFAULT NOW()
     );
 
-    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS spearman_rho NUMERIC(6,4);
-    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS spearman_rho_q NUMERIC(6,4);
-    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS pearson_r2 NUMERIC(6,4);
-    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS nse_stage NUMERIC(6,4);
-    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS nse_discharge NUMERIC(6,4);
-    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS rmse_stage_m NUMERIC(6,4);
-    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS mae_stage_m NUMERIC(6,4);
+    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS spearman_rho NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS spearman_rho_q NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS pearson_r2 NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS nse_stage NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS nse_discharge NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS rmse_stage_m NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS mae_stage_m NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ALTER COLUMN spearman_rho TYPE NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ALTER COLUMN spearman_rho_q TYPE NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ALTER COLUMN pearson_r2 TYPE NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ALTER COLUMN nse_stage TYPE NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ALTER COLUMN nse_discharge TYPE NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ALTER COLUMN rmse_stage_m TYPE NUMERIC(10,4);
+    ALTER TABLE forecast_validation_metrics ALTER COLUMN mae_stage_m TYPE NUMERIC(10,4);
     ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS rmse_q_m3s NUMERIC(8,2);
     ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS mae_q_m3s NUMERIC(8,2);
     ALTER TABLE forecast_validation_metrics ADD COLUMN IF NOT EXISTS pbias_stage_pct NUMERIC(6,2);
