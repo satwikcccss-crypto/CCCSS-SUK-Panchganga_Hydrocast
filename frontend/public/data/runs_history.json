@@ -16,9 +16,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.0,
+    "rmse": 0.079,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 1
+    "verified_hours": 2
   },
   {
     "cycle_id": "CYC_20261012_06z",
@@ -35,11 +35,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": -0.7617,
-    "nse": -2.6556,
-    "rmse": 0.221,
+    "spearman_rho": -0.7581,
+    "nse": -3.0117,
+    "rmse": 0.217,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 13
+    "verified_hours": 14
   },
   {
     "cycle_id": "CYC_20261011_18z",
@@ -56,11 +56,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.0528,
-    "nse": -4.0557,
+    "spearman_rho": 0.0507,
+    "nse": -4.2801,
     "rmse": 0.411,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 25
+    "verified_hours": 26
   },
   {
     "cycle_id": "CYC_20261011_12z",
@@ -77,11 +77,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.0786,
-    "nse": -0.0135,
-    "rmse": 0.166,
+    "spearman_rho": 0.127,
+    "nse": -0.0051,
+    "rmse": 0.162,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 31
+    "verified_hours": 32
   },
   {
     "cycle_id": "CYC_20261011_06z",
@@ -98,11 +98,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.0623,
-    "nse": -0.0764,
-    "rmse": 0.156,
+    "spearman_rho": 0.1217,
+    "nse": -0.0675,
+    "rmse": 0.154,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 37
+    "verified_hours": 38
   },
   {
     "cycle_id": "CYC_20261010_18z",
@@ -119,11 +119,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.3583,
-    "nse": -0.249,
-    "rmse": 0.161,
+    "spearman_rho": 0.3958,
+    "nse": -0.2572,
+    "rmse": 0.16,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 49
+    "verified_hours": 50
   },
   {
     "cycle_id": "CYC_20261010_12z",
@@ -140,11 +140,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.4073,
-    "nse": 0.1051,
-    "rmse": 0.13,
+    "spearman_rho": 0.4354,
+    "nse": 0.1145,
+    "rmse": 0.129,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 55
+    "verified_hours": 56
   },
   {
     "cycle_id": "CYC_20261010_06z",
@@ -161,11 +161,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.3885,
-    "nse": 0.0983,
-    "rmse": 0.125,
+    "spearman_rho": 0.4249,
+    "nse": 0.1114,
+    "rmse": 0.123,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 61
+    "verified_hours": 62
   },
   {
     "cycle_id": "CYC_20261010_00z",
@@ -182,11 +182,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.446,
-    "nse": -0.0843,
-    "rmse": 0.134,
+    "spearman_rho": 0.4742,
+    "nse": -0.0824,
+    "rmse": 0.133,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 67
+    "verified_hours": 68
   },
   {
     "cycle_id": "CYC_20261009_18z",
@@ -203,11 +203,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.4577,
-    "nse": 0.0761,
-    "rmse": 0.12,
+    "spearman_rho": 0.4834,
+    "nse": 0.0911,
+    "rmse": 0.118,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 73
+    "verified_hours": 74
   },
   {
     "cycle_id": "CYC_20261009_12z",
@@ -224,11 +224,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.4749,
-    "nse": -0.133,
-    "rmse": 0.129,
+    "spearman_rho": 0.4972,
+    "nse": -0.1138,
+    "rmse": 0.128,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 79
+    "verified_hours": 80
   },
   {
     "cycle_id": "CYC_20261008_12z",
