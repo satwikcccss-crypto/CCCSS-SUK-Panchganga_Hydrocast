@@ -1,13 +1,13 @@
 {
-  "last_calibrated_at": "2026-10-11T23:53:21.419172+00:00",
+  "last_calibrated_at": "2026-10-13T02:12:56.898330+00:00",
   "is_recalibrated": true,
-  "trigger_reason": "Offset \u0394t=+0.0h, stage_err=-0.19m",
+  "trigger_reason": "Offset \u0394t=+0.0h, stage_err=-0.20m",
   "timing_offset_hours": 0.0,
-  "stage_discrepancy_m": -0.192,
-  "peak_discharge_error_m3s": 3.5999999999999996,
+  "stage_discrepancy_m": -0.197,
+  "peak_discharge_error_m3s": 2.799999999999999,
   "alpha_k": 1.0,
   "alpha_lag": 1.0,
-  "delta_cn": 0.86,
+  "delta_cn": 0.89,
   "muskingum_x": 0.25,
   "confidence_pct": 99.9,
   "baseline_sub_models": {
@@ -92,55 +92,55 @@
     "S6": {
       "name": "Gaganbawda",
       "area_km2": 227.72,
-      "cn": 62.64,
+      "cn": 62.67,
       "lag_min": 3318.1
     },
     "S7": {
       "name": "Garivade",
       "area_km2": 195.39,
-      "cn": 62.14,
+      "cn": 62.17,
       "lag_min": 3362.3
     },
     "S9": {
       "name": "Radhanagari",
       "area_km2": 366.97,
-      "cn": 65.17,
+      "cn": 65.2,
       "lag_min": 5199.0
     },
     "S8": {
       "name": "Beed",
       "area_km2": 177.44,
-      "cn": 66.62,
+      "cn": 66.65,
       "lag_min": 3387.1
     },
     "S4": {
       "name": "Karanjphen",
       "area_km2": 262.0,
-      "cn": 62.75,
+      "cn": 62.78,
       "lag_min": 3115.5
     },
     "S5": {
       "name": "Padasali",
       "area_km2": 106.39,
-      "cn": 61.83,
+      "cn": 61.86,
       "lag_min": 2117.1
     },
     "S3": {
       "name": "Kotoli",
       "area_km2": 261.32,
-      "cn": 65.68,
+      "cn": 65.71,
       "lag_min": 3997.7
     },
     "S2": {
       "name": "Sangarul",
       "area_km2": 153.77,
-      "cn": 66.6,
+      "cn": 66.63,
       "lag_min": 3154.3
     },
     "S1": {
       "name": "Karveer",
       "area_km2": 86.213,
-      "cn": 75.71,
+      "cn": 75.74,
       "lag_min": 2152.0
     }
   },
@@ -175,6 +175,17 @@
       "alpha_k": 1.0,
       "alpha_lag": 1.0,
       "delta_cn": 0.86,
+      "muskingum_x": 0.25,
+      "confidence_pct": 99.9
+    },
+    {
+      "timestamp": "2026-10-13T02:12:56.898330+00:00",
+      "timing_offset_hours": 0.0,
+      "stage_error_m": -0.197,
+      "peak_discharge_error_m3s": 2.799999999999999,
+      "alpha_k": 1.0,
+      "alpha_lag": 1.0,
+      "delta_cn": 0.89,
       "muskingum_x": 0.25,
       "confidence_pct": 99.9
     }
