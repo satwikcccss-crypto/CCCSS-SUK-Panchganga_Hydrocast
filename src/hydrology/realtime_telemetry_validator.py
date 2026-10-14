@@ -85,6 +85,28 @@ TELEMETRY_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 TELEMETRY_CACHE_FILE = TELEMETRY_CACHE_DIR / "thingspeak_hourly_cache.json"
 
 
+def parse_cycle_time(cycle_id: str) -> Optional[datetime]:
+    """Parses UTC datetime from a cycle ID formatted as CYC_YYYYMMDD_HHz."""
+    try:
+        parts = cycle_id.split("_")
+        if len(parts) >= 3 and len(parts[1]) == 8:
+            date_str = parts[1]
+            hour_str = parts[2].rstrip("zZ")
+            hour = int(hour_str) if hour_str.isdigit() else 0
+            return datetime(
+                int(date_str[:4]),
+                int(date_str[4:6]),
+                int(date_str[6:8]),
+                hour,
+                0,
+                0,
+                tzinfo=timezone.utc,
+            )
+    except Exception:
+        pass
+    return None
+
+
 def load_telemetry_cache() -> Dict[str, Dict[str, Any]]:
     """Loads all previously verified hourly observations from disk."""
     if TELEMETRY_CACHE_FILE.exists():
@@ -648,17 +670,31 @@ def sync_validation_to_storage_and_db(
 
     m = validation_result.get("metrics", {})
 
-    # 1. Update run JSON files
+    # 1. Update run JSON files only if validation actually changed
+    run_data = None
+    has_changed = True
     if run_path.exists():
         try:
             with open(run_path, "r", encoding="utf-8") as f:
                 run_data = json.load(f)
-            run_data["validation"] = validation_result
-            with open(run_path, "w", encoding="utf-8") as f:
-                json.dump(run_data, f, indent=2)
-            with open(frontend_run_path, "w", encoding="utf-8") as f:
-                json.dump(run_data, f, indent=2)
-            log.info("✓ Updated validation in %s", run_path.name)
+
+            old_val = run_data.get("validation", {})
+            has_changed = (
+                not old_val
+                or old_val.get("verified_hours") != validation_result.get("verified_hours")
+                or old_val.get("lifecycle_status") != validation_result.get("lifecycle_status")
+                or old_val.get("completion_pct") != validation_result.get("completion_pct")
+            )
+
+            if has_changed:
+                run_data["validation"] = validation_result
+                with open(run_path, "w", encoding="utf-8") as f:
+                    json.dump(run_data, f, indent=2)
+                with open(frontend_run_path, "w", encoding="utf-8") as f:
+                    json.dump(run_data, f, indent=2)
+                log.info("✓ Updated validation in %s", run_path.name)
+            else:
+                log.debug("Validation unchanged for %s; skipping disk rewrite", run_path.name)
         except Exception as e:
             log.error("Failed updating %s: %s", run_path.name, e)
 
@@ -728,8 +764,8 @@ def sync_validation_to_storage_and_db(
     except Exception as e:
         log.warning("Could not sync runs index: %s", e)
 
-    # 4. Sync to Supabase / PostgreSQL
-    if sync_db:
+    # 4. Sync to Supabase / PostgreSQL only if validation changed
+    if sync_db and has_changed:
         sync_to_postgres_db(validation_result)
 
 
@@ -817,11 +853,7 @@ def validate_all_pending_runs(
             current_status = val.get("lifecycle_status")
             verified_h = val.get("verified_hours", 0)
 
-            # Skip only runs whose forecast hours are ALL matched. Runs that have
-            # elapsed in wall-clock time but still lack observations must be
-            # re-scanned, otherwise they can never accumulate more data. This
-            # deliberately includes OBSERVATION_GAP runs: if the sensor feed is
-            # ever backfilled, a re-scan promotes them back to LIFECYCLE_VERIFIED.
+            # Skip only runs whose forecast hours are ALL matched
             fc_total = 0
             _b = data.get("bridgeShivaji", [])
             if isinstance(_b, dict):
@@ -835,6 +867,15 @@ def validate_all_pending_runs(
                 and verified_h >= fc_total
             ):
                 continue
+
+            # Skip historical runs whose 90h window has long expired (>6 days old)
+            # and that already have a finalized status (e.g. OBSERVATION_GAP or verified_h > 0).
+            # Live IoT telemetry from weeks/months ago is never backfilled in real-time.
+            cycle_dt = parse_cycle_time(cycle_id)
+            if not force_revalidate and cycle_dt:
+                age = datetime.now(timezone.utc) - cycle_dt
+                if age > timedelta(days=6) and current_status in ("LIFECYCLE_VERIFIED", "OBSERVATION_GAP"):
+                    continue
 
             b_raw = data.get("bridgeShivaji", [])
             if isinstance(b_raw, dict):

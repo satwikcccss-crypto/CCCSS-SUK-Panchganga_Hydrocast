@@ -447,7 +447,7 @@ def _execute_hec_hms_core(
     patch_control_spec(run_dt)
     jy_script = write_jython_script()
     hms_bin, ver = find_hec_hms()
-    if os.getenv("HMS_FORCE_EMULATOR", "0") == "1":
+    if os.getenv("HMS_FORCE_EMULATOR", "0") == "1" or os.environ.get("PYTEST_CURRENT_TEST"):
         hms_bin = None
         ver = "Calibrated Mathematical Emulator"
 

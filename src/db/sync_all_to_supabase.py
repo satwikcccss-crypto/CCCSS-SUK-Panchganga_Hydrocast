@@ -627,14 +627,55 @@ def sync_single_run(conn, data: Dict[str, Any]) -> bool:
     return True
 
 
-def push_all_runs(conn) -> int:
-    """Reads all runs in data/runs/ and bulk upserts into Supabase."""
+def parse_cycle_date(file_name: str) -> Optional[datetime]:
+    """Extracts UTC datetime from standard cycle file names (e.g. CYC_20261013_18z.json)."""
+    stem = Path(file_name).stem
+    parts = stem.split("_")
+    if len(parts) >= 2 and len(parts[1]) == 8 and parts[1].isdigit():
+        try:
+            return datetime.strptime(parts[1], "%Y%m%d").replace(tzinfo=timezone.utc)
+        except Exception:
+            return None
+    return None
+
+
+def push_all_runs(conn, days: Optional[int] = 3, run_id: Optional[str] = None) -> int:
+    """Reads computation runs in data/runs/ and bulk upserts into Supabase.
+
+    Args:
+        conn: PostgreSQL connection.
+        days: If provided, only sync runs from the last N days. If None, syncs all historical runs.
+        run_id: If provided, sync only the specified run ID (e.g. CYC_20261013_18z).
+    """
     apply_core_schema(conn)
     seed_static_metadata(conn)
 
     runs_dir = PROJECT_ROOT / "data" / "runs"
-    run_files = sorted(runs_dir.glob("CYC_*.json"))
-    log.info("Found %d computation run files in %s", len(run_files), runs_dir)
+    all_run_files = sorted(runs_dir.glob("CYC_*.json"))
+    log.info("Found %d computation run files in %s", len(all_run_files), runs_dir)
+
+    now = datetime.now(timezone.utc)
+    run_files = []
+    for r_path in all_run_files:
+        if run_id:
+            if r_path.stem == run_id or r_path.name == run_id:
+                run_files.append(r_path)
+            continue
+
+        if days is not None:
+            c_date = parse_cycle_date(r_path.name)
+            if c_date:
+                # If cycle is older than `days` days ago, skip it
+                if (now - c_date).total_seconds() > days * 86400:
+                    continue
+        run_files.append(r_path)
+
+    log.info(
+        "Selected %d runs for Supabase synchronization (days=%s, run_id=%s)",
+        len(run_files),
+        days,
+        run_id,
+    )
 
     synced_count = 0
     for r_path in run_files:
@@ -653,18 +694,27 @@ def push_all_runs(conn) -> int:
 
 
 def main():
+    import argparse
     import getpass
     from urllib.parse import quote_plus
 
-    db_arg = sys.argv[1] if len(sys.argv) > 1 else None
-    if db_arg and db_arg in ("-h", "--help"):
-        print("Usage: python -m src.db.sync_all_to_supabase [PASSWORD_OR_URI]")
-        sys.exit(0)
+    parser = argparse.ArgumentParser(description="HydroCast Panchganga - Supabase PostgreSQL Data Sync")
+    parser.add_argument("db_arg", nargs="?", default=None, help="Database password or postgres connection URI")
+    parser.add_argument("--days", type=int, default=3, help="Only sync runs from the last N days (default: 3).")
+    parser.add_argument("--all", action="store_true", help="Sync all historical runs (ignores --days)")
+    parser.add_argument("--run-id", type=str, default=None, help="Sync only a specific cycle ID")
+    parser.add_argument("--db-url", type=str, default=None, help="PostgreSQL connection URL")
 
-    if db_arg and not db_arg.startswith("postgres"):
-        db_url = f"postgresql://postgres.oaranobpxwstubkxrzuu:{quote_plus(db_arg.strip())}@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require"
-    elif db_arg:
-        db_url = db_arg
+    args = parser.parse_args()
+
+    days = None if args.all else args.days
+    run_id = args.run_id
+
+    db_input = args.db_url or args.db_arg
+    if db_input and not db_input.startswith("postgres"):
+        db_url = f"postgresql://postgres.oaranobpxwstubkxrzuu:{quote_plus(db_input.strip())}@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require"
+    elif db_input:
+        db_url = db_input
     else:
         env_url = os.getenv("DATABASE_URL") or os.getenv("SUPABASE_DB_URL") or os.getenv("SUPABASE_DATABASE_URL")
         if env_url:
@@ -685,7 +735,7 @@ def main():
 
     log.info("Connected to Supabase PostgreSQL database successfully.")
     apply_schema(conn)
-    total_synced = push_all_runs(conn)
+    total_synced = push_all_runs(conn, days=days, run_id=run_id)
     log.info("=================================================================")
     log.info("🎉 Supabase Sync Complete! Successfully pushed %d cycles.", total_synced)
     log.info("=================================================================")

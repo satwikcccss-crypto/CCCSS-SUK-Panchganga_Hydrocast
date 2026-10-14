@@ -3,6 +3,11 @@ name: HydroCast Tests
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'data/**'
+      - 'frontend/public/data/**'
+      - 'docs/**'
+      - '*.md'
   pull_request:
   workflow_dispatch:
 

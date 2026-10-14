@@ -1,0 +1,60 @@
+name: Supabase Scheduled Incremental Sync
+
+# Dedicated Supabase Database Synchronizer
+# Runs 3 times a day (04:00, 12:00, 20:00 UTC) to push recent updated forecast
+# cycles, 90-hr hydrographs, bridge stages, and validation metrics into Supabase PostgreSQL.
+# Does NOT create git commits, keeping the repository idle and avoiding commit noise.
+
+on:
+  schedule:
+    - cron: "0 4,12,20 * * *"   # 3 times daily (every 8 hours)
+  workflow_dispatch:            # Manual on-demand execution
+    inputs:
+      days:
+        description: "Number of past days of cycles to sync"
+        required: false
+        default: "3"
+      sync_all:
+        description: "Sync all historical cycles (full backfill)"
+        required: false
+        type: boolean
+        default: false
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  supabase_sync:
+    name: "Sync Updated Cycles & Metrics to Supabase"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Execute Supabase Database Synchronization
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DATABASE_URL }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DATABASE_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
+        run: |
+          if [ "${{ github.event.inputs.sync_all }}" = "true" ]; then
+            echo "Executing full historical Supabase backfill..."
+            python -m src.db.sync_all_to_supabase --all
+          else
+            DAYS="${{ github.event.inputs.days || '3' }}"
+            echo "Synchronizing recent runs from last ${DAYS} days to Supabase..."
+            python -m src.db.sync_all_to_supabase --days "${DAYS}"
+          fi

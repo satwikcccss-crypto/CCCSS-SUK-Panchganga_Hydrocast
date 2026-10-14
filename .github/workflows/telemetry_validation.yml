@@ -9,13 +9,6 @@ on:
   schedule:
     - cron: "0 * * * *"    # Every 1 hour at minute 0
   workflow_dispatch:        # Manual on-demand execution
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/**'
-      - 'data/**'
-      - '.github/workflows/**'
 
 env:
   PYTHON_VERSION: "3.11"
@@ -24,7 +17,7 @@ env:
 
 jobs:
   validate_telemetry:
-    name: "ThingSpeak Live Telemetry vs 90-hr Hydrograph Validation & Supabase Sync"
+    name: "ThingSpeak Live Telemetry vs 90-hr Hydrograph Validation"
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -46,7 +39,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Real-Time Validation & Supabase Sync
+      - name: Run Real-Time Validation
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.SUPABASE_DB_URL || secrets.SUPABASE_DATABASE_URL }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
@@ -54,11 +47,16 @@ jobs:
           THINGSPEAK_API_KEY: ${{ env.THINGSPEAK_API_KEY }}
         run: |
           python -m src.hydrology.realtime_telemetry_validator --all-pending
-          python -m src.db.sync_all_to_supabase
 
       - name: Commit & Push Verified Telemetry State to GitHub
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add frontend/public/data/latest_pipeline_state.json frontend/public/data/runs_history.json frontend/public/data/runs/ data/runs/ data/telemetry/
-          git diff --staged --quiet || (git commit -m "chore(telemetry): update continuous real-time ThingSpeak validation across cycles [skip ci]" && git push)
+          git add \
+            data/telemetry/thingspeak_hourly_cache.json \
+            data/telemetry/ml_calibration_state.json \
+            frontend/public/data/latest_pipeline_state.json \
+            frontend/public/data/runs_history.json \
+            data/runs/runs_index.json 2>/dev/null || true
+          git add -u data/runs/ frontend/public/data/runs/ 2>/dev/null || true
+          git diff --staged --quiet || (git commit -m "chore(telemetry): update real-time ThingSpeak validation [skip ci]" && git push)
