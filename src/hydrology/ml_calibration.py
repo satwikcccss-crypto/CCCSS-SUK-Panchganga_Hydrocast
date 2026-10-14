@@ -250,7 +250,7 @@ class AdaptiveHydrologicCalibrator:
             "history": [],
         }
 
-        if CALIBRATION_STATE_FILE.exists():
+        if not os.environ.get("PYTEST_CURRENT_TEST") and CALIBRATION_STATE_FILE.exists():
             try:
                 with open(CALIBRATION_STATE_FILE, "r", encoding="utf-8") as f:
                     loaded = json.load(f)

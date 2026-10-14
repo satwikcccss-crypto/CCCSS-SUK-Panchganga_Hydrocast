@@ -22,13 +22,23 @@ import json
 import logging
 import math
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
-from sklearn.ensemble import ExtraTreesRegressor
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
+
+try:
+    from sklearn.ensemble import ExtraTreesRegressor
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import mean_squared_error, r2_score
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
+    ExtraTreesRegressor = None  # type: ignore[assignment,misc]
+    StandardScaler = None  # type: ignore[assignment,misc]
+    train_test_split = None  # type: ignore[assignment]
+    mean_squared_error = None  # type: ignore[assignment]
+    r2_score = None  # type: ignore[assignment]
 
 log = logging.getLogger(__name__)
 
@@ -218,15 +228,19 @@ class HydrologicParameterPredictor:
     """
 
     def __init__(self, retrain_on_load: bool = True):
-        self.model: Optional[ExtraTreesRegressor] = None
-        self.scaler_X = StandardScaler()
-        self.scaler_y = StandardScaler()
+        self.model: Optional[Any] = None
+        self.scaler_X = StandardScaler() if SKLEARN_AVAILABLE else None
+        self.scaler_y = StandardScaler() if SKLEARN_AVAILABLE else None
         self.is_trained = False
         self.training_history: List[Dict] = []
 
         self._model_path = PROJECT_ROOT / "data" / "telemetry" / "ml_parameter_model_et.json"
         self._scaler_X_path = PROJECT_ROOT / "data" / "telemetry" / "ml_parameter_scaler_X.json"
         self._scaler_y_path = PROJECT_ROOT / "data" / "telemetry" / "ml_parameter_scaler_y.json"
+
+        if not SKLEARN_AVAILABLE:
+            log.warning("scikit-learn is not installed; HydrologicParameterPredictor operating in fallback mode")
+            return
 
         if retrain_on_load:
             self._load_or_train()
@@ -327,6 +341,10 @@ class HydrologicParameterPredictor:
             return
 
         # Train from historical calibration data
+        if not SKLEARN_AVAILABLE:
+            log.warning("scikit-learn is not installed; cannot train ML model")
+            return
+
         X, y = self._extract_training_data()
         if X.shape[0] == 0 or y.shape[0] == 0 or X.shape[0] < 3:
             log.warning(
@@ -411,6 +429,11 @@ class HydrologicParameterPredictor:
 
     def _load_pretrained(self) -> None:
         """Loads model and scalers from disk."""
+        if not SKLEARN_AVAILABLE:
+            self.is_trained = False
+            self.model = None
+            return
+
         try:
             with open(self._model_path, "r", encoding="utf-8") as f:
                 model_data = json.load(f)
@@ -466,6 +489,8 @@ class HydrologicParameterPredictor:
 
     def _deserialize_model(self, data: Dict):
         """Restores a model from its JSON dict."""
+        if not SKLEARN_AVAILABLE or ExtraTreesRegressor is None:
+            return None
         model = ExtraTreesRegressor(
             n_estimators=data.get("n_estimators", 200),
             max_depth=data.get("max_depth"),
@@ -488,6 +513,8 @@ class HydrologicParameterPredictor:
 
     def _deserialize_scaler(self, data: Dict):
         """Restores a StandardScaler from JSON."""
+        if not SKLEARN_AVAILABLE or StandardScaler is None:
+            return None
         scaler = StandardScaler()
         scaler.scale_ = np.array(data.get("scale", [1.0] * 25))
         scaler.mean_ = np.array(data.get("mean", [0.0] * 25))
@@ -535,8 +562,8 @@ class HydrologicParameterPredictor:
         """
         # Interface 1: Full stage series (new, preferred)
         if stage_series is not None:
-            if not self.is_trained or self.model is None:
-                log.warning("ML predictor not trained; returning None")
+            if not SKLEARN_AVAILABLE or not self.is_trained or self.model is None or self.scaler_X is None or self.scaler_y is None:
+                log.warning("ML predictor not trained or sklearn unavailable; returning None")
                 return None
 
             # Ensure 90 points
@@ -570,8 +597,8 @@ class HydrologicParameterPredictor:
         # Interface 2: Discrepancy summary (backward compatible)
         # Use a simple feature mapping: the 3 discrepancy values mapped to
         # a subset of the 25 expected features, rest zero-initialized
-        if not self.is_trained or self.model is None:
-            log.warning("ML predictor not trained; returning None")
+        if not SKLEARN_AVAILABLE or not self.is_trained or self.model is None or self.scaler_X is None or self.scaler_y is None:
+            log.warning("ML predictor not trained or sklearn unavailable; returning None")
             return None
 
         # Build feature vector from discrepancy values
