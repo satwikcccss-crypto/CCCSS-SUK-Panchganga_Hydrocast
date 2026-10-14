@@ -6,7 +6,7 @@ computed the number in that answer".
 
 <div class="grid cards" markdown>
 
--   :material-api: **Interactive REST Explorer**
+- :material-api: **Interactive REST Explorer**
 
     ---
 
@@ -16,7 +16,7 @@ computed the number in that answer".
 
     [Launch Swagger UI :octicons-arrow-right-24:](../backend.md#3-interactive-api-explorer)
 
--   :material-file-tree: **Python Source Reference**
+- :material-file-tree: **Python Source Reference**
 
     ---
 
@@ -69,7 +69,7 @@ computed the number in that answer".
 ```
 
 | | REST API | Python Reference |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **Audience** | Integrators, integrators' scripts, Postman users | Hydrologists, maintainers, reviewers |
 | **Source of truth** | Type hints + `response_model` on each route | Docstrings in `src/**.py` |
 | **Regenerate by** | Restarting the server — automatic | `mkdocs build` — automatic |
@@ -198,7 +198,7 @@ curl http://localhost:8000/api/v1/admin/me -H "Authorization: Bearer $TOKEN"
 The reference is grouped by the role each subsystem plays in the forecast.
 
 | Group | Modules | What they do |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **FastAPI Service** | [`src.api.main`](backend.md) · [`src.api.admin`](backend.md#srcapiadminpy) · [`src.api.security`](security.md) · [`src.api.notifier`](backend.md) | HTTP surface, auth, rate limiting, WebSocket push |
 | **Hydrology Engine** | [`src.hms.runner`](hms.md) · [`src.hms.basin_parser`](hms.md#srchmsbasin_parserpy) | SCS-CN loss, SCS-UH transform, Muskingum routing, baseflow recession |
 | | [`src.hydrology.stage_converter`](hydrology.md) | Manning DCM + WRD-anchored PCHIP rating curves |

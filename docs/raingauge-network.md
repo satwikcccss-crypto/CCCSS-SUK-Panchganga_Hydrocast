@@ -23,7 +23,7 @@ eleven are alternates that exist to be *competed against* rather than to be
 used directly.
 
 | # | Station ID | Name | Subbasin | Subbasin Area | Elevation | Longitude | Latitude | Role |
-|---|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 01 | `KARVEER` | Karveer | S1 | 86.213 km² | 550 m | 74.248177° | 16.706369° | Primary governing |
 | 02 | `SANGARUL` | Sangarul | S2 | 153.770 km² | 572 m | 74.093163° | 16.684196° | Primary governing |
 | 03 | `BALINGA` | Balinga | S2 | — | 560 m | 74.170310° | 16.687844° | Alternate |
@@ -172,7 +172,7 @@ in `src/processing/validator.py` and applies four checks, any of which can mark
 a gauge degraded:
 
 | Check | Threshold | Rationale |
-|---|---|---|
+| --- | --- | --- |
 | Physical range | depth ≤ 500 mm/h | Values above this are instrument or transmission faults, not rain. The Panchganga record maximum is far below it. |
 | Coverage | ≥ 50 % of the 90 expected hourly records | A gauge reporting 20 hours cannot support a 90-hour hyetograph. |
 | Gauge lag | latest record ≤ 60 min old | A stale gauge is indistinguishable from a failed one, and its 90-hour total is a partial sum presented as a complete one. |

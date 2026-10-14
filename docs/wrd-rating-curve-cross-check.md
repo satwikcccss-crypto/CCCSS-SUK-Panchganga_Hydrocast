@@ -3,6 +3,7 @@
 ## WRD-Anchored Rating Curves & Independent Curves per Gauging Site
 
 ### 1. Root Cause Analysis of Pre-Calibration Discrepancies
+
 During initial validation the Shivaji Bridge rating curve used a **pure Manning / divided-channel
 method** with a single calibration slope. This produced two systematic errors vs the official WRD sheet:
 
@@ -13,6 +14,7 @@ method** with a single calibration slope. This produced two systematic errors vs
 | **Floristic** (sensor 530.2–531 m) | 1–15 m³/s oscillation | ≥ ~14 m³/s (WRD min) | fabricated tail artifact |
 
 The root cause was twofold:
+
 1. Manning's law scales as $Q \propto \sqrt{S_0}$ and depends on survey-accuracy for $A$ and $R$ at
    every stage. The wide floodplain geometry collapses hydraulic radius above bankfull, while a
    single slope cannot reproduce the WRD gauged low-flow conveyance.
@@ -27,6 +29,7 @@ WRD 2021–2023 monsoon register. Baseflow is the sensor-derived discharge itsel
 floor on live data.
 
 ### 2. Correction of the Stage-Offset Assumption
+
 Legacy code used **one** rating curve for both sites, applying an arbitrary `stage − 0.12 m` offset.
 The Sep 2026 fix replaces this with two **independent WRD-anchored curves** related by the surveyed
 bed-datum separation:
@@ -42,7 +45,7 @@ to ~1.2 m — see `stage-discharge-conversion.md` §8.5.
 
 ### 3. Calibrated Rating Curves Comparison
 
-#### Verified Equal-Discharge Stage Profiles (corrected PCHIP curves):
+#### Verified Equal-Discharge Stage Profiles (corrected PCHIP curves)
 
 | Discharge Q (m³/s) | Stage at Shivaji (m MSL) | Stage at Rajaram (m MSL) | Water Level Delta |
 | :---: | :---: | :---: | :---: |
@@ -66,7 +69,7 @@ separated only by the datum offset.
 
 ## Benchmark Cross-Verification Script & Ground Truth Table
 
-```
+```text
 ====================================================================================================
            HYDROCAST WRD-ANCHORED RATING CURVE vs MAHARASHTRA WRD HISTORICAL BENCHMARKS
 ====================================================================================================
@@ -119,7 +122,8 @@ gov_records = [
 # Q(533.54 − 0.648) Shivaji = 80.00 m³/s.  Round-trip Q → h → Q is exact.
 ```
 
-### Key Verification Metrics:
+### Key Verification Metrics
+
 - **Curve construction:** PCHIP (`scipy.interpolate.PchipInterpolator`) anchored on the official
   WRD sheet (+ WRD 2021–23 observed low-flow monsoon points and bed Q=0 anchors).
 - **Shivaji datum offset:** minus 0.648 m (surveyed bed 528.670 m vs Rajaram 529.318 m, 3,858 m apart).
@@ -137,16 +141,19 @@ registers for Rajaram K.T. Weir were used to build the sub-of-gauged low-flow an
 the corrected curve:
 
 ### A. 2020–2021 Daily Monsoon Register ($N = 153$ Days, June–October)
+
 - **Stage Range:** $533.26$ m to $543.79$ m MSL ($10'6''$ to $44'8''$)
 - **Discharge Range:** $36.8$ to $1,814.2\text{ m}^3/s$ ($1,300$ to $64,068$ cusecs)
 - **Stage Prediction:** NSE **0.9983**, RMSE $0.110$ m (11.0 cm), MAE $0.051$ m
 - **Discharge Prediction:** NSE **0.9993**, RMSE $10.99\text{ m}^3/s$, PBIAS **+0.19%**
 
 ### B. 2021 & 2023 Hourly Monsoon Registers ($N = 2,406$ Hourly Observations)
+
 Covers the July–August 2021 flood event up to the all-time historic peak
 ($56'03''$ / $547.33$ m MSL / $76,383$ cusecs). The 2021–23 low-flow portion
 (stages 532.70–533.36 m) supplied the observed low-flow anchors now embedded in the Rajaram and
 Shivaji curves:
+
 - **Stage Range:** $532.70$ m to $547.33$ m MSL
 - **Discharge Range:** $14.2$ to $2,162.9\text{ m}^3/s$
 - **Stage Prediction:** NSE **0.9990**, RMSE $0.104$ m, MAE $0.049$ m
@@ -156,7 +163,7 @@ Shivaji curves:
 
 ## 5. Spatial Reach & Telemetry Validation Architecture
 
-```
+```text
                                  Panchganga River Reach Topology
                                  
   [J_Outlet (Basin Outflow)] 
@@ -181,6 +188,7 @@ Shivaji curves:
 ```
 
 ### Multi-Run Continuous Lifecycle Tracking
+
 - **The Problem Solved**: Previously, once a new 90-hour cycle was executed, older cycles were left at partial completion (e.g. 17/90h) with status frozen at `IN_PROGRESS`.
 - **The Solution**: `validate_all_pending_runs()` continuously queries the persistent telemetry cache (`data/telemetry/thingspeak_hourly_cache.json`) and backfills all archived cycles. Once all 90 hours of a cycle elapse, the run automatically transitions to `LIFECYCLE_VERIFIED`.
 - **Complete PostgreSQL Persistence**: Both `simulation_runs` and `forecast_validation_metrics` are synchronized with all 14 columns fully populated (including `spearman_rho_q`, `nse_discharge`, `rmse_q_m3s`, `mae_q_m3s`, and `pbias_discharge_pct`).

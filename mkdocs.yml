@@ -130,9 +130,12 @@ theme:
 #  MARKDOWN EXTENSIONS
 # ══════════════════════════════════════════════════════════════════════════════
 markdown_extensions:
-  # ── Mathematics (KaTeX-style rendering via MathJax) ────────────────────────
+  # ── Mathematics (MathJax 3 with KaTeX rendering) ────────────────────────
   - pymdownx.arithmatex:
       generic: true
+      # The `generic: true` flag tells pymdownx to look for MathJax config
+      # already loaded via `extra_javascript`. The custom `mathjax.js` in
+      # `docs/javascripts/` provides the TeX/chtml jax configuration.
 
   # ── Fenced code blocks + custom diagram languages ─────────────────────────
   - pymdownx.superfences:

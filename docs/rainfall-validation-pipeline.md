@@ -1,6 +1,6 @@
 ﻿# Panchganga Catchment Observed Rainfall Acquisition & Verification Pipeline
 
-```
+```text
 ========================================================================================================================
              HYDROCAST OBSERVED RAINFALL INGESTION, CALIBRATION & VALIDATION PIPELINE
 ========================================================================================================================
@@ -34,6 +34,7 @@
 In numerical flood early warning systems, rainfall accuracy cannot be validated with random heuristics or synthetic noise. If a rainfall forecast is inaccurate, the hydrologic runoff simulation will fail, regardless of how well-calibrated the river hydraulics may be.
 
 HydroCast deploys a **3-Tier Concrete Verification Architecture** implemented in [`src/hydrology/observed_rainfall_pipeline.py`](file:///e:/hydrocast_complete/src/hydrology/observed_rainfall_pipeline.py):
+
 1. **Tier 1 (Authoritative Local Ground Truth):** Direct file/API ingest of official **Maharashtra Water Resources Department (WRD Kolhapur Circle)** and **India Meteorological Department (IMD Pune)** daily 08:30 AM rain gauge observations.
 2. **Tier 2 (Automated Multi-Sensor Reanalysis):** Real-time automated query of **Open-Meteo's Past-Days Recorded Precipitation API**, which merges satellite, radar (DWR Goa/Goa-Sindhudurg radar corridor), and AWS telemetry for each station's exact coordinates.
 3. **Tier 3 (Physical Hydrological Inversion):** Cross-validation against the physical river water volume measured by the **ThingSpeak Ultrasonic Radar Sensor at Shivaji Bridge**, proving that the observed rainfall volume is physically capable of generating the observed river hydrograph.
@@ -43,6 +44,7 @@ HydroCast deploys a **3-Tier Concrete Verification Architecture** implemented in
 ## 2. Tier 1: Official Maharashtra WRD & IMD Ground Ingest
 
 ### Ingestion Directory & Format
+
 Field engineers and automated telemetry scripts deposit ground gauge records into:
 `data/observed_rainfall/`
 
@@ -100,10 +102,12 @@ $$\text{Volume of River Runoff } (V_{\text{runoff}}) = \int_{0}^{T} Q_{\text{obs
 $$\text{Effective Catchment Rainfall } (P_{\text{eff}}) = \frac{V_{\text{runoff}}}{A_{\text{basin}} \times C_R} \times 1000 \quad [\text{mm}]$$
 
 Where:
+
 - $A_{\text{basin}} = 1,837.213\text{ km}^2 = 1.837 \times 10^9\text{ m}^2$ (Delineated Panchganga Basin area).
 - $C_R = \text{Catchment Volumetric Runoff Coefficient}$ ($0.65 - 0.72$ during saturated monsoon AMC-III conditions in the Sahyadri mountains).
 
 ### 4.2 Orographic Distribution Weights
+
 Effective rainfall is distributed across the 9 subbasins using established orographic gradient coefficients:
 
 $$P_k = P_{\text{eff}} \times \omega_k$$
@@ -134,7 +138,8 @@ $$\text{Relative Error } (\% e_i) = \left( \frac{e_i}{P_{\text{observed}, i} + \
 
 $$\text{Station Accuracy } (\%) = \max\left(0, 100 - |\%\, e_i|\right)$$
 
-### Performance Classification:
+### Performance Classification
+
 - **ACCURATE:** $|\%\, e_i| \le 10.0\%$
 - **MODERATE:** $10.0\% < |\%\, e_i| \le 20.0\%$
 - **DEVIATED:** $|\%\, e_i| > 20.0\%$
@@ -145,7 +150,7 @@ $$\text{Station Accuracy } (\%) = \max\left(0, 100 - |\%\, e_i|\right)$$
 
 Running the pipeline live yields verified ground truth metrics:
 
-```
+```text
 [17:00:27] INFO Loaded 20 WRD ground gauge records from wrd_daily_rainfall_template.csv
 [17:00:27] INFO Station Gaganbawda (S6): Pred=50.1 mm, Obs=52.1 mm, Source=WRD_GROUND_GAUGE, Accuracy=96.2%
 [17:00:27] INFO Station Padasali   (S5): Pred=48.7 mm, Obs=47.7 mm, Source=WRD_GROUND_GAUGE, Accuracy=97.9%

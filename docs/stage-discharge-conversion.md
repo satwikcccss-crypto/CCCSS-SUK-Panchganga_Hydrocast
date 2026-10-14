@@ -1,6 +1,6 @@
 # Hydraulic Stage-to-Discharge & Inverse Rating Curve Conversion
 
-```
+```text
 ========================================================================================
        PANCHGANGA WATER LEVEL (STAGE) <---> RIVER DISCHARGE RATING CONVERTER
 ========================================================================================
@@ -27,6 +27,7 @@
         528.67  531       533       535       537       539       541       545   Stage h (m MSL)
        (Shivaji Bed / Q=0)
 ```
+
 **IMPORTANT (Sep 2026 correction):** The two gauged sites now use rating curves that are
 **PCHIP-interpolated DIRECTLY through the official Maharashtra WRD stage-discharge sheet** —
 not a pure Manning / slope-calibrated curve. This is what makes the discharge calculation
@@ -53,11 +54,12 @@ $$\frac{df}{dh} > 0 \quad \forall h \ge z_{invert}$$
 Two failure modes were eliminated:
 
 ### 2.1 Non-Monotonic Spline Oscillation
+
 Previous iterations used standard natural cubic splines (`scipy.interpolate.CubicSpline`).
 
 While cubic splines provide continuous second derivatives ($C^2$), they suffer from severe **Runge-type polynomial overshoot** in regions where hydraulic slope transitions rapidly (such as the bankfull spill point at $535.5\text{ m MSL}$):
 
-```
+```text
  Standard Cubic Spline vs PCHIP at Bankfull Transition:
  Discharge Q
     ^
@@ -75,8 +77,10 @@ While cubic splines provide continuous second derivatives ($C^2$), they suffer f
 A non-monotonic rating curve means that as flood stage rises, the calculated discharge drops — a catastrophic thermodynamic and hydraulic impossibility that destabilized the model and caused large volumetric errors (**30% PBIAS**).
 
 ### 2.2 Pure Manning Equation at the Wrong Slope → 2.6× Error & Flood Plateau
+
 Before the fix, Shivaji Bridge used the **divided-channel Manning method** with a calibration
 slope that produced:
+
 - **Below-bankfull over-prediction:** at 533.54 m the pure-Manning curve gave
   **209.9 m³/s** vs the official WRD **80.0 m³/s** (≈ **2.6× too high**).
 - **Above-bankfull plateau:** the curve levelled off at **~1,892 m³/s** across
@@ -112,9 +116,9 @@ $$P(h) = a_k + b_k (h - h_k) + c_k (h - h_k)^2 + d_k (h - h_k)^3$$
 
 The slope derivatives $d_k = P'(h_k)$ are determined using the weighted harmonic mean of the secant slopes $\Delta_k = \frac{Q_{k+1} - Q_k}{h_{k+1} - h_k}$:
 
-$$d_k = \begin{cases} 
-\frac{w_1 + w_2}{\frac{w_1}{\Delta_{k-1}} + \frac{w_2}{\Delta_k}} & \text{if } \text{sgn}(\Delta_{k-1}) = \text{sgn}(\Delta_k) \neq 0 \\ 
-0 & \text{if } \text{sgn}(\Delta_{k-1}) \neq \text{sgn}(\Delta_k) \text{ or } \Delta_{k-1}\Delta_k = 0 
+$$d_k = \begin{cases}
+\frac{w_1 + w_2}{\frac{w_1}{\Delta_{k-1}} + \frac{w_2}{\Delta_k}} & \text{if } \text{sgn}(\Delta_{k-1}) = \text{sgn}(\Delta_k) \neq 0 \\
+0 & \text{if } \text{sgn}(\Delta_{k-1}) \neq \text{sgn}(\Delta_k) \text{ or } \Delta_{k-1}\Delta_k = 0
 \end{cases}$$
 
 Where weights $w_1 = 2(h_{k+1} - h_k) + (h_k - h_{k-1})$ and $w_2 = (h_{k+1} - h_k) + 2(h_k - h_{k-1})$.
@@ -134,7 +138,7 @@ verbatim**; **SHIVAJI_BRIDGE uses the sheet stages minus the −0.648 m downstre
 offset** (see §8.1). Extra low-flow anchors below the first gauged point (533.54 m) come
 from the WRD 2021–2023 hourly register.
 
-```
+```text
 +----+-------------------+--------------+-----------------+-----------------+------------------------+
 | No | Rajaram Stage (m) | Discharge    | Discharge (m³/s)| In Code As     | Hydraulic Regime       |
 +----+-------------------+--------------+-----------------+-----------------+------------------------+

@@ -36,7 +36,7 @@ password verification, and the dual-mode admin guard.
     import the module without a provisioned secret.
 
 | Variable | Default | Purpose |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | `JWT_SECRET` | *(empty in production)* | HMAC-SHA256 signing key |
 | `JWT_ALGORITHM` | `HS256` | JWT algorithm |
 | `JWT_EXPIRATION_MINUTES` | `1440` | Token lifetime (24 h) |

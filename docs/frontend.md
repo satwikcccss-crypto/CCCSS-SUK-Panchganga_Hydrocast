@@ -1,6 +1,6 @@
 # HydroCast Frontend Architecture & Design System
 
-```
+```text
 ========================================================================================
              HYDROCAST NEXT.JS 14 BASIN INTELLIGENCE DASHBOARD
 ========================================================================================
@@ -46,7 +46,7 @@ Odometer Count Isohyetals     Rating curves  WRD benchmarks Archival/Bot  Flashi
 
 The user interface is organized into five segregated operational workspaces accessible via the responsive sidebar:
 
-```
+```text
 app/
  ├── layout.tsx                     # Global HTML envelope, Inter font, metadata
  ├── page.tsx                       # Landing redirect to /dashboard
@@ -60,7 +60,7 @@ app/
 
 ### 2.1 Workspace Panel Breakdown
 
-```
+```text
 +-------------------+-------------------------------------------------------------------+
 | Panel ID          | Primary Functional Responsibility                                 |
 +-------------------+-------------------------------------------------------------------+
@@ -79,6 +79,7 @@ app/
 All charts are engineered with strict hydrologic conventions, high-DPI canvas rendering, and custom tooltip formatting.
 
 ### 3.1 Dual-Axis Stage vs Discharge Hydrograph (`RunoffPanel` & `AccuracyPanel`)
+
 - **Left Y-Axis ($y_{stage}$):** River stage in meters MSL ($530.0 - 546.0\text{m}$).
 - **Right Y-Axis ($y_Q$):** River discharge in $m^3/s$ ($0 - 4,000\text{ m}^3/s$).
 - **Threshold Annotations:**
@@ -88,9 +89,11 @@ All charts are engineered with strict hydrologic conventions, high-DPI canvas re
   - **HFL:** $545.33\text{ m}$ (Purple dashed horizontal line)
 
 ### 3.2 Inverted Meteorological Hyetographs (`RainfallPanel`)
+
 - Rainfall bars are plotted with an inverted vertical axis ($0\text{ mm}$ at the top, increasing downward) adhering to standard international civil engineering hydrologic conventions.
 
 ### 3.3 Spearman Correlation Scatter Plot & Target Accuracy Panel (`AccuracyPanel.tsx`)
+
 - **Filtered Coordinate Array (`validPts`):** Coordinates are sanitized to ensure both $x$ and $y$ are finite numbers, preventing `NaN` from disrupting Chart.js canvas layout.
 - **Plots the theoretical $1:1$ ideal agreement line ($Y = X$) in dashed slate.**
 - **Live Empirical Badges:** Displays actual Spearman rank coefficient ($\rho$) and Pearson $R^2$ with safe null-fallback (`—`).
@@ -106,7 +109,7 @@ All charts are engineered with strict hydrologic conventions, high-DPI canvas re
   - 1-click CSV Export including raw feet observations.
 - **Continuous 90h Lifecycle Progress Card:** Visual progress bar and badge tracking verified hours (e.g., `17/90h (18.9%) · IN_PROGRESS`).
 
-```
+```text
      Predicted Stage (m MSL)
   545 +                                     /  <-- 1:1 Ideal Line (Y = X)
       |                                  * /
@@ -127,7 +130,7 @@ All charts are engineered with strict hydrologic conventions, high-DPI canvas re
 
 The cross-section viewer renders a direct 2D geometric elevation slice of the Panchganga river channel using native scalable vector graphics:
 
-```
+```text
   Top of Left Bank (LOB)                                      Top of Right Bank (ROB)
        \                                                               /
         \     Water Surface Elevation (WSE = 533.28m MSL)             /
@@ -138,7 +141,8 @@ The cross-section viewer renders a direct 2D geometric elevation slice of the Pa
                        Main Channel Bed Invert (530.18m MSL)
 ```
 
-### Key Interactive Features:
+### Key Interactive Features
+
 1. **Dynamic Water Level Slider:** Allows hydraulic engineers to manually scrub the water surface elevation from $530.18\text{m}$ to $546.00\text{m}$ to observe simulated floodplain inundation in real time.
 2. **Instant Hydraulic Readouts:** Automatically recalculates and displays:
    - Wetted Flow Area $A$ ($m^2$)
@@ -166,15 +170,20 @@ export async function fetchDashboardData(runId?: string) {
 ```
 
 ### 5.1 Vercel Serverless Edge Bundling
+
 On Vercel, serverless function workers execute isolated from external project folders (`../data/runs/` is not packaged). To guarantee 100% production reliability:
+
 - All historical computation runs (`CYC_*.json`) and `runs_index.json` are mirrored into [`frontend/public/data/runs/`](file:///e:/hydrocast_complete/frontend/public/data/runs/).
-- When `/api/v1/dashboard?run_id=...` is called, the serverless handler resolves `path.join(process.cwd(), "public", "data", "runs", `${requestedRunId}.json`)`, instantly serving the archived run without 404s or empty metrics.
+- When `/api/v1/dashboard?run_id=...` is called, the serverless handler resolves `path.join(process.cwd(), "public", "data", "runs",`${requestedRunId}.json`)`, instantly serving the archived run without 404s or empty metrics.
 
 ### 5.2 Hydration Exception Hardening
+
 All metric formatters in [`AccuracyPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/AccuracyPanel.tsx) and [`SystemPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/SystemPanel.tsx) are safely guarded:
+
 ```tsx
 ρ = {spearmanRho != null ? spearmanRho.toFixed(3) : "—"} · R² = {pearsonR2 != null ? pearsonR2.toFixed(3) : "—"}
 ```
+
 This prevents `TypeError: Cannot read properties of null (reading 'toFixed')` during initial hydration or when inspecting runs with incomplete lead hours.
 
 ---
@@ -237,22 +246,22 @@ CMD ["node", "server.js"]
 
 This reduces the final container image footprint to $< 180\text{ MB}$ and ensures zero external system dependencies.
 
-
-
 ---
 
 ## 8. Interactive Telegram Bot & Tiered RBAC System
 
 HydroCast integrates an edge-ready serverless Next.js API route (`frontend/app/api/telegram/webhook/route.ts`) and a Python background service (`src/alerts/telegram_bot.py`) providing two-way disaster intelligence with Role-Based Access Control (RBAC):
 
-### Public Commands (Open to Everyone):
+### Public Commands (Open to Everyone)
+
 - `/start` or `/help`: Welcome message, public overview, and official onboarding guide
 - `/stage`: Current water level, alert thresholds, and peak stage forecasts for Shivaji Bridge and Rajaram Weir
 - `/alerts`: Active warning, danger, and evacuation safety advisories
 - `/bulletin`: Full official CWC / DDMA emergency flood bulletin
 - `/id`: Shows the caller's Telegram Chat & User ID for access requests
 
-### Official Commands (Restricted to CCCSS, SUK, WRD, & DDMA Personnel):
+### Official Commands (Restricted to CCCSS, SUK, WRD, & DDMA Personnel)
+
 - `/status`: System diagnostics, engine health, database status, and cycle step execution timings
 - `/rainfall`: Catchment precipitation breakdown across the 18 stations and 13 subbasins
 - `/curvenumbers` (alias `/calibration`): Calibrated SCS Curve Numbers ($\Delta CN$) and Muskingum routing parameters ($K, X$)
@@ -263,7 +272,8 @@ HydroCast integrates an edge-ready serverless Next.js API route (`frontend/app/a
 ## 9. Adaptive ML Recalibration Dashboard (`AccuracyPanel.tsx`)
 
 The **Model Accuracy & Validation** workspace features an interactive **Adaptive ML Recalibration** tab displaying:
-- Live parameter scaling factors ($lpha_K, lpha_{	ext{lag}}, \Delta CN, X$)
+
+- Live parameter scaling factors ($lpha_K, lpha_{ ext{lag}}, \Delta CN, X$)
 - Flood wave timing offset $\Delta t$ and stage error $\Delta h$
 - Real-time parameter matrices for all 9 subbasins and 5 reaches
 - Levenberg-Marquardt objective function formulation and optimization bounds
@@ -279,6 +289,7 @@ The dashboard header incorporates an animated odometer counter rendering smooth 
 ## 11. Interactive GIS Leaflet Map (`MapComponent.tsx`)
 
 The central **Overview Panel** features a fully interactive spatial mapping engine built using Leaflet.js and `react-leaflet`. It visualizes the spatial distribution of the flood model:
+
 - **Subbasin Catchments:** Renders high-resolution GeoJSON polygons representing the 9 hydrological subbasins (e.g., Warna, Kasari, Kumbhi, Tulsi).
 - **River Reaches:** Plots the main stem of the Panchganga River and its 5 primary routing reaches as vector PolyLines.
 - **Real-Time Rain Gauge Markers:** Overlays the 18 physical IoT rain gauge stations with active telemetry indicators (e.g., flashing red for extreme precipitation zones).

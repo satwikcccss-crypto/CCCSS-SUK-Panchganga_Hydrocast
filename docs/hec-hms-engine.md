@@ -1,6 +1,6 @@
 # HEC-HMS Headless Automation & DSS File Architecture
 
-```
+```text
 ========================================================================================
              HEC-HMS 4.X HEADLESS SIMULATION ENGINE & HEC-DSS INTEGRATION
 ========================================================================================
@@ -35,7 +35,8 @@
 ---
 
 ## 1. Overview & Operational Role
-```
+
+```text
 ====================================================================================================
            PANCHGANGA HYDROCAST - HEC-HMS 4.13 HYDROLOGICAL ROUTING ARCHITECTURE
 ====================================================================================================
@@ -101,7 +102,6 @@
           +=============================================================+
 ```
 
-
 The **Hydrologic Engineering Center's Hydrologic Modeling System (HEC-HMS)** developed by the U.S. Army Corps of Engineers (USACE) is the international benchmark for physical hydrologic watershed modeling.
 
 In HydroCast, HEC-HMS operates in **headless batch mode** on Windows/Linux servers without graphical user interface (GUI) dependencies, triggered automatically on every 6-hour forecast cycle (00z, 06z, 12z, 18z).
@@ -112,7 +112,7 @@ In HydroCast, HEC-HMS operates in **headless batch mode** on Windows/Linux serve
 
 The HEC-HMS model files reside in [`data/hms/HMS_Automation_RJKT/`](file:///e:/hydrocast_complete/data/hms/HMS_Automation_RJKT/):
 
-```
+```text
 data/hms/HMS_Automation_RJKT/
  ├── HMS_Automation_RJKT.hms   # Master project configuration & module registry
  ├── Basin_1.basin              # Subbasin topology, area, CN, Tc, R, reach geometry
@@ -129,11 +129,12 @@ data/hms/HMS_Automation_RJKT/
 
 All data within HEC-DSS binary container files adhere to the strict USACE six-part pathname convention:
 
-```
+```text
   / A / B / C / D / E / F /
 ```
 
 Where:
+
 - **Part A (Project / River):** `PANCHGANGA`
 - **Part B (Location Node):** `S1` to `S9` (subbasins) or `J_OUTLET`, `SHIVAJI_BRIDGE`, `RAJARAM_WEIR`
 - **Part C (Data Parameter):** `PRECIP-INC` (incremental rain in mm) or `FLOW` (discharge in $m^3/s$)
@@ -141,7 +142,8 @@ Where:
 - **Part E (Sampling Interval):** `1HOUR`
 - **Part F (User / Version Tag):** `FORECAST`, `OBSERVED`, or `RUN:RUN_1`
 
-### Example Pathnames:
+### Example Pathnames
+
 - **Input Rainfall:** `/PANCHGANGA/S6/PRECIP-INC/03SEP2026:0600/1HOUR/FORECAST/`
 - **Computed Outflow:** `/PANCHGANGA/J_OUTLET/FLOW/03SEP2026:0600/1HOUR/RUN:RUN_1/`
 
@@ -162,7 +164,8 @@ hms.compute("Run 1")
 hms.closeProject()
 ```
 
-### Command-Line Invocation:
+### Command-Line Invocation
+
 ```cmd
 "C:\Program Files\HEC\HEC-HMS-4.10\hec-hms.cmd" -s run_hms.py
 ```
@@ -228,7 +231,9 @@ Because native HEC-HMS requires Java runtime dependencies and proprietary 64-bit
 To maintain strict alignment between the 6-hourly operational cycle and the HEC-HMS project files on disk, HydroCast automatically manages:
 
 ### 6.1 Control Specification Synchronization (`Control_1.control`)
+
 At the start of each forecast execution (Step 4), `runner.py` dynamically updates the simulation time window:
+
 ```text
 Control: Control 1
      Description: Panchganga 90-Hour Operational Simulation
@@ -239,6 +244,7 @@ Control: Control 1
      Time Interval: 60
 End:
 ```
+
 This guarantees that both HEC-HMS and the internal Python emulator calculate identical time envelopes ($T+0\text{h} \to T+89\text{h}$).
 
 Because the simulation window is rewritten in place, the checked-in project file
@@ -246,7 +252,7 @@ would otherwise drift permanently away from its committed state. Two helpers in
 `src/hms/runner.py` bracket every run so the repository stays clean:
 
 | Function | When | Behaviour |
-|---|---|---|
+| --- | --- | --- |
 | `snapshot_control_spec()` | Before `patch_control_spec()` | Caches the pristine `Control_1.control` text in a module-global. |
 | `restore_control_spec()` | After the run completes (or fails) | Writes the cached text back and clears the snapshot. |
 
@@ -261,7 +267,7 @@ working tree.
 `Basin_1.basin` into two plain dicts and is consumed by **both** the production
 emulator and the calibration engine:
 
-```
+```text
 parse_basin_file()  ->  (sub_models, reaches)
                         sub_models[sid] = {name, area_km2, cn, lag_min}
                         reaches[rid]    = {k_hr, x}
@@ -285,7 +291,7 @@ The canonical committed values in `Basin_1.basin` are the **official RJKT model
 parameters**, not outputs of the old trial optimization:
 
 | Reach | Committed $K$ (hr) | Committed $X$ |
-|:---|:---:|:---:|
+| :--- | :---: | :---: |
 | R1 | 2.899 | 0.20 |
 | R2 | 11.827 | 0.20 |
 | R3 | 3.829 | 0.20 |
@@ -315,23 +321,23 @@ or the whole new one. **The current run additionally applies the fitted paramete
 in memory** via `parameter_overrides`, so a cycle is never dependent on the disk
 round-trip having already completed.
 
-
-
 ---
 
 ## 7. Governing Hydrological Mathematical Continuum
 
 ### 7.1 SCS Curve Number Loss Method with Dynamic AMC Tracking
+
 The model partitions rainfall into retention, infiltration, and surface runoff using the USDA SCS Curve Number method:
 
 $$S = \frac{25400}{CN} - 254 \quad [\text{mm}]$$
 
 The model dynamically evaluates the catchment-mean 90-hour rainfall forecast and classifies three antecedent-moisture states (`src/hms/runner.py::classify_amc`):
+
 - **Dry Winters / Dry Spells (AMC-I):** $\bar{P}_{90} < 25\text{ mm} \implies CN = \dfrac{4.2 \cdot CN_{\text{II}}}{10 - 0.058 \cdot CN_{\text{II}}}, \; I_a = 0.20 \cdot S$.
 - **Normal / Moderate Periods (AMC-II):** $25 \le \bar{P}_{90} < 65\text{ mm} \implies CN = CN_{\text{II}}, \; I_a = 0.15 \cdot S$.
 - **Saturated Monsoon Downpours (AMC-III):** $\bar{P}_{90} \ge 65\text{ mm} \implies CN = \min\left(98.0, \; \dfrac{23 \cdot CN_{\text{II}}}{10 + 0.13 \cdot CN_{\text{II}}}\right), \; I_a = 0.08 \cdot S$.
 
-$$Q_{\text{cum}}(h) = \begin{cases} 
+$$Q_{\text{cum}}(h) = \begin{cases}
 0.02 \cdot P_{\text{cum}}(h) & \text{if } P_{\text{cum}}(h) \le I_a \\[1ex]
 \dfrac{(P_{\text{cum}}(h) - I_a)^2}{P_{\text{cum}}(h) - I_a + S} + 0.02 \cdot P_{\text{cum}}(h) & \text{if } P_{\text{cum}}(h) > I_a
 \end{cases}$$

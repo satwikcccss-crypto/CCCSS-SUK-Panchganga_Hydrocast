@@ -48,6 +48,7 @@ from scipy import optimize
 
 from src.hms import runner as hms_runner
 from src.hms.basin_parser import load_immutable_baseline
+from src.hydrology.ml_parameter_predictor import predictor as ml_predictor, HydrologicParameterPredictor
 
 log = logging.getLogger(__name__)
 
@@ -219,6 +220,9 @@ class AdaptiveHydrologicCalibrator:
 
     def __init__(self):
         self.state = self.load_calibration_state()
+        self.predictor = HydrologicParameterPredictor(
+            retrain_on_load=False,
+        )
 
     @staticmethod
     def load_calibration_state() -> Dict[str, Any]:
@@ -431,6 +435,42 @@ class AdaptiveHydrologicCalibrator:
         # Muskingum X shift: steeper waves (early) have higher X
         x_shift = 0.25 - (timing_offset_hours * 0.02)
 
+        # ── Machine learning–informed initial guess ────────────────────────
+        # Predict parameters from historical discrepancy-to-parameter mappings.
+        # The ML model learns the systematic offset patterns that the analytical
+        # physics estimate may miss, especially for complex multi-parameter interactions.
+        ml_guess = ml_predictor.predict(
+            timing_offset_hours=timing_offset_hours,
+            stage_discrepancy_m=stage_error_m,
+            peak_discharge_error_m3s=peak_discharge_error_m3s,
+        )
+
+        if ml_guess is not None:
+            # Blend ML prediction with analytical physics: 70% physics / 30% ML
+            # This preserves the deterministic fallback behavior while allowing
+            # the model to capture learned patterns from historical recalibrations.
+            alpha_k_phys = float(np.clip(k_shift, 0.60, 1.60))
+            alpha_lag_phys = float(np.clip(lag_shift, 0.60, 1.60))
+            cn_phys = float(np.clip(cn_shift, -7.0, 7.0))
+            x_phys = float(np.clip(x_shift, 0.16, 0.36))
+
+            alpha_k_ml = ml_guess["alpha_k"]
+            alpha_lag_ml = ml_guess["alpha_lag"]
+            cn_ml = ml_guess["delta_cn"]
+            x_ml = ml_guess["muskingum_x"]
+
+            # Weighted blend: physics prior dominates, ML correction adjusts
+            alpha_k = float(np.clip(0.70 * alpha_k_phys + 0.30 * alpha_k_ml, 0.60, 1.60))
+            alpha_lag = float(np.clip(0.70 * alpha_lag_phys + 0.30 * alpha_lag_ml, 0.60, 1.60))
+            cn = float(np.clip(0.70 * cn_phys + 0.30 * cn_ml, -7.0, 7.0))
+            x = float(np.clip(0.70 * x_phys + 0.30 * x_ml, 0.16, 0.36))
+        else:
+            # Fall back entirely to analytical physics estimate
+            alpha_k = float(np.clip(k_shift, 0.60, 1.60))
+            alpha_lag = float(np.clip(lag_shift, 0.60, 1.60))
+            cn = float(np.clip(cn_shift, -7.0, 7.0))
+            x = float(np.clip(x_shift, 0.16, 0.36))
+
         # Bound parameters strictly within physical hydrologic limits
         bounds = np.array([
             (0.50, 1.80),   # α_K
@@ -441,10 +481,10 @@ class AdaptiveHydrologicCalibrator:
         lo, hi = bounds[:, 0], bounds[:, 1]
 
         initial_params = np.array([
-            float(np.clip(k_shift, 0.60, 1.60)),
-            float(np.clip(lag_shift, 0.60, 1.60)),
-            float(np.clip(cn_shift, -7.0, 7.0)),
-            float(np.clip(x_shift, 0.16, 0.36)),
+            float(np.clip(alpha_k, 0.50, 1.80)),
+            float(np.clip(alpha_lag, 0.50, 1.80)),
+            float(np.clip(cn, -8.0, 8.0)),
+            float(np.clip(x, 0.15, 0.40)),
         ], dtype=np.float64)
 
         # ── True nonlinear least-squares fit (Levenberg–Marquardt via

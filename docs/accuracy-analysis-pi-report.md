@@ -1,6 +1,6 @@
 # Scientific Report on the Predictive Accuracy, Hydraulic Calibration & Simulation Validation of the HydroCast Panchganga River System
 
-```
+```text
 ========================================================================================================================
                       RESEARCH & TECHNICAL VALIDATION MEMORANDUM FOR PRINCIPAL INVESTIGATOR
 ========================================================================================================================
@@ -15,8 +15,7 @@
 
 ---
 
-
-```
+```text
 ====================================================================================================
                PROJECT HYDROCAST: EXECUTIVE ACCURACY & VALIDATION SUMMARY
 ====================================================================================================
@@ -33,6 +32,7 @@ This report provides a formal scientific evaluation of the predictive accuracy, 
 Historically, early iterations of the numerical model suffered from a severe volumetric under-prediction (**Percent Bias $\text{PBIAS} \approx 30 - 40\%$**), where computed discharge at normal monsoonal river stages ($532.6 - 533.5\text{ m MSL}$) collapsed to non-physical values of $\sim 16.6\text{ m}^3/s$.
 
 Through a comprehensive hydraulic re-calibration that replaced the pure-Manning/DCM stage conversion with **WRD-datum-anchored PCHIP rating curves** — interpolating directly through the **official Maharashtra Water Resources Department (WRD) stage-discharge sheet** (Rajaram verbatim; Shivaji shifted −0.648 m for its lower bed datum; WRD 2021–23 observed low-flow anchors below the gauged range) — the platform has achieved benchmark-level predictive performance:
+
 - **Spearman Rank Correlation:** $\mathbf{\rho = 0.9889}$ ($p < 0.001$, confirming monotonic flood wave tracking)
 - **Nash-Sutcliffe Model Efficiency:** $\mathbf{\text{NSE} = 0.9879}$ (classified as *Excellent* under international criteria)
 - **Linear Stage Correlation:** $\mathbf{R^2 = 0.9880}$ ($r = 0.9940$)
@@ -44,7 +44,7 @@ Through a comprehensive hydraulic re-calibration that replaced the pure-Manning/
 
 ## 2. Experimental Framework & Ground Truth Datasets
 
-```
+```text
   Validation Experimental Architecture:
   
   [ Input Meteorological Forcing ]            [ Real-Time Physical Observations ]
@@ -65,6 +65,7 @@ Through a comprehensive hydraulic re-calibration that replaced the pure-Manning/
 ```
 
 ### 2.1 The Two Ground Truth Observation Sources
+
 1. **Continuous Real-Time IoT Telemetry (ThingSpeak Channel ID: `3424513`):**
    - Transducer: Solar-powered ultrasonic level sensor installed beneath the central girder of Chhatrapati Shivaji Maharaj Bridge ($16.708917^\circ\text{ N}, 74.219278^\circ\text{ E}$).
    - Reference Datum: Sensor mounting face surveyed at **$549.35\text{ m MSL}$**.
@@ -79,6 +80,7 @@ Through a comprehensive hydraulic re-calibration that replaced the pure-Manning/
 ## 3. Mathematical Validation Metrics Formulation
 
 ### 3.1 Spearman Rank Correlation ($\rho$)
+
 Evaluates non-linear monotonic correspondence between simulated stage ($X$) and observed sensor stage ($Y$):
 
 $$\rho = 1 - \frac{6 \sum_{i=1}^{n} d_i^2}{n (n^2 - 1)}$$
@@ -86,11 +88,13 @@ $$\rho = 1 - \frac{6 \sum_{i=1}^{n} d_i^2}{n (n^2 - 1)}$$
 Where $d_i = \text{rank}(X_i) - \text{rank}(Y_i)$, and $n=90$ simulation hours.
 
 ### 3.2 Nash-Sutcliffe Model Efficiency (NSE)
+
 International standard for assessing predictive power of hydrologic runoff models (Nash & Sutcliffe, 1970):
 
 $$\text{NSE} = 1 - \frac{\sum_{t=1}^{n} \left(Q_{obs}(t) - Q_{sim}(t)\right)^2}{\sum_{t=1}^{n} \left(Q_{obs}(t) - \overline{Q_{obs}}\right)^2}$$
 
 ### 3.3 Volumetric Percent Bias (PBIAS %)
+
 Measures average relative bias in cumulative discharge volume:
 
 $$\text{PBIAS} = \frac{\sum_{t=1}^{n} \left(Q_{sim}(t) - Q_{obs}(t)\right)}{\sum_{t=1}^{n} Q_{obs}(t)} \times 100\%$$
@@ -105,7 +109,7 @@ $$\text{RMSE} = \sqrt{\frac{1}{n} \sum_{t=1}^{n} \left(h_{sim}(t) - h_{obs}(t)\r
 
 ### 4.1 "Before vs After" Calibration Performance Matrix
 
-```
+```text
 +-----------------------------------+-----------------------+-----------------------+-------------------------+
 | Hydrologic / Hydraulic Metric     | Legacy Uncalibrated   | HydroCast Calibrated  | Scientific Significance |
 +-----------------------------------+-----------------------+-----------------------+-------------------------+
@@ -123,13 +127,17 @@ $$\text{RMSE} = \sqrt{\frac{1}{n} \sum_{t=1}^{n} \left(h_{sim}(t) - h_{obs}(t)\r
 ```
 
 ### 4.2 International Classification Benchmark (Moriasi et al., 2007)
+
 Under the guidelines of the American Society of Agricultural and Biological Engineers (ASABE) and Moriasi et al. (2007) for watershed evaluation:
+
 - $\text{NSE} > 0.75 \implies \mathbf{VERY\ GOOD}$ (HydroCast achieves **$0.988$**)
 - $\text{PBIAS} < \pm 10\% \implies \mathbf{VERY\ GOOD}$ (HydroCast achieves **$-0.08\%$**)
 - $\text{R}^2 > 0.85 \implies \mathbf{VERY\ GOOD}$ (HydroCast achieves **$0.988$**)
 
 ### 4.3 Real-Time Continuous Telemetry Verification Audit (`CYC_20260903_18z`)
+
 Under the continuous 1-hour automated verification pipeline (`.github/workflows/telemetry_validation.yml`), the active forecast cycle is evaluated directly against live ThingSpeak Channel `3424513`:
+
 - **Verification Horizon:** 17 of 90 elapsed lead hours verified ($18.9\%$ complete, $T+0\text{h} \to T+16\text{h}$).
 - **Sensor Telemetry:** Ultrasonic air distance measured at $52.95\text{ ft}$, corresponding to river stage $533.20\text{ m MSL}$.
 - **Stage Dispersion:** $\text{RMSE} = \mathbf{\pm 0.083\text{ m}}$ ($8.3\text{ cm}$), $\text{MAE} = \mathbf{\pm 0.057\text{ m}}$ ($5.7\text{ cm}$).
@@ -143,7 +151,7 @@ Under the continuous 1-hour automated verification pipeline (`.github/workflows/
 
 A rigorous hydrological model cannot be accurate at the basin outlet if the spatial rainfall input is distorted. The rain gauge stations across the 9 subbasins ($S_1$ to $S_9$, totaling $1,837.21\text{ km}^2$) were evaluated over the 90-hour forecast horizon:
 
-```
+```text
 +----+-------------------+----------+-------------+-----------+--------------------+-------------------+--------------+
 | No | Station Name      | Subbasin | Subbasin km²| Elevation | Predicted Rain(mm) | Observed Rain(mm) | Accuracy (%) |
 +----+-------------------+----------+-------------+-----------+--------------------+-------------------+--------------+
@@ -178,7 +186,7 @@ A rigorous hydrological model cannot be accurate at the basin outlet if the spat
 
 The persistent historical ledger records simulation runs across distinct monsoon hydrologic states:
 
-```
+```text
 +--------------------+--------------+------------+-----------------+------------------+--------------+------------+
 | Cycle ID           | Date (UTC)   | Cycle Time | Peak Flow (m³/s)| Peak Stage (m)   | Spearman (ρ) | NSE Score  |
 +--------------------+--------------+------------+-----------------+------------------+--------------+------------+
@@ -200,4 +208,3 @@ The persistent historical ledger records simulation runs across distinct monsoon
 3. **Operational Robustness Certified:** Automated fallback mechanisms guarantee that the system can execute either via native USACE HEC-HMS 4.x or via the internal pure Python emulator in $< 37\text{ seconds}$ without external database dependencies.
 4. **Adaptive ML Recalibration & Disaster Action Windows:** With the integration of real-time parameter recalibration against ultrasonic telemetry, the system achieves a statistically rigorous **$\pm 2.0\text{h}$ operational peak strike horizon** (95% CI) and automated multi-channel disaster alerting (DDMA Telegram bot & live WebSockets).
 5. **Recommendation:** The platform is **scientifically validated and operationally ready** for formal deployment in district flood disaster decision-support, academic publication in hydrologic modeling journals, and presentation to disaster management authorities.
-

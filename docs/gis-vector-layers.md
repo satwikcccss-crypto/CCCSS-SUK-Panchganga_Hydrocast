@@ -1,6 +1,6 @@
 # GIS Geospatial Data, Shapefiles & Subbasin Vector Layers
 
-```
+```text
 ========================================================================================
              PANCHGANGA BASIN GIS SHAPEFILES & VECTOR GEOJSON LAYERS
 ========================================================================================
@@ -32,7 +32,7 @@
 
 The geospatial repository contains both raw QGIS spatial layers and web-optimized GeoJSON files:
 
-```
+```text
 system/
  ├── data/
  │    └── Shapefiles_Panchganga basin/
@@ -112,6 +112,7 @@ Hydrologic vector processing uses dual spatial reference frames:
 ## 4. Leaflet Web GIS Integration
 
 The interactive map in `OverviewPanel.tsx` visualizes these spatial layers:
+
 - **Subbasin Choropleth:** Color-coded by cumulative 90-hour rainfall intensity (green: $< 30\text{ mm}$, amber: $30-75\text{ mm}$, purple: $> 75\text{ mm}$).
 - **River Flowpaths:** Dynamic blue vector lines with thickness proportional to Strahler stream order.
 - **Sensor Pin Overlays:** Interactive markers at Shivaji Bridge and Rajaram Weir displaying live water level ($m$ MSL), alert badges, and historical flood marks.

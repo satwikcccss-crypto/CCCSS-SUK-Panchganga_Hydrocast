@@ -1,6 +1,6 @@
 # Database Architecture & Supabase / PostgreSQL Persistence Schema
 
-```
+```text
 ========================================================================================================================
                       HYDROCAST POSTGRESQL / SUPABASE & JSON LEDGER SCHEMAS
 ========================================================================================================================
@@ -33,8 +33,7 @@ The persistence layer supports both **PostgreSQL / Supabase** for multi-user que
 
 ---
 
-
-```
+```text
 ====================================================================================================
              PANCHGANGA HYDROCAST - UNIFIED SINGLE-TREE DATABASE SCHEMA
 ====================================================================================================
@@ -83,6 +82,7 @@ The persistence layer supports both **PostgreSQL / Supabase** for multi-user que
 ## 2. Relational Table Definitions
 
 ### 2.1 Table: `simulation_runs`
+
 Stores metadata and executive metrics for every 90-hour forecast cycle executed by the pipeline:
 
 ```sql
@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS simulation_runs (
 ```
 
 ### 2.2 Table: `forecast_validation_metrics` (Statistical Accuracy Matrices)
+
 Persists the quantitative evaluation scores comparing simulated hydrographs against live ultrasonic radar sensor ground truth:
 
 ```sql
@@ -134,6 +135,7 @@ CREATE TABLE IF NOT EXISTS forecast_validation_metrics (
 ```
 
 ### 2.3 Table: `subbasins`
+
 Persists the official GIS subbasin delineations and drainage areas:
 
 ```sql
@@ -150,6 +152,7 @@ CREATE TABLE IF NOT EXISTS subbasins (
 ```
 
 ### 2.4 Table: `station_rainfall_telemetry`
+
 Audits the input rainfall volumes across all 20 primary and alternate rain gauge stations for each simulation run:
 
 ```sql
@@ -173,6 +176,7 @@ CREATE TABLE IF NOT EXISTS station_rainfall_telemetry (
 ```
 
 ### 2.5 Table: `bridge_stage_forecast`
+
 Contains 90 hourly stage and flow predictions for Shivaji Bridge and Rajaram Weir:
 
 ```sql
@@ -192,6 +196,7 @@ CREATE TABLE IF NOT EXISTS bridge_stage_forecast (
 ```
 
 ### 2.6 Table: `wrd_field_benchmarks`
+
 Stores the official Maharashtra Government Water Resources Department (WRD) stage-discharge gauging records that anchor the PCHIP rating curves (weir crest / bed Q=0, WRD 2021–23 observed low-flow anchors, and the sheet up to the 545.33 m / 3,850 m³/s HFL benchmark):
 
 ```sql
@@ -208,6 +213,7 @@ CREATE TABLE IF NOT EXISTS wrd_field_benchmarks (
 ```
 
 ### 2.7 Table: `pipeline_step_log`
+
 Tracks granular step-level execution times, durations, details, and errors across the 12-step cycle:
 
 ```sql
@@ -232,6 +238,7 @@ CREATE INDEX IF NOT EXISTS idx_psl_cycle ON pipeline_step_log (cycle_id);
 ## 3. High-Performance SQL Views
 
 ### View 1: `v_model_accuracy_summary`
+
 Aggregates accuracy KPIs (Spearman $\rho$, NSE, RMSE, MAE, PBIAS) across all historical simulation cycles:
 
 ```sql
@@ -259,6 +266,7 @@ ORDER BY r.cycle_date DESC, r.start_time DESC;
 ```
 
 ### View 2: `v_historical_runs_ledger`
+
 Serves pre-formatted historical run rows to the Next.js frontend table:
 
 ```sql
@@ -326,9 +334,11 @@ When operating in zero-dependency edge mode, each computation cycle is archived 
 Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/archive_runs.py):
 
 ### 5.1 Motivation & Retention Window
+
 In active operational deployment, 6-hourly cycles produce millions of time-series rows per season. Unchecked growth degrades B-Tree index scan efficiency and query latency. HydroCast enforces a **90-day retention window** (`ARCHIVE_RETENTION_DAYS=90`).
 
 ### 5.2 Target Time-Series Tables
+
 - `hydrograph_results` (partition column: `timestamp`)
 - `bridge_stage_forecast` (partition column: `forecast_time`)
 - `rainfall_data` (partition column: `timestamp`)
@@ -336,8 +346,10 @@ In active operational deployment, 6-hourly cycles produce millions of time-serie
 - `subbasin_rainfall_ts` (partition column: `valid_time`)
 
 ### 5.3 Columnar Parquet Partitioning
+
 Pruned rows are streamed into Apache Parquet format using PyArrow with Snappy compression, partitioned by year and month:
-```
+
+```text
 data/archives/
  ├── hydrograph_results/
  │    └── year=2026/
@@ -350,6 +362,7 @@ data/archives/
 ```
 
 ### 5.4 Relational Integrity & Performance Preservation
+
 - Once the Parquet file is verified on disk, pruned rows are deleted in PostgreSQL inside a safe database transaction.
 - Master simulation cycle records in `simulation_runs` and accuracy summaries in `forecast_validation_metrics` are **never deleted**, ensuring that historical performance audits and executive reports remain instantly accessible.
 
@@ -358,6 +371,7 @@ data/archives/
 ## 6. Local PostgreSQL / PostGIS Container (`docker-compose.yml`)
 
 For on-premise deployments or air-gapped workstations without Supabase cloud access, HydroCast includes a dedicated PostGIS container:
+
 ```yaml
 hydrocast-db:
   image: postgis/postgis:15-3.4
@@ -373,4 +387,5 @@ hydrocast-db:
     - postgres_data:/var/lib/postgresql/data
     - ./database/supabase_schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
 ```
+
 Upon first launch (`docker compose up -d`), PostgreSQL boots, mounts `database/supabase_schema.sql`, and automatically bootstraps all tables, views, indexes, and initial benchmark data.

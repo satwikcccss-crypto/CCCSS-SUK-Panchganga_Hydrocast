@@ -1,6 +1,6 @@
 # Model Calibration, Validation Metrics & Accuracy Engine
 
-```
+```text
 ========================================================================================
              HYDROCAST ACCURACY BENCHMARKING & VALIDATION ENGINE
 ========================================================================================
@@ -26,7 +26,7 @@ rank correlation       NSE Target > 0.85               PBIAS Target < 5%      Vo
 
 ## 1. Overview & Validation Philosophy
 
-```
+```text
 ====================================================================================================
                 HYDROCAST MULTI-TIER REAL-TIME VALIDATION ARCHITECTURE
 ====================================================================================================
@@ -68,10 +68,10 @@ rank correlation       NSE Target > 0.85               PBIAS Target < 5%      Vo
                +-------------------------------------------------------+
 ```
 
-
 Hydrological flood early warning systems must not be evaluated on single-point errors alone. A model might predict water levels with low mean error while failing to capture the timing, peak magnitude, or rank order of the flood wave.
 
 HydroCast employs a **multi-dimensional validation matrix** that assesses:
+
 1. **Monotonic Rank Tracking:** Spearman Rank Correlation ($\rho$).
 2. **Hydrograph Fit & Energy Alignment:** Nash-Sutcliffe Efficiency (NSE).
 3. **Linear Correspondence:** Pearson Correlation ($r$ and $R^2$).
@@ -84,11 +84,13 @@ HydroCast employs a **multi-dimensional validation matrix** that assesses:
 ## 2. Mathematical Formulations
 
 ### 2.1 Spearman Rank Correlation ($\rho$)
+
 The Spearman rank correlation assesses how well the relationship between predicted stage ($X$) and observed stage ($Y$) can be described using a monotonic function without assuming linearity:
 
 $$\rho = 1 - \frac{6 \sum_{i=1}^{n} d_i^2}{n (n^2 - 1)}$$
 
 Where:
+
 - $d_i = \text{rank}(X_i) - \text{rank}(Y_i)$ is the difference between the ranks of predicted and observed values.
 - $n$ is the number of observation hours ($N=90$).
 - Two-tailed p-value: $p = 2 \cdot \left(1 - \Phi\left(|\rho| \sqrt{\frac{n-2}{1-\rho^2}}\right)\right)$.
@@ -98,16 +100,18 @@ Where:
 ---
 
 ### 2.2 Nash-Sutcliffe Model Efficiency (NSE)
+
 The standard metric in international hydrologic engineering:
 
 $$\text{NSE} = 1 - \frac{\sum_{t=1}^{n} \left(Q_{obs}(t) - Q_{sim}(t)\right)^2}{\sum_{t=1}^{n} \left(Q_{obs}(t) - \overline{Q_{obs}}\right)^2}$$
 
 Where:
+
 - $Q_{sim}(t)$ = Predicted river discharge at hour $t$ ($m^3/s$)
 - $Q_{obs}(t)$ = Actual observed river discharge at hour $t$ ($m^3/s$)
 - $\overline{Q_{obs}}$ = Mean observed discharge over the simulation horizon
 
-```
+```text
  NSE Performance Classification Table:
  +------------------+-----------------------+------------------------------------------+
  | NSE Value Range  | Performance Grade     | Operational Significance                 |
@@ -123,6 +127,7 @@ Where:
 ---
 
 ### 2.3 Percent Bias (PBIAS %)
+
 Measures the average tendency of the simulated data to be larger or smaller than their observed counterparts (volumetric conservation):
 
 $$\text{PBIAS} = \frac{\sum_{t=1}^{n} \left(Q_{sim}(t) - Q_{obs}(t)\right)}{\sum_{t=1}^{n} Q_{obs}(t)} \times 100\%$$
@@ -160,7 +165,7 @@ Across the Panchganga catchment, basin-wide volumetric rainfall accuracy current
 
 ## 4. Government WRD 19 Benchmark Field Records
 
-```
+```text
 +----+--------------+--------------+-----------------+-----------------+------------------------+
 | No | Stage (m)    | Gauge Height | WRD Flow (cfs)  | Flow Q (m³/s)   | Hydraulic Regime       |
 +----+--------------+--------------+-----------------+-----------------+------------------------+
@@ -193,7 +198,7 @@ Across the Panchganga catchment, basin-wide volumetric rainfall accuracy current
 
 In addition to baseline simulation validation, HydroCast features a continuous, real-time IoT verification engine implemented in [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py):
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │             REAL-TIME THINGSPEAK TELEMETRY VALIDATION ENGINE ARCHITECTURE              │
 │                                                                                        │
@@ -218,6 +223,7 @@ In addition to baseline simulation validation, HydroCast features a continuous, 
 ```
 
 ### 5.1 Dual-Units Conversion Mechanics
+
 The physical ultrasonic sensor mounted beneath Shivaji Bridge measures round-trip acoustic reflection distance through air down to the water surface:
 
 $$\text{Observed Stage (m MSL)} = 549.35\text{ m} - \left(\text{Air Distance (ft)} \times 0.3048\right)$$
@@ -227,7 +233,9 @@ $$\text{Air Distance (ft)} = \frac{549.35 - \text{Observed Stage (m MSL)}}{0.304
 Both raw sensor feet (`observed_distance_ft`) and elevation (`observed_stage_m`) are preserved in all JSON state schemas, CSV exports, and dashboard tables.
 
 ### 5.2 Elimination of Synthetic Formulas
+
 Historical prototypes included synthetic noise equations to simulate observed data during offline testing. In the production engine:
+
 - Synthetic equations (e.g., `0.035 * np.sin(i / 2.5)`) have been **completely eliminated**.
 - Only genuine physical ultrasonic measurements recorded by ThingSpeak Channel `3424513` are resampled and compared against the forecasted hydrograph.
 - Unobserved future lead hours ($T > T_{\text{current}}$) remain strictly designated as unverified pending sensor arrival.
@@ -237,12 +245,15 @@ Historical prototypes included synthetic noise equations to simulate observed da
 ## 6. Continuous 90-Hour Lifecycle Tracking & 1-Hour Automation
 
 ### 6.1 Lifecycle Verification States
+
 As time progresses throughout an active 90-hour forecast cycle:
+
 1. **`INITIALIZED` ($0\text{h}$ verified):** Forecast generated, awaiting initial physical telemetry.
 2. **`IN_PROGRESS` ($1\dots 89\text{h}$ verified):** Real-time telemetry is continuously ingested every hour, updating sample size $N$ and progressive accuracy metrics.
 3. **`LIFECYCLE_VERIFIED` ($90\text{h}$ verified):** The full 90-hour hydrograph has been physically verified against ground truth, and final cumulative performance grades are locked.
 
 ### 6.2 Automated 1-Hour CI/CD Execution
+
 The validation engine runs autonomously every hour via GitHub Actions in [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
 
 ```yaml
@@ -253,6 +264,7 @@ on:
 ```
 
 Upon execution:
+
 1. Feeds from ThingSpeak Channel `3424513` are resampled into hourly means.
 2. Accuracy matrices (RMSE, MAE, NSE, PBIAS, Spearman $\rho$, Pearson $R^2$) are computed.
 3. `frontend/public/data/latest_pipeline_state.json` and mirrored run archives in `frontend/public/data/runs/` are updated.
@@ -264,7 +276,7 @@ Upon execution:
 
 Beyond static validation, HydroCast implements an autonomous, physics-informed machine learning parameter recalibration engine in [`src/hydrology/ml_calibration.py`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py):
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │             REAL-TIME CLOSED-LOOP ML RECALIBRATION ENGINE ARCHITECTURE                 │
 │                                                                                        │
@@ -294,21 +306,26 @@ Beyond static validation, HydroCast implements an autonomous, physics-informed m
 ```
 
 ### 7.1 Mathematical Optimization Formulation
+
 The calibrator solves for optimal parameters $\theta = [\alpha_K, \alpha_{\text{lag}}, \Delta\text{CN}, X]$:
 
 $$\min_{\theta} L(\theta) = \left(\frac{\Delta t_{\text{modeled}} - \Delta t}{2.0}\right)^2 + \left(\frac{\Delta h_{\text{modeled}} - \Delta h}{0.25}\right)^2 + \left(\frac{X - X_{\text{expected}}}{0.05}\right)^2 + \Omega_{\text{reg}}(\theta)$$
 
 Where:
+
 - $\Delta t_{\text{modeled}} = 0.55 \left(\frac{\alpha_K - 1.0}{0.075}\right) + 0.45 \left(\frac{\alpha_{\text{lag}} - 1.0}{0.060}\right)$ captures reach routing travel time and watershed lag.
 - $\Delta h_{\text{modeled}} = -\frac{\Delta\text{CN}}{4.5}$ models soil saturation runoff conversion.
 - Regularization $\Omega_{\text{reg}}(\theta) = 0.05 \left[(\alpha_K - 1)^2 + (\alpha_{\text{lag}} - 1)^2 + (\Delta\text{CN}/5)^2 + ((X - 0.25)/0.1)^2\right]$ prevents parameter drift during noisy conditions.
 - Fallback: Includes deterministic analytical kinematic-wave approximations to guarantee convergence in $< 5\text{ ms}$.
 
 ### 7.2 Atomic Disk Synchronization
+
 When recalibrated, the engine creates an automated timestamped backup:
+
 ```bash
 data/hms/HMS_Automation_RJKT/Basin_1.basin.bak_20260910_120000
 ```
+
 It then regex-replaces `Curve Number`, `Lag`, `Muskingum K`, and `Muskingum x` parameters across all 9 subbasins and 5 reaches, replacing the file atomically via `os.replace`.
 
 ---
@@ -318,16 +335,19 @@ It then regex-replaces `Curve Number`, `Lag`, `Muskingum K`, and `Muskingum x` p
 Implemented in `calculate_peak_arrival_window()`:
 
 ### 8.1 Time-to-Peak Lead Time Formulation
+
 For any forecast series $h(t), Q(t)$ over $t \in [0, 89]$ hours:
 $$T_{\text{peak}} = \arg\max_{t} \left\{ h(t) \right\}$$
 $$\text{Peak Arrival Time} = t_{\text{run}} + T_{\text{peak}}$$
 
 ### 8.2 Permissible Uncertainty Horizon (95% Confidence Interval)
+
 To provide actionable, legally sound guidance for district disaster management:
 $$\text{Earliest Strike Time} = \text{Peak Arrival Time} - 2.0\text{ hours}$$
 $$\text{Latest Strike Time} = \text{Peak Arrival Time} + 2.0\text{ hours}$$
 
 ### 8.3 Physical Uncertainty Envelopes
+
 1. **Stage Uncertainty Margin (m MSL):**
    $$\delta_{\text{stage}} = 0.12 + 0.003 \times \max(0, h_{\text{peak}} - 535.0) \times 10$$
    $$\text{Stage 95% Band} = [h_{\text{peak}} - \delta_{\text{stage}}, \; h_{\text{peak}} + \delta_{\text{stage}}]$$
@@ -337,7 +357,6 @@ $$\text{Latest Strike Time} = \text{Peak Arrival Time} + 2.0\text{ hours}$$
 
 This high-precision strike window is visualized on the Next.js dashboard as the **Peak Flood Strike Horizon & Permissible Confidence Interval (±2.0h)** card.
 
-
 ---
 
 ## 9. Flat Baseflow Stability Guard & Variance Protection
@@ -345,6 +364,7 @@ This high-precision strike window is visualized on the Next.js dashboard as the 
 When the river is in baseflow-only dry periods, the observed stage variance is near zero ($\sigma_{\text{obs}} < 0.05\text{ m}$). Standard Nash-Sutcliffe Efficiency (NSE) formulas divide by this variance, producing unphysical negative infinities ($-\infty$).
 
 HydroCast enforces an automated **Variance Guard**:
+
 - If $\sigma_{\text{obs}} < 0.05\text{ m}$:
   - Lifecycle Status: `BASEFLOW_STABLE`
   - Performance Grade: `BASEFLOW_STABLE`
@@ -355,7 +375,7 @@ HydroCast enforces an automated **Variance Guard**:
 
 ## 10. Lead-Time Accuracy Degradation Curve (T+0 to T+90h)
 
-```
+```text
 +--------------------+----------------+-----------------+----------------+----------------+
 | Lead-Time Window   | Mean Stage MAE | Mean Stage RMSE | Peak Time CI   | Reliability    |
 +--------------------+----------------+-----------------+----------------+----------------+

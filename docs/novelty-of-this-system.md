@@ -99,7 +99,7 @@ signature of a structural model error rather than of measurement jitter.
 The optimiser is bounded on every parameter, and the bounds are the point:
 
 | Parameter | Bound | Physical meaning of the bound |
-|---|---|---|
+| --- | --- | --- |
 | Runoff scale α | [0.50, 1.80] | Loss terms cannot be scaled below half or doubled |
 | Lag scale β | [0.50, 1.80] | Travel time is similarly constrained |
 | Curve Number Δ | ±8.0 | A single event cannot rewrite the catchment's soil character |
@@ -198,7 +198,7 @@ The table below is scoped to what the code does. Where a capability is planned
 rather than implemented, that is stated.
 
 | Capability | Traditional CWC/IMD | Academic desktop model | Generic IoT dashboard | HydroCast |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Forecast lead time | 12–24 h | 48–72 h | 0 h (observed only) | 90 h |
 | Operational automation | Manual bulletins | Manual desktop run | Automated telemetry only | Autonomous 6-hourly schedule |
 | Runoff solver | — | Native HEC-HMS / MIKE 11 | — | Native with Python fallback |

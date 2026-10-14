@@ -1,6 +1,6 @@
 # System Errors, Past Mistakes & Engineering Assumptions
 
-```
+```text
 ========================================================================================
        HYDROCAST SYSTEM AUTOPSY: ERRORS, MISTAKES & ENGINEERING ASSUMPTIONS
 ========================================================================================
@@ -28,10 +28,12 @@ Before achieving current operational fidelity, the HydroCast codebase inherited 
 
 ### 1. The 30.2× Bed Slope Distortion (The Unsegmented Flood Regression Bug)
 
-#### What Went Wrong:
+#### What Went Wrong
+
 In the initial uncalibrated system, the stage-discharge converter produced reasonable stage heights ($532.6 - 533.5\text{ m MSL}$), but calculated river discharge collapsed to an absurdly low **$16.6\text{ m}^3/s$** ($586\text{ cusecs}$) at Shivaji Bridge and **$10.4\text{ m}^3/s$** at Rajaram Weir. This resulted in an unacceptable volumetric under-prediction (**PBIAS of $30\% - 40\%$**).
 
-#### Root Cause:
+#### Root Cause
+
 The model previously derived the river channel bed slope $S_0$ using an unsegmented single linear regression against 31 historical extreme flood observations recorded during the catastrophic floods of 2019 and 2021 ($542.0\text{m}$ to $545.62\text{m}$ MSL).
 
 At these extreme flood stages, the Panchganga river is subjected to massive backwater effects, floodplain hydraulic drag, and weir submergence. The regression forced an artificial, catchment-wide energy slope of:
@@ -50,8 +52,10 @@ $$\text{Suppression Factor} = \sqrt{\frac{0.005858}{0.0001938}} = \sqrt{30.23} \
 
 A true physical flow velocity of $1.65\text{ m/s}$ was crushed to $0.30\text{ m/s}$, reducing discharge from $\sim 109\text{ m}^3/s$ down to $16.6\text{ m}^3/s$.
 
-#### Resolution:
+#### Resolution
+
 Re-engineered the rating engine into a **WRD-anchored PCHIP formulation** (`src/hydrology/stage_converter.py`, Sep 2026):
+
 - **Both gauged sites** now PCHIP-interpolate directly through the **official Maharashtra WRD stage-discharge sheet** — no Manning slope fitting is used for the discharge conversion.
 - **Rajaram K.T. Weir:** WRD sheet stages verbatim + WRD 2021–23 observed low-flow anchors + bed Q=0 anchor.
 - **Shivaji Bridge:** the same sheet shifted **−0.648 m downstream** (surveyed bed datum separation: 528.670 m vs 529.318 m over 3,858 m) + bed Q=0 anchor.
@@ -61,10 +65,11 @@ Re-engineered the rating engine into a **WRD-anchored PCHIP formulation** (`src/
 
 ### 2. Compound Cross-Section Wetted Perimeter Discontinuity
 
-#### What Went Wrong:
+#### What Went Wrong
+
 At stage elevations between $535.0\text{m}$ and $536.0\text{m}$ MSL, the computed rating curve exhibited an inverted gradient: **as river stage increased, calculated discharge actually decreased ($\frac{dQ}{dh} < 0$)**.
 
-```
+```text
  Non-Physical Discharge Dip at Bankfull Spill:
  Discharge Q
     ^
@@ -79,7 +84,8 @@ At stage elevations between $535.0\text{m}$ and $536.0\text{m}$ MSL, the compute
        532m            534m            535.5m         538m
 ```
 
-#### Root Cause:
+#### Root Cause
+
 The cross-section geometry was evaluated using a single continuous boundary polygon. When the water level exceeded bankfull stage ($h \approx 535.2\text{m}$), water began spilling over the main channel banks onto wide horizontal agricultural floodplains.
 
 While flow area ($A$) increased by only $\sim 12\%$, the wetted perimeter ($P$) exploded instantly from **$68\text{ meters}$** to **$310\text{ meters}$**.
@@ -93,27 +99,32 @@ $$R^{2/3} \text{ dropped from } (2.60)^{0.667} = 1.89 \implies (1.05)^{0.667} = 
 
 The mathematical formulation punished the discharge calculation for wetting the floodplain, violating physical conservation of energy and mass.
 
-#### Resolution:
+#### Resolution
+
 Decomposed the rating curve into composite sub-sections (main channel vs left/right floodplains) and replaced raw single-polygon geometric integration with **Piecewise Cubic Hermite Interpolating Polynomials (PCHIP)** calibrated directly to field observations, enforcing strict monotonicity $\frac{dQ}{dh} > 0$ across all stages.
 
 ---
 
 ### 3. Spline Runge-Phenomenon Oscillation
 
-#### What Went Wrong:
+#### What Went Wrong
+
 Using standard natural cubic splines (`scipy.interpolate.CubicSpline`) to interpolate between surveyed cross-section points caused mathematical polynomial overshoot. Between the normal monsoon stage ($533.5\text{m}$) and the Alert level ($542.1\text{m}$), the spline created an artificial hump and trough, causing the model to over-predict water levels at intermediate flows.
 
-#### Resolution:
+#### Resolution
+
 Replaced natural cubic splines with **Shape-Preserving PCHIP (`scipy.interpolate.PchipInterpolator`)**. Unlike standard cubic splines which enforce continuous second derivatives ($C^2$) at the expense of shape preservation, PCHIP guarantees that the interpolant is strictly monotonic if the data points are monotonic, completely eliminating artificial polynomial oscillations.
 
 ---
 
 ### 4. Gauge Zero Datum Elevation Misalignment
 
-#### What Went Wrong:
+#### What Went Wrong
+
 Early scripts defined the riverbed elevation at Shivaji Bridge as $530.584\text{ m MSL}$, while others used $530.00\text{ m MSL}$. This $58.4\text{ cm}$ discrepancy propagated through all depth calculations, throwing off water depth and wetted perimeter integrations.
 
-#### Resolution:
+#### Resolution
+
 Audited against the Maharashtra Water Resources Department (WRD) historical benchmark records:
 $$\text{Official Zero Gauge Datum } (0'\ 0'') \equiv \mathbf{530.18\text{ m MSL}}$$
 $$\text{Sensor Mounting Elevation} \equiv \mathbf{549.35\text{ m MSL}}$$
@@ -123,26 +134,30 @@ Water depth above datum is now rigorously calculated as $y = h - 530.18\text{ me
 
 ### 5. The "Stage - 0.12m" Artificial Subtraction Hack
 
-#### What Went Wrong:
+#### What Went Wrong
+
 In previous revisions of `stage_converter.py`, Rajaram K.T. Weir stage was computed by taking the Shivaji Bridge stage and applying a hardcoded subtraction:
 $$\text{Stage}_{\text{rajaram}} = \text{Stage}_{\text{shivaji}} - 0.12\text{ m}$$
 
 This was an empirical hack that completely ignored physical channel hydraulics. Rajaram Weir is $3.8\text{ km}$ upstream of Shivaji Bridge, with surveyed bed RL $529.318\text{ m}$ vs Shivaji $528.670\text{ m}$ (datum separation $+0.648\text{ m}$).
 
-#### Resolution:
+#### Resolution
+
 Built distinct, independently WRD-anchored PCHIP hydraulic curves for both Chhatrapati Shivaji Maharaj Bridge and Rajaram K.T. Weir. The Shivaji curve is the official WRD sheet shifted **−0.648 m** (its lower bed datum); the Rajaram curve is the sheet verbatim. At equal discharge the stage separation is exactly the surveyed datum **0.648 m** (verified in `tests/test_hydrology.py`), replacing the arbitrary 0.12 m hack.
 
 ---
 
 ### 6. Arithmetic Rainfall Dilution in Mountain Catchments
 
-#### What Went Wrong:
+#### What Went Wrong
+
 In subbasins with multiple rain gauges (e.g., Subbasin $S_6$ containing Karanjphen at $640\text{m}$ and Gaganbawda at $680\text{m}$), the system initially computed the simple arithmetic mean of rainfall:
 $$\bar{P} = \frac{P_{\text{karanjphen}} + P_{\text{gaganbawda}}}{2}$$
 
 During monsoonal cloudbursts along the Western Ghats crest, Gaganbawda often recorded $160\text{ mm/day}$ while Karanjphen in the valley recorded $50\text{ mm/day}$. Taking the arithmetic average ($105\text{ mm}$) diluted the severe headwater runoff peak, delaying the simulated flood wave arrival by up to 6 hours.
 
-#### Resolution:
+#### Resolution
+
 Implemented the **Dynamic Conservative Selection Engine** (`station_selector.py`), which identifies the maximum-precipitation station within multi-gauge subbasins and uses it as the governing hyetograph for hydrologic modeling.
 
 ---
@@ -151,7 +166,7 @@ Implemented the **Dynamic Conservative Selection Engine** (`station_selector.py`
 
 Every numerical model is a simplified representation of nature. The following are the core engineering assumptions underpinning HydroCast:
 
-```
+```text
 +-----------------------------------+-----------------------------------------------------------+
 | Engineering Assumption            | Justification & Known Operational Limits                  |
 +-----------------------------------+-----------------------------------------------------------+
@@ -179,7 +194,8 @@ Every numerical model is a simplified representation of nature. The following ar
 ---
 
 ### 1. The 1D Quasi-Steady Flow Assumption
-HydroCast computes stage from discharge using steady-state hydraulic rating curves on a 1-hour discrete time step. 
+
+HydroCast computes stage from discharge using steady-state hydraulic rating curves on a 1-hour discrete time step.
 
 **Limitation:** It does not solve the full 2D unsteady shallow water equations (Saint-Venant momentum equations):
 $$\frac{\partial Q}{\partial t} + \frac{\partial}{\partial x}\left(\frac{\beta Q^2}{A}\right) + gA \left(\frac{\partial h}{\partial x} + S_f - S_0\right) = 0$$
@@ -189,6 +205,7 @@ During extremely rapid flash flood events ($\frac{\partial Q}{\partial t} > 500\
 ---
 
 ### 2. Lumped Hydrologic Parameters (S1 to S9)
+
 The $2,140\text{ km}^2$ catchment is discretized into 9 subbasins ranging from $80.1\text{ km}^2$ ($S_9$) to $510.5\text{ km}^2$ ($S_7$). Within each subbasin, soil infiltration capacity ($CN$), Time of Concentration ($T_c$), and Storage Coefficient ($R$) are spatially lumped.
 
 **Justification:** While fully distributed grid-cell models (e.g., $100\text{m} \times 100\text{m}$ raster cells) provide higher spatial resolution, they require extensive distributed soil data that does not exist for the upper Western Ghats and increase compute time from **$< 20\text{ milliseconds}$** to over **$45\text{ minutes}$**, making real-time automated 6-hourly operational execution impractical.
@@ -196,6 +213,7 @@ The $2,140\text{ km}^2$ catchment is discretized into 9 subbasins ranging from $
 ---
 
 ### 3. Rigid Bed Invert Assumption
+
 River cross-sections at Shivaji Bridge and Rajaram Weir are treated as rigid and non-erodible.
 
 **Known Reality:** The Panchganga riverbed consists of basaltic rock overlaid with silt, sand, and gravel deposits. During extreme floods ($Q > 2,000\text{ m}^3/s$), high shear stresses scour loose bed material, temporarily deepening the channel by $0.3 - 0.6\text{ meters}$. During the falling limb, sediment settles back. HydroCast's rigid bed assumption represents the post-monsoon surveyed datum.
@@ -203,6 +221,7 @@ River cross-sections at Shivaji Bridge and Rajaram Weir are treated as rigid and
 ---
 
 ### 4. Upstream Dam Discharges (Radhanagari Dam)
+
 Subbasin $S_7$ is controlled by Radhanagari Dam (gross storage capacity $236.8\text{ MCM} / 8.36\text{ TMC}$). The dam features unique automated siphon spillways (8 siphons) that open progressively when the reservoir reaches Full Reservoir Level (FRL $615.0\text{ m MSL}$).
 
 **Assumption:** HydroCast assumes that during pre-monsoon and early monsoon periods, the dam absorbs runoff. Once soil saturation reaches AMC-III and antecedent storage is full, inflow equals outflow through the siphons. If dam authorities execute emergency manual sluice gate operations outside automated siphon mechanics, that volume must be integrated via the baseflow offset parameter.
@@ -210,6 +229,7 @@ Subbasin $S_7$ is controlled by Radhanagari Dam (gross storage capacity $236.8\t
 ---
 
 ### 5. Downstream Confluence Hydraulic Boundary (Krishna River Backwater)
+
 The Panchganga river discharges into the Krishna river at Shirol / Narsobawadi, approximately $42\text{ km}$ downstream of Kolhapur.
 
 **Assumption:** HydroCast assumes free hydraulic outfall at the basin outlet.
@@ -217,10 +237,9 @@ The Panchganga river discharges into the Krishna river at Shirol / Narsobawadi, 
 
 ---
 
-
 ## Part III: Recent Hydraulic Inconsistencies & Edge-Case Bug Resolutions (v3.1)
 
-```
+```text
 ====================================================================================================
            PART III: RECENT HYDRAULIC INCONSISTENCIES & EDGE-CASE BUG RESOLUTIONS
 ====================================================================================================
@@ -233,18 +252,23 @@ The Panchganga river discharges into the Krishna river at Shirol / Narsobawadi, 
 ```
 
 ### 7. Uniform Manning Roughness on Overbank Sugarcane Floodplains
-#### What Went Wrong:
+
+#### What Went Wrong
+
 The model previously applied a uniform Manning roughness coefficient ($n = 0.035$) across the entire cross-section at both Shivaji Bridge and Rajaram Weir. During high-flow stages when floodwaters spilled over the natural riverbanks (Shivaji bankfull: $541.60\text{ m}$ MSL, Rajaram bankfull: $541.05\text{ m}$ MSL), this uniform roughness severely overpredicted floodplain discharge capacity. Consequently, the modeled stage for high discharges was underestimated by up to $1.2\text{ m}$, failing to match WRD flood registers.
 
-#### Root Cause:
+#### Root Cause
+
 The Panchganga river corridor in Kolhapur district is surrounded by intense perennial sugarcane and paddy cultivation. Standing sugarcane crops ($2.5\text{ m}$ to $3.5\text{ m}$ height) present immense hydraulic flow resistance, drastically impeding overbank flood velocity. A single composite Manning $n$ cannot account for the hydraulic discontinuity between a deep silt/gravel main channel and heavily vegetated overbank floodplains.
 
-#### Resolution:
+#### Resolution
+
 Implemented the **Divided Channel Method (DCM)** in `src/hydrology/stage_converter.py`. The cross-section is hydraulically partitioned into main channel and overbank floodplains, adopting authoritative roughness values from the **Krishna Basin Flood 2019 Volume 1 Study Report**:
+
 - **Main River Channel:** $n_{\text{main}} = 0.031$ (clean natural channel, silt/sand/gravel bed, irregular natural banks).
 - **Overbank Sugarcane Floodplains:** $n_{\text{flood}} = 0.070$ (dense standing sugarcane crops and paddy bunds).
 
-```
+```text
    Elevation
     (m MSL)
      546.0 +                                                    2019 HFL (545.33 m)
@@ -270,13 +294,16 @@ $$Q(H) = \frac{1}{n_{\text{main}}} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/
 ---
 
 ### 8. Sensor-to-Sink Spatial Transposition Discrepancy
-#### What Went Wrong:
+
+#### What Went Wrong
+
 The IoT ultrasonic radar sensor is physically mounted on the girder of **Chhatrapati Shivaji Maharaj Bridge** (Chainage 6+257 from Krishna confluence). However, the HEC-HMS hydrological basin model has its catchment sink at **Rajaram K.T. Weir** (Chainage 10+115). Previously, the baseflow and stage conversion pipelines directly applied the Shivaji Bridge sensor reading to the Rajaram rating curve, ignoring the $3,858\text{ m}$ longitudinal distance separating the two facilities.
 
-#### Root Cause:
+#### Root Cause
+
 Rajaram Weir is located **upstream** of Shivaji Bridge (higher chainage along the river course). The surveyed thalweg bed invert at Rajaram Weir is **$529.318\text{ m}$ MSL**, whereas at Shivaji Bridge it is **$528.670\text{ m}$ MSL**—a bed elevation differential of **$+0.648\text{ m}$**. Furthermore, during low-flow periods (summer and non-monsoon), the Rajaram K.T. Weir retains water up to its solid masonry crest level (**$530.18\text{ m}$ MSL**) for municipal and agricultural irrigation pumping, establishing an artificial upstream impoundment pool.
 
-```
+```text
    UPSTREAM                                                    DOWNSTREAM
    Chainage 10+115                                           Chainage 6+257
    Rajaram K.T. Weir                                         Shivaji Bridge
@@ -291,8 +318,10 @@ Rajaram Weir is located **upstream** of Shivaji Bridge (higher chainage along th
                              Delta Bed RL: +0.648 m (Rajaram higher)
 ```
 
-#### Resolution:
+#### Resolution
+
 Engineered `infer_rajaram_stage_from_shivaji(shivaji_stage_m, q_m3s)` in `src/hydrology/stage_converter.py`. The function dynamically evaluates the hydraulic flow regime:
+
 1. **Low-Flow / Pool Regime ($H_{\text{shivaji}} < 530.0\text{ m}$):** Rajaram water surface elevation is governed by the weir crest impoundment:
    $$H_{\text{rajaram}} = \max\left(530.18, \; H_{\text{shivaji}} + 0.648\right)$$
 2. **Open Flood Regime ($H_{\text{shivaji}} \ge 530.0\text{ m}$):** Water surface profile follows the surveyed longitudinal bed gradient:
@@ -301,13 +330,17 @@ Engineered `infer_rajaram_stage_from_shivaji(shivaji_stage_m, q_m3s)` in `src/hy
 ---
 
 ### 9. False T+89h Flat Baseflow Peak Detection Bug
-#### What Went Wrong:
+
+#### What Went Wrong
+
 During non-storm periods when rainfall was negligible and river discharge was dominated by a flat or slowly receding baseflow, the automated pipeline reported a peak arrival time at the very end of the 90-hour forecast window ($T+89\text{h}$), triggering false alarm indicators on user dashboards.
 
-#### Root Cause:
+#### Root Cause
+
 `execute_hec_hms()` originally evaluated `peak_idx = int(np.argmax(q_surface))`. When surface runoff was zero across all 90 hours, `np.argmax()` returned index 89 due to minor floating-point rounding artifacts or tie-breaking at the end of the array. Even when evaluated on total discharge ($Q_{\text{total}}$), minor baseflow recession curves produced a maximum at index 0 or index 89 arbitrarily.
 
-#### Resolution (v1 — first fix, later superseded):
+#### Resolution (v1 — first fix, later superseded)
+
 Added a **Physical Flood Wave Significance Rule** that forced the peak to $T+0$ when surface runoff did not exceed $2\times$ the antecedent baseflow:
 
 ```python
@@ -317,7 +350,8 @@ if not is_significant_event:
     peak_idx = 0  # Declare T+0 (flow is receding / baseflow stable)
 ```
 
-#### Resolution (v2 — accurate hydrology, current):
+#### Resolution (v2 — accurate hydrology, current)
+
 The $2\times$ heuristic was itself physically wrong: a genuine storm lifting total discharge by e.g. $+168\%$ over a high monsoon baseflow was mislabelled "receding" and its true crest erased to $T+0$, corrupting peak-discharge and lead-time forecasts. The corrected physics:
 
 ```python
@@ -335,19 +369,24 @@ is_significant_event = storm_rise > max(1.0, 0.10 * initial_baseflow)
 ---
 
 ### 10. Regional Bed Slope Gradient Mismatch
-#### What Went Wrong:
+
+#### What Went Wrong
+
 Previous models assumed a uniform longitudinal bed slope ($S_0 = 0.005858$) throughout the entire Panchganga river basin. This steep gradient caused open-channel flow velocities to be vastly overpredicted in the middle and lower reaches, distorting stage conversions.
 
-#### Corrected Approach (Sep 2026):
+#### Corrected Approach (Sep 2026)
+
 The discharge conversion no longer depends on any regional bed slope. Both gauged rating curves are PCHIP-anchored on the **official WRD stage-discharge sheet** (Rajaram verbatim; Shivaji shifted −0.648 m for its lower bed datum). The true surveyed bed is only used for the Q=0 anchors (528.670 m Shivaji, 529.318 m Rajaram) and for wetted-area geometry from the embedded XS surveys.
 
-#### Root Cause:
+#### Root Cause
+
 Detailed river survey data from the **Krishna Basin Flood 2019 Volume 1 Report** reveals that the bed slope flattens dramatically as the river progresses from the Western Ghats to the Krishna confluence:
+
 - **Radhanagari to Prayag Chikhali:** $1:2529$ ($S_0 = 0.000395\text{ m/m}$)
 - **Prayag Chikhali to Rajaram K.T. Weir:** $1:4641$ ($S_0 = 0.000215\text{ m/m}$)
 - **Rajaram K.T. Weir to Shirol K.T. Weir:** $1:7700$ ($S_0 = 0.000130\text{ m/m}$)
 
-```
+```text
  Elevation
   (m MSL)
    560 +   [Radhanagari Dam: 553.90m MSL]
@@ -367,8 +406,10 @@ Detailed river survey data from the **Krishna Basin Flood 2019 Volume 1 Report**
        0                     40                      58                          100 km
 ```
 
-#### Resolution:
+#### Resolution
+
 Updated canonical slopes in `src/hydrology/stage_converter.py`:
+
 - **Shivaji Bridge Site:** Calibrated to $S_0 = 0.000201$ to incorporate the local hydraulic headloss and backwater from the Jayanti Nalla stormwater confluence.
 - **Rajaram K.T. Weir Site:** Calibrated to $S_0 = 0.000250$.
 
@@ -376,7 +417,7 @@ Updated canonical slopes in `src/hydrology/stage_converter.py`:
 
 During the v3.0 operational production hardening, several systemic risks were diagnosed and engineered against:
 
-```
+```text
 +-----------------------------------+---------------------------------------+-------------------------------------------+
 | Vulnerability / Edge Case         | Previous Failure Mode                 | Engineered Mitigation (v3.0)              |
 +-----------------------------------+---------------------------------------+-------------------------------------------+
@@ -399,6 +440,7 @@ During the v3.0 operational production hardening, several systemic risks were di
 ```
 
 ### 1. The Fallacy of Scalar Peak Flood Prediction
+
 In early releases, the system reported peak flood arrival as a single scalar timestamp (e.g. `2026-09-11T16:30:00Z`). In real-world Western Ghats hydrology, variations in spatial rainfall distribution, soil heterogeneity, and tributary confluence backwaters introduce non-deterministic travel lags. Reporting a single minute led emergency personnel to expect mathematical precision that nature does not exhibit. In v3.0, the system reports peak arrival as a **±2.0 h operational window** $[T_{\text{peak}} - 2\text{h}, T_{\text{peak}} + 2\text{h}]$, read from `PEAK_ARRIVAL_CI_HOURS` with a default of 2.0.
 
 !!! note "The window is an assumption, not a computed confidence interval"
@@ -410,7 +452,9 @@ In early releases, the system reported peak flood arrival as a single scalar tim
     `0.12 + 0.03·(h_peak − 535)` metres, with discharge bounded to ±6 %.
 
 ### 2. Guardrails Against ML Parameter Runaway
+
 When calibrating against live ultrasonic radar telemetry, acoustic echoes from debris or transient sensor dropout can produce artificial stage spikes. If an unconstrained optimizer attempts to fit these anomalies, it might calculate an unphysical Curve Number ($CN > 98$) or an impossible lag time ($T_{\text{lag}} \to 0$), corrupting subsequent cycles. HydroCast enforces:
+
 - Hard physical clipping bounds: $\alpha \in [0.50, 1.80]$, $\beta \in [0.50, 1.80]$, $\Delta CN \in [-8, +8]$, and $X \in [0.15, 0.40]$.
 - Regularized cost functions that penalize deviations from baseline parameters.
 - Discrepancy gating: recalibration runs only when $|\Delta t| \geq 1.0$ h or the rising-limb stage error exceeds $0.25$ m, and only when at least two validated observations above 520.0 m exist.
@@ -662,7 +706,6 @@ Its documented consequences, all asserted: discharge is exactly 0 at the
 surveyed bed level; it rises monotonically with the wetted area and perimeter;
 and 40 m³/s is a legitimate baseflow at 532.42 m MSL (533.06 m at Rajaram) but
 never a floor to apply at every level.
-
 
 ### 24. The reach bed slope was used as the friction slope
 

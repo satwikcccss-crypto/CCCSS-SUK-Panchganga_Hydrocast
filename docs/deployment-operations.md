@@ -1,6 +1,6 @@
 # Production Deployment, Operations & Automation Manual
 
-```
+```text
 ========================================================================================
              HYDROCAST PRODUCTION INFRASTRUCTURE & ORCHESTRATION
 ========================================================================================
@@ -37,7 +37,7 @@ JRE, the shared libraries and a dedicated `hydrocast` user (uid/gid 1000), with
 `tini` as PID 1 so `docker stop` reaches uvicorn and in-flight requests drain.
 
 | Target | Purpose | Base |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | `runner` *(default)* | Production FastAPI service on `:8000` | `python:3.12-slim-bookworm` + JRE 17, GDAL, eccodes |
 | `docs` | MkDocs Material site, built with `--strict` to `/app/site` | `python:3.12-slim-bookworm` + `requirements-docs.txt` |
 | `dev` | `runner` + black, isort, mypy, pytest, JupyterLab | production runtime |
@@ -65,7 +65,7 @@ The runtime honours four optional environment variables, all defaulted inside
 the image so the container starts with no configuration:
 
 | Variable | Default | Purpose |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | `PORT` | `8000` | HTTP listen port (also used by `HEALTHCHECK`) |
 | `WEB_CONCURRENCY` | `2` | uvicorn worker processes |
 | `GRACEFUL_TIMEOUT` | `30` | Seconds to finish in-flight requests on `SIGTERM` |
@@ -194,7 +194,7 @@ services:
 mutable:
 
 | Path | Kind | Mounted? |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | `data/hms/HMS_Automation_RJKT/` | versioned HEC-HMS basin project | baked into the image |
 | `data/Shapefiles_Panchganga basin/`, `data/wrd_cross_sections/`, `data/stations/` | GIS, rating and gauge reference data | baked into the image |
 | `data/runs/` | cycle ledger served by `/api/v1/runs` | named volume, seeded from the image |
@@ -211,6 +211,7 @@ mutable:
     ledger and keeps accumulating cycles from then on.
 
 ### 1.4 Startup & Management Commands
+
 ```bash
 # Build images and start all services in detached mode
 docker compose up -d --build
@@ -238,7 +239,7 @@ docker compose --profile dev run --rm dev pytest -q
 
 The European Centre for Medium-Range Weather Forecasts releases operational IFS runs four times daily. HydroCast triggers automated forecast cycles 45 minutes after official model availability to allow for global numerical assimilation:
 
-```
+```text
 +---------------+---------------------+---------------------+-------------------------+
 | ECMWF Cycle   | Global Model Time   | Indian Std Time(IST)| Automated Pipeline Run  |
 +---------------+---------------------+---------------------+-------------------------+
@@ -249,7 +250,8 @@ The European Centre for Medium-Range Weather Forecasts releases operational IFS 
 +---------------+---------------------+---------------------+-------------------------+
 ```
 
-### Linux Crontab Configuration:
+### Linux Crontab Configuration
+
 ```cron
 # Edit with: crontab -e
 # 6-Hourly Forecast Pipeline Execution
@@ -266,9 +268,11 @@ The European Centre for Medium-Range Weather Forecasts releases operational IFS 
 HydroCast integrates an automated Telegram alert bot and webhook dispatcher ([`src/alerts/telegram_bot.py`](file:///e:/hydrocast_complete/src/alerts/telegram_bot.py)):
 
 ### 3.1 Telegram Bot Configuration
+
 1. Create a bot via `@BotFather` on Telegram to obtain `TELEGRAM_BOT_TOKEN`.
 2. Add the bot to your District Disaster Management Authority (DDMA) channel, District Collectorate channel, and Emergency Operations Center (EOC) groups.
 3. Configure target chat IDs in `.env`:
+
    ```ini
    TELEGRAM_BOT_TOKEN=123456789:ABCdefGHIjklMNOpqrSTUvwxYZ
    TELEGRAM_CHAT_ID=-1001234567890
@@ -276,10 +280,13 @@ HydroCast integrates an automated Telegram alert bot and webhook dispatcher ([`s
    ```
 
 ### 3.2 Agency Webhook Endpoints
+
 To automatically push flood alerts to state disaster management agency dispatch APIs:
+
 ```ini
 DISASTER_MANAGEMENT_WEBHOOKS=https://alert-dispatch.district.gov.in/api/v1/cwc-hook,https://sdrf.maharashtra.gov.in/api/v1/flood
 ```
+
 Whenever river stage breaches the CWC **Warning** ($542.70\text{ m}$) or **Danger** ($543.30\text{ m}$) mark, HydroCast broadcasts formatted HTML bulletins to all Telegram channels and POSTs structured JSON alerts to webhooks within $< 500\text{ ms}$.
 
 ---
@@ -287,9 +294,11 @@ Whenever river stage breaches the CWC **Warning** ($542.70\text{ m}$) or **Dange
 ## 4. Cold Storage & Telemetry Archival Automation
 
 Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/archive_runs.py):
+
 - **Objective:** Prevent high-frequency time-series tables (`hydrograph_results`, `bridge_stage_forecast`, `rainfall_data`, `station_rainfall_telemetry`, `subbasin_rainfall_ts`) from bloating PostgreSQL storage and degrading query speed.
 - **Mechanism:** Records older than `ARCHIVE_RETENTION_DAYS` (default 90 days) are written to Snappy-compressed Apache Parquet partitions (`data/archives/{table}/year=YYYY/month=MM/`), followed by atomic database pruning.
 - **Manual Execution:**
+
   ```bash
   # Dry run (inspect row counts without deleting)
   python -m src.db.archive_runs --dry-run
@@ -297,6 +306,7 @@ Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/a
   # Execute archival with 90-day retention
   python -m src.db.archive_runs --retention-days 90
   ```
+
 - **API Invocation:** Authenticated administrators can trigger archival via `POST /api/v1/admin/archive`.
 
 ---
@@ -304,6 +314,7 @@ Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/a
 ## 5. API Security, JWT Authentication & Rate Limiting
 
 ### 5.1 Environment Security Variables (`.env`)
+
 ```ini
 # Enterprise Security & Authentication
 API_KEY=Hydrocast_PCH
@@ -319,12 +330,15 @@ RATE_LIMIT_PUBLIC=100/minute
 ```
 
 ### 5.2 Obtaining an Admin JWT Bearer Token
+
 ```bash
 curl -X POST http://localhost:8000/api/v1/admin/auth/token \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "your_strong_admin_password"}'
 ```
+
 Response:
+
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -340,6 +354,7 @@ Response:
 For hosts where Docker is not available:
 
 ### 6.1 Backend Systemd Unit (`/etc/systemd/system/hydrocast-api.service`)
+
 ```ini
 [Unit]
 Description=HydroCast FastAPI Backend & WebSocket Service
@@ -359,6 +374,7 @@ WantedBy=multi-user.target
 ```
 
 ### 6.2 Frontend PM2 Process
+
 ```bash
 cd /opt/hydrocast/frontend
 npm run build
@@ -372,6 +388,7 @@ pm2 startup
 ## 7. Continuous 1-Hour Telemetry Validation (GitHub Actions)
 
 Autonomous physical verification runs via [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
+
 - **Interval:** Every hour at minute 0 (`cron: "0 * * * *"`).
 - Pulls 800 raw ultrasonic pings from ThingSpeak Channel `3424513`.
 - Resamples into hourly averages and converts to stage in meters MSL ($549.35\text{m} - \text{ft} \times 0.3048$).

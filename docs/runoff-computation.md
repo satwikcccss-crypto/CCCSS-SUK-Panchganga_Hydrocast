@@ -1,6 +1,6 @@
 # Mathematical Runoff Computation & Hydrograph Routing
 
-```
+```text
 ========================================================================================
        MATHEMATICAL CONTINUUM RUNOFF & UNIT HYDROGRAPH CONVOLUTION ENGINE
 ========================================================================================
@@ -28,7 +28,7 @@
 
 ## 1. Physical Governing Principles
 
-```
+```text
 ====================================================================================================
                   HOURLY DISCRETE RUNOFF CONVOLUTION & ROUTING PIPELINE
 ====================================================================================================
@@ -86,10 +86,10 @@
             (main n=0.035, overbank sugarcane/paddy n=0.055)
 ```
 
-
 Runoff calculation transforms an hourly depth series of atmospheric precipitation ($P$ in $mm/hr$) into a volumetric discharge rate ($Q$ in $m^3/s$) passing a river cross-section over time.
 
 This involves two consecutive transformations:
+
 1. **Vertical Mass Balance (Loss Model):** Segregates gross precipitation into **infiltration / soil storage** ($F$) and **surface runoff excess** ($P_e$).
 2. **Surface Transform Model (SCS Unit Hydrograph):** Converts excess depth over the subbasin surface into an attenuated time series of discharge at the concentration point.
 
@@ -172,11 +172,13 @@ Substituting $F$ into the first equation yields the fundamental runoff equation:
 $$Q_{cum}(t) = \frac{\left(P_{cum}(t) - I_a\right)^2}{P_{cum}(t) - I_a + S_{ret}} \quad \forall P_{cum} > I_a$$
 
 Where:
+
 - $P_{cum}(t) = \sum_{\tau=0}^{t} P(\tau)$ = Cumulative precipitation depth ($mm$)
 - $S_{ret} = \frac{25,400}{CN} - 254$ = Potential maximum retention capacity ($mm$)
 - $I_a = 0.2 \cdot S_{ret}$ = Initial abstraction ($mm$)
 
 ### 2.1 Incremental Excess Runoff Generation
+
 The volumetric excess depth generated in each 1-hour time slice $[h, h+1]$ is computed by backward difference:
 
 $$\Delta P_e[h] = Q_{cum}[h] - Q_{cum}[h-1]$$
@@ -208,6 +210,7 @@ The Muskingum storage equation relates reach storage ($S$) to inflow ($I$) and o
 $$S = K \cdot \left[ X \cdot I + (1 - X) \cdot O \right]$$
 
 Where:
+
 - $K$ = Reach travel time / wave lag ($hours$). These are the **fixed channel-storage constants** declared in `data/hms/HMS_Automation_RJKT/Basin_1.basin` and loaded at run time by `src/hms/basin_parser.py`. They are not re-optimised per cycle and are never written back to the `.basin` file. R5 (Shivaji → Rajaram) is $4.619\text{ h}$, consistent with the observed $\sim 4.2\text{ h}$ wave travel between the two gauges.
 - $X$ = Dimensionless weighting parameter ($0 \le X \le 0.5$). Fixed at $0.20$ for all five RJKT reaches — the storage weighting of a natural, meandering lowland channel.
 
@@ -443,4 +446,3 @@ HydroCast computes the operational peak arrival window directly from the resulti
 
 3. **Peak Inundation Warning Trigger:**
    If $Q_{\text{total}}(t^*) \ge 1,200\text{ m}^3/s$ (Shivaji Bridge Alert Level, $542.1\text{m}$ MSL) or $Q_{\text{total}}(t^*) \ge 1,550\text{ m}^3/s$ (Danger Level, $543.3\text{m}$ MSL), this precise operational window $[T_{\text{earliest}}, T_{\text{latest}}]$ is dispatched across the DDMA Telegram Alert Bot and live dashboard overlays.
-

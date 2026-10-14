@@ -1,6 +1,6 @@
 # Panchganga Catchment Hydrology & Watershed Delineation
 
-```
+```text
 ========================================================================================
              PANCHGANGA BASIN HYDROLOGICAL SYSTEM (1,837.213 KM² CATCHMENT)
 ========================================================================================
@@ -40,7 +40,7 @@
 
 ## 1. Physical Physiography of the Panchganga Basin
 
-```
+```text
 ====================================================================================================
                         PANCHGANGA RIVER BASIN PHYSIOGRAPHIC DELINEATION
 ====================================================================================================
@@ -91,11 +91,12 @@
                    ==========================================
 ```
 
-
 The Panchganga river is a major tributary of the Krishna river basin, draining an area of approximately **$1,837.213\text{ km}^2$** across Kolhapur district, Maharashtra.
 
 ### 1.1 The Five Sacred Tributaries
+
 The river is formed at Prayag Chikhali by the confluence of five streams:
+
 1. **Kasari River:** Originates near Dajipur / Gaganbawda ($S_6$), drains through rocky forested gorges.
 2. **Kumbhi River:** Originates near Shengaon ($S_5$), fast-draining basaltic steep terrain.
 3. **Tulsi River:** Originates near Dhamod ($S_4$), moderate agricultural valley.
@@ -108,7 +109,7 @@ The river is formed at Prayag Chikhali by the confluence of five streams:
 
 The catchment is divided into nine hydrologically distinct subbasins based on 30-meter SRTM Digital Elevation Models (DEM):
 
-```
+```text
 +----+-------------------+------------+-----------+-----------+------------+------------+
 | ID | Subbasin Name     | Area (km²) | CN (AMC-II| CN (AMC-III| Tc (Hours) | R (Hours)  |
 +----+-------------------+------------+-----------+-----------+------------+------------+
@@ -133,11 +134,13 @@ The catchment is divided into nine hydrologically distinct subbasins based on 30
 The physical runoff volume generation follows the United States Natural Resources Conservation Service (NRCS / SCS-CN) standard:
 
 ### 3.1 Potential Soil Retention
+
 Given a calibrated Curve Number $CN$:
 
 $$S_{ret} = \frac{25,400}{CN} - 254 \quad (\text{expressed in mm})$$
 
 ### 3.2 Initial Abstraction
+
 The initial surface wetting, depression storage, and vegetative canopy interception prior to runoff:
 
 $$I_a = 0.2 \cdot S_{ret}$$
@@ -145,11 +148,12 @@ $$I_a = 0.2 \cdot S_{ret}$$
 *(For dense basaltic soil with monsoon pre-saturation, this can be dynamically lowered to $I_a = 0.05 \cdot S_{ret}$).*
 
 ### 3.3 Cumulative Runoff Equation
+
 For any accumulated precipitation depth $P$:
 
-$$Q_{cum} = \begin{cases} 
-0 & \text{if } P \le I_a \\ 
-\frac{(P - I_a)^2}{P - I_a + S_{ret}} & \text{if } P > I_a 
+$$Q_{cum} = \begin{cases}
+0 & \text{if } P \le I_a \\
+\frac{(P - I_a)^2}{P - I_a + S_{ret}} & \text{if } P > I_a
 \end{cases}$$
 
 ### 3.4 Incremental Runoff Hyetograph
@@ -163,7 +167,7 @@ $$\Delta Q_{excess}[h] = Q_{cum}[h] - Q_{cum}[h-1]$$
 
 To convert the rainfall-excess hyetograph into a river discharge hydrograph at the subbasin outlet, HydroCast utilizes the **SCS Unit Hydrograph method**:
 
-```
+```text
         Excess Rain Hyetograph                     SCS Unit Hydrograph Translation & Attenuation
              [ mm/hr ]                                     [ m³/s ]
                 |                                             /\  Peak Runoff
@@ -176,9 +180,9 @@ To convert the rainfall-excess hyetograph into a river discharge hydrograph at t
 
 1. **Translation (Time-Area Routing):**
    Runoff is lagged to the outlet according to the dimensionless time-area curve:
-   $$\frac{A_t}{A} = \begin{cases} 
-   1.414 \cdot \left(\frac{t}{T_c}\right)^{1.5} & \text{for } 0 \le t \le 0.5 T_c \\ 
-   1 - 1.414 \cdot \left(1 - \frac{t}{T_c}\right)^{1.5} & \text{for } 0.5 T_c < t \le T_c 
+   $$\frac{A_t}{A} = \begin{cases}
+   1.414 \cdot \left(\frac{t}{T_c}\right)^{1.5} & \text{for } 0 \le t \le 0.5 T_c \\
+   1 - 1.414 \cdot \left(1 - \frac{t}{T_c}\right)^{1.5} & \text{for } 0.5 T_c < t \le T_c
    \end{cases}$$
    Where $T_c$ is the Time of Concentration.
 
@@ -211,7 +215,7 @@ This ensures that even during dry weather breaks between monsoon storms, river d
 
 To adapt to temporal variations in catchment characteristics (e.g. soil pore saturation, crop cover progression, siltation behind weir crests), HydroCast incorporates an automated closed-loop machine learning calibration engine (`src/hydrology/ml_calibration.py`):
 
-```
+```text
        ┌─────────────────────────────────────────────────────────┐
        │     Real-Time Observed Telemetry (ThingSpeak Gauge)     │
        └────────────────────────────┬────────────────────────────┘
@@ -255,4 +259,3 @@ HydroCast translates continuous 90-hour hydrographs into operational disaster re
    At a 95% confidence level ($z \approx 1.96$), the permissible early warning window is:
    $$[T_{\text{earliest}}, T_{\text{latest}}] = [T_{\text{peak}} - 2.0\text{h}, T_{\text{peak}} + 2.0\text{h}]$$
 4. **Operational Integration:** Both the nominal peak and the bounding window are published in the REST API payload (`/api/v1/runoff/summary`), rendered on the Next.js visual alert banner, and pushed directly to District Disaster Management Authority (DDMA) emergency dispatch channels.
-

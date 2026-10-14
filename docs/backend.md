@@ -1,6 +1,6 @@
 # HydroCast Backend API & Orchestration Architecture
 
-```
+```text
 ========================================================================================
              HYDROCAST FASTAPI REST SERVICE & AUTOMATION BACKEND
 ========================================================================================
@@ -34,7 +34,7 @@
 
 ## 1. Technology Stack & Framework
 
-```
+```text
 ====================================================================================================
                   HYDROCAST 12-STAGE ORCHESTRATION PIPELINE (src/orchestrator.py)
 ====================================================================================================
@@ -78,7 +78,6 @@
  [ Stage 12: Pipeline State Emission & WebSocket Live Broadcast ]
 ```
 
-
 - **Runtime:** Python 3.12 (64-bit)
 - **Framework:** FastAPI 0.111+ & Starlette (Asynchronous ASGI server via Uvicorn)
 - **Database Driver:** `asyncpg` (Native binary protocol PostgreSQL connector) & `psycopg2`
@@ -116,7 +115,7 @@ python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 | Surface | URL | Purpose |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **Swagger UI** | `/docs` | Interactive explorer — *Try it out* against a live backend |
 | **ReDoc** | `/redoc` | Three-panel reference; better for reading than clicking |
 | **OpenAPI spec** | `/openapi.json` | Machine-readable contract for codegen and contract tests |
@@ -163,7 +162,7 @@ credential model.
 
 ## 4. Complete REST API Endpoint Specification
 
-```
+```text
 +--------+-------------------------------+-------------------------------------------------------+
 | Method | Route Path                    | Description & Payload Summary                         |
 +--------+-------------------------------+-------------------------------------------------------+
@@ -201,11 +200,14 @@ credential model.
 Implemented in [`src/api/security.py`](file:///e:/hydrocast_complete/src/api/security.py) and [`src/api/admin.py`](file:///e:/hydrocast_complete/src/api/admin.py):
 
 ### 5.1 Public Rate Limiting (`slowapi`)
+
 - All public read endpoints (`/api/v1/runoff/*`, `/api/v1/rainfall/*`, `/api/v1/alerts`) are protected by a rate limiter configured to **100 requests/minute** per client IP.
 - Prevents scraping bots and aggressive polling from exhausting system resources.
 
 ### 5.2 Dual-Mode Administrative Security
+
 Administrative endpoints (`/api/v1/admin/*`) require authentication via one of two modes:
+
 1. **Signed JWT Bearer Token:**
    - Generated via `POST /api/v1/admin/auth/token` with valid credentials (`ADMIN_USERNAME`, `ADMIN_PASSWORD`).
    - Signed with HMAC-SHA256 using `JWT_SECRET`.
@@ -234,8 +236,11 @@ async def verify_admin_auth(
 The administrative router ([`src/api/admin.py`](file:///e:/hydrocast_complete/src/api/admin.py)) provides operational control:
 
 ### 6.1 Manual Cycle Trigger (`POST /api/v1/admin/trigger-run`)
+
 Allows emergency operations directors to manually trigger an immediate forecast cycle:
+
 - **Request Body:**
+
   ```json
   {
     "date": "20260911",
@@ -243,22 +248,30 @@ Allows emergency operations directors to manually trigger an immediate forecast 
     "async_mode": true
   }
   ```
+
 - If `async_mode` is `true`, the run is dispatched to FastAPI `BackgroundTasks` so the HTTP request returns immediately with a `queued` status.
 
 ### 6.2 Cold Storage Parquet Archival (`POST /api/v1/admin/archive`)
+
 Triggers cold storage data pruning:
+
 - **Request Body:**
+
   ```json
   {
     "retention_days": 90,
     "dry_run": false
   }
   ```
+
 - Exports rows older than cutoff from `hydrograph_results`, `bridge_stage_forecast`, `rainfall_data`, `station_rainfall_telemetry` to Snappy-compressed Parquet files, then prunes PostgreSQL.
 
 ### 6.3 On-Demand ML Recalibration (`POST /api/v1/admin/recalibrate`)
+
 Forces dynamic hydrologic recalibration:
+
 - **Request Body:**
+
   ```json
   {
     "timing_offset_hours": -1.5,
@@ -266,6 +279,7 @@ Forces dynamic hydrologic recalibration:
     "sync_basin_file": true
   }
   ```
+
 - Optimizes parameters ($\alpha_K, \alpha_{\text{lag}}, \Delta\text{CN}, X$) and updates `Basin_1.basin` atomically on disk.
 
 ---
@@ -273,6 +287,7 @@ Forces dynamic hydrologic recalibration:
 ## 7. Real-Time Runoff Calibration & Peak Horizon Payloads
 
 ### 7.1 `GET /api/v1/runoff/summary` Response
+
 Now includes the high-precision peak strike horizon and permissible confidence interval ($\pm 2.0\text{h}$):
 
 ```json
@@ -317,6 +332,7 @@ Now includes the high-precision peak strike horizon and permissible confidence i
 ## 8. WebSocket Event Manager & Real-Time Push
 
 The WebSocket hub (`/ws/live`) pushes immediate updates to connected emergency operations centers (EOC) screens:
+
 - Eliminates constant client polling.
 - The pipeline orchestrator calls `ws_manager.broadcast()` after Step 12 completes.
 - Handles keep-alives and auto-reconnects with exponential backoff on client disconnections.
@@ -327,7 +343,7 @@ The WebSocket hub (`/ws/live`) pushes immediate updates to connected emergency o
 
 HydroCast integrates an automated Telegram flood bulletin dispatcher formatting official Central Water Commission (CWC) and District Disaster Management Authority (DDMA) emergency alert cards whenever river levels exceed Alert, Warning, Danger, or HFL marks:
 
-```
+```text
 🌊 HYDROCAST FLOOD BULLETIN 🌊
 Authority: District Disaster Management Authority (DDMA)
 Classification: 🔴 [DANGER / FLOOD EMERGENCY]

@@ -120,7 +120,7 @@ upstream failure does not cost a cycle.
 allowed to influence the forecast:
 
 | Constant | Value | Meaning |
-|---|---|---|
+| --- | --- | --- |
 | `MAX_VALID_MM_HR` | 500.0 | Physical upper bound on hourly depth |
 | coverage floor | 50 % | Minimum share of the 90 expected hourly records |
 | `MAX_LAG_MINUTES` | 60 | Latest gauge record must be within one hour |
@@ -224,7 +224,7 @@ cycle identifier encodes the run, so `CYC_20260901_06z` is the 06z cycle of
 1 September 2026.
 
 | Step | Operation | Module |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Meteorological forcing ingestion, with retry and QC | `src/ecmwf/open_meteo.py` |
 | 2 | Gauge fetching and spatial station routing | `src/ecmwf/station_selector.py` |
 | 3 | Antecedent moisture classification | `src/hydrology/` |
@@ -248,7 +248,7 @@ cycle identifier encodes the run, so `CYC_20260901_06z` is the 06z cycle of
 ### Scheduling
 
 | Workflow | Cadence | Command |
-|---|---|---|
+| --- | --- | --- |
 | `pipeline.yml` | 02:30, 08:30, 14:30, 20:30 UTC | `python -m src.ecmwf.open_meteo` |
 | `telemetry_validation.yml` | Hourly, minute 0 | `python -m src.hydrology.realtime_telemetry_validator --all-pending` |
 | `tests.yml` | On push and pull request | `python -m pytest -q` |
@@ -264,7 +264,7 @@ Parameters below are read from
 `data/hms/HMS_Automation_RJKT/Basin_1.basin` by `src/hms/basin_parser.py`.
 
 | Subbasin | Name | Area (km²) | Baseline CN | Lag (min) | Registered primary station |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | S1 | Karveer (outlet) | 86.213 | 74.85 | 2 152.0 | `KARVEER` |
 | S2 | Sangarul | 153.770 | 65.74 | 3 154.3 | `SANGARUL` |
 | S3 | Kotoli | 261.320 | 64.82 | 3 997.7 | `KOTOLI` |
@@ -280,7 +280,7 @@ connectivity. The descriptive names that appeared in earlier revisions of this
 page were not present in the source.
 
 | Reach | Upstream inflow | Downstream outflow | K (h) | X |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | R5 | S6, S7 | `J_Confluence` | 4.619 | 0.20 |
 | R4 | S9 | `J_Shivaji` | 1.224 | 0.20 |
 | R2 | S8, S4, S5 | `J_Confluence` | 11.827 | 0.20 |
@@ -352,7 +352,7 @@ All regulatory levels are expressed against the WRD zero gauge datum of
 **530.18 m MSL**.
 
 | Regulatory level | Stage (m MSL) | Discharge (m³/s) | Tier |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Zero gauge datum | 530.18 | 0 | `dry` |
 | Normal monsoon level | 533.28 | 109.2 | `normal` |
 | Rajaram weir crest | 535.77 | 274.4 | `normal` |
@@ -391,7 +391,7 @@ with a default of 2.0.
 ## 7. Technology stack
 
 | Layer | Technology | Function |
-|---|---|---|
+| --- | --- | --- |
 | NWP data | ECMWF IFS HRES 9 km via Open-Meteo REST | 90-hour QPF forecast |
 | Ingestion | `requests`, `openmeteo-requests`, SQLite cache | Backoff, jitter, QC bounds |
 | Hydrology | HEC-HMS 4.x + Python emulator | SCS-CN loss, UH transform, Muskingum routing |
@@ -432,7 +432,7 @@ routes under `/api/v1/admin` require either an HMAC-SHA256 JWT bearer token from
 hours — or an `X-API-Key` header matching `API_KEY`.
 
 | Route | Purpose |
-|---|---|
+| --- | --- |
 | `GET /api/v1/health` | Service and last-run status |
 | `GET /api/v1/status` | Current cycle state |
 | `GET /api/v1/rainfall/*` | Gauge and subbasin rainfall series |

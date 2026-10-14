@@ -1,6 +1,6 @@
 # Open-Meteo & ECMWF Meteorological Data Pipeline
 
-```
+```text
 ========================================================================================
              HYDROCAST METEOROLOGICAL INGESTION & FORECAST ENGINE
 ========================================================================================
@@ -38,9 +38,10 @@ AMC-I (Dry) / AMC-II / AMC-III (Wet)
 
 ## 1. Overview & Architectural Motivation
 
-The HydroCast system requires forward-looking meteorological forcing data to drive hydrological flood predictions with a minimum lead time of **48 to 72 hours**. 
+The HydroCast system requires forward-looking meteorological forcing data to drive hydrological flood predictions with a minimum lead time of **48 to 72 hours**.
 
 ### Why Open-Meteo over Direct ECMWF MARS Subscriptions?
+
 1. **Zero License Friction:** Open-Meteo aggregates the open-data releases from ECMWF (European Centre for Medium-Range Weather Forecasts) IFS HRES 9km (Integrated Forecasting System), DWD ICON, and NOAA GFS.
 2. **Sub-second Response Times:** High-performance Rust-based servers deliver point forecasts in $< 150\text{ ms}$ per coordinate.
 3. **No Local GRIB2 Storage Overhead:** Directly extracts 1D precipitation arrays without downloading multi-gigabyte GRIB2 grid files across India.
@@ -52,7 +53,7 @@ The HydroCast system requires forward-looking meteorological forcing data to dri
 
 The Panchganga river basin originates along the high-rainfall crest of the Western Ghats (Sahyadri ridge, receiving $3,000 - 6,000\text{ mm}$ annually) and drains eastward toward Kolhapur city.
 
-```
+```text
  Catchment Bounding Box:
  17.20° N  +-----------------------------------------------------------+ (North: Kasaba Walawe)
            |   Gaganbawda (680m)                                       |
@@ -64,7 +65,8 @@ The Panchganga river basin originates along the high-rainfall crest of the Weste
            73.70° W (Ghats Crest)                              74.50° E (Outlet Confluence)
 ```
 
-### Catchment Bounding Coordinates:
+### Catchment Bounding Coordinates
+
 - **North ($BBOX\_N$):** $17.20^\circ\text{ N}$
 - **South ($BBOX\_S$):** $16.20^\circ\text{ N}$
 - **East ($BBOX\_E$):** $74.50^\circ\text{ E}$
@@ -76,7 +78,7 @@ The Panchganga river basin originates along the high-rainfall crest of the Weste
 
 The system tracks 18 distinct meteorological nodes across the 9 hydrologic subbasins ($S_1$ to $S_9$):
 
-```
+```text
 +----+-------------------+----------+-----------+------------+------------+--------------------+
 | ID | Station Name      | Subbasin | Elevation | Longitude  | Latitude   | Hierarchy Role     |
 +----+-------------------+----------+-----------+------------+------------+--------------------+
@@ -108,9 +110,11 @@ The system tracks 18 distinct meteorological nodes across the 9 hydrologic subba
 The forecast fetcher in [`open_meteo.py`](file:///e:/hydrocast_complete/src/ecmwf/open_meteo.py) queries the Open-Meteo v1 forecast endpoint:
 
 ### 4.1 Endpoint URL
+
 `GET https://api.open-meteo.com/v1/forecast`
 
 ### 4.2 Query Parameters
+
 ```python
 params = {
     "latitude":          round(lat, 4),
@@ -123,6 +127,7 @@ params = {
 ```
 
 ### 4.3 Hourly Precipitation Response Parsing
+
 ```python
 # Open-Meteo JSON Structure:
 {
@@ -143,7 +148,9 @@ params = {
 To guarantee 100% pipeline reliability without triggering IP-level rate-limiting (`HTTP 429 Too Many Requests`) or crashing on upstream cloud hiccups, HydroCast employs a dedicated retry engine ([`src/ecmwf/retry_utils.py`](file:///e:/hydrocast_complete/src/ecmwf/retry_utils.py)):
 
 ### 5.1 Architecture of `retry_with_backoff`
+
 The utility wraps both requests and callable workflows:
+
 ```python
 def retry_with_backoff(
     fn=None,
@@ -159,6 +166,7 @@ def retry_with_backoff(
 ```
 
 ### 5.2 Key Resilience Mechanisms
+
 1. **Exponential Backoff with Full Random Jitter:**
    $$\Delta t_{\text{wait}} = \min\left(t_{\text{max}}, t_{\text{base}} \cdot \text{factor}^{\text{attempt}} + \text{uniform}(0, t_{\text{jitter}})\right)$$
    This prevents synchronized retry storms across concurrent workers.
@@ -172,14 +180,13 @@ def retry_with_backoff(
 
 ---
 
-
 ## 6. Antecedent Soil Moisture Condition (AMC) Analysis
 
 To configure the hydrological runoff Curve Number ($CN$) accurately, the automation path classifies antecedent moisture directly from the forward 90-hour forecast signal (`classify_amc` in `src/hms/runner.py`) — no 90-day gauge archive is required on the CI runner:
 
 $$\bar{P}_{90} = \frac{1}{N}\sum_{\text{subbasins}_{i}} \sum_{h=0}^{89} P_i(h) \quad (\text{mean cumulative 90h forecast rainfall in mm})$$
 
-```
+```text
 +-------------------+------------------------------+
 | Moisture Category | Mean 90h Forecast Rain (mm) |
 +-------------------+------------------------------+
@@ -204,13 +211,13 @@ Every forecast cycle additionally captures soil moisture per subbasin via the go
 Two best-effort fetches are issued per subbasin (both wrapped so any failure only logs and returns `None` — the forecast pipeline is never blocked):
 
 | Source | Endpoint | Data | Storage key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | ECMWF IFS forecast | `https://api.open-meteo.com/v1/forecast` + `models=ecmwf_ifs` | Hourly volumetric soil-moisture (m³/m³) for T+0…T+89, 4 depth layers | `forecast_90h_vwc` |
 | ERA5-Land reanalysis | `https://archive-api.open-meteo.com/v1/era5` | Daily soil-moisture for the 5 days before the forecast window | `antecedent_5d_vwc` |
 
 ### 7.1 Soil-Moisture Depth Layers (m³/m³ volumetric water content)
 
-```
+```text
 +--------------------------+-------------------------------+
 | API Field                | Physical Depth Stored         |
 +--------------------------+-------------------------------+

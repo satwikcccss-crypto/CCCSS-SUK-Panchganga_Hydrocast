@@ -1,6 +1,6 @@
 # Open-Channel Hydraulics & River Stage Mechanics
 
-```
+```text
 ========================================================================================
              HYDROCAST PANCHGANGA HYDRAULICS ENGINE & RATING SYSTEM
 ========================================================================================
@@ -33,6 +33,7 @@ For uniform steady open channel flow, discharge is governed by Manning's equatio
 $$Q = \frac{1}{n} \cdot A \cdot R^{2/3} \cdot S_0^{1/2}$$
 
 Where:
+
 - $Q$ = Total river discharge ($m^3/s$)
 - $n$ = Composite Manning roughness coefficient (dimensionless, typically $0.035 - 0.045\text{ s/m}^{1/3}$ for gravelly/rocky Deccan trap river beds with seasonal monsoon brush)
 - $A$ = Net wetted cross-sectional flow area ($m^2$)
@@ -46,7 +47,7 @@ Where:
 
 The Panchganga river system in Kolhapur features two primary regulatory hydraulic control points separated by $3.8\text{ km}$ of river channel:
 
-```
+```text
 [ Shivaji Bridge Gauge ]  ====== 3.8 km Reach ======>  [ Rajaram K.T. Weir ]
 Elevation: 528.67 - 549.35m MSL                       Elevation: 529.318 - 545.33m MSL
 Datum separation: +0.648 m (Rajaram higher)            Rating: PCHIP on WRD sheet (verbatim)
@@ -57,6 +58,7 @@ Rating: PCHIP on WRD sheet − 0.648 m (sheet points)    Sheet anchors: 530.18 g
 ### 2.1 Surveyed Cross-Section Topometry
 
 #### Site 1: Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)
+
 - **Coordinates:** $16.708917^\circ\text{ N}, 74.219278^\circ\text{ E}$
 - **Bed Invert Level ($z_{min}$):** $530.18\text{ m MSL}$ (Gauge Zero Datum: $0'\ 0''$)
 - **Alert Stage:** $542.10\text{ m MSL}$ ($39'\ 1''$, $1,800\text{ m}^3/s$)
@@ -66,6 +68,7 @@ Rating: PCHIP on WRD sheet − 0.648 m (sheet points)    Sheet anchors: 530.18 g
 - **Sensor Elevation:** $549.35\text{ m MSL}$ (ThingSpeak Ultrasonic Radar Gauge)
 
 #### Site 2: Rajaram K.T. (Kolhapur Type) Weir (Kasba Bawada)
+
 - **Coordinates:** $16.736167^\circ\text{ N}, 74.235889^\circ\text{ E}$
 - **Weir Crest Level:** $535.50\text{ m MSL}$ (Needle gates removed during monsoon)
 - **Bed Invert Level:** $530.18\text{ m MSL}$
@@ -84,7 +87,7 @@ In early iterations of the system, water stage predictions were reasonably accur
 
 Three severe hydraulic flaws caused this:
 
-```
+```text
 +---------------------------------------------------------------------------------------+
 | FLAW 1: Unsegmented Bed Slope Calibration (The 24x Distortion)                         |
 | An unsegmented regression was fitted against 31 historical high-flood records         |
@@ -164,6 +167,7 @@ The table below reflects the exact benchmark records from the Maharashtra Water 
 ## 5. Live Telemetry Alignment
 
 At current observed radar telemetry (Sep 2026 toolset):
+
 - **Measured Water Level:** $533.28\text{ m MSL}$ ($10'\ 2''$ above Shivaji bed)
 - **Computed Discharge (Shivaji Bridge):** PCHIP on WRD sheet offset −0.648 m → interpolated between anchors
 - **Computed Discharge (Rajaram Weir):** PCHIP on WRD sheet
@@ -173,7 +177,7 @@ At current observed radar telemetry (Sep 2026 toolset):
 
 ## 6. Fluvial Geomorphology & Longitudinal Bed Slopes (L-Section)
 
-```
+```text
 ====================================================================================================
            LONGITUDINAL BED PROFILE (L-SECTION) & SLOPE TRANSITIONS
 ====================================================================================================
@@ -198,6 +202,7 @@ At current observed radar telemetry (Sep 2026 toolset):
 ```
 
 Per the authoritative **Krishna Basin Flood 2019 Volume 1 Study Report**:
+
 - **Radhanagari Dam to Prayag Chikhali:** $1:2529$ ($S_0 = 0.000395\text{ m/m}$), length $\approx 40\text{ km}$.
 - **Prayag Chikhali to Rajaram K.T. Weir:** $1:4641$ ($S_0 = 0.000215\text{ m/m}$), length $\approx 18\text{ km}$.
 - **Rajaram K.T. Weir to Shirol K.T. Weir:** $1:7700$ ($S_0 = 0.000130\text{ m/m}$), length $\approx 42\text{ km}$.
@@ -206,7 +211,7 @@ Per the authoritative **Krishna Basin Flood 2019 Volume 1 Study Report**:
 
 ## 7. Divided Channel Method (DCM) for Sugarcane Overbank Floodplains
 
-```
+```text
    Elevation
     (m MSL)
      546.0 +                                                    2019 HFL (545.33 m)
@@ -228,6 +233,7 @@ Per the authoritative **Krishna Basin Flood 2019 Volume 1 Study Report**:
 ```
 
 To eliminate overbank discharge distortion during high stages ($>541.6\text{ m}$ MSL), the flow cross-section is hydraulically subdivided:
+
 - **Main Channel ($n_{\text{main}} = 0.031$):** Clean natural riverbed with silt and gravel.
 - **Overbank Floodplains ($n_{\text{flood}} = 0.070$):** Heavy resistance due to dense standing sugarcane crops.
 
@@ -237,7 +243,7 @@ $$Q(H) = \frac{1}{n_{\text{main}}} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/
 
 ## 8. Sensor-to-Sink Upstream Stage Transfer
 
-```
+```text
    UPSTREAM                                                    DOWNSTREAM
    Chainage 10+115                                           Chainage 6+257
    Rajaram K.T. Weir                                         Shivaji Bridge
