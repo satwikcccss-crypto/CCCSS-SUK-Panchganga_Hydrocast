@@ -14,18 +14,11 @@ if [ "${VERCEL_GIT_COMMIT_REF}" = "gh-pages" ]; then
   exit 0
 fi
 
-# 2. Skip if commit message contains [skip ci] or [ci skip]
-if echo "${VERCEL_GIT_COMMIT_MESSAGE}" | grep -qiE "\[skip ci\]|\[ci skip\]"; then
-  echo "🛑 Skip build: Commit message contains [skip ci]."
-  exit 0
-fi
-
-# 3. Check if frontend files actually changed
-if [ -f "package.json" ]; then
-  CHECK_PATH="."
-else
-  CHECK_PATH="frontend"
-fi
+# 2. Check if frontend files actually changed
+# Note: GitHub Actions automated forecast pipeline commits with [skip ci] to prevent
+# recursive GitHub Actions triggers, but writes fresh forecasts to frontend/public/data/.
+# Therefore, any change under frontend/ must proceed with deployment.
+CHECK_PATH="frontend"
 
 if [ -n "$VERCEL_GIT_PREVIOUS_SHA" ] && [ -n "$VERCEL_GIT_COMMIT_SHA" ]; then
   DIFF_TARGET="${VERCEL_GIT_PREVIOUS_SHA}...${VERCEL_GIT_COMMIT_SHA}"
@@ -38,5 +31,5 @@ if git diff --quiet $DIFF_TARGET -- "$CHECK_PATH" 2>/dev/null; then
   exit 0
 fi
 
-echo "✅ Changes detected in frontend. Proceeding with deployment build."
+echo "✅ Changes detected in $CHECK_PATH. Proceeding with deployment build."
 exit 1

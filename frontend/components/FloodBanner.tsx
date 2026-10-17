@@ -36,8 +36,18 @@ export default function FloodBanner({ alerts }: { alerts: any[] }) {
           </span>
           <span className="font-semibold">{worst?.alert_message}</span>
           {worst?.arrival_time && (
-            <span className="text-xs opacity-75 font-mono-code bg-white/60 px-2 py-0.5 rounded">
-              Est. Arrival: {new Date(worst.arrival_time).toUTCString().replace(" GMT", " UTC")}
+            <span
+              className="text-xs opacity-75 font-mono-code bg-white/60 px-2 py-0.5 rounded"
+              title={`UTC: ${new Date(worst.arrival_time).toUTCString().replace(" GMT", " UTC")}`}
+            >
+              Est. Arrival: {new Date(worst.arrival_time).toLocaleString("en-IN", {
+                timeZone: "Asia/Kolkata",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })} IST
             </span>
           )}
         </div>

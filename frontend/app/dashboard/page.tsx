@@ -126,9 +126,22 @@ export default function Dashboard() {
           </div>
 
           <div className="text-right hidden lg:block text-xs text-gray-500">
-            {mounted && status?.last_cycle?.start_time
-              ? new Date(status.last_cycle.start_time).toUTCString().replace(" GMT", " UTC")
-              : "Live Pipeline State"}
+            {mounted && status?.last_cycle?.start_time ? (
+              <span title={`UTC: ${new Date(status.last_cycle.start_time).toUTCString().replace(" GMT", " UTC")}`}>
+                {new Date(status.last_cycle.start_time).toLocaleString("en-IN", {
+                  timeZone: "Asia/Kolkata",
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })} IST
+              </span>
+            ) : (
+              "Live Pipeline State"
+            )}
           </div>
 
           <div

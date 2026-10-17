@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+// Use relative API route in browser to hit Next.js serverless route, avoiding mixed-content on Vercel
+const getVisitsUrl = () => {
+  if (typeof window !== "undefined") {
+    return "/api/v1/visits/record";
+  }
+  const api = process.env.NEXT_PUBLIC_API_URL;
+  return api && api.startsWith("https://") ? `${api}/api/v1/visits/record` : "/api/v1/visits/record";
+};
 
 function DigitRoll({ digit }: { digit: string }) {
   // Use translateY to simulate the mechanical roll of an odometer
@@ -49,16 +56,38 @@ export default function VisitorCounterWidget() {
 
   useEffect(() => {
     setMounted(true);
-    fetch(`${BASE_URL}/api/v1/visits/record`, { method: "POST" })
+
+    // Initial load from localStorage cache for instant display
+    try {
+      const cached = localStorage.getItem("hydrocast_visitor_counts");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.daily) setDaily(parsed.daily);
+        if (parsed.total) setTotal(parsed.total);
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+
+    fetch(getVisitsUrl(), { method: "POST" })
       .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        setDaily(data.daily || 0);
-        setTotal(data.total || 0);
+        const d = data.daily || 0;
+        const t = data.total || 0;
+        setDaily(d);
+        setTotal(t);
+        try {
+          localStorage.setItem("hydrocast_visitor_counts", JSON.stringify({ daily: d, total: t }));
+        } catch {
+          // Ignore
+        }
       })
-      .catch((err) => console.error("Error fetching visitor stats:", err));
+      .catch((err) => {
+        console.warn("Could not record visit from server:", err);
+      });
   }, []);
 
   if (!mounted) return null;
