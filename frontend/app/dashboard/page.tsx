@@ -9,6 +9,7 @@ import RainfallPanel from "@/components/RainfallPanel";
 import RunoffPanel from "@/components/RunoffPanel";
 import SystemPanel from "@/components/SystemPanel";
 import AccuracyPanel from "@/components/AccuracyPanel";
+import ProjectInfoPanel from "@/components/ProjectInfoPanel";
 import FloodBanner from "@/components/FloodBanner";
 import VisitorCounterWidget from "@/components/OdometerCounter";
 
@@ -48,6 +49,13 @@ const NAV = [
     desc: "12-Step Automation & Orchestration",
     badge: "100% OK",
   },
+  {
+    id: "info",
+    label: "Project Information",
+    icon: "Project Info",
+    desc: "DST-SERB, Shivaji University & Team",
+    badge: "DST-SERB",
+  },
 ];
 
 const ALERT_BADGES: Record<string, { bg: string; text: string; border: string }> = {
@@ -59,7 +67,7 @@ const ALERT_BADGES: Record<string, { bg: string; text: string; border: string }>
 };
 
 export default function Dashboard() {
-  const [panel, setPanel] = useState<"dashboard" | "rainfall" | "runoff" | "accuracy" | "system">("dashboard");
+  const [panel, setPanel] = useState<"dashboard" | "rainfall" | "runoff" | "accuracy" | "system" | "info">("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedStationId, setSelectedStationId] = useState<string>("KARANJPHEN");
   const { connected, lastEvent } = useWebSocket();
@@ -110,6 +118,13 @@ export default function Dashboard() {
               <span className="text-xs text-gray-500 hidden md:inline">
                 / Panchganga Basin
               </span>
+              <button
+                onClick={() => setPanel("info")}
+                className="ml-2 text-[11px] font-semibold text-sky-700 bg-sky-50 hover:bg-sky-100 px-2 py-0.5 rounded border border-sky-200 transition-colors hidden sm:inline-flex items-center gap-1 cursor-pointer"
+                title="Project Information, DST-SERB & Shivaji University"
+              >
+                <span>DST-SERB / SUK Info</span>
+              </button>
             </div>
           </div>
         </div>
@@ -184,15 +199,22 @@ export default function Dashboard() {
                         setPanel(n.id as any);
                         setIsSidebarOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between p-2.5 rounded text-left ${
+                      className={`w-full flex items-center justify-between p-2.5 rounded text-left transition-colors ${
                         isActive
-                          ? "bg-gray-100 text-gray-900 font-medium"
+                          ? "bg-sky-50 text-sky-950 font-semibold border-l-2 border-sky-600 shadow-xs"
                           : "text-gray-600 hover:bg-gray-50"
                       }`}
                     >
-                      <div className="flex items-center gap-2">
-                        <div className="text-sm">{n.icon}</div>
+                      <div className="flex items-center gap-2 truncate">
+                        <span className="text-xs font-medium truncate">{n.label}</span>
                       </div>
+                      {n.badge && (
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold tracking-wider shrink-0 ${
+                          isActive ? "bg-sky-200/70 text-sky-900" : "bg-gray-100 text-gray-500"
+                        }`}>
+                          {n.badge}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
@@ -249,6 +271,7 @@ export default function Dashboard() {
           {panel === "runoff" && <RunoffPanel summary={summary} />}
           {panel === "accuracy" && <AccuracyPanel />}
           {panel === "system" && <SystemPanel pipeline={pipeline} />}
+          {panel === "info" && <ProjectInfoPanel />}
         </main>
       </div>
     </div>
