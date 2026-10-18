@@ -23840,7 +23840,7 @@
         "step_number": 1,
         "step_name": "01. Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)",
         "status": "success",
-        "duration_seconds": 1.49
+        "duration_seconds": 2.93
       },
       {
         "step_number": 2,
@@ -23852,19 +23852,19 @@
         "step_number": 3,
         "step_name": "02b. Soil-Moisture Snapshot (fetch-and-log only, never used in decisions)",
         "status": "success",
-        "duration_seconds": 34.45
+        "duration_seconds": 2.7
       },
       {
         "step_number": 4,
         "step_name": "03. Live Telemetry Fetch & IoT Sync",
         "status": "success",
-        "duration_seconds": 0.19
+        "duration_seconds": 0.23
       },
       {
         "step_number": 5,
         "step_name": "04. Real-Time ML Recalibration Assessment",
         "status": "success",
-        "duration_seconds": 0.9
+        "duration_seconds": 0.91
       },
       {
         "step_number": 6,
@@ -23874,7 +23874,7 @@
       }
     ],
     "metrics": {
-      "avg_duration_s": 37.2,
+      "avg_duration_s": 6.9,
       "success_rate_pct": 100.0
     }
   },
@@ -23884,8 +23884,8 @@
       "run_id": "CYC_20261018_12z",
       "status": "completed",
       "start_time": "2026-10-18T12:00:00+00:00",
-      "end_time": "2026-10-18T12:44:46.065555+00:00",
-      "duration_seconds": 37.2,
+      "end_time": "2026-10-18T17:29:45.793251+00:00",
+      "duration_seconds": 6.9,
       "total_rainfall_mm": 0.7,
       "peak_discharge_m3s": 7.1,
       "peak_stage_m": 531.25,
@@ -23897,47 +23897,47 @@
   },
   "logs": [
     {
-      "t": "12:44:08",
+      "t": "17:29:38",
       "lv": "INFO",
       "msg": "Forecast cycle CYC_20261018_12z initiated across 18 Panchganga stations"
     },
     {
-      "t": "12:44:10",
+      "t": "17:29:41",
       "lv": "INFO",
       "msg": "Open-Meteo 90-hr precipitation forecast downloaded successfully"
     },
     {
-      "t": "12:44:10",
+      "t": "17:29:41",
       "lv": "INFO",
       "msg": "Dynamic subbasin selector evaluated: S1\u2192Karveer, S2\u2192Balinga, S6\u2192Gaganbawda"
     },
     {
-      "t": "12:44:10",
+      "t": "17:29:41",
       "lv": "INFO",
       "msg": "HEC-DSS hyetograph time-series generated: //<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/"
     },
     {
-      "t": "12:44:44",
+      "t": "17:29:44",
       "lv": "INFO",
       "msg": "Soil-moisture snapshot captured for 9 subbasins (S1, S2, S3, S4, S5, S6, S7, S8, S9)"
     },
     {
-      "t": "12:44:45",
+      "t": "17:29:44",
       "lv": "INFO",
       "msg": "ThingSpeak Shivaji Live Ground Truth: Distance=59.38 ft -> Water Level=531.25 m MSL"
     },
     {
-      "t": "12:44:45",
+      "t": "17:29:45",
       "lv": "INFO",
-      "msg": "Hydrologic Calibration Baseline Stable: Within tolerances (\u0394t=+0.0h, signed=-0.02m, max=0.02m)"
+      "msg": "Hydrologic Calibration Baseline Stable: Within tolerances (\u0394t=+0.0h, signed=+0.00m, max=0.00m)"
     },
     {
-      "t": "12:44:46",
+      "t": "17:29:45",
       "lv": "INFO",
       "msg": "HEC-HMS 4.13 execution completed (CALIBRATED_RJKT): Peak Discharge 7.1 m\u00b3/s at T+0h in 14.8s"
     },
     {
-      "t": "12:44:46",
+      "t": "17:29:46",
       "lv": "INFO",
       "msg": "Model accuracy evaluated: Spearman \u03c1=N/A, NSE=N/A [ACCUMULATING_TELEMETRY]"
     }
@@ -23967,7 +23967,7 @@
     "actual_observed_series": [
       {
         "lead_hours": 0,
-        "timestamp": "2026-10-18T06:00:00+00:00",
+        "timestamp": "2026-10-18T12:00:00+00:00",
         "predicted_stage_m": 531.25,
         "predicted_discharge_m3s": 7.1,
         "observed_stage_m": null,
@@ -23980,7 +23980,7 @@
       },
       {
         "lead_hours": 1,
-        "timestamp": "2026-10-18T07:00:00+00:00",
+        "timestamp": "2026-10-18T13:00:00+00:00",
         "predicted_stage_m": 531.25,
         "predicted_discharge_m3s": 7.1,
         "observed_stage_m": null,
@@ -23993,7 +23993,7 @@
       },
       {
         "lead_hours": 2,
-        "timestamp": "2026-10-18T08:00:00+00:00",
+        "timestamp": "2026-10-18T14:00:00+00:00",
         "predicted_stage_m": 531.25,
         "predicted_discharge_m3s": 7.1,
         "observed_stage_m": null,
@@ -24006,7 +24006,7 @@
       },
       {
         "lead_hours": 3,
-        "timestamp": "2026-10-18T09:00:00+00:00",
+        "timestamp": "2026-10-18T15:00:00+00:00",
         "predicted_stage_m": 531.25,
         "predicted_discharge_m3s": 7.1,
         "observed_stage_m": null,
@@ -24019,84 +24019,6 @@
       },
       {
         "lead_hours": 4,
-        "timestamp": "2026-10-18T10:00:00+00:00",
-        "predicted_stage_m": 531.23,
-        "predicted_discharge_m3s": 7.0,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
-        "alert_level": "NORMAL",
-        "has_observation": false
-      },
-      {
-        "lead_hours": 5,
-        "timestamp": "2026-10-18T11:00:00+00:00",
-        "predicted_stage_m": 531.23,
-        "predicted_discharge_m3s": 7.0,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
-        "alert_level": "NORMAL",
-        "has_observation": false
-      },
-      {
-        "lead_hours": 6,
-        "timestamp": "2026-10-18T12:00:00+00:00",
-        "predicted_stage_m": 531.23,
-        "predicted_discharge_m3s": 7.0,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
-        "alert_level": "NORMAL",
-        "has_observation": false
-      },
-      {
-        "lead_hours": 7,
-        "timestamp": "2026-10-18T13:00:00+00:00",
-        "predicted_stage_m": 531.23,
-        "predicted_discharge_m3s": 7.0,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
-        "alert_level": "NORMAL",
-        "has_observation": false
-      },
-      {
-        "lead_hours": 8,
-        "timestamp": "2026-10-18T14:00:00+00:00",
-        "predicted_stage_m": 531.23,
-        "predicted_discharge_m3s": 7.0,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
-        "alert_level": "NORMAL",
-        "has_observation": false
-      },
-      {
-        "lead_hours": 9,
-        "timestamp": "2026-10-18T15:00:00+00:00",
-        "predicted_stage_m": 531.23,
-        "predicted_discharge_m3s": 7.0,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
-        "alert_level": "NORMAL",
-        "has_observation": false
-      },
-      {
-        "lead_hours": 10,
         "timestamp": "2026-10-18T16:00:00+00:00",
         "predicted_stage_m": 531.23,
         "predicted_discharge_m3s": 7.0,
@@ -24109,10 +24031,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 11,
+        "lead_hours": 5,
         "timestamp": "2026-10-18T17:00:00+00:00",
-        "predicted_stage_m": 531.22,
-        "predicted_discharge_m3s": 6.9,
+        "predicted_stage_m": 531.23,
+        "predicted_discharge_m3s": 7.0,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24122,10 +24044,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 12,
+        "lead_hours": 6,
         "timestamp": "2026-10-18T18:00:00+00:00",
-        "predicted_stage_m": 531.22,
-        "predicted_discharge_m3s": 6.9,
+        "predicted_stage_m": 531.23,
+        "predicted_discharge_m3s": 7.0,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24135,10 +24057,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 13,
+        "lead_hours": 7,
         "timestamp": "2026-10-18T19:00:00+00:00",
-        "predicted_stage_m": 531.22,
-        "predicted_discharge_m3s": 6.9,
+        "predicted_stage_m": 531.23,
+        "predicted_discharge_m3s": 7.0,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24148,10 +24070,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 14,
+        "lead_hours": 8,
         "timestamp": "2026-10-18T20:00:00+00:00",
-        "predicted_stage_m": 531.22,
-        "predicted_discharge_m3s": 6.9,
+        "predicted_stage_m": 531.23,
+        "predicted_discharge_m3s": 7.0,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24161,10 +24083,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 15,
+        "lead_hours": 9,
         "timestamp": "2026-10-18T21:00:00+00:00",
-        "predicted_stage_m": 531.22,
-        "predicted_discharge_m3s": 6.9,
+        "predicted_stage_m": 531.23,
+        "predicted_discharge_m3s": 7.0,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24174,10 +24096,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 16,
+        "lead_hours": 10,
         "timestamp": "2026-10-18T22:00:00+00:00",
-        "predicted_stage_m": 531.22,
-        "predicted_discharge_m3s": 6.9,
+        "predicted_stage_m": 531.23,
+        "predicted_discharge_m3s": 7.0,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24187,7 +24109,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 17,
+        "lead_hours": 11,
         "timestamp": "2026-10-18T23:00:00+00:00",
         "predicted_stage_m": 531.22,
         "predicted_discharge_m3s": 6.9,
@@ -24200,7 +24122,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 18,
+        "lead_hours": 12,
         "timestamp": "2026-10-19T00:00:00+00:00",
         "predicted_stage_m": 531.22,
         "predicted_discharge_m3s": 6.9,
@@ -24213,10 +24135,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 19,
+        "lead_hours": 13,
         "timestamp": "2026-10-19T01:00:00+00:00",
-        "predicted_stage_m": 531.2,
-        "predicted_discharge_m3s": 6.8,
+        "predicted_stage_m": 531.22,
+        "predicted_discharge_m3s": 6.9,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24226,10 +24148,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 20,
+        "lead_hours": 14,
         "timestamp": "2026-10-19T02:00:00+00:00",
-        "predicted_stage_m": 531.2,
-        "predicted_discharge_m3s": 6.8,
+        "predicted_stage_m": 531.22,
+        "predicted_discharge_m3s": 6.9,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24239,10 +24161,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 21,
+        "lead_hours": 15,
         "timestamp": "2026-10-19T03:00:00+00:00",
-        "predicted_stage_m": 531.2,
-        "predicted_discharge_m3s": 6.8,
+        "predicted_stage_m": 531.22,
+        "predicted_discharge_m3s": 6.9,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24252,10 +24174,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 22,
+        "lead_hours": 16,
         "timestamp": "2026-10-19T04:00:00+00:00",
-        "predicted_stage_m": 531.2,
-        "predicted_discharge_m3s": 6.8,
+        "predicted_stage_m": 531.22,
+        "predicted_discharge_m3s": 6.9,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24265,10 +24187,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 23,
+        "lead_hours": 17,
         "timestamp": "2026-10-19T05:00:00+00:00",
-        "predicted_stage_m": 531.2,
-        "predicted_discharge_m3s": 6.8,
+        "predicted_stage_m": 531.22,
+        "predicted_discharge_m3s": 6.9,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24278,10 +24200,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 24,
+        "lead_hours": 18,
         "timestamp": "2026-10-19T06:00:00+00:00",
-        "predicted_stage_m": 531.2,
-        "predicted_discharge_m3s": 6.8,
+        "predicted_stage_m": 531.22,
+        "predicted_discharge_m3s": 6.9,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24291,7 +24213,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 25,
+        "lead_hours": 19,
         "timestamp": "2026-10-19T07:00:00+00:00",
         "predicted_stage_m": 531.2,
         "predicted_discharge_m3s": 6.8,
@@ -24304,7 +24226,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 26,
+        "lead_hours": 20,
         "timestamp": "2026-10-19T08:00:00+00:00",
         "predicted_stage_m": 531.2,
         "predicted_discharge_m3s": 6.8,
@@ -24317,10 +24239,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 27,
+        "lead_hours": 21,
         "timestamp": "2026-10-19T09:00:00+00:00",
-        "predicted_stage_m": 531.19,
-        "predicted_discharge_m3s": 6.7,
+        "predicted_stage_m": 531.2,
+        "predicted_discharge_m3s": 6.8,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24330,10 +24252,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 28,
+        "lead_hours": 22,
         "timestamp": "2026-10-19T10:00:00+00:00",
-        "predicted_stage_m": 531.19,
-        "predicted_discharge_m3s": 6.7,
+        "predicted_stage_m": 531.2,
+        "predicted_discharge_m3s": 6.8,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24343,10 +24265,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 29,
+        "lead_hours": 23,
         "timestamp": "2026-10-19T11:00:00+00:00",
-        "predicted_stage_m": 531.19,
-        "predicted_discharge_m3s": 6.7,
+        "predicted_stage_m": 531.2,
+        "predicted_discharge_m3s": 6.8,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24356,10 +24278,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 30,
+        "lead_hours": 24,
         "timestamp": "2026-10-19T12:00:00+00:00",
-        "predicted_stage_m": 531.19,
-        "predicted_discharge_m3s": 6.7,
+        "predicted_stage_m": 531.2,
+        "predicted_discharge_m3s": 6.8,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24369,10 +24291,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 31,
+        "lead_hours": 25,
         "timestamp": "2026-10-19T13:00:00+00:00",
-        "predicted_stage_m": 531.19,
-        "predicted_discharge_m3s": 6.7,
+        "predicted_stage_m": 531.2,
+        "predicted_discharge_m3s": 6.8,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24382,7 +24304,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 32,
+        "lead_hours": 26,
         "timestamp": "2026-10-19T14:00:00+00:00",
         "predicted_stage_m": 531.19,
         "predicted_discharge_m3s": 6.7,
@@ -24395,7 +24317,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 33,
+        "lead_hours": 27,
         "timestamp": "2026-10-19T15:00:00+00:00",
         "predicted_stage_m": 531.19,
         "predicted_discharge_m3s": 6.7,
@@ -24408,7 +24330,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 34,
+        "lead_hours": 28,
         "timestamp": "2026-10-19T16:00:00+00:00",
         "predicted_stage_m": 531.19,
         "predicted_discharge_m3s": 6.7,
@@ -24421,7 +24343,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 35,
+        "lead_hours": 29,
         "timestamp": "2026-10-19T17:00:00+00:00",
         "predicted_stage_m": 531.19,
         "predicted_discharge_m3s": 6.7,
@@ -24434,7 +24356,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 36,
+        "lead_hours": 30,
         "timestamp": "2026-10-19T18:00:00+00:00",
         "predicted_stage_m": 531.19,
         "predicted_discharge_m3s": 6.7,
@@ -24447,10 +24369,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 37,
+        "lead_hours": 31,
         "timestamp": "2026-10-19T19:00:00+00:00",
-        "predicted_stage_m": 531.17,
-        "predicted_discharge_m3s": 6.6,
+        "predicted_stage_m": 531.19,
+        "predicted_discharge_m3s": 6.7,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24460,10 +24382,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 38,
+        "lead_hours": 32,
         "timestamp": "2026-10-19T20:00:00+00:00",
-        "predicted_stage_m": 531.17,
-        "predicted_discharge_m3s": 6.6,
+        "predicted_stage_m": 531.19,
+        "predicted_discharge_m3s": 6.7,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24473,10 +24395,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 39,
+        "lead_hours": 33,
         "timestamp": "2026-10-19T21:00:00+00:00",
-        "predicted_stage_m": 531.17,
-        "predicted_discharge_m3s": 6.6,
+        "predicted_stage_m": 531.19,
+        "predicted_discharge_m3s": 6.7,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24486,7 +24408,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 40,
+        "lead_hours": 34,
         "timestamp": "2026-10-19T22:00:00+00:00",
         "predicted_stage_m": 531.17,
         "predicted_discharge_m3s": 6.6,
@@ -24499,7 +24421,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 41,
+        "lead_hours": 35,
         "timestamp": "2026-10-19T23:00:00+00:00",
         "predicted_stage_m": 531.17,
         "predicted_discharge_m3s": 6.6,
@@ -24512,7 +24434,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 42,
+        "lead_hours": 36,
         "timestamp": "2026-10-20T00:00:00+00:00",
         "predicted_stage_m": 531.17,
         "predicted_discharge_m3s": 6.6,
@@ -24525,7 +24447,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 43,
+        "lead_hours": 37,
         "timestamp": "2026-10-20T01:00:00+00:00",
         "predicted_stage_m": 531.17,
         "predicted_discharge_m3s": 6.6,
@@ -24538,7 +24460,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 44,
+        "lead_hours": 38,
         "timestamp": "2026-10-20T02:00:00+00:00",
         "predicted_stage_m": 531.17,
         "predicted_discharge_m3s": 6.6,
@@ -24551,7 +24473,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 45,
+        "lead_hours": 39,
         "timestamp": "2026-10-20T03:00:00+00:00",
         "predicted_stage_m": 531.17,
         "predicted_discharge_m3s": 6.6,
@@ -24564,7 +24486,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 46,
+        "lead_hours": 40,
         "timestamp": "2026-10-20T04:00:00+00:00",
         "predicted_stage_m": 531.17,
         "predicted_discharge_m3s": 6.6,
@@ -24577,10 +24499,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 47,
+        "lead_hours": 41,
         "timestamp": "2026-10-20T05:00:00+00:00",
-        "predicted_stage_m": 531.16,
-        "predicted_discharge_m3s": 6.5,
+        "predicted_stage_m": 531.17,
+        "predicted_discharge_m3s": 6.6,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24590,7 +24512,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 48,
+        "lead_hours": 42,
         "timestamp": "2026-10-20T06:00:00+00:00",
         "predicted_stage_m": 531.16,
         "predicted_discharge_m3s": 6.5,
@@ -24603,7 +24525,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 49,
+        "lead_hours": 43,
         "timestamp": "2026-10-20T07:00:00+00:00",
         "predicted_stage_m": 531.16,
         "predicted_discharge_m3s": 6.5,
@@ -24616,7 +24538,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 50,
+        "lead_hours": 44,
         "timestamp": "2026-10-20T08:00:00+00:00",
         "predicted_stage_m": 531.16,
         "predicted_discharge_m3s": 6.5,
@@ -24629,7 +24551,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 51,
+        "lead_hours": 45,
         "timestamp": "2026-10-20T09:00:00+00:00",
         "predicted_stage_m": 531.16,
         "predicted_discharge_m3s": 6.5,
@@ -24642,7 +24564,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 52,
+        "lead_hours": 46,
         "timestamp": "2026-10-20T10:00:00+00:00",
         "predicted_stage_m": 531.16,
         "predicted_discharge_m3s": 6.5,
@@ -24655,7 +24577,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 53,
+        "lead_hours": 47,
         "timestamp": "2026-10-20T11:00:00+00:00",
         "predicted_stage_m": 531.16,
         "predicted_discharge_m3s": 6.5,
@@ -24668,7 +24590,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 54,
+        "lead_hours": 48,
         "timestamp": "2026-10-20T12:00:00+00:00",
         "predicted_stage_m": 531.16,
         "predicted_discharge_m3s": 6.5,
@@ -24681,7 +24603,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 55,
+        "lead_hours": 49,
         "timestamp": "2026-10-20T13:00:00+00:00",
         "predicted_stage_m": 531.16,
         "predicted_discharge_m3s": 6.5,
@@ -24694,7 +24616,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 56,
+        "lead_hours": 50,
         "timestamp": "2026-10-20T14:00:00+00:00",
         "predicted_stage_m": 531.16,
         "predicted_discharge_m3s": 6.5,
@@ -24707,7 +24629,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 57,
+        "lead_hours": 51,
         "timestamp": "2026-10-20T15:00:00+00:00",
         "predicted_stage_m": 531.14,
         "predicted_discharge_m3s": 6.4,
@@ -24720,7 +24642,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 58,
+        "lead_hours": 52,
         "timestamp": "2026-10-20T16:00:00+00:00",
         "predicted_stage_m": 531.14,
         "predicted_discharge_m3s": 6.4,
@@ -24733,7 +24655,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 59,
+        "lead_hours": 53,
         "timestamp": "2026-10-20T17:00:00+00:00",
         "predicted_stage_m": 531.14,
         "predicted_discharge_m3s": 6.4,
@@ -24746,7 +24668,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 60,
+        "lead_hours": 54,
         "timestamp": "2026-10-20T18:00:00+00:00",
         "predicted_stage_m": 531.14,
         "predicted_discharge_m3s": 6.4,
@@ -24759,7 +24681,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 61,
+        "lead_hours": 55,
         "timestamp": "2026-10-20T19:00:00+00:00",
         "predicted_stage_m": 531.14,
         "predicted_discharge_m3s": 6.4,
@@ -24772,7 +24694,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 62,
+        "lead_hours": 56,
         "timestamp": "2026-10-20T20:00:00+00:00",
         "predicted_stage_m": 531.14,
         "predicted_discharge_m3s": 6.4,
@@ -24785,7 +24707,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 63,
+        "lead_hours": 57,
         "timestamp": "2026-10-20T21:00:00+00:00",
         "predicted_stage_m": 531.14,
         "predicted_discharge_m3s": 6.4,
@@ -24798,7 +24720,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 64,
+        "lead_hours": 58,
         "timestamp": "2026-10-20T22:00:00+00:00",
         "predicted_stage_m": 531.14,
         "predicted_discharge_m3s": 6.4,
@@ -24811,10 +24733,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 65,
+        "lead_hours": 59,
         "timestamp": "2026-10-20T23:00:00+00:00",
-        "predicted_stage_m": 531.14,
-        "predicted_discharge_m3s": 6.4,
+        "predicted_stage_m": 531.13,
+        "predicted_discharge_m3s": 6.3,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24824,7 +24746,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 66,
+        "lead_hours": 60,
         "timestamp": "2026-10-21T00:00:00+00:00",
         "predicted_stage_m": 531.13,
         "predicted_discharge_m3s": 6.3,
@@ -24837,7 +24759,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 67,
+        "lead_hours": 61,
         "timestamp": "2026-10-21T01:00:00+00:00",
         "predicted_stage_m": 531.13,
         "predicted_discharge_m3s": 6.3,
@@ -24850,7 +24772,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 68,
+        "lead_hours": 62,
         "timestamp": "2026-10-21T02:00:00+00:00",
         "predicted_stage_m": 531.13,
         "predicted_discharge_m3s": 6.3,
@@ -24863,7 +24785,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 69,
+        "lead_hours": 63,
         "timestamp": "2026-10-21T03:00:00+00:00",
         "predicted_stage_m": 531.13,
         "predicted_discharge_m3s": 6.3,
@@ -24876,7 +24798,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 70,
+        "lead_hours": 64,
         "timestamp": "2026-10-21T04:00:00+00:00",
         "predicted_stage_m": 531.13,
         "predicted_discharge_m3s": 6.3,
@@ -24889,7 +24811,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 71,
+        "lead_hours": 65,
         "timestamp": "2026-10-21T05:00:00+00:00",
         "predicted_stage_m": 531.13,
         "predicted_discharge_m3s": 6.3,
@@ -24902,7 +24824,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 72,
+        "lead_hours": 66,
         "timestamp": "2026-10-21T06:00:00+00:00",
         "predicted_stage_m": 531.13,
         "predicted_discharge_m3s": 6.3,
@@ -24915,7 +24837,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 73,
+        "lead_hours": 67,
         "timestamp": "2026-10-21T07:00:00+00:00",
         "predicted_stage_m": 531.13,
         "predicted_discharge_m3s": 6.3,
@@ -24928,10 +24850,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 74,
+        "lead_hours": 68,
         "timestamp": "2026-10-21T08:00:00+00:00",
-        "predicted_stage_m": 531.13,
-        "predicted_discharge_m3s": 6.3,
+        "predicted_stage_m": 531.11,
+        "predicted_discharge_m3s": 6.2,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24941,7 +24863,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 75,
+        "lead_hours": 69,
         "timestamp": "2026-10-21T09:00:00+00:00",
         "predicted_stage_m": 531.11,
         "predicted_discharge_m3s": 6.2,
@@ -24954,7 +24876,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 76,
+        "lead_hours": 70,
         "timestamp": "2026-10-21T10:00:00+00:00",
         "predicted_stage_m": 531.11,
         "predicted_discharge_m3s": 6.2,
@@ -24967,7 +24889,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 77,
+        "lead_hours": 71,
         "timestamp": "2026-10-21T11:00:00+00:00",
         "predicted_stage_m": 531.11,
         "predicted_discharge_m3s": 6.2,
@@ -24980,7 +24902,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 78,
+        "lead_hours": 72,
         "timestamp": "2026-10-21T12:00:00+00:00",
         "predicted_stage_m": 531.11,
         "predicted_discharge_m3s": 6.2,
@@ -24993,7 +24915,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 79,
+        "lead_hours": 73,
         "timestamp": "2026-10-21T13:00:00+00:00",
         "predicted_stage_m": 531.11,
         "predicted_discharge_m3s": 6.2,
@@ -25006,7 +24928,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 80,
+        "lead_hours": 74,
         "timestamp": "2026-10-21T14:00:00+00:00",
         "predicted_stage_m": 531.11,
         "predicted_discharge_m3s": 6.2,
@@ -25019,7 +24941,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 81,
+        "lead_hours": 75,
         "timestamp": "2026-10-21T15:00:00+00:00",
         "predicted_stage_m": 531.11,
         "predicted_discharge_m3s": 6.2,
@@ -25032,7 +24954,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 82,
+        "lead_hours": 76,
         "timestamp": "2026-10-21T16:00:00+00:00",
         "predicted_stage_m": 531.11,
         "predicted_discharge_m3s": 6.2,
@@ -25045,10 +24967,10 @@
         "has_observation": false
       },
       {
-        "lead_hours": 83,
+        "lead_hours": 77,
         "timestamp": "2026-10-21T17:00:00+00:00",
-        "predicted_stage_m": 531.11,
-        "predicted_discharge_m3s": 6.2,
+        "predicted_stage_m": 531.1,
+        "predicted_discharge_m3s": 6.1,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25058,7 +24980,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 84,
+        "lead_hours": 78,
         "timestamp": "2026-10-21T18:00:00+00:00",
         "predicted_stage_m": 531.1,
         "predicted_discharge_m3s": 6.1,
@@ -25071,7 +24993,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 85,
+        "lead_hours": 79,
         "timestamp": "2026-10-21T19:00:00+00:00",
         "predicted_stage_m": 531.1,
         "predicted_discharge_m3s": 6.1,
@@ -25084,7 +25006,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 86,
+        "lead_hours": 80,
         "timestamp": "2026-10-21T20:00:00+00:00",
         "predicted_stage_m": 531.1,
         "predicted_discharge_m3s": 6.1,
@@ -25097,7 +25019,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 87,
+        "lead_hours": 81,
         "timestamp": "2026-10-21T21:00:00+00:00",
         "predicted_stage_m": 531.1,
         "predicted_discharge_m3s": 6.1,
@@ -25110,7 +25032,7 @@
         "has_observation": false
       },
       {
-        "lead_hours": 88,
+        "lead_hours": 82,
         "timestamp": "2026-10-21T22:00:00+00:00",
         "predicted_stage_m": 531.1,
         "predicted_discharge_m3s": 6.1,
@@ -25123,10 +25045,88 @@
         "has_observation": false
       },
       {
-        "lead_hours": 89,
+        "lead_hours": 83,
         "timestamp": "2026-10-21T23:00:00+00:00",
         "predicted_stage_m": 531.1,
         "predicted_discharge_m3s": 6.1,
+        "observed_stage_m": null,
+        "observed_distance_ft": null,
+        "observed_discharge_m3s": null,
+        "error_delta_m": null,
+        "error_delta_ft": null,
+        "alert_level": "NORMAL",
+        "has_observation": false
+      },
+      {
+        "lead_hours": 84,
+        "timestamp": "2026-10-22T00:00:00+00:00",
+        "predicted_stage_m": 531.1,
+        "predicted_discharge_m3s": 6.1,
+        "observed_stage_m": null,
+        "observed_distance_ft": null,
+        "observed_discharge_m3s": null,
+        "error_delta_m": null,
+        "error_delta_ft": null,
+        "alert_level": "NORMAL",
+        "has_observation": false
+      },
+      {
+        "lead_hours": 85,
+        "timestamp": "2026-10-22T01:00:00+00:00",
+        "predicted_stage_m": 531.08,
+        "predicted_discharge_m3s": 6.0,
+        "observed_stage_m": null,
+        "observed_distance_ft": null,
+        "observed_discharge_m3s": null,
+        "error_delta_m": null,
+        "error_delta_ft": null,
+        "alert_level": "NORMAL",
+        "has_observation": false
+      },
+      {
+        "lead_hours": 86,
+        "timestamp": "2026-10-22T02:00:00+00:00",
+        "predicted_stage_m": 531.08,
+        "predicted_discharge_m3s": 6.0,
+        "observed_stage_m": null,
+        "observed_distance_ft": null,
+        "observed_discharge_m3s": null,
+        "error_delta_m": null,
+        "error_delta_ft": null,
+        "alert_level": "NORMAL",
+        "has_observation": false
+      },
+      {
+        "lead_hours": 87,
+        "timestamp": "2026-10-22T03:00:00+00:00",
+        "predicted_stage_m": 531.08,
+        "predicted_discharge_m3s": 6.0,
+        "observed_stage_m": null,
+        "observed_distance_ft": null,
+        "observed_discharge_m3s": null,
+        "error_delta_m": null,
+        "error_delta_ft": null,
+        "alert_level": "NORMAL",
+        "has_observation": false
+      },
+      {
+        "lead_hours": 88,
+        "timestamp": "2026-10-22T04:00:00+00:00",
+        "predicted_stage_m": 531.08,
+        "predicted_discharge_m3s": 6.0,
+        "observed_stage_m": null,
+        "observed_distance_ft": null,
+        "observed_discharge_m3s": null,
+        "error_delta_m": null,
+        "error_delta_ft": null,
+        "alert_level": "NORMAL",
+        "has_observation": false
+      },
+      {
+        "lead_hours": 89,
+        "timestamp": "2026-10-22T05:00:00+00:00",
+        "predicted_stage_m": 531.08,
+        "predicted_discharge_m3s": 6.0,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25143,7 +25143,7 @@
       "run_date": "18 Oct 2026",
       "cycle_time": "12z",
       "start_time": "2026-10-18T12:00:00+00:00",
-      "duration_seconds": 37.2,
+      "duration_seconds": 6.9,
       "peak_discharge_m3s": 7.1,
       "lead_hours_to_peak": 0,
       "total_volume_mcm": 2.1,
