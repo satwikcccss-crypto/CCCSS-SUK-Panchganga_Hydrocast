@@ -23840,7 +23840,7 @@
         "step_number": 1,
         "step_name": "01. Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)",
         "status": "success",
-        "duration_seconds": 4.02
+        "duration_seconds": 3.3
       },
       {
         "step_number": 2,
@@ -23852,29 +23852,29 @@
         "step_number": 3,
         "step_name": "02b. Soil-Moisture Snapshot (fetch-and-log only, never used in decisions)",
         "status": "success",
-        "duration_seconds": 2.74
+        "duration_seconds": 3.22
       },
       {
         "step_number": 4,
         "step_name": "03. Live Telemetry Fetch & IoT Sync",
         "status": "success",
-        "duration_seconds": 0.13
+        "duration_seconds": 0.24
       },
       {
         "step_number": 5,
         "step_name": "04. Real-Time ML Recalibration Assessment",
         "status": "success",
-        "duration_seconds": 0.5
+        "duration_seconds": 0.9
       },
       {
         "step_number": 6,
         "step_name": "05. HEC-HMS 4.13 Hydrologic Simulation",
         "status": "success",
-        "duration_seconds": 0.12
+        "duration_seconds": 0.08
       }
     ],
     "metrics": {
-      "avg_duration_s": 7.5,
+      "avg_duration_s": 7.7,
       "success_rate_pct": 100.0
     }
   },
@@ -23884,8 +23884,8 @@
       "run_id": "CYC_20261019_18z",
       "status": "completed",
       "start_time": "2026-10-19T18:00:00+00:00",
-      "end_time": "2026-10-19T20:07:11.308157+00:00",
-      "duration_seconds": 7.5,
+      "end_time": "2026-10-19T23:55:11.483054+00:00",
+      "duration_seconds": 7.7,
       "total_rainfall_mm": 1.1,
       "peak_discharge_m3s": 7.1,
       "peak_stage_m": 531.25,
@@ -23897,54 +23897,54 @@
   },
   "logs": [
     {
-      "t": "20:07:03",
+      "t": "23:55:03",
       "lv": "INFO",
       "msg": "Forecast cycle CYC_20261019_18z initiated across 18 Panchganga stations"
     },
     {
-      "t": "20:07:07",
+      "t": "23:55:07",
       "lv": "INFO",
       "msg": "Open-Meteo 90-hr precipitation forecast downloaded successfully"
     },
     {
-      "t": "20:07:07",
+      "t": "23:55:07",
       "lv": "INFO",
       "msg": "Dynamic subbasin selector evaluated: S1\u2192Karveer, S2\u2192Balinga, S6\u2192Gaganbawda"
     },
     {
-      "t": "20:07:07",
+      "t": "23:55:07",
       "lv": "INFO",
       "msg": "HEC-DSS hyetograph time-series generated: //<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/"
     },
     {
-      "t": "20:07:10",
+      "t": "23:55:10",
       "lv": "INFO",
       "msg": "Soil-moisture snapshot captured for 9 subbasins (S1, S2, S3, S4, S5, S6, S7, S8, S9)"
     },
     {
-      "t": "20:07:10",
+      "t": "23:55:10",
       "lv": "INFO",
       "msg": "ThingSpeak Shivaji Live Ground Truth: Distance=59.38 ft -> Water Level=531.25 m MSL"
     },
     {
-      "t": "20:07:11",
+      "t": "23:55:11",
       "lv": "INFO",
-      "msg": "Hydrologic Calibration Baseline Stable: Within tolerances (\u0394t=+0.0h, signed=-0.02m, max=0.02m)"
+      "msg": "Hydrologic Calibration Baseline Stable: Within tolerances (\u0394t=+0.0h, signed=+0.00m, max=0.00m)"
     },
     {
-      "t": "20:07:11",
+      "t": "23:55:11",
       "lv": "INFO",
       "msg": "HEC-HMS 4.13 execution completed (CALIBRATED_RJKT): Peak Discharge 7.1 m\u00b3/s at T+0h in 14.8s"
     },
     {
-      "t": "20:07:11",
+      "t": "23:55:12",
       "lv": "INFO",
       "msg": "Model accuracy evaluated: Spearman \u03c1=N/A, NSE=N/A [ACCUMULATING_TELEMETRY]"
     }
   ],
   "validation": {
     "cycle_id": "CYC_20261019_18z",
-    "validation_timestamp": "2026-10-19T20:07:31.492752+00:00",
+    "validation_timestamp": "2026-10-19T23:55:38.950155+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
