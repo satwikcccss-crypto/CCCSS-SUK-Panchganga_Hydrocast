@@ -248,7 +248,7 @@
     "spearman_rho": null,
     "nse": null,
     "rmse": null,
-    "lifecycle_status": "PENDING",
+    "lifecycle_status": "AWAITING_OBSERVATIONS",
     "verified_hours": 0
   },
   {
@@ -290,7 +290,7 @@
     "spearman_rho": null,
     "nse": null,
     "rmse": null,
-    "lifecycle_status": "AWAITING_OBSERVATIONS",
+    "lifecycle_status": "OBSERVATION_GAP",
     "verified_hours": 0
   },
   {
