@@ -135,8 +135,9 @@ To resolve this, we re-engineered the rating curve engine in [`stage_converter.p
        rather than by transferring stage across the 3.858 km reach. See the
        [Engineering Autopsy](errors-and-engineering-assumptions.md), item 20.
 3. **Monotonic PCHIP Spline Interpolation:**
-   Replaced standard cubic splines with **Piecewise Cubic Hermite Interpolating Polynomials (PCHIP)**, which preserves shape and mathematically guarantees strict monotonicity:
-   $$\frac{dQ}{dh} > 0 \quad \forall h \in [528.67\text{m}, 548.00\text{m}]$$
+    Replaced standard cubic splines with **Piecewise Cubic Hermite Interpolating Polynomials (PCHIP)**, which preserves shape and mathematically guarantees strict monotonicity:
+
+    $$\frac{dQ}{dh} > 0 \quad \forall h \in [528.67\text{m}, 548.00\text{m}]$$
 
 ---
 

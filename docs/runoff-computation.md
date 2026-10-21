@@ -434,15 +434,18 @@ The regularizer term $\lambda \left[ (1 - \alpha)^2 + (1 - \beta)^2 \right]$ pen
 HydroCast computes the operational peak arrival window directly from the resulting runoff hydrograph $Q_{\text{total}}(t)$:
 
 1. **Peak Index Determination:**
-   $$t^* = \arg\max_{t \in [0, 90]} Q_{\text{total}}(t), \quad T_{\text{peak}} = T_{\text{cycle\_start}} + t^* \cdot \Delta t$$
+
+    $$t^* = \arg\max_{t \in [0, 90]} Q_{\text{total}}(t), \quad T_{\text{peak}} = T_{\text{cycle\_start}} + t^* \cdot \Delta t$$
 
 2. **Permissible Confidence Interval Window:**
-   Field hydrodynamic validation confirms peak wave arrival follows normal dispersion $\mathcal{N}(0, \sigma^2)$ with $\sigma \approx 1.02\text{ hours}$.
-   At the 95% operational confidence interval ($z = 1.96$):
-   $$\Delta T_{\text{window}} = \pm 1.96 \cdot \sigma \approx \pm 2.0\text{ hours}$$
+    Field hydrodynamic validation confirms peak wave arrival follows normal dispersion $\mathcal{N}(0, \sigma^2)$ with $\sigma \approx 1.02\text{ hours}$.
+    At the 95% operational confidence interval ($z = 1.96$):
 
-   $$T_{\text{earliest}} = T_{\text{peak}} - 2.0\text{ hours}$$
-   $$T_{\text{latest}} = T_{\text{peak}} + 2.0\text{ hours}$$
+    $$\Delta T_{\text{window}} = \pm 1.96 \cdot \sigma \approx \pm 2.0\text{ hours}$$
+
+    $$T_{\text{earliest}} = T_{\text{peak}} - 2.0\text{ hours}$$
+
+    $$T_{\text{latest}} = T_{\text{peak}} + 2.0\text{ hours}$$
 
 3. **Peak Inundation Warning Trigger:**
    If $Q_{\text{total}}(t^*) \ge 1,200\text{ m}^3/s$ (Shivaji Bridge Alert Level, $542.1\text{m}$ MSL) or $Q_{\text{total}}(t^*) \ge 1,550\text{ m}^3/s$ (Danger Level, $543.3\text{m}$ MSL), this precise operational window $[T_{\text{earliest}}, T_{\text{latest}}]$ is dispatched across the DDMA Telegram Alert Bot and live dashboard overlays.

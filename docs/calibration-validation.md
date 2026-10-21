@@ -349,11 +349,15 @@ $$\text{Latest Strike Time} = \text{Peak Arrival Time} + 2.0\text{ hours}$$
 ### 8.3 Physical Uncertainty Envelopes
 
 1. **Stage Uncertainty Margin (m MSL):**
-   $$\delta_{\text{stage}} = 0.12 + 0.003 \times \max(0, h_{\text{peak}} - 535.0) \times 10$$
-   $$\text{Stage 95% Band} = [h_{\text{peak}} - \delta_{\text{stage}}, \; h_{\text{peak}} + \delta_{\text{stage}}]$$
+
+    $$\delta_{\text{stage}} = 0.12 + 0.003 \times \max(0, h_{\text{peak}} - 535.0) \times 10$$
+
+    $$\text{Stage 95% Band} = [h_{\text{peak}} - \delta_{\text{stage}}, \; h_{\text{peak}} + \delta_{\text{stage}}]$$
+
 2. **Discharge Uncertainty Band ($m^3/s$):**
-   Based on cross-sectional survey rating sensitivity:
-   $$\text{Discharge 95% Band} = [Q_{\text{peak}} \times 0.94, \; Q_{\text{peak}} \times 1.06]$$
+    Based on cross-sectional survey rating sensitivity:
+
+    $$\text{Discharge 95% Band} = [Q_{\text{peak}} \times 0.94, \; Q_{\text{peak}} \times 1.06]$$
 
 This high-precision strike window is visualized on the Next.js dashboard as the **Peak Flood Strike Horizon & Permissible Confidence Interval (±2.0h)** card.
 

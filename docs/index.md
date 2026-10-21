@@ -10,6 +10,25 @@
   </a>
 </p>
 
+## Interactive Engineering Consoles & Architectural Simulators
+
+All system architecture diagrams, hydrologic solvers, and telemetry pipelines are available as standalone interactive visual consoles (styled in clean White & Sky-Blue light theme):
+
+| # | System Console | Focus Area | Direct Interactive Simulator |
+|:---:|:---|:---|:---:|
+| **01** | **End-to-End Architecture** | 7-Stage System Topology & Boundaries | [Launch Simulator ↗](diagrams/01-architecture.html) |
+| **02** | **Precipitation & Telemetry Flow** | Atmospheric NWP Grids, Radar & Ingestion QC | [Launch Simulator ↗](diagrams/02-dataflow.html) |
+| **03** | **Forecast Cycle Workflow** | 12-Step Automation Engine & State Transitions | [Launch Simulator ↗](diagrams/03-workflow-forecast.html) |
+| **04** | **API Gateway & Auth Sequence** | Security Handshake, JWT & Master Keys | [Launch Simulator ↗](diagrams/04-sequence-auth-api.html) |
+| **05** | **Simulation Run Lifecycle** | Run Verification Horizon & State Machine | [Launch Simulator ↗](diagrams/05-lifecycle-runs.html) |
+| **06** | **Hybrid OS Deployment** | Linux Docker vs Windows HEC-RAS Host | [Launch Simulator ↗](diagrams/06-deployment-docker-os.html) |
+| **07** | **HydroSim 2D Handoff** | Boundary Conditions & HEC-RAS Inflow | [Launch Simulator ↗](diagrams/07-workflow-hydrosim-handoff.html) |
+| **08** | **Hydraulic Rating Simulator** | Rajaram Cross-Section & PCHIP Spline Curve | [Launch Simulator ↗](diagrams/08-rating-curve-hydraulics.html) |
+| **09** | **Rain Gauge Network Flowchart** | Spatial Selection, QC Gate & Thiessen Weights | [Launch Simulator ↗](diagrams/09-raingauge-selection-flowchart.html) |
+| **10** | **Hydrology Catchment Solver** | SCS-CN Runoff & Muskingum Routing Engine | [Launch Simulator ↗](diagrams/10-catchment-hydrology-solver.html) |
+| **11** | **Relational Schema ERD** | PostgreSQL 15, PostGIS 3.4 & TimescaleDB | [Launch Simulator ↗](diagrams/11-database-schema-erd.html) |
+| **12** | **Radar Telemetry Pipeline** | Ultrasonic Sensor Ingestion & Stage Conversion | [Launch Simulator ↗](diagrams/12-telemetry-radar-pipeline.html) |
+
 ## What this system is
 
 HydroCast is a rainfall-runoff and flood-early-warning platform for the

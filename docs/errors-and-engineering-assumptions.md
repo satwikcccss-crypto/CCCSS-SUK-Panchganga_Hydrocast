@@ -323,9 +323,12 @@ Rajaram Weir is located **upstream** of Shivaji Bridge (higher chainage along th
 Engineered `infer_rajaram_stage_from_shivaji(shivaji_stage_m, q_m3s)` in `src/hydrology/stage_converter.py`. The function dynamically evaluates the hydraulic flow regime:
 
 1. **Low-Flow / Pool Regime ($H_{\text{shivaji}} < 530.0\text{ m}$):** Rajaram water surface elevation is governed by the weir crest impoundment:
-   $$H_{\text{rajaram}} = \max\left(530.18, \; H_{\text{shivaji}} + 0.648\right)$$
+
+    $$H_{\text{rajaram}} = \max\left(530.18, \; H_{\text{shivaji}} + 0.648\right)$$
+
 2. **Open Flood Regime ($H_{\text{shivaji}} \ge 530.0\text{ m}$):** Water surface profile follows the surveyed longitudinal bed gradient:
-   $$H_{\text{rajaram}} = H_{\text{shivaji}} + 0.648\text{ m}$$
+
+    $$H_{\text{rajaram}} = H_{\text{shivaji}} + 0.648\text{ m}$$
 
 ---
 

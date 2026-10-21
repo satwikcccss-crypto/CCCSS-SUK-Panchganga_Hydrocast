@@ -179,20 +179,27 @@ To convert the rainfall-excess hyetograph into a river discharge hydrograph at t
 ```
 
 1. **Translation (Time-Area Routing):**
-   Runoff is lagged to the outlet according to the dimensionless time-area curve:
-   $$\frac{A_t}{A} = \begin{cases}
-   1.414 \cdot \left(\frac{t}{T_c}\right)^{1.5} & \text{for } 0 \le t \le 0.5 T_c \\
-   1 - 1.414 \cdot \left(1 - \frac{t}{T_c}\right)^{1.5} & \text{for } 0.5 T_c < t \le T_c
-   \end{cases}$$
-   Where $T_c$ is the Time of Concentration.
+    Runoff is lagged to the outlet according to the dimensionless time-area curve:
+
+    $$\frac{A_t}{A} = \begin{cases}
+    1.414 \cdot \left(\frac{t}{T_c}\right)^{1.5} & \text{for } 0 \le t \le 0.5 T_c \\
+    1 - 1.414 \cdot \left(1 - \frac{t}{T_c}\right)^{1.5} & \text{for } 0.5 T_c < t \le T_c
+    \end{cases}$$
+
+    Where $T_c$ is the Time of Concentration.
 
 2. **Attenuation (Linear Reservoir Routing):**
-   Storage effects in channels and valley wetlands are modeled through a linear reservoir with storage coefficient $R$:
-   $$S = R \cdot O$$
-   Using finite differences:
-   $$O_2 = C_A \cdot I_2 + C_B \cdot I_1 + C_C \cdot O_1$$
-   Where routing coefficients are derived from $\Delta t$ and $R$:
-   $$C_A = C_B = \frac{\Delta t}{2R + \Delta t}, \quad C_C = \frac{2R - \Delta t}{2R + \Delta t}$$
+    Storage effects in channels and valley wetlands are modeled through a linear reservoir with storage coefficient $R$:
+
+    $$S = R \cdot O$$
+
+    Using finite differences:
+
+    $$O_2 = C_A \cdot I_2 + C_B \cdot I_1 + C_C \cdot O_1$$
+
+    Where routing coefficients are derived from $\Delta t$ and $R$:
+
+    $$C_A = C_B = \frac{\Delta t}{2R + \Delta t}, \quad C_C = \frac{2R - \Delta t}{2R + \Delta t}$$
 
 ---
 
@@ -202,10 +209,13 @@ The Panchganga river maintains a continuous physical baseflow during the June–
 
 In [`runner.py`](file:///e:/hydrocast_complete/src/hms/runner.py):
 1. **Physical Live Baseflow:** Extracted directly from live water level telemetry:
-   $$Q_{base} = \text{convert\_stage\_to\_discharge\_manning}(h_{live}, \text{"SHIVAJI\_BRIDGE"})$$
-   At current normal monsoon stages ($532.63 - 533.28\text{ m MSL}$), $Q_{base} \approx 91.1 - 109.2\text{ m}^3/s$.
+
+    $$Q_{base} = \text{convert\_stage\_to\_discharge\_manning}(h_{live}, \text{"SHIVAJI\_BRIDGE"})$$
+
+    At current normal monsoon stages ($532.63 - 533.28\text{ m MSL}$), $Q_{base} \approx 91.1 - 109.2\text{ m}^3/s$.
 2. **Total River Hydrograph:**
-   $$Q_{total}(t) = Q_{base} + \sum_{i=1}^{9} Q_{surface, i}(t)$$
+
+    $$Q_{total}(t) = Q_{base} + \sum_{i=1}^{9} Q_{surface, i}(t)$$
 
 This ensures that even during dry weather breaks between monsoon storms, river discharge never collapses to artificial zero or non-physical single-digit values.
 
@@ -251,11 +261,17 @@ To adapt to temporal variations in catchment characteristics (e.g. soil pore sat
 HydroCast translates continuous 90-hour hydrographs into operational disaster response timeframes:
 
 1. **Nominal Crest Detection:** Identifies the point of maximum simulated discharge:
-   $$T_{\text{peak}} = \arg\max_{t} Q_{\text{total}}(t)$$
+
+    $$T_{\text{peak}} = \arg\max_{t} Q_{\text{total}}(t)$$
+
 2. **Gradient & Centroid Validation:** Cross-checks the crest with the hyetograph centroid lag:
-   $$\bar{T}_{\text{rain}} = \frac{\sum t \cdot P(t)}{\sum P(t)}, \quad T_{\text{lag, basin}} \approx 14.2 - 18.5\text{ hours}$$
+
+    $$\bar{T}_{\text{rain}} = \frac{\sum t \cdot P(t)}{\sum P(t)}, \quad T_{\text{lag, basin}} \approx 14.2 - 18.5\text{ hours}$$
+
 3. **Permissible Error Window Formulation:**
-   Based on empirical validation across historical monsoon events (2019, 2021, 2026), the travel time variability follows a normal distribution with standard deviation $\sigma_t \approx 1.02\text{ hours}$.
-   At a 95% confidence level ($z \approx 1.96$), the permissible early warning window is:
-   $$[T_{\text{earliest}}, T_{\text{latest}}] = [T_{\text{peak}} - 2.0\text{h}, T_{\text{peak}} + 2.0\text{h}]$$
+    Based on empirical validation across historical monsoon events (2019, 2021, 2026), the travel time variability follows a normal distribution with standard deviation $\sigma_t \approx 1.02\text{ hours}$.
+    At a 95% confidence level ($z \approx 1.96$), the permissible early warning window is:
+
+    $$[T_{\text{earliest}}, T_{\text{latest}}] = [T_{\text{peak}} - 2.0\text{h}, T_{\text{peak}} + 2.0\text{h}]$$
+
 4. **Operational Integration:** Both the nominal peak and the bounding window are published in the REST API payload (`/api/v1/runoff/summary`), rendered on the Next.js visual alert banner, and pushed directly to District Disaster Management Authority (DDMA) emergency dispatch channels.

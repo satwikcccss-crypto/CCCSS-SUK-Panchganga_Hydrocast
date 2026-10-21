@@ -168,15 +168,18 @@ def retry_with_backoff(
 ### 5.2 Key Resilience Mechanisms
 
 1. **Exponential Backoff with Full Random Jitter:**
-   $$\Delta t_{\text{wait}} = \min\left(t_{\text{max}}, t_{\text{base}} \cdot \text{factor}^{\text{attempt}} + \text{uniform}(0, t_{\text{jitter}})\right)$$
-   This prevents synchronized retry storms across concurrent workers.
+
+    $$\Delta t_{\text{wait}} = \min\left(t_{\text{max}}, t_{\text{base}} \cdot \text{factor}^{\text{attempt}} + \text{uniform}(0, t_{\text{jitter}})\right)$$
+
+    This prevents synchronized retry storms across concurrent workers.
 2. **Polite Inter-Station Delays:**
-   A 250ms spacing between sequential station requests ensures compliance with Open-Meteo non-commercial fair-use burst limits.
+    A 250ms spacing between sequential station requests ensures compliance with Open-Meteo non-commercial fair-use burst limits.
 3. **HTTP Status Code Discrimination:**
-   Transient errors (`429 Too Many Requests`, `500 Internal Server Error`, `502 Bad Gateway`, `503 Service Unavailable`, `504 Gateway Timeout`) trigger automatic backoff, while permanent errors (`400 Bad Request`, `404 Not Found`) fail fast without wasting quota.
+    Transient errors (`429 Too Many Requests`, `500 Internal Server Error`, `502 Bad Gateway`, `503 Service Unavailable`, `504 Gateway Timeout`) trigger automatic backoff, while permanent errors (`400 Bad Request`, `404 Not Found`) fail fast without wasting quota.
 4. **Spatial Fallback (Nearest Neighbor):**
-   If a station API fails after 4 exponential backoff attempts, the dynamic station selector automatically routes to the closest spatial alternate station in the same or adjacent subbasin using Euclidean geographic distance:
-   $$d = \sqrt{(\Delta\text{lon} \cdot \cos\bar{\phi})^2 + \Delta\phi^2}$$
+    If a station API fails after 4 exponential backoff attempts, the dynamic station selector automatically routes to the closest spatial alternate station in the same or adjacent subbasin using Euclidean geographic distance:
+
+    $$d = \sqrt{(\Delta\text{lon} \cdot \cos\bar{\phi})^2 + \Delta\phi^2}$$
 
 ---
 

@@ -1,29 +1,34 @@
 window.MathJax = {
   tex: {
-    inlineMath: [["\\(", "\\)"], ["$", "$"]],
-    displayMath: [["\\[", "\\]"], ["$$", "$$"]],
+    inlineMath: [["\\(", "\\)"]],
+    displayMath: [["\\[", "\\]"]],
+    processEscapes: true,
+    processEnvironments: true,
     macros: {
       PBIAS: "\\text{PBIAS}",
       NSE: "\\text{NSE}",
       RMSE: "\\text{RMSE}",
-      MAE: "\\text{MAE}",
-      ρ: "\\rho",
-      σ: "\\sigma"
+      MAE: "\\text{MAE}"
     }
   },
   options: {
     ignoreHtmlClass: ".*|",
     processHtmlClass: "arithmatex"
-  },
-  jax: ["output/chtml"],
-  jsMath2jax: {
-    delimiters: [
-      {left: "$$", right: "$$", delimiters: "double"},
-      {left: "$", right: "$", delimiters: "inline"}
-    ]
   }
 };
 
-window.addEventListener('load', () => {
-  MathJax.typesetPromise().catch(err => console.error('MathJax typesetting failed:', err));
+document$.subscribe(() => {
+  if (typeof MathJax !== "undefined" && MathJax.typesetPromise) {
+    if (MathJax.startup && MathJax.startup.output) {
+      MathJax.startup.output.clearCache();
+    }
+    if (MathJax.typesetClear) {
+      MathJax.typesetClear();
+    }
+    if (MathJax.texReset) {
+      MathJax.texReset();
+    }
+    MathJax.typesetPromise().catch(err => console.error('MathJax typesetting failed:', err));
+  }
 });
+
