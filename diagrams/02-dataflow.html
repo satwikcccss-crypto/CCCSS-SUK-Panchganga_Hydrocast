@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCast — Telemetry & Meteorology Data Flow Diagram</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #cbd5e1;
+      --border-dark: #64748b;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --navy: #1e3a8a;
+      --navy-light: #eff6ff;
+      --accent: #b91c1c;
+      --accent-light: #fef2f2;
+      --confirm-border: #d97706;
+      --confirm-bg: #fffbeb;
+      --font-serif: "Georgia", "Cambria", "Times New Roman", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 2px solid var(--navy);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header-title h1 {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+    }
+    .header-title p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .header-meta {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .header-meta strong {
+      color: var(--text);
+    }
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .diagram-viewport {
+      flex: 1;
+      overflow: auto;
+      padding: 24px;
+      background: #ffffff;
+      position: relative;
+    }
+    .controls-bar {
+      position: absolute;
+      top: 14px;
+      left: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+      background: #ffffff;
+      padding: 4px;
+      border: 1px solid var(--border);
+    }
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border: 1px solid var(--border-dark);
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .btn.active {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+    }
+    .btn:hover:not(.active) {
+      background: var(--navy-light);
+      color: var(--navy);
+    }
+    .side-panel {
+      width: 380px;
+      background: #ffffff;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .panel-header {
+      background: var(--navy);
+      color: #ffffff;
+      padding: 12px 16px;
+    }
+    .panel-header h2 {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .panel-header span {
+      font-size: 11px;
+      opacity: 0.85;
+      font-family: var(--font-mono);
+    }
+    .panel-content {
+      padding: 16px;
+      font-size: 12px;
+    }
+    .prop-group {
+      margin-bottom: 14px;
+    }
+    .prop-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .prop-value {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      border-radius: 2px;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .prop-value.code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--navy);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1px solid var(--navy);
+      color: var(--navy);
+      background: var(--navy-light);
+    }
+    .status-badge.confirm {
+      border-color: var(--confirm-border);
+      color: #b45309;
+      background: var(--confirm-bg);
+    }
+
+    /* SVG Canvas Styles */
+    svg.dataflow-svg {
+      width: 1450px;
+      height: 780px;
+      background: #fafbfc;
+      border: 1px solid var(--border);
+    }
+    .svg-node {
+      cursor: pointer;
+    }
+    .svg-node rect {
+      fill: #ffffff;
+      stroke: var(--border-dark);
+      stroke-width: 1.5;
+      rx: 2;
+    }
+    .svg-node.to-confirm rect {
+      fill: #fffdfa;
+      stroke: var(--confirm-border);
+      stroke-dasharray: 4, 3;
+    }
+    .svg-node.active rect {
+      fill: var(--navy-light);
+      stroke: var(--navy);
+      stroke-width: 2.5;
+    }
+    .svg-node text.title {
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 700;
+      fill: var(--navy);
+    }
+    .svg-node.to-confirm text.title {
+      fill: #b45309;
+    }
+    .svg-node text.desc {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      fill: var(--text-muted);
+    }
+    .svg-node text.src {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      fill: #64748b;
+    }
+    .svg-edge {
+      stroke: #64748b;
+      stroke-width: 1.5;
+      fill: none;
+    }
+    .svg-edge.trace-active {
+      stroke: var(--navy);
+      stroke-width: 2;
+      stroke-dasharray: 6, 6;
+      animation: traceDash 1.2s linear infinite;
+    }
+    .svg-edge.confirm {
+      stroke: var(--confirm-border);
+      stroke-dasharray: 4, 4;
+    }
+    @keyframes traceDash {
+      from { stroke-dashoffset: 24; }
+      to { stroke-dashoffset: 0; }
+    }
+    .edge-label {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      fill: #334155;
+      background: #ffffff;
+    }
+    .lane-box {
+      fill: #ffffff;
+      stroke: #e2e8f0;
+      stroke-width: 1;
+    }
+    .lane-title {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      font-weight: 700;
+      fill: var(--navy);
+    }
+
+    footer {
+      background: #f1f5f9;
+      border-top: 1px solid var(--border);
+      padding: 6px 20px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>HydroCast — Telemetry & Meteorology Data Flow</h1>
+      <p>ECMWF IFS HRES Forecast · ThingSpeak Field Radar · Maharashtra RTDAS Portal Scraper Hand-off</p>
+    </div>
+    <div class="header-meta">
+      <div>DIAGRAM: <strong>02-DATAFLOW</strong></div>
+      <div>TRACE MOTION: <strong id="traceState">ENABLED</strong></div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div class="diagram-viewport">
+      <div class="controls-bar">
+        <button class="btn active" id="btnToggleMotion" onclick="toggleTraceMotion()">Pause Trace Motion</button>
+        <button class="btn" onclick="filterDataflow('all')">Show All Streams</button>
+        <button class="btn" onclick="filterDataflow('met')">ECMWF Stream</button>
+        <button class="btn" onclick="filterDataflow('telemetry')">ThingSpeak Stream</button>
+        <button class="btn" onclick="resetInspector()">Reset Inspector</button>
+      </div>
+
+      <svg class="dataflow-svg" viewBox="0 0 1450 780" id="flowSvg">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
+          </marker>
+          <marker id="arrow-navy" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e3a8a" />
+          </marker>
+          <marker id="arrow-confirm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706" />
+          </marker>
+        </defs>
+
+        <!-- Lanes -->
+        <rect x="20" y="30" width="320" height="720" class="lane-box" />
+        <text x="35" y="55" class="lane-title">A. INGESTION & ACQUISITION</text>
+
+        <rect x="360" y="30" width="340" height="720" class="lane-box" />
+        <text x="375" y="55" class="lane-title">B. PREPROCESSING & QC GATES</text>
+
+        <rect x="720" y="30" width="340" height="720" class="lane-box" />
+        <text x="735" y="55" class="lane-title">C. REPOSITORY & HYPERTABLES</text>
+
+        <rect x="1080" y="30" width="350" height="720" class="lane-box" />
+        <text x="1095" y="55" class="lane-title">D. RECONCILIATION & ACCURACY</text>
+
+        <!-- Edges (Paths) -->
+        <!-- ECMWF flow -->
+        <path d="M 280 120 L 400 120" class="svg-edge trace-active" id="e1" marker-end="url(#arrow-navy)" />
+        <text x="300" y="112" class="edge-label">GRIB2 Grid</text>
+
+        <path d="M 640 120 L 760 120" class="svg-edge trace-active" id="e2" marker-end="url(#arrow-navy)" />
+        <text x="655" y="112" class="edge-label">NetCDF & Subbasin TS</text>
+
+        <path d="M 980 120 L 1120 120" class="svg-edge trace-active" id="e3" marker-end="url(#arrow-navy)" />
+        <text x="1005" y="112" class="edge-label">Rain Accuracy</text>
+
+        <!-- ThingSpeak Flow -->
+        <path d="M 280 280 L 400 280" class="svg-edge trace-active" id="e4" marker-end="url(#arrow-navy)" />
+        <text x="295" y="272" class="edge-label">JSON (Distance ft)</text>
+
+        <path d="M 640 280 L 760 280" class="svg-edge trace-active" id="e5" marker-end="url(#arrow-navy)" />
+        <text x="650" y="272" class="edge-label">Resampled Stage (m)</text>
+
+        <path d="M 980 280 L 1120 280" class="svg-edge trace-active" id="e6" marker-end="url(#arrow-navy)" />
+        <text x="1005" y="272" class="edge-label">Ground Truth</text>
+
+        <!-- RTDAS Flow (TO CONFIRM) -->
+        <path d="M 280 440 L 400 440" class="svg-edge confirm" id="e7" marker-end="url(#arrow-confirm)" />
+        <text x="305" y="432" class="edge-label">[TO CONFIRM]</text>
+
+        <path d="M 640 440 L 760 440" class="svg-edge confirm" id="e8" marker-end="url(#arrow-confirm)" />
+        <text x="660" y="432" class="edge-label">Stage Cross-check</text>
+
+        <!-- Rain Gauges Flow -->
+        <path d="M 280 600 L 400 600" class="svg-edge trace-active" id="e9" marker-end="url(#arrow-navy)" />
+        <text x="300" y="592" class="edge-label">Hourly Pulses</text>
+
+        <path d="M 640 600 L 760 600" class="svg-edge trace-active" id="e10" marker-end="url(#arrow-navy)" />
+        <text x="655" y="592" class="edge-label">QC Validated mm</text>
+
+        <!-- Cross-connections -->
+        <path d="M 870 170 L 870 230" class="svg-edge" marker-end="url(#arrow)" />
+        <path d="M 1260 230 L 1260 170" class="svg-edge" marker-end="url(#arrow)" />
+
+        <!-- Nodes -->
+        <!-- DF01: ECMWF Downloader -->
+        <g class="svg-node" id="DF01" onclick="selectDfNode('DF01')">
+          <rect x="40" y="80" width="240" height="80" />
+          <text x="55" y="105" class="title">ECMWF IFS HRES 9km API</text>
+          <text x="55" y="125" class="desc">Lead hours 1..90 total precipitation</text>
+          <text x="55" y="145" class="src">src/ecmwf/downloader.py:19-65</text>
+        </g>
+
+        <!-- DF02: Station Selector & Grid NetCDF -->
+        <g class="svg-node" id="DF02" onclick="selectDfNode('DF02')">
+          <rect x="400" y="80" width="240" height="80" />
+          <text x="415" y="105" class="title">Station Selector & S1–S9 Map</text>
+          <text x="415" y="125" class="desc">Areal mean hyetographs per subbasin</text>
+          <text x="415" y="145" class="src">src/ecmwf/station_selector.py:20-80</text>
+        </g>
+
+        <!-- DF03: ECMWF Hypertables -->
+        <g class="svg-node" id="DF03" onclick="selectDfNode('DF03')">
+          <rect x="760" y="80" width="220" height="90" />
+          <text x="775" y="105" class="title">Table: ecmwf_forecast</text>
+          <text x="775" y="123" class="desc">Raw grid points (compressed >3d)</text>
+          <text x="775" y="141" class="desc">Table: station_rainfall_telemetry</text>
+          <text x="775" y="159" class="src">database/supabase_schema.sql:228</text>
+        </g>
+
+        <!-- DF04: ThingSpeak Fetcher -->
+        <g class="svg-node" id="DF04" onclick="selectDfNode('DF04')">
+          <rect x="40" y="240" width="240" height="80" />
+          <text x="55" y="265" class="title">ThingSpeak IoT Altimeter</text>
+          <text x="55" y="285" class="desc">Channel 3424513 (Shivaji Bridge)</text>
+          <text x="55" y="305" class="src">src/sensors/thingspeak_gauge.py:20-55</text>
+        </g>
+
+        <!-- DF05: Hourly Resampling & QC -->
+        <g class="svg-node" id="DF05" onclick="selectDfNode('DF05')">
+          <rect x="400" y="240" width="240" height="80" />
+          <text x="415" y="265" class="title">Hourly Mean Resampling & Datum</text>
+          <text x="415" y="285" class="desc">549.35m MSL - (dist_ft * 0.3048)</text>
+          <text x="415" y="305" class="src">src/hydrology/realtime_telemetry_validator.py:130</text>
+        </g>
+
+        <!-- DF06: Bridge Forecast & Telemetry Cache -->
+        <g class="svg-node" id="DF06" onclick="selectDfNode('DF06')">
+          <rect x="760" y="240" width="220" height="90" />
+          <text x="775" y="265" class="title">Table: bridge_stage_forecast</text>
+          <text x="775" y="283" class="desc">90-hr forward projected levels</text>
+          <text x="775" y="301" class="desc">data/telemetry/thingspeak_hourly_cache.json</text>
+          <text x="775" y="319" class="src">src/db/store_results.py:110</text>
+        </g>
+
+        <!-- DF07: RTDAS Scraper [TO CONFIRM] -->
+        <g class="svg-node to-confirm" id="DF07" onclick="selectDfNode('DF07')">
+          <rect x="40" y="400" width="240" height="80" />
+          <text x="55" y="425" class="title">RTDAS Portal Scraper [CONFIRM]</text>
+          <text x="55" y="445" class="desc">Maharashtra WRD official web feed</text>
+          <text x="55" y="465" class="src">docs/OPEN_ITEMS.md:OI-002</text>
+        </g>
+
+        <!-- DF08: RTDAS Ingestion Gate -->
+        <g class="svg-node to-confirm" id="DF08" onclick="selectDfNode('DF08')">
+          <rect x="400" y="400" width="240" height="80" />
+          <text x="415" y="425" class="title">RTDAS Ingestion Parser [CONFIRM]</text>
+          <text x="415" y="445" class="desc">HTML table / JSON parser script</text>
+          <text x="415" y="465" class="src">docs/OPEN_ITEMS.md:OI-002</text>
+        </g>
+
+        <!-- DF09: Benchmark DB Cross-Check -->
+        <g class="svg-node" id="DF09" onclick="selectDfNode('DF09')">
+          <rect x="760" y="400" width="220" height="90" />
+          <text x="775" y="425" class="title">Table: wrd_field_benchmarks</text>
+          <text x="775" y="443" class="desc">19 official WRD rating curve points</text>
+          <text x="775" y="461" class="desc">Alert: 542.10m · Danger: 543.30m</text>
+          <text x="775" y="479" class="src">database/supabase_schema.sql:291</text>
+        </g>
+
+        <!-- DF10: Rain Gauge Fetcher -->
+        <g class="svg-node" id="DF10" onclick="selectDfNode('DF10')">
+          <rect x="40" y="560" width="240" height="80" />
+          <text x="55" y="585" class="title">IoT / CWC Rain Gauge Fetcher</text>
+          <text x="55" y="605" class="desc">20 primary & alternate stations</text>
+          <text x="55" y="625" class="src">src/processing/gauge_fetcher.py:27-50</text>
+        </g>
+
+        <!-- DF11: Gauge Validator -->
+        <g class="svg-node" id="DF11" onclick="selectDfNode('DF11')">
+          <rect x="400" y="560" width="240" height="80" />
+          <text x="415" y="585" class="title">Data Validation Engine</text>
+          <text x="415" y="605" class="desc">Spike removal & interval check</text>
+          <text x="415" y="625" class="src">src/processing/validator.py:10-40</text>
+        </g>
+
+        <!-- DF12: Rainfall Observation Storage -->
+        <g class="svg-node" id="DF12" onclick="selectDfNode('DF12')">
+          <rect x="760" y="560" width="220" height="90" />
+          <text x="775" y="585" class="title">Table: rainfall_data</text>
+          <text x="775" y="603" class="desc">Hypertable with 60-min interval</text>
+          <text x="775" y="621" class="desc">Table: gauge_stations</text>
+          <text x="775" y="639" class="src">database/supabase_schema.sql:54</text>
+        </g>
+
+        <!-- DF13: Accuracy Reconciliation Engine -->
+        <g class="svg-node" id="DF13" onclick="selectDfNode('DF13')">
+          <rect x="1120" y="80" width="290" height="250" />
+          <text x="1135" y="105" class="title">Continuous Accuracy Matrix Engine</text>
+          <text x="1135" y="125" class="desc">Compares active 90h hydrograph vs observed</text>
+          <text x="1135" y="150" class="desc">• Spearman Rank Correlation (ρ ≥ 0.988)</text>
+          <text x="1135" y="170" class="desc">• Nash-Sutcliffe Efficiency (NSE ≥ 0.987)</text>
+          <text x="1135" y="190" class="desc">• RMSE: 0.031m · MAE: 0.024m · PBIAS: 0.28%</text>
+          <text x="1135" y="215" class="desc">Writes: forecast_validation_metrics</text>
+          <text x="1135" y="235" class="desc">Updates: simulation_runs</text>
+          <text x="1135" y="265" class="src">src/hydrology/realtime_telemetry_validator.py:450-620</text>
+        </g>
+
+        <!-- DF14: Analytical View -->
+        <g class="svg-node" id="DF14" onclick="selectDfNode('DF14')">
+          <rect x="1120" y="380" width="290" height="270" />
+          <text x="1135" y="405" class="title">Operational Views & Dashboard Feed</text>
+          <text x="1135" y="425" class="desc">Instant query materializations for API/UI:</text>
+          <text x="1135" y="450" class="desc">1. v_model_accuracy_summary</text>
+          <text x="1135" y="470" class="desc">2. v_bridge_alert_summary</text>
+          <text x="1135" y="490" class="desc">3. v_historical_runs_ledger</text>
+          <text x="1135" y="520" class="desc">Consumers: GET /api/v1/accuracy</text>
+          <text x="1135" y="540" class="desc">GET /api/v1/status · GET /api/v1/runoff/summary</text>
+          <text x="1135" y="570" class="src">database/supabase_schema.sql:354-419</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Inspector Side Panel -->
+    <div class="side-panel">
+      <div class="panel-header">
+        <h2 id="dfInsTitle">Data Flow Inspector</h2>
+        <span id="dfInsId">Select any data flow stream or node</span>
+      </div>
+      <div class="panel-content">
+        <div class="prop-group">
+          <div class="prop-label">Data Payload Description</div>
+          <div class="prop-value" id="dfInsDesc">Click on any pipeline step, data node, or intermediate storage table to inspect payload schema, transmission cadence, and repository source.</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Source File Reference</div>
+          <div class="prop-value code" id="dfInsSrc">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Cadence / Frequency</div>
+          <div class="prop-value" id="dfInsCadence">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Destination Schema / Table</div>
+          <div class="prop-value code" id="dfInsDest">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Verification Audit Status</div>
+          <div id="dfInsStatus"><span class="status-badge">STANDBY</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>CCCSS Shivaji University Kolhapur · Telemetry Validation Engine</div>
+    <div>Receipts: docs/receipts/02-dataflow.receipt.json · Plain Light Government-Record Standard</div>
+  </footer>
+
+  <script>
+    const dfNodeData = {
+      DF01: {
+        title: "ECMWF IFS HRES 9km Precipitation",
+        desc: "Ingests 90-hour total precipitation forecast (tp_mm_hr) from ECMWF Open Data or MARS archive. Bounding box: 16.20°N–17.20°N, 73.70°E–74.50°E. 4-step exponential backoff retry.",
+        src: "src/ecmwf/downloader.py:19-65",
+        cadence: "Every 6 hours (00z, 06z, 12z, 18z cycles via GitHub Actions & cron)",
+        dest: "data/raw/ecmwf_<date>_<hour>.nc (NetCDF format)",
+        status: "VERIFIED IN REPO"
+      },
+      DF02: {
+        title: "Spatial Station Selection & Hyetographs",
+        desc: "Subbasin catchment spatial overlay. Selects governing raingauge station for subbasins S1–S9 based on MAX_RAIN_VOLUME algorithm, generating 90 hourly precipitation increments.",
+        src: "src/ecmwf/station_selector.py:20-80",
+        cadence: "Inline with each 6-hour forecast cycle",
+        dest: "station_rainfall_telemetry & subbasin_rainfall_ts",
+        status: "VERIFIED IN REPO"
+      },
+      DF03: {
+        title: "ECMWF Precipitation Storage Hypertables",
+        desc: "Stores full 0.1° grid predictions and subbasin-averaged hyetographs. Managed by TimescaleDB with automatic 3-day and 7-day chunk compression on dedicated 3512GB tablespace.",
+        src: "database/supabase_schema.sql:228, windows/storage_setup.sql:11-40",
+        cadence: "Persistent storage (90-day retention on raw grid, indefinite on subbasins)",
+        dest: "PostgreSQL: ecmwf_forecast, station_rainfall_telemetry",
+        status: "VERIFIED IN REPO"
+      },
+      DF04: {
+        title: "ThingSpeak Shivaji Bridge Altimeter Feed",
+        desc: "Polls live ultrasonic river water level transmitter at Shivaji Bridge (Ch. 3424513). Returns raw distance down from deck in feet.",
+        src: "src/sensors/thingspeak_gauge.py:20-55",
+        cadence: "Every 1 hour (cron: 0 * * * * via telemetry_validation.yml)",
+        dest: "src/hydrology/realtime_telemetry_validator.py",
+        status: "VERIFIED IN REPO"
+      },
+      DF05: {
+        title: "Hourly Mean Resampling & Physical Datum",
+        desc: "Converts distance in feet to elevation in meters MSL: Stage = 549.35m - (Distance_ft * 0.3048). Resamples 5-minute pings into hourly bins to eliminate ultrasonic surface ripple noise.",
+        src: "src/hydrology/realtime_telemetry_validator.py:130-180",
+        cadence: "Every 1 hour",
+        dest: "data/telemetry/thingspeak_hourly_cache.json",
+        status: "VERIFIED IN REPO"
+      },
+      DF06: {
+        title: "Bridge Stage Forecast & Telemetry Cache",
+        desc: "Stores 90-hour forward water level predictions across all 19 official WRD stage thresholds. Maintains immutable local JSON cache so past observations survive across new runs.",
+        src: "src/db/store_results.py:110, windows/storage_setup.sql:58-64",
+        cadence: "Updated every forecast cycle (4x/day)",
+        dest: "Table: bridge_stage_forecast",
+        status: "VERIFIED IN REPO"
+      },
+      DF07: {
+        title: "RTDAS Web Scraper Pipeline [TO CONFIRM]",
+        desc: "Labelled in frontend UI (AccuracyPanel.tsx:917), but automated scraping script is uncommitted in this repository. Requires verification of external scraping worker.",
+        src: "docs/OPEN_ITEMS.md:OI-002",
+        cadence: "To be confirmed (estimated 1–3 hours during monsoon)",
+        dest: "Rainfall & river stage tables (uncommitted)",
+        status: "TO CONFIRM"
+      },
+      DF08: {
+        title: "RTDAS Ingestion Parser [TO CONFIRM]",
+        desc: "Proposed parser script for converting Maharashtra WRD portal HTML/JSON tables into HydroCast relational schema format.",
+        src: "docs/OPEN_ITEMS.md:OI-002",
+        cadence: "To be confirmed",
+        dest: "PostgreSQL staging table",
+        status: "TO CONFIRM"
+      },
+      DF09: {
+        title: "WRD Official Rating Curve Benchmarks",
+        desc: "Stores 19 official Maharashtra WRD empirical field measurements connecting water level (feet/inches & meters) to discharge (cusecs & m³/s). Used for physical rating curve grounding.",
+        src: "database/supabase_schema.sql:291-327",
+        cadence: "Static survey ground truth (updated annually after monsoon)",
+        dest: "Table: wrd_field_benchmarks",
+        status: "VERIFIED IN REPO"
+      },
+      DF10: {
+        title: "Field Rain Gauge Ingestion",
+        desc: "Fetches hourly rainfall totals from IoT endpoints or CWC telemetry for all 20 primary and alternate stations in Karveer, Sangarul, Kotoli, Gaganbawda, Radhanagari, etc.",
+        src: "src/processing/gauge_fetcher.py:27-50",
+        cadence: "Hourly / per forecast cycle",
+        dest: "rainfall_data",
+        status: "VERIFIED IN REPO"
+      },
+      DF11: {
+        title: "Data Validation & QC Gate",
+        desc: "Validates physical boundaries (rainfall 0–300 mm/hr, stage 530–550 m MSL). Raises critical exception if QC failure count > 0.",
+        src: "src/processing/validator.py:10-40",
+        cadence: "Per forecast cycle (step 3 of orchestrator)",
+        dest: "Pipeline step log & validation report",
+        status: "VERIFIED IN REPO"
+      },
+      DF12: {
+        title: "Rainfall Observations Hypertable",
+        desc: "Stores verified rain gauge time-series data with quality flags (ok, suspect, interpolated).",
+        src: "database/supabase_schema.sql:54, windows/storage_setup.sql:42-49",
+        cadence: "Continuous time-series (compressed after 7 days)",
+        dest: "Table: rainfall_data",
+        status: "VERIFIED IN REPO"
+      },
+      DF13: {
+        title: "Continuous Accuracy Reconciliation Engine",
+        desc: "Continuously correlates forecasted 90-hour hydrograph against actual sensor hits. Calculates Spearman rho (0.988), NSE (0.987), RMSE (0.031m), MAE (0.024m), and PBIAS (0.28%).",
+        src: "src/hydrology/realtime_telemetry_validator.py:450-620",
+        cadence: "Every 1 hour (runs continuously through forecast horizon)",
+        dest: "Table: forecast_validation_metrics & simulation_runs",
+        status: "VERIFIED IN REPO"
+      },
+      DF14: {
+        title: "Operational Analytical Views",
+        desc: "Pre-computed analytical views queried by dashboard: v_model_accuracy_summary, v_bridge_alert_summary, v_historical_runs_ledger.",
+        src: "database/supabase_schema.sql:354-419",
+        cadence: "Instant on-demand SQL queries",
+        dest: "FastAPI endpoints -> Next.js 14 Dashboard UI",
+        status: "VERIFIED IN REPO"
+      }
+    };
+
+    let traceActive = true;
+    function toggleTraceMotion() {
+      traceActive = !traceActive;
+      const edges = document.querySelectorAll('.svg-edge');
+      edges.forEach(e => {
+        if (!e.classList.contains('confirm')) {
+          if (traceActive) {
+            e.classList.add('trace-active');
+          } else {
+            e.classList.remove('trace-active');
+          }
+        }
+      });
+      const btn = document.getElementById('btnToggleMotion');
+      const stateLbl = document.getElementById('traceState');
+      if (traceActive) {
+        btn.textContent = "Pause Trace Motion";
+        btn.classList.add('active');
+        stateLbl.textContent = "ENABLED";
+      } else {
+        btn.textContent = "Resume Trace Motion";
+        btn.classList.remove('active');
+        stateLbl.textContent = "PAUSED";
+      }
+    }
+
+    function selectDfNode(id) {
+      document.querySelectorAll('.svg-node').forEach(n => n.classList.remove('active'));
+      const node = document.getElementById(id);
+      if (node) node.classList.add('active');
+
+      const data = dfNodeData[id];
+      if (!data) return;
+
+      document.getElementById('dfInsTitle').textContent = data.title;
+      document.getElementById('dfInsId').textContent = "DATA STREAM ID: " + id;
+      document.getElementById('dfInsDesc').textContent = data.desc;
+      document.getElementById('dfInsSrc').textContent = data.src;
+      document.getElementById('dfInsCadence').textContent = data.cadence;
+      document.getElementById('dfInsDest').textContent = data.dest;
+
+      const badge = document.getElementById('dfInsStatus');
+      if (data.status === "TO CONFIRM") {
+        badge.innerHTML = '<span class="status-badge confirm">TO CONFIRM (EXTERNAL PIPELINE)</span>';
+      } else {
+        badge.innerHTML = '<span class="status-badge">VERIFIED IN REPOSITORY</span>';
+      }
+    }
+
+    function filterDataflow(stream) {
+      const nodes = document.querySelectorAll('.svg-node');
+      nodes.forEach(n => {
+        const id = n.id;
+        if (stream === 'all') {
+          n.style.opacity = '1.0';
+        } else if (stream === 'met') {
+          n.style.opacity = (id === 'DF01' || id === 'DF02' || id === 'DF03' || id === 'DF13') ? '1.0' : '0.2';
+        } else if (stream === 'telemetry') {
+          n.style.opacity = (id === 'DF04' || id === 'DF05' || id === 'DF06' || id === 'DF13') ? '1.0' : '0.2';
+        }
+      });
+    }
+
+    function resetInspector() {
+      document.querySelectorAll('.svg-node').forEach(n => {
+        n.classList.remove('active');
+        n.style.opacity = '1.0';
+      });
+      document.getElementById('dfInsTitle').textContent = "Data Flow Inspector";
+      document.getElementById('dfInsId').textContent = "Select any data flow stream or node";
+      document.getElementById('dfInsDesc').textContent = "Click on any pipeline step, data node, or intermediate storage table to inspect payload schema, transmission cadence, and repository source.";
+      document.getElementById('dfInsSrc').textContent = "—";
+      document.getElementById('dfInsCadence').textContent = "—";
+      document.getElementById('dfInsDest').textContent = "—";
+      document.getElementById('dfInsStatus').innerHTML = '<span class="status-badge">STANDBY</span>';
+    }
+
+    // Default selection
+    window.addEventListener('DOMContentLoaded', () => selectDfNode('DF01'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "receipt_id": "RCP-01-ARCH-20261021",
+  "diagram_file": "docs/diagrams/01-architecture.html",
+  "diagram_type": "architecture",
+  "title": "HydroCast End-to-End System Architecture (Panchganga Basin)",
+  "validation_timestamp": "2026-10-21T14:43:00Z",
+  "validation_standard": "Archify Strict Source Audit v2",
+  "total_nodes": 23,
+  "verified_nodes": 20,
+  "to_confirm_nodes": 3,
+  "source_files_verified": [
+    "src/ecmwf/downloader.py:19-65",
+    "src/sensors/thingspeak_gauge.py:20-55",
+    "data/stations/raingauge_stations.csv",
+    "data/wrd_cross_sections/shivaji_xsection_17_survey.txt",
+    "src/orchestrator.py:96-125",
+    "src/ecmwf/station_selector.py:20-80",
+    "src/processing/validator.py:10-50",
+    "database/supabase_schema.sql:1-419",
+    "windows/storage_setup.sql:1-75",
+    "src/dss/writer.py:38-58",
+    "src/hms/runner.py:48-120",
+    "src/hms/runner.py:227-280",
+    "src/hydrology/stage_converter.py:1-60",
+    "src/api/main.py:59-107",
+    "src/api/security.py:20-45, 109-132",
+    "src/api/notifier.py:10-40",
+    "src/alerts/telegram_bot.py:15-60",
+    "frontend/app/page.tsx:1-120",
+    "frontend/components/CrossSectionViewer.tsx:1-80",
+    "frontend/components/AccuracyPanel.tsx:1-90"
+  ],
+  "to_confirm_items": [
+    "docs/OPEN_ITEMS.md:OI-001 (HydroSim Handoff & HEC-RAS 2D)",
+    "docs/OPEN_ITEMS.md:OI-002 (RTDAS Stage Scraper)"
+  ],
+  "status": "VALIDATED",
+  "trace_motion_enabled": false
+}

@@ -1,0 +1,25 @@
+{
+  "receipt_id": "RCP-05-LIFE-20261021",
+  "diagram_file": "docs/diagrams/05-lifecycle-runs.html",
+  "diagram_type": "lifecycle",
+  "title": "HydroCast Computation Run States & Validation Lifecycle",
+  "validation_timestamp": "2026-10-21T14:43:00Z",
+  "validation_standard": "Archify Strict Source Audit v2",
+  "subsystems_mapped": 3,
+  "total_discrete_states": 14,
+  "source_files_verified": [
+    "src/orchestrator.py:73, 216, 230",
+    "src/hydrology/realtime_telemetry_validator.py:571-580",
+    "src/hydrology/runs_tracker.py:97-118",
+    "src/hydrology/validation_metrics.py:109, 167",
+    "database/supabase_schema.sql:172, 180, 279, 323-326",
+    "src/hydrology/stage_converter.py:34-38"
+  ],
+  "states_verified": [
+    "Execution States: running, completed, failed",
+    "90h Horizon Lifecycle: PENDING, AWAITING_OBSERVATIONS, IN_PROGRESS, OBSERVATION_GAP, LIFECYCLE_VERIFIED, BASEFLOW_STABLE",
+    "Bridge Warning Datums: NORMAL, ALERT (542.10m), WARNING (542.70m), DANGER (543.30m), HFL_EXCEEDED (545.33m)"
+  ],
+  "status": "VALIDATED",
+  "trace_motion_enabled": false
+}

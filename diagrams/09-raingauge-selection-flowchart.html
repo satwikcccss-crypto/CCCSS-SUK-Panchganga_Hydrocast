@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCast — Rain Gauge Network, Quality Control & Subbasin Allocation Simulator</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel-bg: #ffffff;
+      --card-bg: #f0f9ff;
+      --border: #cbd5e1;
+      --border-blue: #bae6fd;
+      --navy: #1e3a8a;
+      --sky: #0284c7;
+      --blue: #0ea5e9;
+      --green: #059669;
+      --amber: #d97706;
+      --red: #dc2626;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 2px solid var(--navy);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      z-index: 10;
+    }
+    .header-title h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ecfdf5;
+      border: 1px solid #10b981;
+      color: #047857;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px #10b981;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .header-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+    .header-meta strong { color: var(--navy); }
+
+    .main-workspace {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .left-flow-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      gap: 12px;
+      overflow-y: auto;
+      background: #f1f5f9;
+    }
+
+    .toolbar-bar {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tool-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-right: 4px;
+    }
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all 0.15s;
+    }
+    .btn:hover { background: #f8fafc; border-color: var(--sky); }
+    .btn.active { background: var(--sky); border-color: var(--sky); color: #ffffff; }
+    .btn.warn { border-color: #fde68a; color: #b45309; background: #fffbeb; }
+    .btn.warn.active { background: var(--amber); color: #ffffff; border-color: var(--amber); }
+    .btn.danger { border-color: #fecaca; color: var(--red); background: #fef2f2; }
+    .btn.danger.active { background: var(--red); color: #ffffff; border-color: var(--red); }
+
+    .sim-viewport {
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 520px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .sim-header {
+      padding: 10px 16px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--navy);
+      font-weight: 700;
+    }
+    svg.flowchart-svg {
+      width: 100%;
+      height: 100%;
+      flex: 1;
+      background: #ffffff;
+    }
+
+    .node-box {
+      cursor: pointer;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .node-box:hover {
+      filter: drop-shadow(0 2px 8px rgba(2, 132, 199, 0.25));
+    }
+    .node-box.selected rect {
+      stroke: var(--sky) !important;
+      stroke-width: 2.5 !important;
+    }
+
+    .right-sidebar {
+      width: 440px;
+      background: #ffffff;
+      border-left: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .sidebar-header {
+      padding: 14px 18px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-header h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+    .subbasin-matrix {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+    }
+    .matrix-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      background: #ffffff;
+    }
+    .matrix-table th {
+      background: #f1f5f9;
+      color: var(--navy);
+      padding: 6px 8px;
+      text-align: left;
+      border: 1px solid #cbd5e1;
+      font-weight: 700;
+    }
+    .matrix-table td {
+      padding: 5px 8px;
+      border: 1px solid #e2e8f0;
+      color: var(--text);
+    }
+    .matrix-table tr:hover td {
+      background: #f0f9ff;
+    }
+    .tag-primary { color: #047857; font-weight: 700; }
+    .tag-alternate { color: #b45309; }
+    .tag-fallback { color: #b91c1c; font-weight: 700; }
+
+    .telemetry-log-panel {
+      padding: 14px 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .log-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      line-height: 1.5;
+      color: #334155;
+      flex: 1;
+      height: 240px;
+      overflow-y: auto;
+    }
+    .log-row { margin-bottom: 4px; }
+    .log-time { color: #64748b; margin-right: 6px; }
+    .log-ok { color: #047857; font-weight: 600; }
+    .log-warn { color: #b45309; font-weight: 600; }
+    .log-err { color: #dc2626; font-weight: 700; }
+    .log-flow { color: #0284c7; }
+
+    .flow-stream {
+      stroke-dasharray: 6, 6;
+      animation: dash 1s linear infinite;
+    }
+    @keyframes dash {
+      to { stroke-dashoffset: -12; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>
+        <span>HYDROCAST</span> · RAIN GAUGE NETWORK &amp; QUALITY CONTROL SIMULATION CONSOLE
+      </h1>
+      <span class="badge-live"><span class="pulse-dot"></span> ORCHESTRATOR STEP 2–5 ACTIVE</span>
+    </div>
+    <div class="header-meta">
+      <div>REGISTRY: <strong>20 GAUGES (9 SUBBASINS S1–S9 · KASARI, KUMBHI, BHOGAWATI, PANCHGANGA)</strong></div>
+      <div>QC GATE: <strong>PHYSICAL RANGE [0, 500mm] · SPIKE FILTER &le; 100mm/hr · VARIANCE CHECK</strong></div>
+      <div>GOVERNING CODE: <strong>src/ecmwf/station_selector.py · src/sensors/observed_qc.py</strong></div>
+    </div>
+  </header>
+
+  <div class="main-workspace">
+    <div class="left-flow-container">
+      
+      <!-- Interactive Toolbar Strip -->
+      <div class="toolbar-bar">
+        <div class="tool-group">
+          <span class="tool-label">Simulation:</span>
+          <button class="btn active" id="btnPlay" onclick="togglePlay()">Play Pipeline</button>
+          <button class="btn" onclick="stepForward()">Step Forward &gt;</button>
+          <button class="btn" onclick="resetSim()">Reset</button>
+        </div>
+
+        <div class="tool-group">
+          <span class="tool-label">Rainstorm Scenario:</span>
+          <button class="btn active" id="btnStormNormal" onclick="setStormScenario('normal')">Monsoon Front (65mm)</button>
+          <button class="btn" id="btnStormExtreme" onclick="setStormScenario('cloudburst')">Sahyadri Cloudburst (240mm)</button>
+        </div>
+
+        <div class="tool-group">
+          <span class="tool-label">Fault Injection:</span>
+          <button class="btn warn" id="btnFaultGaganbawda" onclick="toggleSensorFault('Gaganbawda')">Kill Gaganbawda (S6)</button>
+          <button class="btn warn" id="btnFaultRadhanagari" onclick="toggleSensorFault('Radhanagari')">Kill Radhanagari (S7)</button>
+          <button class="btn danger" id="btnSpikeNoise" onclick="injectSpikeNoise()">Inject 750mm Spike</button>
+        </div>
+      </div>
+
+      <!-- Main Animated Flowchart & Interactive Engine Canvas -->
+      <div class="sim-viewport">
+        <div class="sim-header">
+          <span>OPERATIONAL DATA PIPELINE: FIELD SENSORS &rarr; QC VALIDATION &rarr; CONSERVATIVE SELECTOR &rarr; DSS ARCHIVE</span>
+          <span id="simStepLabel" style="color:#047857;">CYCLE RUNNING · TIME STEP T+24h</span>
+        </div>
+
+        <svg class="flowchart-svg" viewBox="0 0 1100 580" id="flowSvg">
+          <defs>
+            <pattern id="lightGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="0.8"/>
+            </pattern>
+            <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7"/>
+            </marker>
+            <marker id="arrowGreen" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+            </marker>
+            <marker id="arrowRed" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626"/>
+            </marker>
+          </defs>
+
+          <rect width="1100" height="580" fill="url(#lightGrid)"/>
+
+          <!-- STAGE 1: TELEMETRY INGESTION (X: 30) -->
+          <text x="30" y="35" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">STAGE 1: 20 FIELD TELEMETRY STATIONS</text>
+
+          <!-- Group of Stations -->
+          <g class="node-box" id="node-gaganbawda" onclick="selectStation('Gaganbawda')">
+            <rect x="30" y="60" width="180" height="52" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" id="rect-gaganbawda"/>
+            <circle cx="48" cy="86" r="6" fill="#10b981" id="dot-gaganbawda"/>
+            <text x="64" y="80" font-family="var(--font-mono)" font-size="10.5" font-weight="700" fill="#0f172a">Gaganbawda (S6)</text>
+            <text x="64" y="96" font-family="var(--font-mono)" font-size="9" fill="#475569" id="val-gaganbawda">Rain: 84.5 mm · Elev: 680m</text>
+          </g>
+
+          <g class="node-box" id="node-radhanagari" onclick="selectStation('Radhanagari')">
+            <rect x="30" y="125" width="180" height="52" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" id="rect-radhanagari"/>
+            <circle cx="48" cy="151" r="6" fill="#10b981" id="dot-radhanagari"/>
+            <text x="64" y="145" font-family="var(--font-mono)" font-size="10.5" font-weight="700" fill="#0f172a">Radhanagari (S7)</text>
+            <text x="64" y="161" font-family="var(--font-mono)" font-size="9" fill="#475569" id="val-radhanagari">Rain: 92.0 mm · Elev: 615m</text>
+          </g>
+
+          <g class="node-box" id="node-karanjphen" onclick="selectStation('Karanjphen')">
+            <rect x="30" y="190" width="180" height="52" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+            <circle cx="48" cy="216" r="6" fill="#10b981"/>
+            <text x="64" y="210" font-family="var(--font-mono)" font-size="10.5" font-weight="700" fill="#0f172a">Karanjphen (S6 Primary)</text>
+            <text x="64" y="226" font-family="var(--font-mono)" font-size="9" fill="#475569" id="val-karanjphen">Rain: 78.0 mm · Elev: 640m</text>
+          </g>
+
+          <g class="node-box" id="node-kotoli" onclick="selectStation('Kotoli')">
+            <rect x="30" y="255" width="180" height="52" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+            <circle cx="48" cy="281" r="6" fill="#10b981"/>
+            <text x="64" y="275" font-family="var(--font-mono)" font-size="10.5" font-weight="700" fill="#0f172a">Kotoli (S3 Primary)</text>
+            <text x="64" y="291" font-family="var(--font-mono)" font-size="9" fill="#475569" id="val-kotoli">Rain: 62.0 mm · Elev: 585m</text>
+          </g>
+
+          <g class="node-box" id="node-sangarul" onclick="selectStation('Sangarul')">
+            <rect x="30" y="320" width="180" height="52" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+            <circle cx="48" cy="346" r="6" fill="#10b981"/>
+            <text x="64" y="340" font-family="var(--font-mono)" font-size="10.5" font-weight="700" fill="#0f172a">Sangarul (S2 Primary)</text>
+            <text x="64" y="356" font-family="var(--font-mono)" font-size="9" fill="#475569" id="val-sangarul">Rain: 54.0 mm · Elev: 572m</text>
+          </g>
+
+          <g class="node-box" id="node-karvir" onclick="selectStation('Karvir')">
+            <rect x="30" y="385" width="180" height="52" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+            <circle cx="48" cy="411" r="6" fill="#10b981"/>
+            <text x="64" y="405" font-family="var(--font-mono)" font-size="10.5" font-weight="700" fill="#0f172a">Karvir (S1 Shivaji Bridge)</text>
+            <text x="64" y="421" font-family="var(--font-mono)" font-size="9" fill="#475569" id="val-karvir">Rain: 48.0 mm · Elev: 550m</text>
+          </g>
+
+          <g class="node-box" id="node-ecmwf">
+            <rect x="30" y="460" width="180" height="52" rx="4" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+            <text x="45" y="482" font-family="var(--font-mono)" font-size="10.5" font-weight="700" fill="#0369a1">ECMWF IFS OpenData</text>
+            <text x="45" y="498" font-family="var(--font-mono)" font-size="9" fill="#0284c7">0.1° GRIB2 Surface Flux</text>
+          </g>
+
+          <!-- STAGE 2: QUALITY CONTROL GATE (X: 290) -->
+          <text x="290" y="35" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">STAGE 2: QUALITY CONTROL (QC)</text>
+
+          <g class="node-box" id="node-qc" transform="translate(290, 110)">
+            <rect x="0" y="0" width="190" height="310" rx="6" fill="#f8fafc" stroke="#0284c7" stroke-width="1.5" id="rect-qc-gate"/>
+            <text x="20" y="30" font-family="var(--font-mono)" font-size="11.5" font-weight="700" fill="#1e3a8a">HYDRAULIC QC GATE</text>
+            <line x1="20" y1="42" x2="170" y2="42" stroke="#bae6fd" stroke-width="1.5"/>
+
+            <rect x="18" y="55" width="154" height="42" rx="3" fill="#ffffff" stroke="#cbd5e1" id="qc-box-range"/>
+            <text x="28" y="72" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#059669">1. PHYSICAL RANGE</text>
+            <text x="28" y="87" font-family="var(--font-mono)" font-size="8.5" fill="#475569">0.0 &le; P &le; 500.0 mm</text>
+
+            <rect x="18" y="110" width="154" height="42" rx="3" fill="#ffffff" stroke="#cbd5e1" id="qc-box-spike"/>
+            <text x="28" y="127" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#059669">2. RATE-OF-CHANGE</text>
+            <text x="28" y="142" font-family="var(--font-mono)" font-size="8.5" fill="#475569">|&Delta;P/&Delta;t| &le; 100 mm/hr</text>
+
+            <rect x="18" y="165" width="154" height="42" rx="3" fill="#ffffff" stroke="#cbd5e1" id="qc-box-stuck"/>
+            <text x="28" y="182" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#059669">3. VARIANCE CHECK</text>
+            <text x="28" y="197" font-family="var(--font-mono)" font-size="8.5" fill="#475569">Detect stuck constant</text>
+
+            <rect x="18" y="220" width="154" height="42" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+            <text x="28" y="237" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#059669">4. NEIGHBOUR CHECK</text>
+            <text x="28" y="252" font-family="var(--font-mono)" font-size="8.5" fill="#475569">&plusmn;3.5&sigma; from subbasin mean</text>
+
+            <rect x="18" y="272" width="154" height="26" rx="2" fill="#ecfdf5" stroke="#10b981" id="qc-status-badge"/>
+            <text x="95" y="289" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#047857" text-anchor="middle" id="qc-status-text">QC STATUS: ALL PASS</text>
+          </g>
+
+          <!-- STAGE 3: CONSERVATIVE STATION SELECTOR (X: 560) -->
+          <text x="560" y="35" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">STAGE 3: DYNAMIC SELECTOR</text>
+
+          <g class="node-box" id="node-selector" transform="translate(560, 110)">
+            <rect x="0" y="0" width="220" height="310" rx="6" fill="#f8fafc" stroke="#0284c7" stroke-width="1.5"/>
+            <text x="20" y="30" font-family="var(--font-mono)" font-size="11.5" font-weight="700" fill="#1e3a8a">SUBBASIN SELECTOR</text>
+            <line x1="20" y1="42" x2="200" y2="42" stroke="#bae6fd" stroke-width="1.5"/>
+
+            <rect x="16" y="55" width="188" height="60" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+            <text x="24" y="74" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#b45309">PRIMARY vs ALTERNATE</text>
+            <text x="24" y="89" font-family="var(--font-mono)" font-size="8.5" fill="#475569">Evaluates volume &amp; availability.</text>
+            <text x="24" y="103" font-family="var(--font-mono)" font-size="8.5" fill="#0284c7" font-weight="700">Conservative: Max Rainfall Rule</text>
+
+            <rect x="16" y="125" width="188" height="75" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+            <text x="24" y="144" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#0284c7">FAILOVER ROUTING</text>
+            <text x="24" y="159" font-family="var(--font-mono)" font-size="8.5" fill="#334155" id="failover-rule-1">S6: Gaganbawda &harr; Karanjphen</text>
+            <text x="24" y="173" font-family="var(--font-mono)" font-size="8.5" fill="#334155" id="failover-rule-2">S7: Radhanagari &harr; Tarale/Walawe</text>
+            <text x="24" y="187" font-family="var(--font-mono)" font-size="8.5" fill="#334155" id="failover-rule-3">S2: Sangarul &harr; Balinga / Kale</text>
+
+            <rect x="16" y="210" width="188" height="85" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+            <text x="24" y="228" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#059669">SELECTED STATIONS</text>
+            <text x="24" y="244" font-family="var(--font-mono)" font-size="8.5" fill="#0f172a" id="active-sel-s6">S6: Gaganbawda (84.5 mm)</text>
+            <text x="24" y="258" font-family="var(--font-mono)" font-size="8.5" fill="#0f172a" id="active-sel-s7">S7: Radhanagari (92.0 mm)</text>
+            <text x="24" y="272" font-family="var(--font-mono)" font-size="8.5" fill="#0f172a" id="active-sel-s3">S3: Kotoli (62.0 mm)</text>
+            <text x="24" y="286" font-family="var(--font-mono)" font-size="8.5" fill="#0f172a" id="active-sel-s1">S1: Karvir (48.0 mm)</text>
+          </g>
+
+          <!-- STAGE 4: HEC-DSS 7 BINARY ARCHIVE & TIME-SERIES (X: 860) -->
+          <text x="860" y="35" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">STAGE 4: DSS BINARY WRITER</text>
+
+          <g class="node-box" id="node-dss" transform="translate(860, 110)">
+            <rect x="0" y="0" width="200" height="180" rx="6" fill="#f8fafc" stroke="#059669" stroke-width="1.5"/>
+            <text x="18" y="28" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#059669">HMS_Automation_RJKT.dss</text>
+            <line x1="18" y1="38" x2="182" y2="38" stroke="#a7f3d0" stroke-width="1.5"/>
+
+            <text x="18" y="58" font-family="var(--font-mono)" font-size="8.5" fill="#64748b">HEC-DSS Record Path:</text>
+            <rect x="14" y="66" width="172" height="36" fill="#ffffff" stroke="#cbd5e1" rx="2"/>
+            <text x="20" y="80" font-family="var(--font-mono)" font-size="7.8" fill="#0284c7" font-weight="700">/PANCHGANGA/S6/PRECIP-INC/</text>
+            <text x="20" y="94" font-family="var(--font-mono)" font-size="7.8" fill="#64748b">01JUL2026/1HOUR/RUN_01/</text>
+
+            <text x="18" y="120" font-family="var(--font-mono)" font-size="8.5" fill="#334155">90-hr Hyetograph Spooled:</text>
+            <text x="18" y="135" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#059669">&check; 9 Subbasin records</text>
+            <text x="18" y="150" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#059669">&check; 360 Time-steps (15-min)</text>
+            <text x="18" y="165" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#0284c7">&check; Ready for HEC-HMS 4.12</text>
+          </g>
+
+          <!-- STAGE 5: POSTGRES HYPERTABLE ARCHIVAL -->
+          <g class="node-box" id="node-db" transform="translate(860, 310)">
+            <rect x="0" y="0" width="200" height="110" rx="6" fill="#f8fafc" stroke="#0284c7" stroke-width="1.5"/>
+            <text x="18" y="28" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">POSTGRES HYPERTABLE</text>
+            <line x1="18" y1="38" x2="182" y2="38" stroke="#bae6fd" stroke-width="1.5"/>
+            <text x="18" y="58" font-family="var(--font-mono)" font-size="8.5" fill="#334155">table: observed_rainfall_qc</text>
+            <text x="18" y="74" font-family="var(--font-mono)" font-size="8.5" fill="#64748b">Volume: 3512 GB dedicated tablespace</text>
+            <text x="18" y="92" font-family="var(--font-mono)" font-size="8.5" fill="#059669" font-weight="700">&bull; TimescaleDB chunking (7 days)</text>
+          </g>
+
+          <!-- Flow Stream Lines -->
+          <path d="M 210 86 L 250 86 L 250 180 L 290 180" fill="none" stroke="#0284c7" stroke-width="1.5" class="flow-stream" id="stream-gaganbawda" marker-end="url(#arrow)"/>
+          <path d="M 210 151 L 250 151 L 250 200 L 290 200" fill="none" stroke="#0284c7" stroke-width="1.5" class="flow-stream" id="stream-radhanagari" marker-end="url(#arrow)"/>
+          <path d="M 210 216 L 290 216" fill="none" stroke="#0284c7" stroke-width="1.5" class="flow-stream" marker-end="url(#arrow)"/>
+          <path d="M 210 281 L 250 281 L 250 230 L 290 230" fill="none" stroke="#0284c7" stroke-width="1.5" class="flow-stream" marker-end="url(#arrow)"/>
+          <path d="M 210 346 L 250 346 L 250 250 L 290 250" fill="none" stroke="#0284c7" stroke-width="1.5" class="flow-stream" marker-end="url(#arrow)"/>
+          <path d="M 210 411 L 260 411 L 260 270 L 290 270" fill="none" stroke="#0284c7" stroke-width="1.5" class="flow-stream" marker-end="url(#arrow)"/>
+
+          <path d="M 480 265 L 560 265" fill="none" stroke="#059669" stroke-width="2.5" class="flow-stream" marker-end="url(#arrowGreen)" id="stream-qc-pass"/>
+          <path d="M 780 200 L 860 200" fill="none" stroke="#059669" stroke-width="2.5" class="flow-stream" marker-end="url(#arrowGreen)"/>
+          <path d="M 780 365 L 860 365" fill="none" stroke="#0284c7" stroke-width="2" class="flow-stream" marker-end="url(#arrow)"/>
+
+          <circle cx="520" cy="265" r="4.5" fill="#059669" id="live-packet-1"/>
+          <circle cx="820" cy="200" r="4.5" fill="#059669" id="live-packet-2"/>
+        </svg>
+      </div>
+
+    </div>
+
+    <!-- Right Side Inspection Matrix -->
+    <div class="right-sidebar">
+      <div class="sidebar-header">
+        <h2>SUBBASIN GAUGE ALLOCATION MATRIX</h2>
+      </div>
+
+      <div class="subbasin-matrix">
+        <div class="matrix-title">
+          <span>ACTIVE SUBBASINS (1,837 km²)</span>
+          <span style="color:#059669;">9 ALLOCATED</span>
+        </div>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Subbasin</th>
+              <th>Area</th>
+              <th>Selected Station</th>
+              <th>Status</th>
+              <th>Rain</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>S1</strong> Karveer</td>
+              <td>86.2 km²</td>
+              <td>Karvir</td>
+              <td><span class="tag-primary">PRIMARY</span></td>
+              <td id="td-rain-s1">48.0 mm</td>
+            </tr>
+            <tr>
+              <td><strong>S2</strong> Sangarul</td>
+              <td>153.8 km²</td>
+              <td id="td-stat-s2">Sangarul</td>
+              <td><span class="tag-primary" id="td-tag-s2">PRIMARY</span></td>
+              <td id="td-rain-s2">54.0 mm</td>
+            </tr>
+            <tr>
+              <td><strong>S3</strong> Kotoli</td>
+              <td>261.3 km²</td>
+              <td>Kotoli</td>
+              <td><span class="tag-primary">PRIMARY</span></td>
+              <td id="td-rain-s3">62.0 mm</td>
+            </tr>
+            <tr>
+              <td><strong>S4</strong> Beed</td>
+              <td>262.0 km²</td>
+              <td>Beed</td>
+              <td><span class="tag-primary">PRIMARY</span></td>
+              <td id="td-rain-s4">58.0 mm</td>
+            </tr>
+            <tr>
+              <td><strong>S5</strong> Padasali</td>
+              <td>106.4 km²</td>
+              <td>Salwan</td>
+              <td><span class="tag-primary">PRIMARY</span></td>
+              <td id="td-rain-s5">66.0 mm</td>
+            </tr>
+            <tr id="row-s6">
+              <td><strong>S6</strong> Gaganbawda</td>
+              <td>227.7 km²</td>
+              <td id="td-stat-s6">Gaganbawda</td>
+              <td><span class="tag-primary" id="td-tag-s6">PRIMARY</span></td>
+              <td id="td-rain-s6">84.5 mm</td>
+            </tr>
+            <tr id="row-s7">
+              <td><strong>S7</strong> Radhanagari</td>
+              <td>367.0 km²</td>
+              <td id="td-stat-s7">Radhanagari</td>
+              <td><span class="tag-primary" id="td-tag-s7">PRIMARY</span></td>
+              <td id="td-rain-s7">92.0 mm</td>
+            </tr>
+            <tr>
+              <td><strong>S8</strong> Shiroli</td>
+              <td>177.4 km²</td>
+              <td>Shiroli-Dhumala</td>
+              <td><span class="tag-alternate">ALTERNATE</span></td>
+              <td id="td-rain-s8">51.0 mm</td>
+            </tr>
+            <tr>
+              <td><strong>S9</strong> Kasaba</td>
+              <td>195.4 km²</td>
+              <td>Kasaba Tarale</td>
+              <td><span class="tag-alternate">ALTERNATE</span></td>
+              <td id="td-rain-s9">73.5 mm</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Real-Time Orchestrator Event Log -->
+      <div class="telemetry-log-panel">
+        <div class="matrix-title">
+          <span>ORCHESTRATOR TELEMETRY STREAM</span>
+          <span style="font-size:9.5px; color:#059669; font-weight:700;">WS /ws/live</span>
+        </div>
+        <div class="log-box" id="logBox">
+          <div class="log-row"><span class="log-time">[15:12:00]</span> <span class="log-flow">[POLL]</span> ECMWF OpenData 0.1° GRIB2 ingestion cycle triggered.</div>
+          <div class="log-row"><span class="log-time">[15:12:01]</span> <span class="log-flow">[POLL]</span> Queried 20 telemetry rain gauges via GPRS/ThingSpeak.</div>
+          <div class="log-row"><span class="log-time">[15:12:02]</span> <span class="log-ok">[QC PASS]</span> Station Gaganbawda: 84.5 mm (within physical range [0, 500mm]).</div>
+          <div class="log-row"><span class="log-time">[15:12:02]</span> <span class="log-ok">[QC PASS]</span> Station Radhanagari: 92.0 mm (rate &Delta;P = 18.4 mm/hr &le; 100mm/hr).</div>
+          <div class="log-row"><span class="log-time">[15:12:03]</span> <span class="log-ok">[QC PASS]</span> Stations Kotoli, Sangarul, Karvir: All variance checks passed.</div>
+          <div class="log-row"><span class="log-time">[15:12:04]</span> <span class="log-flow">[SELECTOR]</span> Evaluating Primary vs Alternate volumes for 9 subbasins.</div>
+          <div class="log-row"><span class="log-time">[15:12:04]</span> <span class="log-flow">[SELECTOR]</span> S6: Gaganbawda selected (84.5mm &gt; Karanjphen 78.0mm).</div>
+          <div class="log-row"><span class="log-time">[15:12:05]</span> <span class="log-ok">[DSS]</span> Spooling /PANCHGANGA/*/PRECIP-INC/ into HMS_Automation_RJKT.dss.</div>
+          <div class="log-row"><span class="log-time">[15:12:06]</span> <span class="log-ok">[POSTGRES]</span> 360 records committed to hypertable observed_rainfall_qc.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let isPlaying = true;
+    let simTime = 24;
+    let stormType = 'normal';
+    let faultGaganbawda = false;
+    let faultRadhanagari = false;
+    let spikeActive = false;
+
+    const BASE_RAINFALL = {
+      normal: {
+        Gaganbawda: 84.5,
+        Radhanagari: 92.0,
+        Karanjphen: 78.0,
+        Kotoli: 62.0,
+        Sangarul: 54.0,
+        Karvir: 48.0,
+        Beed: 58.0,
+        Salwan: 66.0,
+        Shiroli: 51.0,
+        Kasaba: 73.5
+      },
+      cloudburst: {
+        Gaganbawda: 245.0,
+        Radhanagari: 268.0,
+        Karanjphen: 215.0,
+        Kotoli: 175.0,
+        Sangarul: 145.0,
+        Karvir: 112.0,
+        Beed: 138.0,
+        Salwan: 162.0,
+        Shiroli: 124.0,
+        Kasaba: 195.0
+      }
+    };
+
+    function logMsg(level, text) {
+      const box = document.getElementById('logBox');
+      const time = new Date().toTimeString().split(' ')[0];
+      const div = document.createElement('div');
+      div.className = "log-row";
+      let lvlClass = "log-flow";
+      if (level === 'OK') lvlClass = "log-ok";
+      if (level === 'WARN') lvlClass = "log-warn";
+      if (level === 'ERR') lvlClass = "log-err";
+      div.innerHTML = `<span class="log-time">[${time}]</span> <span class="${lvlClass}">[${level}]</span> ${text}`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      document.getElementById('btnPlay').innerText = isPlaying ? "Pause Pipeline" : "Resume Pipeline";
+      if (isPlaying) {
+        logMsg("OK", "Pipeline simulation resumed.");
+      } else {
+        logMsg("WARN", "Pipeline paused by user operator.");
+      }
+    }
+
+    function stepForward() {
+      simTime = (simTime + 6) % 96;
+      document.getElementById('simStepLabel').innerText = `CYCLE RUNNING · TIME STEP T+${simTime}h`;
+      logMsg("FLOW", `Advanced pipeline time window to T+${simTime}h.`);
+      updateState();
+    }
+
+    function resetSim() {
+      simTime = 24;
+      faultGaganbawda = false;
+      faultRadhanagari = false;
+      spikeActive = false;
+      stormType = 'normal';
+      document.getElementById('btnFaultGaganbawda').classList.remove('active');
+      document.getElementById('btnFaultRadhanagari').classList.remove('active');
+      document.getElementById('btnSpikeNoise').classList.remove('active');
+      document.getElementById('btnStormNormal').classList.add('active');
+      document.getElementById('btnStormExtreme').classList.remove('active');
+      logMsg("OK", "Pipeline reset to nominal baseline state.");
+      updateState();
+    }
+
+    function setStormScenario(type) {
+      stormType = type;
+      if (type === 'normal') {
+        document.getElementById('btnStormNormal').classList.add('active');
+        document.getElementById('btnStormExtreme').classList.remove('active');
+        logMsg("FLOW", "Monsoon Front scenario applied: moderate Sahyadri rainfall.");
+      } else {
+        document.getElementById('btnStormNormal').classList.remove('active');
+        document.getElementById('btnStormExtreme').classList.add('active');
+        logMsg("WARN", "EXTREME CLOUDBURST SCENARIO: Ghat stations > 240mm!");
+      }
+      updateState();
+    }
+
+    function toggleSensorFault(station) {
+      if (station === 'Gaganbawda') {
+        faultGaganbawda = !faultGaganbawda;
+        document.getElementById('btnFaultGaganbawda').classList.toggle('active', faultGaganbawda);
+        if (faultGaganbawda) {
+          logMsg("ERR", "FAULT INJECTED: Gaganbawda hardware timeout / dead telemetry!");
+          logMsg("WARN", "FAILOVER TRIGGERED: S6 rerouting from Gaganbawda &rarr; Karanjphen!");
+        } else {
+          logMsg("OK", "Gaganbawda sensor link restored to primary.");
+        }
+      } else if (station === 'Radhanagari') {
+        faultRadhanagari = !faultRadhanagari;
+        document.getElementById('btnFaultRadhanagari').classList.toggle('active', faultRadhanagari);
+        if (faultRadhanagari) {
+          logMsg("ERR", "FAULT INJECTED: Radhanagari ultrasonic sensor offline!");
+          logMsg("WARN", "FAILOVER TRIGGERED: S7 rerouting from Radhanagari &rarr; Kasaba Tarale!");
+        } else {
+          logMsg("OK", "Radhanagari sensor link restored to primary.");
+        }
+      }
+      updateState();
+    }
+
+    function injectSpikeNoise() {
+      spikeActive = !spikeActive;
+      document.getElementById('btnSpikeNoise').classList.toggle('active', spikeActive);
+      if (spikeActive) {
+        logMsg("ERR", "SPIKE NOISE INJECTED: 750.0 mm surge at Kotoli (S3)!");
+        logMsg("WARN", "QC FILTER TRIGGERED: Physical range [0, 500mm] violated! Reading discarded.");
+      } else {
+        logMsg("OK", "Noise cleared. Nominal sensor stream restored.");
+      }
+      updateState();
+    }
+
+    function updateState() {
+      const data = BASE_RAINFALL[stormType];
+
+      if (faultGaganbawda) {
+        document.getElementById('dot-gaganbawda').setAttribute('fill', '#dc2626');
+        document.getElementById('rect-gaganbawda').setAttribute('stroke', '#dc2626');
+        document.getElementById('val-gaganbawda').innerHTML = "<span style='color:#dc2626; font-weight:700;'>TIMEOUT [OFFLINE]</span>";
+        document.getElementById('stream-gaganbawda').setAttribute('stroke', '#dc2626');
+        document.getElementById('td-stat-s6').innerText = "Karanjphen (Alternate)";
+        document.getElementById('td-tag-s6').className = "tag-fallback";
+        document.getElementById('td-tag-s6').innerText = "FAILOVER";
+        document.getElementById('active-sel-s6').innerText = `S6: Karanjphen (${data.Karanjphen} mm) [FAILOVER]`;
+      } else {
+        document.getElementById('dot-gaganbawda').setAttribute('fill', '#10b981');
+        document.getElementById('rect-gaganbawda').setAttribute('stroke', '#cbd5e1');
+        document.getElementById('val-gaganbawda').innerText = `Rain: ${data.Gaganbawda} mm · Elev: 680m`;
+        document.getElementById('stream-gaganbawda').setAttribute('stroke', '#0284c7');
+        document.getElementById('td-stat-s6').innerText = "Gaganbawda";
+        document.getElementById('td-tag-s6').className = "tag-primary";
+        document.getElementById('td-tag-s6').innerText = "PRIMARY";
+        document.getElementById('active-sel-s6').innerText = `S6: Gaganbawda (${data.Gaganbawda} mm)`;
+      }
+
+      if (faultRadhanagari) {
+        document.getElementById('dot-radhanagari').setAttribute('fill', '#dc2626');
+        document.getElementById('rect-radhanagari').setAttribute('stroke', '#dc2626');
+        document.getElementById('val-radhanagari').innerHTML = "<span style='color:#dc2626; font-weight:700;'>SENSOR ERROR</span>";
+        document.getElementById('stream-radhanagari').setAttribute('stroke', '#dc2626');
+        document.getElementById('td-stat-s7').innerText = "Kasaba Tarale (Alt)";
+        document.getElementById('td-tag-s7').className = "tag-fallback";
+        document.getElementById('td-tag-s7').innerText = "FAILOVER";
+        document.getElementById('active-sel-s7').innerText = `S7: Kasaba Tarale (${data.Kasaba} mm) [FAILOVER]`;
+      } else {
+        document.getElementById('dot-radhanagari').setAttribute('fill', '#10b981');
+        document.getElementById('rect-radhanagari').setAttribute('stroke', '#cbd5e1');
+        document.getElementById('val-radhanagari').innerText = `Rain: ${data.Radhanagari} mm · Elev: 615m`;
+        document.getElementById('stream-radhanagari').setAttribute('stroke', '#0284c7');
+        document.getElementById('td-stat-s7').innerText = "Radhanagari";
+        document.getElementById('td-tag-s7').className = "tag-primary";
+        document.getElementById('td-tag-s7').innerText = "PRIMARY";
+        document.getElementById('active-sel-s7').innerText = `S7: Radhanagari (${data.Radhanagari} mm)`;
+      }
+
+      if (spikeActive) {
+        document.getElementById('qc-box-range').setAttribute('fill', '#fef2f2');
+        document.getElementById('qc-box-range').setAttribute('stroke', '#dc2626');
+        document.getElementById('qc-status-badge').setAttribute('fill', '#fee2e2');
+        document.getElementById('qc-status-badge').setAttribute('stroke', '#dc2626');
+        document.getElementById('qc-status-text').setAttribute('fill', '#991b1b');
+        document.getElementById('qc-status-text').innerText = "QC ERROR: RANGE EXCEEDED";
+        document.getElementById('stream-qc-pass').setAttribute('stroke', '#dc2626');
+      } else {
+        document.getElementById('qc-box-range').setAttribute('fill', '#ffffff');
+        document.getElementById('qc-box-range').setAttribute('stroke', '#cbd5e1');
+        document.getElementById('qc-status-badge').setAttribute('fill', '#ecfdf5');
+        document.getElementById('qc-status-badge').setAttribute('stroke', '#10b981');
+        document.getElementById('qc-status-text').setAttribute('fill', '#047857');
+        document.getElementById('qc-status-text').innerText = "QC STATUS: ALL PASS";
+        document.getElementById('stream-qc-pass').setAttribute('stroke', '#059669');
+      }
+
+      document.getElementById('td-rain-s1').innerText = `${data.Karvir} mm`;
+      document.getElementById('td-rain-s2').innerText = `${data.Sangarul} mm`;
+      document.getElementById('td-rain-s3').innerText = `${data.Kotoli} mm`;
+      document.getElementById('td-rain-s4').innerText = `${data.Beed} mm`;
+      document.getElementById('td-rain-s5').innerText = `${data.Salwan} mm`;
+      document.getElementById('td-rain-s6').innerText = faultGaganbawda ? `${data.Karanjphen} mm` : `${data.Gaganbawda} mm`;
+      document.getElementById('td-rain-s7').innerText = faultRadhanagari ? `${data.Kasaba} mm` : `${data.Radhanagari} mm`;
+      document.getElementById('td-rain-s8').innerText = `${data.Shiroli} mm`;
+      document.getElementById('td-rain-s9').innerText = `${data.Kasaba} mm`;
+    }
+
+    function selectStation(name) {
+      logMsg("FLOW", `Inspecting station metadata: ${name}. 20 total gauges in Panchganga registry.`);
+    }
+
+    let packetX1 = 480;
+    let packetX2 = 780;
+    setInterval(() => {
+      if (!isPlaying) return;
+      packetX1 += 4;
+      if (packetX1 > 560) packetX1 = 480;
+      document.getElementById('live-packet-1').setAttribute('cx', packetX1);
+
+      packetX2 += 4;
+      if (packetX2 > 860) packetX2 = 780;
+      document.getElementById('live-packet-2').setAttribute('cx', packetX2);
+    }, 50);
+
+    window.onload = updateState;
+  </script>
+</body>
+</html>

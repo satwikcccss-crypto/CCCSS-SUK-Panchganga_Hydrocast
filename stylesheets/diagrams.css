@@ -5,26 +5,94 @@
    ========================================================================== */
 
 /* ── Mermaid containers ─────────────────────────────────────────────────── */
-.mermaid {
+.md-typeset .mermaid {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 1.4rem 0;
-  padding: 1rem;
+  margin: 1.6rem 0;
+  padding: 1.1rem;
   background: var(--md-code-bg-color);
   border: 1px solid var(--md-default-fg-color--lightest);
-  border-radius: 8px;
+  border-radius: 10px;
   overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
-.mermaid svg {
+/* Mermaid renders asynchronously; keep the box collapsed until it settles. */
+.md-typeset .mermaid:not([data-mermaid-state='done']) {
+  min-height: 3rem;
+}
+
+.md-typeset .mermaid[data-mermaid-state='done'] {
+  animation: mermaid-fade 240ms ease-out;
+}
+
+@keyframes mermaid-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-typeset .mermaid[data-mermaid-state='done'] {
+    animation: none;
+  }
+}
+
+.md-typeset .mermaid svg {
   max-width: 100%;
   height: auto;
 }
 
+/* Diagrams carry a lot of text at small sizes — never shrink below legibility. */
+.md-typeset .mermaid .nodeLabel,
+.md-typeset .mermaid .edgeLabel {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 /* Keep diagram blocks readable inside admonitions and tabs. */
-.md-typeset .mermaid {
+.md-typeset .admonition .mermaid,
+.md-typeset details .mermaid {
   background: var(--md-default-bg-color);
+}
+
+/* ── Inline parse-failure reporting ─────────────────────────────────────── */
+/* The renderer replaces a failed diagram's contents with this markup, so a bad
+   fence is diagnosable from the published page rather than showing as blank. */
+.md-typeset .mermaid.mermaid--error {
+  display: block;
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.08);
+  color: var(--md-default-fg-color);
+  text-align: left;
+}
+
+.md-typeset .mermaid-error__title {
+  font-weight: 700;
+  color: #b91c1c;
+  margin-bottom: 0.4rem;
+}
+
+.md-typeset .mermaid-error__body,
+.md-typeset .mermaid-error__source {
+  font-size: 0.74rem;
+  text-align: left;
+}
+
+.md-typeset .mermaid-error__body pre,
+.md-typeset .mermaid-error__source pre {
+  margin: 0.3rem 0 0;
+}
+
+.md-typeset .mermaid-error__source summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .mermaid-error__title {
+  color: #fca5a5;
 }
 
 /* ── ASCII box-art (plain fenced code blocks) ───────────────────────────── */
@@ -72,6 +140,8 @@
 .md-typeset table:not([class]) {
   width: 100%;
   font-size: 0.76rem;
+  display: block;
+  overflow-x: auto;
 }
 
 .md-typeset table:not([class]) th {
@@ -108,6 +178,12 @@
   color: var(--md-default-fg-color--light);
 }
 
+/* Generous line height on body prose — these pages are read, not skimmed. */
+.md-typeset p,
+.md-typeset li {
+  max-width: 46rem;
+}
+
 /* ── Legend chips used in the diagram atlas ────────────────────────────── */
 .md-typeset code.legend {
   display: inline-block;
@@ -115,4 +191,18 @@
   border-radius: 4px;
   font-size: 0.82em;
   border: 1px solid currentColor;
+}
+
+/* ── Print ──────────────────────────────────────────────────────────────── */
+@media print {
+  .md-typeset .mermaid {
+    break-inside: avoid;
+    border: 1px solid #bbb;
+    background: none;
+  }
+
+  .md-typeset pre.hydrocast-figure {
+    break-inside: avoid;
+    box-shadow: none;
+  }
 }

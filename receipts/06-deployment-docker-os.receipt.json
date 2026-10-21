@@ -1,0 +1,23 @@
+{
+  "receipt_id": "RCP-06-DEPL-20261021",
+  "diagram_file": "docs/diagrams/06-deployment-docker-os.html",
+  "diagram_type": "architecture-deployment",
+  "title": "HydroCast Deployment View: Linux Docker vs Windows Server",
+  "validation_timestamp": "2026-10-21T14:43:00Z",
+  "validation_standard": "Archify Strict Source Audit v2",
+  "environments_compared": 2,
+  "docker_services": 5,
+  "windows_entities": 5,
+  "source_files_verified": [
+    "docker-compose.yml:1-208",
+    "Dockerfile:1-184",
+    "windows/install_postgres.ps1:1-212",
+    "windows/storage_setup.sql:1-211"
+  ],
+  "verified_deployments": [
+    "Linux Docker: hydrocast-db (:5432), hydrocast-backend (:8000), hydrocast-frontend (:3000), hydrocast-docs (:8001), hydrocast-dev (:8000, :8888)",
+    "Windows Server 2022: postgresql-x64-16 service, 3512GB tablespace on E:\\pgtablespace\\hydrocast, WAL on E:\\pgwal, native HEC-HMS 4.13, Windows Task Scheduler"
+  ],
+  "status": "VALIDATED",
+  "trace_motion_enabled": false
+}

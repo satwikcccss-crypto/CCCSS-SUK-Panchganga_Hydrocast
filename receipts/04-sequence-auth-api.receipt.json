@@ -1,0 +1,23 @@
+{
+  "receipt_id": "RCP-04-SEQ-20261021",
+  "diagram_file": "docs/diagrams/04-sequence-auth-api.html",
+  "diagram_type": "sequence",
+  "title": "HydroCast API Authentication & Data Access Sequence",
+  "validation_timestamp": "2026-10-21T14:43:00Z",
+  "validation_standard": "Archify Strict Source Audit v2",
+  "total_sequences": 3,
+  "total_messages": 20,
+  "source_files_verified": [
+    "src/api/admin.py:52-130",
+    "src/api/security.py:20-132",
+    "src/api/main.py:56-125, 202-230, 347-410",
+    "database/supabase_schema.sql:251-287"
+  ],
+  "sequences_verified": [
+    "Path A: Disaster Management Admin JWT Login & Protected Trigger Run",
+    "Path B: HydroSim Consumer Master X-API-Key Path for 90h Discharge & Stage",
+    "Path C: Unauthenticated Public Liveness Probe (/api/v1/health)"
+  ],
+  "status": "VALIDATED",
+  "trace_motion_enabled": false
+}

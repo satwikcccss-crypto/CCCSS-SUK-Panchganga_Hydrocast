@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCast — Deployment View: Linux Docker vs Windows Server</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #cbd5e1;
+      --border-dark: #64748b;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --navy: #1e3a8a;
+      --navy-light: #eff6ff;
+      --accent: #b91c1c;
+      --accent-light: #fef2f2;
+      --win-blue: #0284c7;
+      --win-light: #f0f9ff;
+      --font-serif: "Georgia", "Cambria", "Times New Roman", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 2px solid var(--navy);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header-title h1 {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+    }
+    .header-title p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .header-meta {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .header-meta strong {
+      color: var(--text);
+    }
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .diagram-viewport {
+      flex: 1;
+      overflow: auto;
+      padding: 24px;
+      background: #ffffff;
+      position: relative;
+    }
+    .controls-bar {
+      position: absolute;
+      top: 14px;
+      left: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+      background: #ffffff;
+      padding: 4px;
+      border: 1px solid var(--border);
+    }
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border: 1px solid var(--border-dark);
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .btn.active {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+    }
+    .btn:hover:not(.active) {
+      background: var(--navy-light);
+      color: var(--navy);
+    }
+    .side-panel {
+      width: 400px;
+      background: #ffffff;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .panel-header {
+      background: var(--navy);
+      color: #ffffff;
+      padding: 12px 16px;
+    }
+    .panel-header h2 {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .panel-header span {
+      font-size: 11px;
+      opacity: 0.85;
+      font-family: var(--font-mono);
+    }
+    .panel-content {
+      padding: 16px;
+      font-size: 12px;
+    }
+    .prop-group {
+      margin-bottom: 14px;
+    }
+    .prop-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .prop-value {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      border-radius: 2px;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .prop-value.code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--navy);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1px solid var(--navy);
+      color: var(--navy);
+      background: var(--navy-light);
+    }
+
+    /* Comparison Dual-Column Layout */
+    .deploy-grid {
+      display: grid;
+      grid-template-columns: 680px 680px;
+      gap: 24px;
+      min-width: 1400px;
+      padding-top: 36px;
+    }
+    .env-column {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .env-column.linux {
+      border-top: 4px solid var(--navy);
+    }
+    .env-column.windows {
+      border-top: 4px solid var(--win-blue);
+    }
+    .env-header {
+      padding: 12px 16px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+    .env-header h2 {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .env-header p {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 2px;
+    }
+    .env-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .service-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 12px;
+      cursor: pointer;
+      position: relative;
+    }
+    .service-card:hover {
+      border-color: var(--navy);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .service-card.active {
+      border: 2px solid var(--navy);
+      background: var(--navy-light);
+    }
+    .service-card.win.active {
+      border: 2px solid var(--win-blue);
+      background: var(--win-light);
+    }
+    .srv-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      justify-content: space-between;
+    }
+    .srv-port {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 1px 6px;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .srv-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin: 4px 0 8px 0;
+    }
+    .srv-details {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #334155;
+      background: #f8fafc;
+      padding: 6px 8px;
+      border: 1px solid #e2e8f0;
+      line-height: 1.5;
+    }
+
+    footer {
+      background: #f1f5f9;
+      border-top: 1px solid var(--border);
+      padding: 6px 20px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>HydroCast — Deployment View: Linux Docker vs Windows Server</h1>
+      <p>Multi-Container Orchestration (Docker Compose v2) vs Dedicated Physical Tablespace on E:\ (Windows Server 2022)</p>
+    </div>
+    <div class="header-meta">
+      <div>DIAGRAM: <strong>06-DEPLOYMENT-DOCKER-OS</strong></div>
+      <div>AUDIT STANDARD: <strong>GOVERNMENT-RECORD / STATIC ARCHITECTURE</strong></div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div class="diagram-viewport">
+      <div class="controls-bar">
+        <button class="btn active" onclick="filterDeploy('all')">Show Both Environments</button>
+        <button class="btn" onclick="filterDeploy('linux')">Linux Docker Stack</button>
+        <button class="btn" onclick="filterDeploy('windows')">Windows Server 3512GB Stack</button>
+        <button class="btn" onclick="resetDeployInspector()">Reset Inspector</button>
+      </div>
+
+      <div class="deploy-grid" id="deployGrid">
+
+        <!-- COLUMN 1: LINUX DOCKER COMPOSE -->
+        <div class="env-column linux" id="colLinux">
+          <div class="env-header">
+            <h2>ENVIRONMENT A: LINUX DOCKER COMPOSE</h2>
+            <p>docker-compose.yml · Dockerfile · Network: hydrocast-net (bridge)</p>
+          </div>
+          <div class="env-body">
+
+            <!-- Container 1: hydrocast-db -->
+            <div class="service-card" id="DEP_L1" onclick="selectDeploy('DEP_L1')">
+              <div class="srv-title">
+                <span>1. Database Service (hydrocast-db)</span>
+                <span class="srv-port">Port 5432:5432</span>
+              </div>
+              <div class="srv-sub">Image: postgis/postgis:15-3.4 · Container: hydrocast-db</div>
+              <div class="srv-details">
+                Volumes: postgres_data:/var/lib/postgresql/data<br>
+                Init SQL: ./database/supabase_schema.sql:ro<br>
+                Healthcheck: pg_isready -U hms_app -d rainfall_runoff (interval 10s)<br>
+                Security: no-new-privileges: true
+              </div>
+            </div>
+
+            <!-- Container 2: hydrocast-backend -->
+            <div class="service-card" id="DEP_L2" onclick="selectDeploy('DEP_L2')">
+              <div class="srv-title">
+                <span>2. Backend Runtime (hydrocast-backend)</span>
+                <span class="srv-port">Port 8000:8000</span>
+              </div>
+              <div class="srv-sub">Multi-Stage Dockerfile (target: runner) · Image: hydrocast-backend:2.0.0</div>
+              <div class="srv-details">
+                Runtime: Python 3.12 + OpenJDK 17 + GDAL 3.2 + eccodes + pydsstools<br>
+                User: hydrocast:1000 (Non-root) · Init: /usr/bin/tini --<br>
+                Command: uvicorn src.api.main:app --workers 2 --timeout-graceful 30s<br>
+                Named Volumes: hydrocast_runs, hydrocast_telemetry, hydrocast_forecast, hydrocast_raw, hydrocast_archives, hydrocast_logs<br>
+                Healthcheck: curl -fsS http://localhost:8000/api/v1/health (interval 15s)<br>
+                Security: cap_drop: ALL · stop_grace_period: 45s
+              </div>
+            </div>
+
+            <!-- Container 3: hydrocast-frontend -->
+            <div class="service-card" id="DEP_L3" onclick="selectDeploy('DEP_L3')">
+              <div class="srv-title">
+                <span>3. Frontend Dashboard (hydrocast-frontend)</span>
+                <span class="srv-port">Port 3000:3000</span>
+              </div>
+              <div class="srv-sub">Context: ./frontend · Next.js 14 Production Container</div>
+              <div class="srv-details">
+                Environment: NODE_ENV=production<br>
+                API URL: http://localhost:8000 · WS URL: ws://localhost:8000/ws/live<br>
+                Healthcheck: wget --spider http://localhost:3000/ (interval 20s)<br>
+                Security: cap_drop: ALL · no-new-privileges: true
+              </div>
+            </div>
+
+            <!-- Container 4: hydrocast-docs -->
+            <div class="service-card" id="DEP_L4" onclick="selectDeploy('DEP_L4')">
+              <div class="srv-title">
+                <span>4. Documentation Server (hydrocast-docs)</span>
+                <span class="srv-port">Port 8001:8001</span>
+              </div>
+              <div class="srv-sub">Profile: docs · MkDocs Material Engine (--strict validated)</div>
+              <div class="srv-details">
+                Volumes (Read-Only Live Reload): ./docs:/app/docs:ro, ./src:/app/src:ro, ./mkdocs.yml:ro<br>
+                Command: mkdocs serve --dev-addr 0.0.0.0:8001
+              </div>
+            </div>
+
+            <!-- Container 5: hydrocast-dev -->
+            <div class="service-card" id="DEP_L5" onclick="selectDeploy('DEP_L5')">
+              <div class="srv-title">
+                <span>5. Development & Testing (hydrocast-dev)</span>
+                <span class="srv-port">Ports 8000, 8888</span>
+              </div>
+              <div class="srv-sub">Profile: dev · Runtime + Pytest + Ruff + JupyterLab</div>
+              <div class="srv-details">
+                Volumes: ./src:/app/src:ro, ./tests:/app/tests:ro, ./notebooks:/app/notebooks:ro<br>
+                Token: JUPYTER_TOKEN=hydrocast-dev · Interactive shell: bash
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- COLUMN 2: WINDOWS SERVER 2022 -->
+        <div class="env-column windows" id="colWindows">
+          <div class="env-header">
+            <h2>ENVIRONMENT B: WINDOWS SERVER 2022 DEDICATED</h2>
+            <p>windows/install_postgres.ps1 · windows/storage_setup.sql · 3512GB Tablespace</p>
+          </div>
+          <div class="env-body">
+
+            <!-- Windows 1: Storage Architecture -->
+            <div class="service-card win" id="DEP_W1" onclick="selectDeploy('DEP_W1')">
+              <div class="srv-title">
+                <span>1. Physical Drive Partitioning & Tablespace</span>
+                <span class="srv-port">Capacity: 3512 GB</span>
+              </div>
+              <div class="srv-sub">Dual-Drive Architecture (OS / Fast I/O vs High-Capacity Storage)</div>
+              <div class="srv-details">
+                System Drive C:\ or D:\: OS, binaries, and default pg_default<br>
+                Data Drive E:\ (3512 GB): Dedicated PostgreSQL Tablespace `hydrocast_data`<br>
+                Location: E:\pgtablespace\hydrocast<br>
+                WAL Logs Drive: E:\pgwal · System Logs: E:\pglogs<br>
+                Local Raw GRIB2/NetCDF Archive: E:\hydrocast\data\raw
+              </div>
+            </div>
+
+            <!-- Windows 2: PostgreSQL 16 Service -->
+            <div class="service-card win" id="DEP_W2" onclick="selectDeploy('DEP_W2')">
+              <div class="srv-title">
+                <span>2. Native PostgreSQL 16 Windows Service</span>
+                <span class="srv-port">Port 5432</span>
+              </div>
+              <div class="srv-sub">Service: postgresql-x64-16 · EnterpriseDB Native Windows x64</div>
+              <div class="srv-details">
+                Extensions: timescaledb 2.15.3, postgis, pg_cron, pg_stat_statements<br>
+                RAM-Tuned Configuration (Auto-detected in install_postgres.ps1):<br>
+                - shared_buffers = 25% RAM · effective_cache_size = 75% RAM<br>
+                - max_wal_size = 8GB · checkpoint_completion_target = 0.9<br>
+                Service Account: NT AUTHORITY\NetworkService with FullControl ACLs
+              </div>
+            </div>
+
+            <!-- Windows 3: TimescaleDB Compression Policy -->
+            <div class="service-card win" id="DEP_W3" onclick="selectDeploy('DEP_W3')">
+              <div class="srv-title">
+                <span>3. TimescaleDB Compression & Retention Engine</span>
+                <span class="srv-port">Compression: 5–10x</span>
+              </div>
+              <div class="srv-sub">Automated Storage Management on Drive E:\ (storage_setup.sql)</div>
+              <div class="srv-details">
+                ecmwf_forecast: compress after 3 days · drop after 90 days<br>
+                subbasin_rainfall_ts: compress after 7 days · retention: indefinite<br>
+                rainfall_data: compress after 7 days · retention: indefinite<br>
+                bridge_stage_forecast: compress after 7 days · drop after 365 days<br>
+                system_logs: compress after 3 days · drop after 180 days<br>
+                pg_cron maintenance: weekly-vacuum (Sunday 03:00), daily-compress (02:30)
+              </div>
+            </div>
+
+            <!-- Windows 4: Native HEC-HMS Engine -->
+            <div class="service-card win" id="DEP_W4" onclick="selectDeploy('DEP_W4')">
+              <div class="srv-title">
+                <span>4. Native USACE HEC-HMS 4.13 Batch Engine</span>
+                <span class="srv-port">Native EXE</span>
+              </div>
+              <div class="srv-sub">Installed Path: C:\Program Files\HEC\HEC-HMS\4.13\HEC-HMS.exe</div>
+              <div class="srv-details">
+                Headless Mode: "HEC-HMS.exe" -s compute.jy<br>
+                Automation Jython Script: compute.jy targeting 'Run 1'<br>
+                Project File: data/hms/HMS_Automation_RJKT/HMS_Automation_RJKT.hms<br>
+                Dynamic Window Patching: Control_1.control patched for 90-hr forecast horizon
+              </div>
+            </div>
+
+            <!-- Windows 5: Windows Task Scheduler -->
+            <div class="service-card win" id="DEP_W5" onclick="selectDeploy('DEP_W5')">
+              <div class="srv-title">
+                <span>5. Windows Task Scheduler (Automation Runner)</span>
+                <span class="srv-port">Cron Equivalent</span>
+              </div>
+              <div class="srv-sub">Scheduled Task: "HydroCast_Sync_Cycle"</div>
+              <div class="srv-details">
+                Trigger: Runs every 6 hours (02:30, 08:30, 14:30, 20:30 UTC)<br>
+                Action: powershell -ExecutionPolicy Bypass -Command "python -m src.orchestrator"<br>
+                Logging: logs/pipeline.log and database table pipeline_step_log
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Inspector Side Panel -->
+    <div class="side-panel">
+      <div class="panel-header">
+        <h2 id="depTitle">Deployment Inspector</h2>
+        <span id="depId">Select any service or environment component</span>
+      </div>
+      <div class="panel-content">
+        <div class="prop-group">
+          <div class="prop-label">Component Overview</div>
+          <div class="prop-value" id="depDesc">Click on any container service (Linux Docker) or physical server entity (Windows Server) on the left to view exact ports, volume mounts, health probes, and configurations.</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Configuration File Source</div>
+          <div class="prop-value code" id="depSrc">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Ports & Network Boundaries</div>
+          <div class="prop-value" id="depPorts">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Volumes / Tablespaces</div>
+          <div class="prop-value code" id="depStorage">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Process & Healthcheck Specifications</div>
+          <div class="prop-value" id="depProc">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Audit Verification</div>
+          <div id="depStatus"><span class="status-badge">STANDBY</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>CCCSS Shivaji University Kolhapur · Production Deployment Architecture</div>
+    <div>Receipts: docs/receipts/06-deployment-docker-os.receipt.json · Zero Guessing Standard</div>
+  </footer>
+
+  <script>
+    const deployData = {
+      DEP_L1: {
+        title: "Docker Service: hydrocast-db",
+        desc: "PostgreSQL 15 database with PostGIS 3.4 geospatial extension containerized on bridge network hydrocast-net. Automatically initializes schema from database/supabase_schema.sql on clean deployment.",
+        src: "docker-compose.yml:30-53",
+        ports: "5432:5432 (Internal network and exposed host port)",
+        storage: "Named volume: postgres_data -> /var/lib/postgresql/data; Bind mount: ./database/supabase_schema.sql -> /docker-entrypoint-initdb.d/01-init.sql:ro",
+        proc: "Healthcheck: pg_isready -U hms_app -d rainfall_runoff (interval 10s, timeout 5s, retries 5); security_opt: no-new-privileges:true",
+        status: "VERIFIED IN REPO"
+      },
+      DEP_L2: {
+        title: "Docker Service: hydrocast-backend",
+        desc: "Production FastAPI backend container compiled via multi-stage Dockerfile. Embeds Python 3.12, OpenJDK 17 JRE headless, GDAL 3.2, eccodes GRIB decoder, and pydsstools. Executes as unprivileged hydrocast:1000 user.",
+        src: "docker-compose.yml:55-103 · Dockerfile:64-142",
+        ports: "8000:8000 (Internal & external REST/WebSocket)",
+        storage: "6 Per-directory named volumes: hydrocast_runs, hydrocast_telemetry, hydrocast_forecast, hydrocast_raw, hydrocast_archives, hydrocast_logs (preserves baked-in GIS layers and basin project)",
+        proc: "Entrypoint: /usr/bin/tini -- uvicorn src.api.main:app; Healthcheck: curl -fsS http://localhost:8000/api/v1/health (interval 15s); cap_drop: ALL; stop_grace_period: 45s",
+        status: "VERIFIED IN REPO"
+      },
+      DEP_L3: {
+        title: "Docker Service: hydrocast-frontend",
+        desc: "Executive Next.js 14 web application container. Serves the interactive hydrological dashboard, live telemetry charts, 2D cross-section viewer, and Leaflet basin map.",
+        src: "docker-compose.yml:105-135 · frontend/Dockerfile",
+        ports: "3000:3000",
+        storage: "Stateless container image (reads historical runs from Next.js public data directory)",
+        proc: "Node.js 18 production server; Healthcheck: wget --spider http://localhost:3000/ (interval 20s); cap_drop: ALL; depends_on: hydrocast-backend (healthy)",
+        status: "VERIFIED IN REPO"
+      },
+      DEP_L4: {
+        title: "Docker Service: hydrocast-docs",
+        desc: "Opt-in documentation container (profile: docs). Runs MkDocs Material server with live reload. Validated with `mkdocs build --strict` at build time.",
+        src: "docker-compose.yml:137-156 · Dockerfile:143-163",
+        ports: "8001:8001",
+        storage: "Read-only bind mounts: ./docs:/app/docs:ro, ./src:/app/src:ro, ./mkdocs.yml:/app/mkdocs.yml:ro",
+        proc: "Command: mkdocs serve --dev-addr 0.0.0.0:8001",
+        status: "VERIFIED IN REPO"
+      },
+      DEP_L5: {
+        title: "Docker Service: hydrocast-dev",
+        desc: "Opt-in developer container (profile: dev). Derives from runtime image and adds pytest, ruff, black, mypy, and JupyterLab.",
+        src: "docker-compose.yml:158-185 · Dockerfile:166-184",
+        ports: "8000:8000 (API), 8888:8888 (JupyterLab)",
+        storage: "Read-only source mounts: ./src, ./tests, ./notebooks; Volume: hydrocast_dev_logs",
+        proc: "Interactive bash shell; Token: JUPYTER_TOKEN=hydrocast-dev",
+        status: "VERIFIED IN REPO"
+      },
+      DEP_W1: {
+        title: "Windows Storage: 3512 GB Tablespace on E:\\",
+        desc: "Dedicated physical storage architecture for Maharashtra WRD / Shivaji University high-capacity deployment. Separates OS operations (C:\\) from massive time-series data tablespace (E:\\).",
+        src: "windows/install_postgres.ps1:8-36, 176-180 · windows/storage_setup.sql:1-19",
+        ports: "Direct NVMe/SATA controller I/O",
+        storage: "E:\\pgtablespace\\hydrocast (TABLESPACE hydrocast_data); E:\\pgwal (WAL transaction logs); E:\\pglogs (Query logs); E:\\hydrocast\\data\\raw (GRIB2/NetCDF archives)",
+        proc: "Capacity: 3512 GB supports 50+ years of compressed 90-hr forecast cycles (~50GB/year active)",
+        status: "VERIFIED IN REPO"
+      },
+      DEP_W2: {
+        title: "Windows Service: PostgreSQL 16 x64",
+        desc: "Native Windows service postgresql-x64-16 installed silently via EnterpriseDB installer. Configured with TimescaleDB 2.15.3 and PostGIS extensions.",
+        src: "windows/install_postgres.ps1:38-74, 85-142",
+        ports: "Port 5432 (Windows Service)",
+        storage: "E:\\pgdata (Base data cluster)",
+        proc: "Automatic RAM tuning: shared_buffers=25% RAM, effective_cache=75% RAM, work_mem=64-128MB. Security ACLs assigned to NT AUTHORITY\\NetworkService",
+        status: "VERIFIED IN REPO"
+      },
+      DEP_W3: {
+        title: "Windows Storage: TimescaleDB Policies",
+        desc: "Automatic chunk compression and retention SQL commands executed via pg_cron inside PostgreSQL. Compresses chunks older than 3 to 7 days with 5–10x compression ratio.",
+        src: "windows/storage_setup.sql:20-95, 140-171",
+        ports: "Internal background workers",
+        storage: "Hypertables: ecmwf_forecast, subbasin_rainfall_ts, rainfall_data, hydrograph_results, bridge_stage_forecast",
+        proc: "pg_cron jobs: weekly-vacuum (Sunday 03:00), daily-compress (02:30), auto-cancel-alerts (04:00)",
+        status: "VERIFIED IN REPO"
+      },
+      DEP_W4: {
+        title: "Windows HEC-HMS 4.13 Native Binary",
+        desc: "Official USACE HEC-HMS 4.13 installed natively on Windows Server host. Eliminates reliance on containerized emulation by running the verified USACE compiled binary directly.",
+        src: "src/hms/runner.py:60-70",
+        ports: "Direct OS Process Spawn (subprocess.run)",
+        storage: "data/hms/HMS_Automation_RJKT/HMS_Automation_RJKT.hms, Control_1.control, Run_1.dss",
+        proc: "Command: 'C:\\Program Files\\HEC\\HEC-HMS\\4.13\\HEC-HMS.exe' -s compute.jy; Patches Control_1.control dynamically for each 90-hr forecast horizon",
+        status: "VERIFIED IN REPO"
+      },
+      DEP_W5: {
+        title: "Windows Automation: Task Scheduler",
+        desc: "Automates the 6-hourly execution of the forecast pipeline on Windows Server 2022 without external dependencies.",
+        src: "windows/install_postgres.ps1:211 · src/orchestrator.py:12-14",
+        ports: "Windows Task Scheduler Engine",
+        storage: "Logs: logs/pipeline.log",
+        proc: "Command: python -m src.orchestrator; Runs at 02:30, 08:30, 14:30, 20:30 UTC corresponding with synoptic ECMWF weather releases",
+        status: "VERIFIED IN REPO"
+      }
+    };
+
+    function selectDeploy(id) {
+      document.querySelectorAll('.service-card').forEach(c => c.classList.remove('active'));
+      const card = document.getElementById(id);
+      if (card) card.classList.add('active');
+
+      const data = deployData[id];
+      if (!data) return;
+
+      document.getElementById('depTitle').textContent = data.title;
+      document.getElementById('depId').textContent = "DEPLOYMENT ENTITY: " + id;
+      document.getElementById('depDesc').textContent = data.desc;
+      document.getElementById('depSrc').textContent = data.src;
+      document.getElementById('depPorts').textContent = data.ports;
+      document.getElementById('depStorage').textContent = data.storage;
+      document.getElementById('depProc').textContent = data.proc;
+      document.getElementById('depStatus').innerHTML = '<span class="status-badge">VERIFIED IN REPOSITORY</span>';
+    }
+
+    function filterDeploy(env) {
+      const colL = document.getElementById('colLinux');
+      const colW = document.getElementById('colWindows');
+      const grid = document.getElementById('deployGrid');
+      if (env === 'linux') {
+        colL.style.display = 'flex';
+        colW.style.display = 'none';
+        grid.style.gridTemplateColumns = '1000px';
+        selectDeploy('DEP_L1');
+      } else if (env === 'windows') {
+        colL.style.display = 'none';
+        colW.style.display = 'flex';
+        grid.style.gridTemplateColumns = '1000px';
+        selectDeploy('DEP_W1');
+      } else {
+        colL.style.display = 'flex';
+        colW.style.display = 'flex';
+        grid.style.gridTemplateColumns = '680px 680px';
+        resetDeployInspector();
+      }
+    }
+
+    function resetDeployInspector() {
+      document.querySelectorAll('.service-card').forEach(c => c.classList.remove('active'));
+      document.getElementById('depTitle').textContent = "Deployment Inspector";
+      document.getElementById('depId').textContent = "Select any service or environment component";
+      document.getElementById('depDesc').textContent = "Click on any container service (Linux Docker) or physical server entity (Windows Server) on the left to view exact ports, volume mounts, health probes, and configurations.";
+      document.getElementById('depSrc').textContent = "—";
+      document.getElementById('depPorts').textContent = "—";
+      document.getElementById('depStorage').textContent = "—";
+      document.getElementById('depProc').textContent = "—";
+      document.getElementById('depStatus').innerHTML = '<span class="status-badge">STANDBY</span>';
+    }
+
+    // Default selection
+    window.addEventListener('DOMContentLoaded', () => selectDeploy('DEP_L1'));
+  </script>
+</body>
+</html>

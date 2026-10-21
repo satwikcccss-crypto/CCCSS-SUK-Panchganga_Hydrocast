@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCast — Computation Run States & Validation Lifecycle</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #cbd5e1;
+      --border-dark: #64748b;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --navy: #1e3a8a;
+      --navy-light: #eff6ff;
+      --accent: #b91c1c;
+      --accent-light: #fef2f2;
+      --amber: #d97706;
+      --amber-light: #fffbeb;
+      --green: #15803d;
+      --green-light: #f0fdf4;
+      --font-serif: "Georgia", "Cambria", "Times New Roman", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 2px solid var(--navy);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header-title h1 {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+    }
+    .header-title p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .header-meta {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .header-meta strong {
+      color: var(--text);
+    }
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .diagram-viewport {
+      flex: 1;
+      overflow: auto;
+      padding: 24px;
+      background: #ffffff;
+      position: relative;
+    }
+    .controls-bar {
+      position: absolute;
+      top: 14px;
+      left: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+      background: #ffffff;
+      padding: 4px;
+      border: 1px solid var(--border);
+    }
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border: 1px solid var(--border-dark);
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .btn.active {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+    }
+    .btn:hover:not(.active) {
+      background: var(--navy-light);
+      color: var(--navy);
+    }
+    .side-panel {
+      width: 400px;
+      background: #ffffff;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .panel-header {
+      background: var(--navy);
+      color: #ffffff;
+      padding: 12px 16px;
+    }
+    .panel-header h2 {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .panel-header span {
+      font-size: 11px;
+      opacity: 0.85;
+      font-family: var(--font-mono);
+    }
+    .panel-content {
+      padding: 16px;
+      font-size: 12px;
+    }
+    .prop-group {
+      margin-bottom: 14px;
+    }
+    .prop-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .prop-value {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      border-radius: 2px;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .prop-value.code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--navy);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1px solid var(--navy);
+      color: var(--navy);
+      background: var(--navy-light);
+    }
+
+    /* SVG Canvas */
+    svg.lifecycle-svg {
+      width: 1250px;
+      height: 880px;
+      background: #fafbfc;
+      border: 1px solid var(--border);
+    }
+    .group-box {
+      fill: #ffffff;
+      stroke: #cbd5e1;
+      stroke-width: 1.5;
+    }
+    .group-title {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      font-weight: 700;
+      fill: var(--navy);
+    }
+    .state-node {
+      cursor: pointer;
+    }
+    .state-node rect {
+      fill: #ffffff;
+      stroke: var(--navy);
+      stroke-width: 1.5;
+      rx: 3;
+    }
+    .state-node:hover rect {
+      stroke-width: 2.5;
+    }
+    .state-node.active rect {
+      fill: var(--navy-light);
+      stroke-width: 2.5;
+    }
+    .state-node.fail rect {
+      stroke: var(--accent);
+      fill: var(--accent-light);
+    }
+    .state-node.amber rect {
+      stroke: var(--amber);
+      fill: var(--amber-light);
+    }
+    .state-node.green rect {
+      stroke: var(--green);
+      fill: var(--green-light);
+    }
+    .state-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      fill: var(--navy);
+      text-anchor: middle;
+    }
+    .state-node.fail .state-title { fill: var(--accent); }
+    .state-node.amber .state-title { fill: var(--amber); }
+    .state-node.green .state-title { fill: var(--green); }
+    .state-sub {
+      font-family: var(--font-sans);
+      font-size: 9.5px;
+      fill: var(--text-muted);
+      text-anchor: middle;
+    }
+    .trans-line {
+      stroke: #64748b;
+      stroke-width: 1.5;
+      fill: none;
+    }
+    .trans-text {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      fill: #334155;
+    }
+
+    footer {
+      background: #f1f5f9;
+      border-top: 1px solid var(--border);
+      padding: 6px 20px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>HydroCast — Computation Run States & Validation Lifecycle</h1>
+      <p>State Machine Architecture Derived Strictly from Simulation Ledger and Telemetry Validation Code</p>
+    </div>
+    <div class="header-meta">
+      <div>DIAGRAM: <strong>05-LIFECYCLE-RUNS</strong></div>
+      <div>SPECIFICATION: <strong>STRICT CODE-GROUNDED ENUM STATES</strong></div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div class="diagram-viewport">
+      <div class="controls-bar">
+        <button class="btn active" onclick="filterLifecycle('all')">Show Complete State System</button>
+        <button class="btn" onclick="filterLifecycle('exec')">1. Execution States (simulation_runs)</button>
+        <button class="btn" onclick="filterLifecycle('val')">2. Telemetry Lifecycle (90-Hour)</button>
+        <button class="btn" onclick="filterLifecycle('alert')">3. Bridge Warning Levels</button>
+        <button class="btn" onclick="resetLcInspector()">Reset Inspector</button>
+      </div>
+
+      <svg class="lifecycle-svg" viewBox="0 0 1250 880" id="lcSvg">
+        <defs>
+          <marker id="lc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
+          </marker>
+          <marker id="lc-arrow-navy" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e3a8a" />
+          </marker>
+        </defs>
+
+        <!-- SUB-SYSTEM 1: SIMULATION RUN EXECUTION STATES -->
+        <rect x="40" y="40" width="1170" height="230" class="group-box" />
+        <text x="60" y="70" class="group-title">SUB-SYSTEM 1: FORECAST EXECUTION STATES (Table: simulation_runs.status)</text>
+        <text x="60" y="88" style="font-family: var(--font-mono); font-size: 10px; fill: #64748b;">Source: src/orchestrator.py:216, 230, 73 · database/supabase_schema.sql:172</text>
+
+        <!-- State 1.1: running -->
+        <g class="state-node" id="ST_RUN" onclick="selectState('ST_RUN')">
+          <rect x="80" y="120" width="220" height="70" />
+          <text x="190" y="150" class="state-title">status = 'running'</text>
+          <text x="190" y="170" class="state-sub">create_cycle() inserted in DB</text>
+        </g>
+
+        <!-- Trans 1.1 -> 1.2 -->
+        <path d="M 300 155 L 480 155" class="trans-line" marker-end="url(#lc-arrow-navy)" />
+        <text x="320" y="145" class="trans-text">Steps 1–12 succeed</text>
+
+        <!-- State 1.2: completed -->
+        <g class="state-node green" id="ST_COMP" onclick="selectState('ST_COMP')">
+          <rect x="480" y="120" width="240" height="70" />
+          <text x="600" y="150" class="state-title">status = 'completed'</text>
+          <text x="600" y="170" class="state-sub">mark_complete() · end_time set</text>
+        </g>
+
+        <!-- Trans 1.1 -> 1.3 (Failure) -->
+        <path d="M 190 190 L 190 230 L 920 230 L 920 190" class="trans-line" marker-end="url(#lc-arrow-navy)" />
+        <text x="440" y="222" class="trans-text">Any unhandled exception in steps 1..11 -> step_fail()</text>
+
+        <!-- State 1.3: failed -->
+        <g class="state-node fail" id="ST_FAIL" onclick="selectState('ST_FAIL')">
+          <rect x="840" y="120" width="220" height="70" />
+          <text x="950" y="150" class="state-title">status = 'failed'</text>
+          <text x="950" y="170" class="state-sub">error_message populated</text>
+        </g>
+
+        <!-- SUB-SYSTEM 2: 90-HOUR FORWARD VALIDATION LIFECYCLE -->
+        <rect x="40" y="300" width="1170" height="300" class="group-box" />
+        <text x="60" y="330" class="group-title">SUB-SYSTEM 2: 90-HOUR TELEMETRY VALIDATION LIFECYCLE (lifecycle_status)</text>
+        <text x="60" y="348" style="font-family: var(--font-mono); font-size: 10px; fill: #64748b;">Source: src/hydrology/realtime_telemetry_validator.py:571-580 · src/hydrology/runs_tracker.py:97-118</text>
+
+        <!-- LC 1: PENDING -->
+        <g class="state-node" id="LC_PEND" onclick="selectState('LC_PEND')">
+          <rect x="70" y="380" width="170" height="65" />
+          <text x="155" y="410" class="state-title">PENDING</text>
+          <text x="155" y="428" class="state-sub">New run generated</text>
+        </g>
+
+        <!-- Trans LC 1 -> 2 -->
+        <path d="M 240 412 L 300 412" class="trans-line" marker-end="url(#lc-arrow-navy)" />
+
+        <!-- LC 2: AWAITING_OBSERVATIONS -->
+        <g class="state-node amber" id="LC_AWAIT" onclick="selectState('LC_AWAIT')">
+          <rect x="300" y="380" width="210" height="65" />
+          <text x="405" y="410" class="state-title">AWAITING_OBSERVATIONS</text>
+          <text x="405" y="428" class="state-sub">verified_hours == 0</text>
+        </g>
+
+        <!-- Trans LC 2 -> 3 -->
+        <path d="M 510 412 L 580 412" class="trans-line" marker-end="url(#lc-arrow-navy)" />
+        <text x="515" y="405" class="trans-text">>0 pings</text>
+
+        <!-- LC 3: IN_PROGRESS -->
+        <g class="state-node" id="LC_PROG" onclick="selectState('LC_PROG')">
+          <rect x="580" y="380" width="210" height="65" />
+          <text x="685" y="410" class="state-title">IN_PROGRESS</text>
+          <text x="685" y="428" class="state-sub">0 &lt; verified_hours &lt; 72</text>
+        </g>
+
+        <!-- Trans LC 3 -> 4 (Mature Verification) -->
+        <path d="M 790 412 L 870 412" class="trans-line" marker-end="url(#lc-arrow-navy)" />
+        <text x="800" y="405" class="trans-text">≥72 hours</text>
+
+        <!-- LC 4: LIFECYCLE_VERIFIED -->
+        <g class="state-node green" id="LC_VERIF" onclick="selectState('LC_VERIF')">
+          <rect x="870" y="380" width="230" height="65" />
+          <text x="985" y="410" class="state-title">LIFECYCLE_VERIFIED</text>
+          <text x="985" y="428" class="state-sub">≥80% 90-hr horizon verified</text>
+        </g>
+
+        <!-- LC 5: OBSERVATION_GAP (Branch from IN_PROGRESS) -->
+        <path d="M 685 445 L 685 500" class="trans-line" marker-end="url(#lc-arrow-navy)" />
+        <text x="695" y="475" class="trans-text">Sensor gap > 3h</text>
+
+        <g class="state-node fail" id="LC_GAP" onclick="selectState('LC_GAP')">
+          <rect x="580" y="500" width="210" height="65" />
+          <text x="685" y="530" class="state-title">OBSERVATION_GAP</text>
+          <text x="685" y="548" class="state-sub">Missing telemetry dropout</text>
+        </g>
+
+        <!-- LC 6: BASEFLOW_STABLE -->
+        <g class="state-node" id="LC_BASE" onclick="selectState('LC_BASE')">
+          <rect x="870" y="500" width="230" height="65" />
+          <text x="985" y="530" class="state-title">BASEFLOW_STABLE</text>
+          <text x="985" y="548" class="state-sub">Dry season steady baseflow</text>
+        </g>
+        <path d="M 985 445 L 985 500" class="trans-line" marker-end="url(#lc-arrow-navy)" />
+
+        <!-- SUB-SYSTEM 3: BRIDGE FLOOD WARNING DATUMS -->
+        <rect x="40" y="630" width="1170" height="210" class="group-box" />
+        <text x="60" y="660" class="group-title">SUB-SYSTEM 3: BRIDGE FLOOD ALERT LEVEL CLASSIFICATION (alert_level)</text>
+        <text x="60" y="678" style="font-family: var(--font-mono); font-size: 10px; fill: #64748b;">Source: database/supabase_schema.sql:279 · src/hydrology/stage_converter.py:34-38</text>
+
+        <!-- Level 1: NORMAL -->
+        <g class="state-node green" id="AL_NORM" onclick="selectState('AL_NORM')">
+          <rect x="70" y="710" width="190" height="65" />
+          <text x="165" y="740" class="state-title">NORMAL</text>
+          <text x="165" y="758" class="state-sub">Stage &lt; 542.10m MSL</text>
+        </g>
+
+        <!-- Trans -->
+        <path d="M 260 742 L 310 742" class="trans-line" marker-end="url(#lc-arrow-navy)" />
+
+        <!-- Level 2: ALERT -->
+        <g class="state-node amber" id="AL_ALRT" onclick="selectState('AL_ALRT')">
+          <rect x="310" y="710" width="190" height="65" />
+          <text x="405" y="740" class="state-title">ALERT</text>
+          <text x="405" y="758" class="state-sub">Stage ≥ 542.10m (39'1")</text>
+        </g>
+
+        <!-- Trans -->
+        <path d="M 500 742 L 550 742" class="trans-line" marker-end="url(#lc-arrow-navy)" />
+
+        <!-- Level 3: WARNING -->
+        <g class="state-node amber" id="AL_WARN" onclick="selectState('AL_WARN')">
+          <rect x="550" y="710" width="190" height="65" />
+          <text x="645" y="740" class="state-title">WARNING</text>
+          <text x="645" y="758" class="state-sub">Stage ≥ 542.70m (41'1")</text>
+        </g>
+
+        <!-- Trans -->
+        <path d="M 740 742 L 790 742" class="trans-line" marker-end="url(#lc-arrow-navy)" />
+
+        <!-- Level 4: DANGER -->
+        <g class="state-node fail" id="AL_DNGR" onclick="selectState('AL_DNGR')">
+          <rect x="790" y="710" width="190" height="65" />
+          <text x="885" y="740" class="state-title">DANGER</text>
+          <text x="885" y="758" class="state-sub">Stage ≥ 543.30m (43'0")</text>
+        </g>
+
+        <!-- Trans -->
+        <path d="M 980 742 L 1020 742" class="trans-line" marker-end="url(#lc-arrow-navy)" />
+
+        <!-- Level 5: HFL_EXCEEDED -->
+        <g class="state-node fail" id="AL_HFL" onclick="selectState('AL_HFL')">
+          <rect x="1020" y="710" width="170" height="65" />
+          <text x="1105" y="740" class="state-title">HFL_EXCEEDED</text>
+          <text x="1105" y="758" class="state-sub">Stage ≥ 545.33m (49'8")</text>
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- Inspector Side Panel -->
+    <div class="side-panel">
+      <div class="panel-header">
+        <h2 id="stTitle">State & Lifecycle Inspector</h2>
+        <span id="stId">Select any discrete state node</span>
+      </div>
+      <div class="panel-content">
+        <div class="prop-group">
+          <div class="prop-label">State Definition & Invariants</div>
+          <div class="prop-value" id="stDesc">Click any state box from the diagram on the left to view exact enum constants, database column mappings, entry conditions, and exit transitions.</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Source Implementation File</div>
+          <div class="prop-value code" id="stSrc">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Entry Condition / Trigger</div>
+          <div class="prop-value" id="stEntry">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Next Permissible Transitions</div>
+          <div class="prop-value code" id="stTrans">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Audit Verification</div>
+          <div id="stStatus"><span class="status-badge">STANDBY</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>CCCSS Shivaji University Kolhapur · River Hydraulics & Continuous Validation Engine</div>
+    <div>Receipts: docs/receipts/05-lifecycle-runs.receipt.json · Zero Speculation Standard</div>
+  </footer>
+
+  <script>
+    const stateData = {
+      ST_RUN: {
+        title: "Simulation Run: running",
+        desc: "Initial execution state when a forecast cycle begins. The orchestrator records start_time=NOW() and commits row into simulation_runs master table.",
+        src: "src/orchestrator.py:216 · database/supabase_schema.sql:172",
+        entry: "create_cycle(conn, cycle_id, run_dt) executed at start of pipeline",
+        trans: "-> completed (on normal completion) OR -> failed (on unhandled error)",
+        status: "VERIFIED IN REPO"
+      },
+      ST_COMP: {
+        title: "Simulation Run: completed",
+        desc: "Final successful terminal state of a 12-step forecast cycle. All outputs are verified, stored in PostgreSQL, and broadcast over WebSockets.",
+        src: "src/orchestrator.py:230 · database/supabase_schema.sql:172",
+        entry: "mark_complete(conn, cycle_id) called after step 12 broadcast",
+        trans: "Terminal state (run is archived into cold storage after 90 days)",
+        status: "VERIFIED IN REPO"
+      },
+      ST_FAIL: {
+        title: "Simulation Run: failed",
+        desc: "Terminal error state. Records exact stack trace in error_message column so engineering staff can audit failed pipeline runs.",
+        src: "src/orchestrator.py:73 · database/supabase_schema.sql:172",
+        entry: "step_fail(conn, cycle_id, step_num, traceback) invoked on unhandled exception",
+        trans: "Terminal state",
+        status: "VERIFIED IN REPO"
+      },
+      LC_PEND: {
+        title: "Validation Horizon: PENDING",
+        desc: "Newly computed run waiting for real-world time to elapse and matching sensor observations to accumulate.",
+        src: "src/hydrology/runs_tracker.py:97",
+        entry: "Run created by orchestrator; zero real-time telemetry matching timestamps yet",
+        trans: "-> AWAITING_OBSERVATIONS",
+        status: "VERIFIED IN REPO"
+      },
+      LC_AWAIT: {
+        title: "Validation Horizon: AWAITING_OBSERVATIONS",
+        desc: "Run has been registered into the active validation queue. System is waiting for initial hourly telemetry pings.",
+        src: "src/hydrology/realtime_telemetry_validator.py:575",
+        entry: "verified_hours == 0; incoming telemetry has not reached forecast lead time +01h",
+        trans: "-> IN_PROGRESS (upon first matching telemetry ping)",
+        status: "VERIFIED IN REPO"
+      },
+      LC_PROG: {
+        title: "Validation Horizon: IN_PROGRESS",
+        desc: "Active continuous validation state. Real-time telemetry observations are actively arriving, matching forecast timesteps, and computing running skill metrics (RMSE, NSE, rho).",
+        src: "src/hydrology/realtime_telemetry_validator.py:577",
+        entry: "0 < verified_hours < 72 hours of the 90-hour forecast window",
+        trans: "-> LIFECYCLE_VERIFIED (when verified_hours >= 72) OR -> OBSERVATION_GAP (if sensors drop out)",
+        status: "VERIFIED IN REPO"
+      },
+      LC_VERIF: {
+        title: "Validation Horizon: LIFECYCLE_VERIFIED",
+        desc: "Mature validated state. The forecast run has completed at least 72 hours (80% of total 90-hour window) of continuous real-world sensor verification.",
+        src: "src/hydrology/realtime_telemetry_validator.py:571",
+        entry: "verified_hours >= 72 hours; sample_size_hours gate satisfied",
+        trans: "Terminal lifecycle validation state for the cycle",
+        status: "VERIFIED IN REPO"
+      },
+      LC_GAP: {
+        title: "Validation Horizon: OBSERVATION_GAP",
+        desc: "Flagged when physical sensor telemetry has an observation outage exceeding 3 continuous hours during the forecast window.",
+        src: "src/hydrology/realtime_telemetry_validator.py:573",
+        entry: "is_gap == True; missing telemetry chunks detected in ThingSpeak cache",
+        trans: "-> IN_PROGRESS (if telemetry resumes and backfill succeeds)",
+        status: "VERIFIED IN REPO"
+      },
+      LC_BASE: {
+        title: "Validation Horizon: BASEFLOW_STABLE",
+        desc: "Designates cycles during low-flow dry season conditions where discharge remains at stable baseflow (45 m³/s).",
+        src: "src/hydrology/validation_metrics.py:167",
+        entry: "Runoff variance < threshold; baseflow dominance verified",
+        trans: "Terminal low-flow validation state",
+        status: "VERIFIED IN REPO"
+      },
+      AL_NORM: {
+        title: "Alert Classification: NORMAL",
+        desc: "Safe baseline river condition. River level is below Alert Level at all bridge monitoring sites.",
+        src: "database/supabase_schema.sql:180, 279",
+        entry: "Projected stage < 542.10m MSL at Shivaji Bridge",
+        trans: "-> ALERT (if upstream runoff increases stage)",
+        status: "VERIFIED IN REPO"
+      },
+      AL_ALRT: {
+        title: "Alert Classification: ALERT",
+        desc: "First operational warning stage (542.10m MSL / 39'1\" at Shivaji Bridge, 541.50m MSL at Rajaram Weir). WRD and municipal monitoring initiated.",
+        src: "database/supabase_schema.sql:127, 151, 323",
+        entry: "Projected stage >= 542.10m MSL",
+        trans: "-> WARNING OR -> NORMAL",
+        status: "VERIFIED IN REPO"
+      },
+      AL_WARN: {
+        title: "Alert Classification: WARNING",
+        desc: "Second operational warning stage (542.70m MSL / 41'1\" at Shivaji Bridge). River begins overtopping secondary banks.",
+        src: "database/supabase_schema.sql:128, 152, 324",
+        entry: "Projected stage >= 542.70m MSL",
+        trans: "-> DANGER OR -> ALERT",
+        status: "VERIFIED IN REPO"
+      },
+      AL_DNGR: {
+        title: "Alert Classification: DANGER",
+        desc: "Critical flood threshold (543.30m MSL / 43'0\" at Shivaji Bridge). Water reaches bridge roadway level; low-lying urban areas inundated; automated evacuation advisories sent.",
+        src: "database/supabase_schema.sql:129, 153, 325",
+        entry: "Projected stage >= 543.30m MSL (is_above_danger = TRUE)",
+        trans: "-> HFL_EXCEEDED OR -> WARNING",
+        status: "VERIFIED IN REPO"
+      },
+      AL_HFL: {
+        title: "Alert Classification: HFL_EXCEEDED",
+        desc: "Historic High Flood Level exceeded (545.33m MSL / 49'8\" reached during devastating 2019 and 2021 Panchganga floods). Extreme catastrophe condition.",
+        src: "database/supabase_schema.sql:130, 154, 326",
+        entry: "Projected stage >= 545.33m MSL",
+        trans: "-> DANGER (as flood recedes)",
+        status: "VERIFIED IN REPO"
+      }
+    };
+
+    function selectState(id) {
+      document.querySelectorAll('.state-node').forEach(n => n.classList.remove('active'));
+      const node = document.getElementById(id);
+      if (node) node.classList.add('active');
+
+      const data = stateData[id];
+      if (!data) return;
+
+      document.getElementById('stTitle').textContent = data.title;
+      document.getElementById('stId').textContent = "DISCRETE STATE: " + id;
+      document.getElementById('stDesc').textContent = data.desc;
+      document.getElementById('stSrc').textContent = data.src;
+      document.getElementById('stEntry').textContent = data.entry;
+      document.getElementById('stTrans').textContent = data.trans;
+      document.getElementById('stStatus').innerHTML = '<span class="status-badge">VERIFIED IN REPOSITORY</span>';
+    }
+
+    function filterLifecycle(cat) {
+      if (cat === 'exec') selectState('ST_RUN');
+      else if (cat === 'val') selectState('LC_PROG');
+      else if (cat === 'alert') selectState('AL_DNGR');
+      else resetLcInspector();
+    }
+
+    function resetLcInspector() {
+      document.querySelectorAll('.state-node').forEach(n => n.classList.remove('active'));
+      document.getElementById('stTitle').textContent = "State & Lifecycle Inspector";
+      document.getElementById('stId').textContent = "Select any discrete state node";
+      document.getElementById('stDesc').textContent = "Click any state box from the diagram on the left to view exact enum constants, database column mappings, entry conditions, and exit transitions.";
+      document.getElementById('stSrc').textContent = "—";
+      document.getElementById('stEntry').textContent = "—";
+      document.getElementById('stTrans').textContent = "—";
+      document.getElementById('stStatus').innerHTML = '<span class="status-badge">STANDBY</span>';
+    }
+
+    // Default selection
+    window.addEventListener('DOMContentLoaded', () => selectState('ST_RUN'));
+  </script>
+</body>
+</html>
