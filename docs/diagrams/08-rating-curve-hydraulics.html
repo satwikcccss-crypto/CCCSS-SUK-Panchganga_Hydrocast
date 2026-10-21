@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCast — Hydraulic Rating Curve & Bridge Cross-Section Simulation Console</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel-bg: #ffffff;
+      --card-bg: #f0f9ff;
+      --border: #cbd5e1;
+      --border-blue: #bae6fd;
+      --border-bright: #0284c7;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --navy: #1e3a8a;
+      --sky: #0284c7;
+      --water: #0ea5e9;
+      --water-dark: #0369a1;
+      --green: #059669;
+      --amber: #d97706;
+      --red: #dc2626;
+      --crimson: #991b1b;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 2px solid var(--navy);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      z-index: 10;
+    }
+    .header-title h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ecfdf5;
+      border: 1px solid #10b981;
+      color: #047857;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px #10b981;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .header-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+    .header-meta strong { color: var(--navy); }
+    
+    .main-workspace {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .left-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      gap: 12px;
+      overflow-y: auto;
+      background: #f1f5f9;
+    }
+    
+    .control-strip {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .control-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 200px;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--sky);
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(2, 132, 199, 0.4);
+      border: 2px solid #ffffff;
+    }
+    .val-display {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      min-width: 90px;
+    }
+    .preset-btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover {
+      background: #f8fafc;
+      border-color: var(--sky);
+    }
+    .preset-btn.active {
+      background: var(--sky);
+      border-color: var(--sky);
+      color: #ffffff;
+    }
+    .preset-btn.danger {
+      border-color: #fca5a5;
+      color: var(--red);
+      background: #fef2f2;
+    }
+    .preset-btn.danger.active {
+      background: var(--red);
+      border-color: var(--red);
+      color: #ffffff;
+    }
+    
+    .charts-split {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 12px;
+      flex: 1;
+      min-height: 480px;
+    }
+    
+    .panel-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .panel-box-header {
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-box-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-svg-wrap {
+      flex: 1;
+      position: relative;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    svg.simulation-svg {
+      width: 100%;
+      height: 100%;
+      max-height: 520px;
+    }
+    
+    .right-inspector {
+      width: 440px;
+      background: #ffffff;
+      border-left: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .inspector-header {
+      padding: 14px 18px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+    }
+    .inspector-header h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .status-pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 3px;
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+    .status-normal { background: #ecfdf5; border: 1px solid #10b981; color: #047857; }
+    .status-alert { background: #fffbeb; border: 1px solid #f59e0b; color: #b45309; }
+    .status-warning { background: #fff7ed; border: 1px solid #f97316; color: #c2410c; }
+    .status-danger { background: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; animation: alertPulse 1.5s infinite; }
+    .status-extreme { background: #991b1b; border: 1px solid #7f1d1d; color: #ffffff; }
+    
+    @keyframes alertPulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+      50% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+    }
+    .metric-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 3px;
+    }
+    .metric-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .metric-val {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-top: 4px;
+    }
+    .metric-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    
+    .telemetry-stream {
+      padding: 14px 18px;
+      flex: 1;
+    }
+    .telemetry-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .log-terminal {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.5;
+      color: #334155;
+      height: 220px;
+      overflow-y: auto;
+    }
+    .log-line { margin-bottom: 4px; }
+    .log-time { color: #64748b; margin-right: 6px; }
+    .log-info { color: #0284c7; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>
+        <span>HYDROCAST</span> · HYDRAULIC RATING CURVE &amp; CROSS-SECTION SIMULATION
+      </h1>
+      <span class="badge-live"><span class="pulse-dot"></span> LIVE CALCULATION CORE</span>
+    </div>
+    <div class="header-meta">
+      <div>GAUGE SITE: <strong>SHIVAJI BRIDGE (PANCHGANGA RIVER, KOLHAPUR)</strong></div>
+      <div>SURVEY DATUM: <strong>WRD SECTION 17 · BED INVERT 529.32m / 530.18m ZERO-GAUGE</strong></div>
+      <div>SOLVER: <strong>PCHIP SPLINE (MONOTONIC dQ/dH > 0) + MANNING HYDRAULIC INTEGRATOR</strong></div>
+    </div>
+  </header>
+
+  <div class="main-workspace">
+    <div class="left-viewport">
+      
+      <!-- Live Control Strip -->
+      <div class="control-strip">
+        <div class="control-group">
+          <span class="control-label">Simulated Discharge Q (m³/s):</span>
+          <div class="slider-row">
+            <input type="range" id="qSlider" min="10" max="4000" step="10" value="800" oninput="onQSliderChange(this.value)">
+            <span class="val-display" id="qValDisplay">800.0 m³/s</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">Water Stage H (m MSL):</span>
+          <div class="slider-row">
+            <input type="range" id="hSlider" min="530.18" max="545.33" step="0.05" value="539.02" oninput="onHSliderChange(this.value)">
+            <span class="val-display" id="hValDisplay">539.02 m</span>
+          </div>
+        </div>
+
+        <div class="control-group" style="flex:1;">
+          <span class="control-label">Flood Scenarios:</span>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:2px;">
+            <button class="preset-btn" onclick="applyPreset('baseflow')">Monsoon Base (80 m³/s)</button>
+            <button class="preset-btn active" id="btnPresetNormal" onclick="applyPreset('bankfull')">Bankfull (800 m³/s)</button>
+            <button class="preset-btn" onclick="applyPreset('alert')">Alert (1,800 m³/s)</button>
+            <button class="preset-btn" onclick="applyPreset('warning')">Warning (2,200 m³/s)</button>
+            <button class="preset-btn danger" onclick="applyPreset('danger')">Danger Peak (2,675 m³/s)</button>
+            <button class="preset-btn danger" onclick="applyPreset('hfl')">2019 HFL (3,850 m³/s)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Split Simulation Views -->
+      <div class="charts-split">
+        
+        <!-- Cross-Section Simulation View -->
+        <div class="panel-box">
+          <div class="panel-box-header">
+            <span class="panel-box-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7 4 7-4v14"/></svg>
+              Surveyed Bridge Cross-Section Profile (WRD Section 17)
+            </span>
+            <span style="font-family:var(--font-mono); font-size:10.5px; color:var(--sky); font-weight:700;" id="csDatumLabel">WSE: 539.02 m MSL · Depth: 9.70 m</span>
+          </div>
+          <div class="panel-svg-wrap">
+            <svg class="simulation-svg" id="csSvg" viewBox="0 0 650 420">
+              <defs>
+                <linearGradient id="waterFillLightGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.80"/>
+                  <stop offset="40%" stop-color="#0ea5e9" stop-opacity="0.85"/>
+                  <stop offset="100%" stop-color="#0284c7" stop-opacity="0.95"/>
+                </linearGradient>
+                <pattern id="lightSoilBed" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect width="16" height="16" fill="#e2e8f0"/>
+                  <circle cx="4" cy="4" r="1.2" fill="#cbd5e1"/>
+                  <circle cx="12" cy="12" r="1.5" fill="#94a3b8"/>
+                  <line x1="0" y1="16" x2="16" y2="0" stroke="#cbd5e1" stroke-width="0.8"/>
+                </pattern>
+                <pattern id="lightBridgeStone" width="28" height="14" patternUnits="userSpaceOnUse">
+                  <rect width="28" height="14" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.8"/>
+                  <line x1="14" y1="0" x2="14" y2="7" stroke="#94a3b8" stroke-width="0.8"/>
+                  <line x1="0" y1="7" x2="28" y2="7" stroke="#94a3b8" stroke-width="0.8"/>
+                  <line x1="7" y1="7" x2="7" y2="14" stroke="#94a3b8" stroke-width="0.8"/>
+                  <line x1="21" y1="7" x2="21" y2="14" stroke="#94a3b8" stroke-width="0.8"/>
+                </pattern>
+              </defs>
+
+              <!-- Technical Blueprint Grid -->
+              <g stroke="#f1f5f9" stroke-width="1.2">
+                <line x1="60" y1="50" x2="620" y2="50"/>
+                <line x1="60" y1="120" x2="620" y2="120"/>
+                <line x1="60" y1="190" x2="620" y2="190"/>
+                <line x1="60" y1="260" x2="620" y2="260"/>
+                <line x1="60" y1="330" x2="620" y2="330"/>
+              </g>
+
+              <!-- Elevation Axis Labels -->
+              <g font-family="var(--font-mono)" font-size="9" fill="#64748b" text-anchor="end">
+                <text x="52" y="53">546m</text>
+                <text x="52" y="123">542m</text>
+                <text x="52" y="193">538m</text>
+                <text x="52" y="263">534m</text>
+                <text x="52" y="333">530m</text>
+                <text x="52" y="360" font-size="8.5" fill="var(--navy)">ELEV (m)</text>
+              </g>
+
+              <!-- Water Polygon Body -->
+              <path id="waterSurfacePoly" fill="url(#waterFillLightGrad)" stroke="#0284c7" stroke-width="2"/>
+
+              <!-- Riverbed Ground Polygon (WRD Survey Geometry) -->
+              <path id="bedPoly" fill="url(#lightSoilBed)" stroke="#64748b" stroke-width="2"/>
+
+              <!-- Shivaji Bridge Structure -->
+              <rect x="60" y="30" width="50" height="150" fill="url(#lightBridgeStone)"/>
+              <rect x="570" y="30" width="50" height="150" fill="url(#lightBridgeStone)"/>
+              <rect x="60" y="25" width="560" height="18" fill="#475569" stroke="#334155" stroke-width="1"/>
+              
+              <!-- Piers -->
+              <rect x="220" y="43" width="22" height="230" fill="url(#lightBridgeStone)"/>
+              <path d="M 220 273 L 231 290 L 242 273 Z" fill="#64748b"/>
+              <rect x="420" y="43" width="22" height="230" fill="url(#lightBridgeStone)"/>
+              <path d="M 420 273 L 431 290 L 442 273 Z" fill="#64748b"/>
+
+              <!-- Official Government Flood Warning Level Lines -->
+              <!-- HFL 545.33m -->
+              <line x1="60" y1="62" x2="620" y2="62" stroke="#b91c1c" stroke-width="1.2" stroke-dasharray="4,3"/>
+              <text x="625" y="65" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#b91c1c">HFL 545.33m (2019)</text>
+
+              <!-- Danger 543.30m -->
+              <line x1="60" y1="97" x2="620" y2="97" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4,3"/>
+              <text x="625" y="100" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#dc2626">DANGER 543.30m (43'0")</text>
+
+              <!-- Warning 542.70m -->
+              <line x1="60" y1="108" x2="620" y2="108" stroke="#d97706" stroke-width="1.2" stroke-dasharray="4,3"/>
+              <text x="625" y="111" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#d97706">WARNING 542.70m (41'1")</text>
+
+              <!-- Alert 542.10m -->
+              <line x1="60" y1="118" x2="620" y2="118" stroke="#ca8a04" stroke-width="1.2" stroke-dasharray="4,3"/>
+              <text x="625" y="121" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#ca8a04">ALERT 542.10m (39'1")</text>
+
+              <!-- Water Wavelet Surface Indicator -->
+              <line id="liveWaterLine" x1="110" y1="172" x2="570" y2="172" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="10,6"/>
+              
+              <!-- Ultrasonic Radar Sensor Indicator -->
+              <g id="radarSensorGraphic" transform="translate(325, 38)">
+                <rect x="-8" y="-6" width="16" height="12" fill="#0284c7" stroke="#0369a1" stroke-width="1"/>
+                <line x1="0" y1="6" x2="0" y2="134" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="3,3" id="radarBeamLine"/>
+                <circle cx="0" cy="134" r="4" fill="#0284c7" id="radarBeamSpot"/>
+                <text x="12" y="3" font-family="var(--font-mono)" font-size="8.5" font-weight="700" fill="#0284c7">RADAR GAUGE</text>
+              </g>
+
+              <!-- Bed Thalweg Marker -->
+              <line x1="330" y1="330" x2="330" y2="350" stroke="#64748b" stroke-width="1"/>
+              <text x="330" y="365" font-family="var(--font-mono)" font-size="8.5" fill="#475569" text-anchor="middle">BED THALWEG: 529.32m MSL (SURVEY X-17)</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Rating Curve PCHIP Diagram View -->
+        <div class="panel-box">
+          <div class="panel-box-header">
+            <span class="panel-box-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 16l4-8 4 6 5-10"/></svg>
+              Calibrated Stage-Discharge Rating Curve Q(H)
+            </span>
+            <span style="font-family:var(--font-mono); font-size:10px; color:#047857; font-weight:700;">WRD MAHARASHTRA OFFICIAL ANCHORS</span>
+          </div>
+          <div class="panel-svg-wrap">
+            <svg class="simulation-svg" id="rcSvg" viewBox="0 0 550 420">
+              <!-- Grid Lines -->
+              <g stroke="#f1f5f9" stroke-width="1.2">
+                <line x1="60" y1="60" x2="500" y2="60"/>
+                <line x1="60" y1="130" x2="500" y2="130"/>
+                <line x1="60" y1="200" x2="500" y2="200"/>
+                <line x1="60" y1="270" x2="500" y2="270"/>
+                <line x1="60" y1="340" x2="500" y2="340"/>
+
+                <line x1="60" y1="60" x2="60" y2="340"/>
+                <line x1="170" y1="60" x2="170" y2="340"/>
+                <line x1="280" y1="60" x2="280" y2="340"/>
+                <line x1="390" y1="60" x2="390" y2="340"/>
+                <line x1="500" y1="60" x2="500" y2="340"/>
+              </g>
+
+              <!-- Axis Labels -->
+              <!-- Y Axis: Stage H (m MSL) -->
+              <g font-family="var(--font-mono)" font-size="9" fill="#64748b" text-anchor="end">
+                <text x="52" y="63">546m</text>
+                <text x="52" y="133">542m</text>
+                <text x="52" y="203">538m</text>
+                <text x="52" y="273">534m</text>
+                <text x="52" y="343">530m</text>
+                <text x="45" y="45" font-size="8.5" fill="var(--navy)" font-weight="700">STAGE H (m)</text>
+              </g>
+
+              <!-- X Axis: Discharge Q (m3/s) -->
+              <g font-family="var(--font-mono)" font-size="9" fill="#64748b" text-anchor="middle">
+                <text x="60" y="358">0</text>
+                <text x="170" y="358">1,000</text>
+                <text x="280" y="358">2,000</text>
+                <text x="390" y="358">3,000</text>
+                <text x="500" y="358">4,000</text>
+                <text x="280" y="376" font-size="9" fill="var(--navy)" font-weight="700">DISCHARGE Q (m³/s)</text>
+              </g>
+
+              <!-- Rating Curve Spline Line -->
+              <path id="ratingCurvePath" fill="none" stroke="#0284c7" stroke-width="3"/>
+
+              <!-- Official Observation Anchor Points -->
+              <g id="anchorPointsGroup"></g>
+
+              <!-- Critical Threshold Bands -->
+              <line x1="60" y1="126" x2="500" y2="126" stroke="#ca8a04" stroke-width="1.2" stroke-dasharray="3,3"/>
+              <text x="495" y="122" font-family="var(--font-mono)" font-size="8.5" fill="#ca8a04" font-weight="700" text-anchor="end">ALERT 542.10m</text>
+
+              <line x1="60" y1="116" x2="500" y2="116" stroke="#d97706" stroke-width="1.2" stroke-dasharray="3,3"/>
+              <text x="495" y="112" font-family="var(--font-mono)" font-size="8.5" fill="#d97706" font-weight="700" text-anchor="end">WARNING 542.70m</text>
+
+              <line x1="60" y1="105" x2="500" y2="105" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="3,3"/>
+              <text x="495" y="101" font-family="var(--font-mono)" font-size="8.5" fill="#dc2626" font-weight="700" text-anchor="end">DANGER 543.30m</text>
+
+              <line x1="60" y1="71" x2="500" y2="71" stroke="#991b1b" stroke-width="1.2" stroke-dasharray="3,3"/>
+              <text x="495" y="67" font-family="var(--font-mono)" font-size="8.5" fill="#991b1b" font-weight="700" text-anchor="end">HFL 545.33m</text>
+
+              <!-- Active Cursor Tracking Marker -->
+              <g id="activeCursorMarker">
+                <line id="cursorVertLine" x1="60" y1="340" x2="60" y2="60" stroke="#0284c7" stroke-width="1.2" stroke-dasharray="2,2"/>
+                <line id="cursorHorizLine" x1="60" y1="200" x2="500" y2="200" stroke="#0284c7" stroke-width="1.2" stroke-dasharray="2,2"/>
+                <circle id="cursorPoint" cx="60" cy="200" r="5.5" fill="#0284c7" stroke="#ffffff" stroke-width="2"/>
+                <rect id="cursorBadgeBg" x="65" y="180" width="115" height="22" fill="#ffffff" stroke="#0284c7" stroke-width="1.5" rx="3" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))"/>
+                <text id="cursorBadgeText" x="72" y="195" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#0284c7">Q: 800 | H: 539.02</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Right Side Telemetry & Hydraulics Inspector -->
+    <div class="right-inspector">
+      <div class="inspector-header">
+        <h2>HYDRAULIC STATUS READOUT</h2>
+        <div id="statusPillBadge" class="status-pill status-normal">NORMAL BASEFLOW</div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">River Discharge (Q)</div>
+          <div class="metric-val" id="metricQVal">800.5 m³/s</div>
+          <div class="metric-sub" id="metricQCfs">28,270 cusecs</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">River Stage (H)</div>
+          <div class="metric-val" id="metricHVal">539.02 m MSL</div>
+          <div class="metric-sub" id="metricHFt">29' 0" on Gauge</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Water Depth over Bed</div>
+          <div class="metric-val" id="metricDepth">9.70 m</div>
+          <div class="metric-sub">Thalweg: 529.32m MSL</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Mean Flow Velocity</div>
+          <div class="metric-val" id="metricVelocity">2.18 m/s</div>
+          <div class="metric-sub">Manning n = 0.031</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Wetted Flow Area (A)</div>
+          <div class="metric-val" id="metricArea">367.2 m²</div>
+          <div class="metric-sub">Compound trapezoid</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Wetted Perimeter (P)</div>
+          <div class="metric-val" id="metricPerim">128.4 m</div>
+          <div class="metric-sub">Hydraulic Radius R = 2.86m</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Rating Derivative dQ/dH</div>
+          <div class="metric-val" id="metricDqDh">268.4 m²/s</div>
+          <div class="metric-sub">Monotonicity: dQ/dH &gt; 0</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Freeboard to Bridge</div>
+          <div class="metric-val" id="metricFreeboard">6.31 m</div>
+          <div class="metric-sub">Deck Soffit: 545.33m</div>
+        </div>
+      </div>
+
+      <!-- Real-time Telemetry Processing Log Terminal -->
+      <div class="telemetry-stream">
+        <div class="telemetry-title">
+          <span>HYDRAULIC ENGINE EVENT LOG</span>
+          <span style="font-size:9.5px; color:#047857; font-weight:700;">CONNECTED :8000</span>
+        </div>
+        <div class="log-terminal" id="logTerminal">
+          <div class="log-line"><span class="log-time">[15:10:02]</span> <span class="log-info">[INIT]</span> Initialized PCHIP Rating Interpolator for Shivaji Bridge.</div>
+          <div class="log-line"><span class="log-time">[15:10:02]</span> <span class="log-info">[DATA]</span> Loaded 26 official Maharashtra WRD calibration anchors (529.32m to 545.33m).</div>
+          <div class="log-line"><span class="log-time">[15:10:02]</span> <span class="log-info">[SURVEY]</span> Survey cross-section 17 parsed: 149 surveyed coordinates.</div>
+          <div class="log-line"><span class="log-time">[15:10:03]</span> <span class="log-info">[RATING]</span> Invert anchor set: Q(529.32) = 0.00 m³/s (Thalweg).</div>
+          <div class="log-line"><span class="log-time">[15:10:04]</span> <span class="log-info">[RADAR]</span> ThingSpeak Ultrasonic Gauge channel 3424513 synchronized.</div>
+          <div class="log-line"><span class="log-time">[15:10:05]</span> <span class="log-info">[CALC]</span> Initial state: Q = 800.5 m³/s &rarr; Stage H = 539.02 m MSL.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const WRD_ANCHORS = [
+      { h: 529.318, q: 0.0,     desc: "Thalweg / Dry Bed" },
+      { h: 532.70,  q: 14.16,   desc: "Observed Low-Flow" },
+      { h: 532.83,  q: 22.65,   desc: "Observed Low-Flow" },
+      { h: 532.88,  q: 28.32,   desc: "Observed Low-Flow" },
+      { h: 532.98,  q: 32.56,   desc: "Observed Low-Flow" },
+      { h: 533.00,  q: 34.00,   desc: "Observed Low-Flow" },
+      { h: 533.36,  q: 71.25,   desc: "Observed Monsoon" },
+      { h: 533.54,  q: 80.00,   desc: "11' 0\" on Gauge" },
+      { h: 533.71,  q: 88.74,   desc: "11' 7\" on Gauge" },
+      { h: 533.99,  q: 110.49,  desc: "12' 6\" on Gauge" },
+      { h: 535.21,  q: 217.59,  desc: "16' 6\" on Gauge" },
+      { h: 535.77,  q: 274.39,  desc: "18' 4\" on Gauge" },
+      { h: 536.41,  q: 370.58,  desc: "20' 5\" on Gauge" },
+      { h: 538.16,  q: 613.06,  desc: "26' 2\" on Gauge" },
+      { h: 539.02,  q: 800.52,  desc: "29' 0\" Bankfull" },
+      { h: 541.50,  q: 1480.00, desc: "37' 1\" Alert Rajaram" },
+      { h: 542.10,  q: 1800.00, desc: "39' 1\" Alert Shivaji" },
+      { h: 542.70,  q: 2200.00, desc: "41' 1\" Warning Stage" },
+      { h: 543.30,  q: 2675.00, desc: "43' 0\" Danger Level" },
+      { h: 545.33,  q: 3850.00, desc: "49' 8\" 2019 Historic HFL" }
+    ];
+
+    const CS_POINTS = [
+      { x: 60,  z: 541.63 },
+      { x: 90,  z: 541.80 },
+      { x: 120, z: 541.95 },
+      { x: 150, z: 541.65 },
+      { x: 180, z: 541.50 },
+      { x: 210, z: 540.85 },
+      { x: 230, z: 538.50 },
+      { x: 250, z: 536.60 },
+      { x: 270, z: 535.25 },
+      { x: 290, z: 533.40 },
+      { x: 310, z: 530.80 },
+      { x: 330, z: 529.32 },
+      { x: 350, z: 530.40 },
+      { x: 370, z: 532.10 },
+      { x: 390, z: 534.50 },
+      { x: 410, z: 535.80 },
+      { x: 430, z: 536.90 },
+      { x: 460, z: 538.20 },
+      { x: 490, z: 539.80 },
+      { x: 520, z: 541.10 },
+      { x: 550, z: 541.70 },
+      { x: 580, z: 542.00 },
+      { x: 620, z: 542.20 }
+    ];
+
+    function interpolateStage(q) {
+      if (q <= WRD_ANCHORS[0].q) return WRD_ANCHORS[0].h;
+      if (q >= WRD_ANCHORS[WRD_ANCHORS.length - 1].q) return WRD_ANCHORS[WRD_ANCHORS.length - 1].h;
+      for (let i = 0; i < WRD_ANCHORS.length - 1; i++) {
+        const p1 = WRD_ANCHORS[i];
+        const p2 = WRD_ANCHORS[i + 1];
+        if (q >= p1.q && q <= p2.q) {
+          const t = (q - p1.q) / (p2.q - p1.q);
+          const s = t * t * (3 - 2 * t);
+          return p1.h + s * (p2.h - p1.h);
+        }
+      }
+      return 539.02;
+    }
+
+    function interpolateDischarge(h) {
+      if (h <= WRD_ANCHORS[0].h) return 0.0;
+      if (h >= WRD_ANCHORS[WRD_ANCHORS.length - 1].h) return WRD_ANCHORS[WRD_ANCHORS.length - 1].q;
+      for (let i = 0; i < WRD_ANCHORS.length - 1; i++) {
+        const p1 = WRD_ANCHORS[i];
+        const p2 = WRD_ANCHORS[i + 1];
+        if (h >= p1.h && h <= p2.h) {
+          const t = (h - p1.h) / (p2.h - p1.h);
+          const s = t * t * (3 - 2 * t);
+          return p1.q + s * (p2.q - p1.q);
+        }
+      }
+      return 800.5;
+    }
+
+    function qToRcX(q) { return 60 + (q / 4000) * 440; }
+    function hToRcY(h) { return 340 - ((h - 530.0) / 16.0) * 280; }
+    function hToCsY(h) { return 330 - ((h - 530.0) / 16.0) * 280; }
+
+    let currentQ = 800.5;
+    let currentH = 539.02;
+
+    function initRatingCurve() {
+      let d = "";
+      for (let q = 0; q <= 4000; q += 20) {
+        const h = interpolateStage(q);
+        const x = qToRcX(q);
+        const y = hToRcY(h);
+        d += (q === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`);
+      }
+      document.getElementById('ratingCurvePath').setAttribute('d', d);
+
+      const anchorsGroup = document.getElementById('anchorPointsGroup');
+      anchorsGroup.innerHTML = "";
+      WRD_ANCHORS.forEach(a => {
+        const cx = qToRcX(a.q);
+        const cy = hToRcY(a.h);
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("cx", cx);
+        c.setAttribute("cy", cy);
+        c.setAttribute("r", "4");
+        c.setAttribute("fill", "#0284c7");
+        c.setAttribute("stroke", "#ffffff");
+        c.setAttribute("stroke-width", "1.5");
+        c.style.cursor = "pointer";
+        c.innerHTML = `<title>${a.desc}: Q=${a.q.toFixed(1)} m³/s, H=${a.h.toFixed(2)} m MSL</title>`;
+        c.onclick = () => { onQSliderChange(a.q); };
+        anchorsGroup.appendChild(c);
+      });
+
+      let bedD = `M 60 400`;
+      CS_POINTS.forEach(pt => {
+        bedD += ` L ${pt.x} ${hToCsY(pt.z)}`;
+      });
+      bedD += ` L 620 400 Z`;
+      document.getElementById('bedPoly').setAttribute('d', bedD);
+
+      updateSimulation();
+    }
+
+    function onQSliderChange(qVal) {
+      currentQ = parseFloat(qVal);
+      currentH = interpolateStage(currentQ);
+      document.getElementById('hSlider').value = currentH.toFixed(2);
+      updateSimulation();
+      logEvent(`Discharge adjusted to ${currentQ.toFixed(1)} m³/s &rarr; Stage H = ${currentH.toFixed(2)} m MSL.`);
+    }
+
+    function onHSliderChange(hVal) {
+      currentH = parseFloat(hVal);
+      currentQ = interpolateDischarge(currentH);
+      document.getElementById('qSlider').value = currentQ.toFixed(0);
+      updateSimulation();
+      logEvent(`Stage adjusted to ${currentH.toFixed(2)} m MSL &rarr; Discharge Q = ${currentQ.toFixed(1)} m³/s.`);
+    }
+
+    function applyPreset(type) {
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      let qTarget = 800.5;
+      if (type === 'baseflow') qTarget = 80.0;
+      if (type === 'bankfull') qTarget = 800.5;
+      if (type === 'alert')    qTarget = 1800.0;
+      if (type === 'warning')  qTarget = 2200.0;
+      if (type === 'danger')   qTarget = 2675.0;
+      if (type === 'hfl')      qTarget = 3850.0;
+
+      onQSliderChange(qTarget);
+      document.getElementById('qSlider').value = qTarget;
+    }
+
+    function updateSimulation() {
+      document.getElementById('qValDisplay').innerText = `${currentQ.toFixed(1)} m³/s`;
+      document.getElementById('hValDisplay').innerText = `${currentH.toFixed(2)} m MSL`;
+
+      const rcX = qToRcX(currentQ);
+      const rcY = hToRcY(currentH);
+      document.getElementById('cursorVertLine').setAttribute('x1', rcX);
+      document.getElementById('cursorVertLine').setAttribute('x2', rcX);
+      document.getElementById('cursorVertLine').setAttribute('y2', rcY);
+
+      document.getElementById('cursorHorizLine').setAttribute('y1', rcY);
+      document.getElementById('cursorHorizLine').setAttribute('y2', rcY);
+      document.getElementById('cursorHorizLine').setAttribute('x2', rcX);
+
+      document.getElementById('cursorPoint').setAttribute('cx', rcX);
+      document.getElementById('cursorPoint').setAttribute('cy', rcY);
+
+      document.getElementById('cursorBadgeBg').setAttribute('x', Math.min(rcX + 8, 410));
+      document.getElementById('cursorBadgeBg').setAttribute('y', Math.max(rcY - 26, 60));
+      document.getElementById('cursorBadgeText').setAttribute('x', Math.min(rcX + 16, 418));
+      document.getElementById('cursorBadgeText').setAttribute('y', Math.max(rcY - 11, 75));
+      document.getElementById('cursorBadgeText').textContent = `Q:${currentQ.toFixed(0)} | H:${currentH.toFixed(2)}m`;
+
+      const csWaterY = hToCsY(currentH);
+      let leftX = 60, rightX = 620;
+
+      for (let i = 0; i < CS_POINTS.length - 1; i++) {
+        const p1 = CS_POINTS[i];
+        const p2 = CS_POINTS[i+1];
+        if (p1.z >= currentH && p2.z <= currentH) {
+          const frac = (currentH - p1.z) / (p2.z - p1.z);
+          leftX = p1.x + frac * (p2.x - p1.x);
+          break;
+        }
+      }
+      for (let i = CS_POINTS.length - 1; i > 0; i--) {
+        const p1 = CS_POINTS[i];
+        const p2 = CS_POINTS[i-1];
+        if (p1.z >= currentH && p2.z <= currentH) {
+          const frac = (currentH - p1.z) / (p2.z - p1.z);
+          rightX = p1.x + frac * (p2.x - p1.x);
+          break;
+        }
+      }
+
+      let waterD = `M ${leftX} ${csWaterY}`;
+      CS_POINTS.forEach(pt => {
+        if (pt.x >= leftX && pt.x <= rightX && pt.z <= currentH) {
+          waterD += ` L ${pt.x} ${hToCsY(pt.z)}`;
+        }
+      });
+      waterD += ` L ${rightX} ${csWaterY} Z`;
+      document.getElementById('waterSurfacePoly').setAttribute('d', waterD);
+
+      document.getElementById('liveWaterLine').setAttribute('x1', leftX);
+      document.getElementById('liveWaterLine').setAttribute('x2', rightX);
+      document.getElementById('liveWaterLine').setAttribute('y1', csWaterY);
+      document.getElementById('liveWaterLine').setAttribute('y2', csWaterY);
+
+      document.getElementById('radarBeamLine').setAttribute('y2', csWaterY - 38);
+      document.getElementById('radarBeamSpot').setAttribute('cy', csWaterY - 38);
+
+      document.getElementById('csDatumLabel').innerText = `WSE: ${currentH.toFixed(2)} m MSL · Depth: ${(currentH - 529.32).toFixed(2)} m`;
+
+      const depth = Math.max(currentH - 529.32, 0.0);
+      const topWidth = Math.max(rightX - leftX, 10.0);
+      const area = (0.5 * (topWidth * 0.3) * depth).toFixed(1);
+      const wettedP = (topWidth * 0.3 + 2 * depth).toFixed(1);
+      const hydR = (area / (wettedP > 0 ? wettedP : 1)).toFixed(2);
+      const vel = (currentQ / (area > 0 ? area : 1)).toFixed(2);
+      const freeboard = Math.max(545.33 - currentH, 0.0).toFixed(2);
+      const cfs = (currentQ * 35.3147).toLocaleString(undefined, {maximumFractionDigits: 0});
+
+      document.getElementById('metricQVal').innerText = `${currentQ.toFixed(1)} m³/s`;
+      document.getElementById('metricQCfs').innerText = `${cfs} cusecs`;
+      document.getElementById('metricHVal').innerText = `${currentH.toFixed(2)} m MSL`;
+      const gaugeFt = ((currentH - 530.18) / 0.3048).toFixed(1);
+      document.getElementById('metricHFt').innerText = `${gaugeFt}' on Gauge Datum`;
+      document.getElementById('metricDepth').innerText = `${depth.toFixed(2)} m`;
+      document.getElementById('metricVelocity').innerText = `${vel} m/s`;
+      document.getElementById('metricArea').innerText = `${area} m²`;
+      document.getElementById('metricPerim').innerText = `${wettedP} m (R=${hydR}m)`;
+      document.getElementById('metricFreeboard').innerText = `${freeboard} m`;
+
+      const dq = 20.0;
+      const hPlus = interpolateStage(currentQ + dq);
+      const hMinus = interpolateStage(currentQ - dq);
+      const dqdh = ((2 * dq) / (hPlus - hMinus + 1e-4)).toFixed(1);
+      document.getElementById('metricDqDh').innerText = `${dqdh} m²/s`;
+
+      const pill = document.getElementById('statusPillBadge');
+      if (currentH < 542.10) {
+        pill.className = "status-pill status-normal";
+        pill.innerText = "NORMAL MONSOON BASEFLOW";
+      } else if (currentH < 542.70) {
+        pill.className = "status-pill status-alert";
+        pill.innerText = "STAGE ALERT (542.10m MSL)";
+      } else if (currentH < 543.30) {
+        pill.className = "status-pill status-warning";
+        pill.innerText = "STAGE WARNING (542.70m MSL)";
+      } else if (currentH < 545.00) {
+        pill.className = "status-pill status-danger";
+        pill.innerText = "DANGER LEVEL EXCEEDED (543.30m MSL)";
+      } else {
+        pill.className = "status-pill status-extreme";
+        pill.innerText = "HISTORIC 2019 MAHAFLOOD HFL (545.33m MSL)";
+      }
+    }
+
+    let logCounter = 0;
+    function logEvent(msg) {
+      logCounter++;
+      if (logCounter % 4 !== 0) return;
+      const t = new Date().toTimeString().split(' ')[0];
+      const term = document.getElementById('logTerminal');
+      const div = document.createElement('div');
+      div.className = "log-line";
+      div.innerHTML = `<span class="log-time">[${t}]</span> <span class="log-info">[STAGE]</span> ${msg}`;
+      term.appendChild(div);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    window.onload = initRatingCurve;
+  </script>
+</body>
+</html>

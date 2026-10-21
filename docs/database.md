@@ -41,27 +41,31 @@ The persistence layer supports both **PostgreSQL / Supabase** for multi-user que
       +----------------------------------------------------------------------------------+
       |                                simulation_runs                                   |
       |----------------------------------------------------------------------------------|
-      | PK run_id                 VARCHAR(64)                                            |
-      |    cycle_id               VARCHAR(32)                                            |
+      | PK run_id                 VARCHAR(100)                                           |
+      |    cycle_date             DATE                                                   |
+      |    cycle_time             VARCHAR(32) ('00z', '06z', '12z', '18z')               |
       |    start_time             TIMESTAMPTZ                                            |
       |    end_time               TIMESTAMPTZ                                            |
-      |    peak_discharge_m3s     DOUBLE PRECISION                                       |
-      |    peak_stage_m           DOUBLE PRECISION                                       |
-      |    lead_hours_to_peak     INTEGER                                                |
-      |    status                 VARCHAR(32)                                            |
+      |    peak_discharge_m3s     NUMERIC(10,2)                                          |
+      |    peak_stage_m           NUMERIC(6,2)                                           |
+      |    lead_hours_to_peak     SMALLINT                                               |
+      |    total_volume_mcm       NUMERIC(10,2)                                          |
+      |    spearman_rho           NUMERIC(6,4)                                           |
+      |    nse_score              NUMERIC(6,4)                                           |
+      |    status                 VARCHAR(32) ('running', 'completed', 'failed')         |
       +----------------------------------------------------------------------------------+
                |                               |                               |
                | 1:N                           | 1:N                           | 1:N
                v                               v                               v
 +-------------------------------+ +-------------------------------+ +-------------------------------+
-|     hydrograph_results        | |    bridge_stage_forecast      | |       rainfall_data           |
+|     hydrograph_results        | |    bridge_stage_forecast      | |  station_rainfall_telemetry   |
 |-------------------------------| |-------------------------------| |-------------------------------|
 | PK  id           BIGSERIAL    | | PK  id           BIGSERIAL    | | PK  id           BIGSERIAL    |
-| FK  run_id       VARCHAR(64)  | | FK  run_id       VARCHAR(64)  | | FK  run_id       VARCHAR(64)  |
-|     node_id      VARCHAR(32)  | |     bridge_id    VARCHAR(32)  | |     station_id   VARCHAR(32)  |
-|     timestamp    TIMESTAMPTZ  | |     forecast_time TIMESTAMPTZ | |     timestamp    TIMESTAMPTZ  |
-|     discharge    DOUBLE PREC. | |     stage_m      DOUBLE PREC. | |     rainfall_mm  DOUBLE PREC. |
-|     baseflow     DOUBLE PREC. | |     discharge    DOUBLE PREC. | |     subbasin_id  VARCHAR(16)  |
+| FK  run_id       VARCHAR(100) | | FK  run_id       VARCHAR(100) | | FK  run_id       VARCHAR(100) |
+|     node_id      VARCHAR(32)  | |     site_id      VARCHAR(50)  | | FK  station_id   VARCHAR(64)  |
+|     time_step_utc TIMESTAMPTZ | |     time_step_utc TIMESTAMPTZ | | FK  subbasin_id  VARCHAR(32)  |
+|     discharge_m3s NUMERIC(10,2)| |     stage_m      NUMERIC(6,2) | |     cumulative_90h_mm NUMERIC |
+|     baseflow_m3s NUMERIC(8,2) | |     discharge_m3s NUMERIC(10,2)| |     selection_method VARCHAR  |
 +-------------------------------+ +-------------------------------+ +-------------------------------+
                |                               |                               |
                +-------------------------------+-------------------------------+

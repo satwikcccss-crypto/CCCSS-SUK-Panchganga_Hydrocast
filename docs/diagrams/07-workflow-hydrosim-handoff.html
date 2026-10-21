@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCast — HydroSim Hydraulic Handoff & Inundation Workflow</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #cbd5e1;
+      --border-dark: #64748b;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --navy: #1e3a8a;
+      --navy-light: #eff6ff;
+      --accent: #b91c1c;
+      --accent-light: #fef2f2;
+      --confirm-border: #d97706;
+      --confirm-bg: #fffbeb;
+      --font-serif: "Georgia", "Cambria", "Times New Roman", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 2px solid var(--navy);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header-title h1 {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+    }
+    .header-title p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .header-meta {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .header-meta strong {
+      color: var(--text);
+    }
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .diagram-viewport {
+      flex: 1;
+      overflow: auto;
+      padding: 24px;
+      background: #ffffff;
+      position: relative;
+    }
+    .controls-bar {
+      position: absolute;
+      top: 14px;
+      left: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+      background: #ffffff;
+      padding: 4px;
+      border: 1px solid var(--border);
+    }
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border: 1px solid var(--border-dark);
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .btn.active {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+    }
+    .btn:hover:not(.active) {
+      background: var(--navy-light);
+      color: var(--navy);
+    }
+    .side-panel {
+      width: 400px;
+      background: #ffffff;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .panel-header {
+      background: var(--navy);
+      color: #ffffff;
+      padding: 12px 16px;
+    }
+    .panel-header h2 {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .panel-header span {
+      font-size: 11px;
+      opacity: 0.85;
+      font-family: var(--font-mono);
+    }
+    .panel-content {
+      padding: 16px;
+      font-size: 12px;
+    }
+    .prop-group {
+      margin-bottom: 14px;
+    }
+    .prop-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .prop-value {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      border-radius: 2px;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .prop-value.code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--navy);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1px solid var(--navy);
+      color: var(--navy);
+      background: var(--navy-light);
+    }
+    .status-badge.confirm {
+      border-color: var(--confirm-border);
+      color: #b45309;
+      background: var(--confirm-bg);
+    }
+
+    /* SVG Canvas Styles */
+    svg.handoff-svg {
+      width: 1350px;
+      height: 980px;
+      background: #fafbfc;
+      border: 1px solid var(--border);
+    }
+    .step-card {
+      cursor: pointer;
+    }
+    .step-card rect {
+      fill: #ffffff;
+      stroke: var(--border-dark);
+      stroke-width: 1.5;
+      rx: 2;
+    }
+    .step-card:hover rect {
+      stroke-width: 2.5;
+    }
+    .step-card.active rect {
+      fill: var(--navy-light);
+      stroke: var(--navy);
+      stroke-width: 2.5;
+    }
+    .step-card.confirm rect {
+      fill: #fffdfa;
+      stroke: var(--confirm-border);
+      stroke-dasharray: 4, 3;
+    }
+    .step-card.confirm.active rect {
+      fill: var(--confirm-bg);
+      stroke-width: 2.5;
+    }
+    .step-card text.num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      fill: var(--navy);
+    }
+    .step-card.confirm text.num {
+      fill: #b45309;
+    }
+    .step-card text.title {
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 700;
+      fill: var(--text);
+    }
+    .step-card text.meta {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      fill: var(--text-muted);
+    }
+    .flow-path {
+      stroke: #64748b;
+      stroke-width: 1.5;
+      fill: none;
+    }
+    .flow-path.trace-active {
+      stroke: var(--navy);
+      stroke-width: 2;
+      stroke-dasharray: 6, 6;
+      animation: traceDash 1.2s linear infinite;
+    }
+    .flow-path.confirm-path.trace-active {
+      stroke: var(--confirm-border);
+      stroke-width: 2;
+      stroke-dasharray: 6, 6;
+      animation: traceDash 1.2s linear infinite;
+    }
+    @keyframes traceDash {
+      from { stroke-dashoffset: 24; }
+      to { stroke-dashoffset: 0; }
+    }
+    .flow-text {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      fill: #334155;
+    }
+    .boundary-rect {
+      fill: none;
+      stroke-width: 1.5;
+    }
+    .boundary-rect.repo {
+      stroke: #94a3b8;
+    }
+    .boundary-rect.ext {
+      stroke: var(--confirm-border);
+      stroke-dasharray: 5, 4;
+    }
+    .boundary-header {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    footer {
+      background: #f1f5f9;
+      border-top: 1px solid var(--border);
+      padding: 6px 20px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>HydroCast — HydroSim Hydraulic Handoff & Inundation Workflow</h1>
+      <p>Hydrologic Forecast Outflow (J_Outlet) · API Key Handoff Boundary · HEC-RAS 1D/2D Unsteady Floodplain Simulation</p>
+    </div>
+    <div class="header-meta">
+      <div>DIAGRAM: <strong>07-WORKFLOW-HYDROSIM-HANDOFF</strong></div>
+      <div>TRACE MOTION: <strong id="traceState">ENABLED</strong></div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div class="diagram-viewport">
+      <div class="controls-bar">
+        <button class="btn active" id="btnToggleMotion" onclick="toggleTraceMotion()">Pause Trace Motion</button>
+        <button class="btn" onclick="filterHandoff('all')">Show Complete Pipeline</button>
+        <button class="btn" onclick="filterHandoff('repo')">Verified Repo Section</button>
+        <button class="btn" onclick="filterHandoff('ext')">External HydroSim Section</button>
+        <button class="btn" onclick="resetHsInspector()">Reset Inspector</button>
+      </div>
+
+      <svg class="handoff-svg" viewBox="0 0 1350 980" id="hsSvg">
+        <defs>
+          <marker id="hs-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e3a8a" />
+          </marker>
+          <marker id="hs-arrow-confirm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706" />
+          </marker>
+        </defs>
+
+        <!-- ZONE 1: REPOSITORY HYDROLOGY (IN-REPO) -->
+        <rect x="30" y="30" width="600" height="910" class="boundary-rect repo" />
+        <text x="50" y="60" class="boundary-header" fill="#1e3a8a">ZONE 1: HYDROCAST HYDROLOGIC ENGINE (IN-REPOSITORY)</text>
+        <text x="50" y="78" style="font-family: var(--font-mono); font-size: 10px; fill: #64748b;">All components and equations strictly verified in codebase</text>
+
+        <!-- Node 1: HEC-HMS Hydrograph -->
+        <g class="step-card" id="HS01" onclick="selectHandoff('HS01')">
+          <rect x="50" y="100" width="560" height="75" />
+          <text x="70" y="125" class="num">PHASE 1 · STEP 01</text>
+          <text x="180" y="125" class="title">HEC-HMS 4.13 Basin Outflow Simulation (J_Outlet)</text>
+          <text x="70" y="145" class="meta">Outlet discharge hydrograph Q(t) for lead hours 1..90 at Panchganga basin terminus</text>
+          <text x="70" y="162" class="meta" fill="#1e3a8a">Source: src/hms/runner.py:163-174 · Peak Q & Total Volume</text>
+        </g>
+
+        <!-- Flow 1 -> 2 -->
+        <path d="M 330 175 L 330 215" class="flow-path trace-active" marker-end="url(#hs-arrow)" />
+        <text x="340" y="198" class="flow-text">Q(t) m³/s (90 hours)</text>
+
+        <!-- Node 2: Cross Section Hydraulics -->
+        <g class="step-card" id="HS02" onclick="selectHandoff('HS02')">
+          <rect x="50" y="215" width="560" height="75" />
+          <text x="70" y="240" class="num">PHASE 1 · STEP 02</text>
+          <text x="180" y="240" class="title">WRD Surveyed Geometry & Manning Compound Hydraulics</text>
+          <text x="70" y="260" class="meta">Compound cross-sections: Shivaji Bridge (17 pts) & Rajaram KT Weir (29 pts)</text>
+          <text x="70" y="277" class="meta" fill="#1e3a8a">Source: src/hydrology/stage_converter.py:24-60 · Manning n=0.031 bed / 0.070 overbank</text>
+        </g>
+
+        <!-- Flow 2 -> 3 -->
+        <path d="M 330 290 L 330 330" class="flow-path trace-active" marker-end="url(#hs-arrow)" />
+        <text x="340" y="313" class="flow-text">Rating Geometry & Slopes</text>
+
+        <!-- Node 3: PCHIP Stage Converter -->
+        <g class="step-card" id="HS03" onclick="selectHandoff('HS03')">
+          <rect x="50" y="330" width="560" height="75" />
+          <text x="70" y="355" class="num">PHASE 1 · STEP 03</text>
+          <text x="180" y="355" class="title">WRD PCHIP Rating Curve & Stage Interpolation</text>
+          <text x="70" y="375" class="meta">Transforms Q(t) into water surface elevations (m MSL) across 19 official field datums</text>
+          <text x="70" y="392" class="meta" fill="#1e3a8a">Source: src/hydrology/post_process.py:10-40 · SciPy PchipInterpolator</text>
+        </g>
+
+        <!-- Flow 3 -> 4 -->
+        <path d="M 330 405 L 330 445" class="flow-path trace-active" marker-end="url(#hs-arrow)" />
+        <text x="340" y="428" class="flow-text">Stage Forecast & Alert Levels</text>
+
+        <!-- Node 4: PostgreSQL Persistence -->
+        <g class="step-card" id="HS04" onclick="selectHandoff('HS04')">
+          <rect x="50" y="445" width="560" height="75" />
+          <text x="70" y="470" class="num">PHASE 1 · STEP 04</text>
+          <text x="180" y="470" class="title">PostgreSQL Storage: hydrograph_results & bridge_stage_forecast</text>
+          <text x="70" y="490" class="meta">Persisted rows with run_id, lead_hours, discharge_m3s, stage_m, alert_level</text>
+          <text x="70" y="507" class="meta" fill="#1e3a8a">Source: database/supabase_schema.sql:251-287 · simulation_runs</text>
+        </g>
+
+        <!-- Flow 4 -> 5 -->
+        <path d="M 330 520 L 330 560" class="flow-path trace-active" marker-end="url(#hs-arrow)" />
+        <text x="340" y="543" class="flow-text">Stored Data Pool</text>
+
+        <!-- Node 5: FastAPI REST Exporter -->
+        <g class="step-card" id="HS05" onclick="selectHandoff('HS05')">
+          <rect x="50" y="560" width="560" height="75" />
+          <text x="70" y="585" class="num">PHASE 1 · STEP 05</text>
+          <text x="180" y="585" class="title">FastAPI Exporter Endpoints (/api/v1/runoff/*)</text>
+          <text x="70" y="605" class="meta">GET /api/v1/runoff/hydrograph · GET /api/v1/runoff/stage/{site_id}</text>
+          <text x="70" y="622" class="meta" fill="#1e3a8a">Source: src/api/main.py:347-410 · JSON serialization of 90-hr timesteps</text>
+        </g>
+
+        <!-- Flow 5 -> 6 -->
+        <path d="M 330 635 L 330 675" class="flow-path trace-active" marker-end="url(#hs-arrow)" />
+        <text x="340" y="658" class="flow-text">HTTP REST Dispatch</text>
+
+        <!-- Node 6: API Security Gateway -->
+        <g class="step-card" id="HS06" onclick="selectHandoff('HS06')">
+          <rect x="50" y="675" width="560" height="85" />
+          <text x="70" y="700" class="num">PHASE 1 · STEP 06</text>
+          <text x="180" y="700" class="title">API Security Dependency (verify_public_or_key)</text>
+          <text x="70" y="720" class="meta">Enforces constant-time hmac.compare_digest(x_api_key, API_KEY)</text>
+          <text x="70" y="737" class="meta">Evaluates slowapi rate limit (100 req/min); Rejects invalid calls with HTTP 401</text>
+          <text x="70" y="752" class="meta" fill="#1e3a8a">Source: src/api/security.py:34-42 · src/api/main.py:202-212</text>
+        </g>
+
+        <!-- INTER-SYSTEM HAND-OFF ARROW -->
+        <path d="M 610 717 L 720 717" class="flow-path confirm-path trace-active" marker-end="url(#hs-arrow-confirm)" />
+        <text x="620" y="705" class="flow-text" fill="#b45309">HTTPS REST (X-API-Key)</text>
+        <text x="625" y="735" class="flow-text" fill="#b45309">HANDOFF BOUNDARY</text>
+
+        <!-- ZONE 2: EXTERNAL HYDROSYS PIPELINE (TO CONFIRM) -->
+        <rect x="710" y="30" width="610" height="910" class="boundary-rect ext" />
+        <text x="730" y="60" class="boundary-header" fill="#b45309">ZONE 2: EXTERNAL HYDROSIS & HEC-RAS SIMULATION [TO CONFIRM]</text>
+        <text x="730" y="78" style="font-family: var(--font-mono); font-size: 10px; fill: #b45309;">Mentioned in operational requirements; external to current repository (docs/OPEN_ITEMS.md:OI-001)</text>
+
+        <!-- Node 7: HydroSim Ingestion Gateway -->
+        <g class="step-card confirm" id="HS07" onclick="selectHandoff('HS07')">
+          <rect x="730" y="675" width="570" height="85" />
+          <text x="750" y="700" class="num">PHASE 2 · STEP 07</text>
+          <text x="860" y="700" class="title">HydroSim Telemetry & Hydrograph Ingestion [CONFIRM]</text>
+          <text x="750" y="720" class="meta">Consumes 90-hr forecast hydrograph payload via authenticated client requests</text>
+          <text x="750" y="737" class="meta">Parses time series array into hydraulic boundary conditions</text>
+          <text x="750" y="752" class="meta" fill="#b45309">Reference: docs/OPEN_ITEMS.md:OI-001 (External Microservice)</text>
+        </g>
+
+        <!-- Flow 7 -> 8 (Upward) -->
+        <path d="M 1015 675 L 1015 635" class="flow-path confirm-path trace-active" marker-end="url(#hs-arrow-confirm)" />
+        <text x="1025" y="658" class="flow-text" fill="#b45309">Boundary Injection</text>
+
+        <!-- Node 8: Boundary Condition Injection -->
+        <g class="step-card confirm" id="HS08" onclick="selectHandoff('HS08')">
+          <rect x="730" y="550" width="570" height="85" />
+          <text x="750" y="575" class="num">PHASE 2 · STEP 08</text>
+          <text x="860" y="575" class="title">HEC-RAS Boundary Condition Setup [CONFIRM]</text>
+          <text x="750" y="595" class="meta">Upstream: Flow Hydrograph Q(t) injected at Karveer / Shivaji Bridge station</text>
+          <text x="750" y="612" class="meta">Downstream: Normal Depth / Stage Hydrograph at Rajaram KT Weir (Bed slope = 0.002318)</text>
+          <text x="750" y="627" class="meta" fill="#b45309">Reference: docs/OPEN_ITEMS.md:OI-001</text>
+        </g>
+
+        <!-- Flow 8 -> 9 (Upward) -->
+        <path d="M 1015 550 L 1015 510" class="flow-path confirm-path trace-active" marker-end="url(#hs-arrow-confirm)" />
+        <text x="1025" y="533" class="flow-text" fill="#b45309">Hydraulic Mesh</text>
+
+        <!-- Node 9: HEC-RAS Unsteady Simulation -->
+        <g class="step-card confirm" id="HS09" onclick="selectHandoff('HS09')">
+          <rect x="730" y="425" width="570" height="85" />
+          <text x="750" y="450" class="num">PHASE 2 · STEP 09</text>
+          <text x="860" y="450" class="title">HEC-RAS 1D/2D Unsteady Hydraulic Simulation [CONFIRM]</text>
+          <text x="750" y="470" class="meta">Solves 2D Saint-Venant shallow water equations across Panchganga channel mesh</text>
+          <text x="750" y="487" class="meta">Computes transient water surface profiles, velocity vectors, and overbank breakouts</text>
+          <text x="750" y="502" class="meta" fill="#b45309">Engine: USACE HEC-RAS 6.x Controller (External execution)</text>
+        </g>
+
+        <!-- Flow 9 -> 10 (Upward) -->
+        <path d="M 1015 425 L 1015 385" class="flow-path confirm-path trace-active" marker-end="url(#hs-arrow-confirm)" />
+        <text x="1025" y="408" class="flow-text" fill="#b45309">Depth Grids (HDF5)</text>
+
+        <!-- Node 10: Inundation Depth Mapping -->
+        <g class="step-card confirm" id="HS10" onclick="selectHandoff('HS10')">
+          <rect x="730" y="300" width="570" height="85" />
+          <text x="750" y="325" class="num">PHASE 2 · STEP 10</text>
+          <text x="860" y="325" class="title">Spatial Inundation Extent & Floodplain Mapping [CONFIRM]</text>
+          <text x="750" y="345" class="meta">Rasters water depth grids over Kolhapur city elevation model</text>
+          <text x="750" y="362" class="meta">Delineates flood arrival time, peak inundation contour, and inundated road networks</text>
+          <text x="750" y="377" class="meta" fill="#b45309">Reference: docs/OPEN_ITEMS.md:OI-001</text>
+        </g>
+
+        <!-- Flow 10 -> 11 (Upward) -->
+        <path d="M 1015 300 L 1015 260" class="flow-path confirm-path trace-active" marker-end="url(#hs-arrow-confirm)" />
+        <text x="1025" y="283" class="flow-text" fill="#b45309">GeoJSON / Shapefiles</text>
+
+        <!-- Node 11: Emergency Authority Dispatch -->
+        <g class="step-card confirm" id="HS11" onclick="selectHandoff('HS11')">
+          <rect x="730" y="175" width="570" height="85" />
+          <text x="750" y="200" class="num">PHASE 2 · STEP 11</text>
+          <text x="860" y="200" class="title">Disaster Authority Warning Portal & Evacuation GIS [CONFIRM]</text>
+          <text x="750" y="220" class="meta">Pushes inundation hazard maps to Kolhapur District Disaster Management (DDMA)</text>
+          <text x="750" y="237" class="meta">Emergency operation center GIS layers for road closures, barrages, and relief camps</text>
+          <text x="750" y="252" class="meta" fill="#b45309">Stakeholder: Collectorate Kolhapur & Maharashtra WRD</text>
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- Inspector Side Panel -->
+    <div class="side-panel">
+      <div class="panel-header">
+        <h2 id="hsTitle">Hydraulic Handoff Inspector</h2>
+        <span id="hsId">Select any phase or step</span>
+      </div>
+      <div class="panel-content">
+        <div class="prop-group">
+          <div class="prop-label">Operation Description</div>
+          <div class="prop-value" id="hsDesc">Click any step card in the workflow diagram on the left to inspect data contracts, boundary conditions, hydraulic equations, and source verification.</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Source Implementation File</div>
+          <div class="prop-value code" id="hsSrc">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Data Ingest / Dependency</div>
+          <div class="prop-value" id="hsInputs">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Data Output / Target Entity</div>
+          <div class="prop-value code" id="hsOutputs">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Governing Hydraulic Model</div>
+          <div class="prop-value" id="hsEq">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Audit Verification</div>
+          <div id="hsStatus"><span class="status-badge">STANDBY</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>CCCSS Shivaji University Kolhapur · Flood Routing & Hydraulic Inundation Interface</div>
+    <div>Receipts: docs/receipts/07-workflow-hydrosim-handoff.receipt.json · Zero Speculation Standard</div>
+  </footer>
+
+  <script>
+    const hsData = {
+      HS01: {
+        title: "HEC-HMS 4.13 Basin Outflow Simulation",
+        desc: "Executes hydrologic catchment routing producing 90-hour forward discharge hydrograph Q(t) at Panchganga basin outlet node (J_Outlet).",
+        src: "src/hms/runner.py:163-174",
+        inputs: "90-hour subbasin hyetographs and immutable basin parameters (Basin_1.basin)",
+        outputs: "Outlet hydrograph dictionary {peak_q_m3s, time_of_peak, total_volume_m3, series}",
+        eq: "SCS-CN Runoff Generation + SCS Unit Hydrograph + Muskingum Channel Storage Cascade (R1–R5)",
+        status: "VERIFIED IN REPO"
+      },
+      HS02: {
+        title: "WRD Surveyed Geometry & Manning Hydraulics",
+        desc: "Loads official physical survey coordinates for Chhatrapati Shivaji Maharaj Bridge and Rajaram KT Weir. Calibrated against historical flood records.",
+        src: "src/hydrology/stage_converter.py:24-60 · data/wrd_cross_sections/shivaji_xsection_17_survey.txt",
+        inputs: "Surveyed elevation vertices and channel bed slopes (S0=0.005858 at Shivaji, S0=0.002318 at Rajaram)",
+        outputs: "CrossSection compound geometry object",
+        eq: "Manning Equation: Q = (1/n) * A * R^(2/3) * S^(1/2) with compound roughness (n_bed=0.031, n_flood=0.070)",
+        status: "VERIFIED IN REPO"
+      },
+      HS03: {
+        title: "WRD PCHIP Rating Curve & Stage Interpolation",
+        desc: "Builds monotonic piecewise cubic Hermite interpolating polynomials linking discharge to stage without spurious oscillations. Validated against 19 official WRD empirical field measurements.",
+        src: "src/hydrology/post_process.py:10-40 · src/hydrology/stage_converter.py:15-60",
+        inputs: "Modeled discharge hydrograph and table wrd_field_benchmarks",
+        outputs: "90-hour stage forecast series (stage_m MSL) for each bridge gauge site",
+        eq: "SciPy PchipInterpolator (strictly monotonic cubic spline avoiding Runge phenomenon)",
+        status: "VERIFIED IN REPO"
+      },
+      HS04: {
+        title: "PostgreSQL Storage: hydrograph_results & bridge_stage_forecast",
+        desc: "Atomic database persistence of computed hydrographs and bridge warnings. Indexed by run_id, lead_hours, and site_id.",
+        src: "database/supabase_schema.sql:251-287 · src/db/store_results.py:10-80",
+        inputs: "Hydrograph dictionary and bridge stage projections",
+        outputs: "Rows in hydrograph_results and bridge_stage_forecast; updates simulation_runs",
+        eq: "PostgreSQL Relational & TimescaleDB Hypertable schema",
+        status: "VERIFIED IN REPO"
+      },
+      HS05: {
+        title: "FastAPI Exporter Endpoints (/api/v1/runoff/*)",
+        desc: "High-performance REST API endpoints providing the official machine-readable handoff payload to downstream hydraulic consumers.",
+        src: "src/api/main.py:347-410",
+        inputs: "GET /api/v1/runoff/hydrograph · GET /api/v1/runoff/stage/{site_id}",
+        outputs: "JSON payload: {run_id, outlet_node, peak_discharge_m3s, series: [{lead_hours, timestamp, discharge_m3s}]}",
+        eq: "FastAPI REST serializer",
+        status: "VERIFIED IN REPO"
+      },
+      HS06: {
+        title: "API Security Dependency (verify_public_or_key)",
+        desc: "Validates incoming X-API-Key header against configured master key API_KEY using constant-time string comparison to prevent timing attacks. Enforces slowapi rate limits.",
+        src: "src/api/security.py:34-42 · src/api/main.py:202-212",
+        inputs: "Header: X-API-Key: <key>",
+        outputs: "Grants authenticated read access or raises HTTP 401 Unauthorized",
+        eq: "hmac.compare_digest(x_api_key.strip(), API_KEY.strip())",
+        status: "VERIFIED IN REPO"
+      },
+      HS07: {
+        title: "HydroSim Ingestion Gateway [TO CONFIRM]",
+        desc: "Downstream external service that polls or subscribes to HydroCast forecast hydrographs using the authenticated API key.",
+        src: "docs/OPEN_ITEMS.md:OI-001",
+        inputs: "FastAPI JSON hydrograph response over TLS",
+        outputs: "Hydraulic simulation control file and boundary time series",
+        eq: "External microservice (TO CONFIRM)",
+        status: "TO CONFIRM"
+      },
+      HS08: {
+        title: "HEC-RAS Boundary Condition Setup [TO CONFIRM]",
+        desc: "Sets unsteady flow boundary conditions in HEC-RAS geometry: Injects hydrograph Q(t) at upstream river stations and sets normal depth friction slope at downstream Rajaram weir.",
+        src: "docs/OPEN_ITEMS.md:OI-001",
+        inputs: "HydroSim boundary hydrographs and river cross-section geometry",
+        outputs: "HEC-RAS Unsteady Flow file (.u01 / .p01)",
+        eq: "Upstream: Flow Hydrograph Q(t); Downstream: Energy Slope Normal Depth S0=0.002318",
+        status: "TO CONFIRM"
+      },
+      HS09: {
+        title: "HEC-RAS 1D/2D Unsteady Hydraulic Simulation [TO CONFIRM]",
+        desc: "Executes USACE HEC-RAS 6.x unsteady flow calculation across Panchganga channel and Kolhapur urban floodplain 2D mesh.",
+        src: "docs/OPEN_ITEMS.md:OI-001",
+        inputs: "HEC-RAS project geometry (.g01) and boundary file (.u01)",
+        outputs: "HEC-RAS HDF5 output file (.p01.hdf) with spatial water surface elevations and velocity vectors",
+        eq: "2D Saint-Venant Full Momentum / Diffusion Wave Equations",
+        status: "TO CONFIRM"
+      },
+      HS10: {
+        title: "Spatial Inundation Extent & Depth Mapping [TO CONFIRM]",
+        desc: "Generates GIS depth rasters by subtracting digital elevation model (DEM) from simulated 2D water surface elevation.",
+        src: "docs/OPEN_ITEMS.md:OI-001",
+        inputs: "HEC-RAS HDF5 output and 30m Digital Elevation Model",
+        outputs: "Flood inundation depth grids (GeoTIFF) and vector hazard contours (GeoJSON/Shapefile)",
+        eq: "Inundation Depth = Water Surface Elevation - Ground Elevation",
+        status: "TO CONFIRM"
+      },
+      HS11: {
+        title: "Disaster Authority Warning Portal & Evacuation GIS [TO CONFIRM]",
+        desc: "Disseminates dynamic flood hazard polygons to Kolhapur District Disaster Management Authority (DDMA) for emergency traffic re-routing and evacuation.",
+        src: "docs/OPEN_ITEMS.md:OI-001",
+        inputs: "Flood inundation polygons and bridge danger datums",
+        outputs: "Emergency Operations Center (EOC) situational awareness display",
+        eq: "GIS Spatial Overlay with Census & Infrastructure layers",
+        status: "TO CONFIRM"
+      }
+    };
+
+    let traceActive = true;
+    function toggleTraceMotion() {
+      traceActive = !traceActive;
+      const paths = document.querySelectorAll('.flow-path');
+      paths.forEach(p => {
+        if (traceActive) {
+          p.classList.add('trace-active');
+        } else {
+          p.classList.remove('trace-active');
+        }
+      });
+      const btn = document.getElementById('btnToggleMotion');
+      const stateLbl = document.getElementById('traceState');
+      if (traceActive) {
+        btn.textContent = "Pause Trace Motion";
+        btn.classList.add('active');
+        stateLbl.textContent = "ENABLED";
+      } else {
+        btn.textContent = "Resume Trace Motion";
+        btn.classList.remove('active');
+        stateLbl.textContent = "PAUSED";
+      }
+    }
+
+    function selectHandoff(id) {
+      document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+      const card = document.getElementById(id);
+      if (card) card.classList.add('active');
+
+      const data = hsData[id];
+      if (!data) return;
+
+      document.getElementById('hsTitle').textContent = data.title;
+      document.getElementById('hsId').textContent = "HANDOFF STEP ID: " + id;
+      document.getElementById('hsDesc').textContent = data.desc;
+      document.getElementById('hsSrc').textContent = data.src;
+      document.getElementById('hsInputs').textContent = data.inputs;
+      document.getElementById('hsOutputs').textContent = data.outputs;
+      document.getElementById('hsEq').textContent = data.eq;
+
+      const badge = document.getElementById('hsStatus');
+      if (data.status === "TO CONFIRM") {
+        badge.innerHTML = '<span class="status-badge confirm">TO CONFIRM (EXTERNAL PIPELINE)</span>';
+      } else {
+        badge.innerHTML = '<span class="status-badge">VERIFIED IN REPOSITORY</span>';
+      }
+    }
+
+    function filterHandoff(zone) {
+      const allCards = document.querySelectorAll('.step-card');
+      allCards.forEach(c => {
+        if (zone === 'all') {
+          c.style.opacity = '1.0';
+        } else if (zone === 'repo') {
+          c.style.opacity = c.classList.contains('confirm') ? '0.2' : '1.0';
+        } else if (zone === 'ext') {
+          c.style.opacity = c.classList.contains('confirm') ? '1.0' : '0.2';
+        }
+      });
+      if (zone === 'repo') selectHandoff('HS01');
+      else if (zone === 'ext') selectHandoff('HS07');
+    }
+
+    function resetHsInspector() {
+      document.querySelectorAll('.step-card').forEach(c => {
+        c.classList.remove('active');
+        c.style.opacity = '1.0';
+      });
+      document.getElementById('hsTitle').textContent = "Hydraulic Handoff Inspector";
+      document.getElementById('hsId').textContent = "Select any phase or step";
+      document.getElementById('hsDesc').textContent = "Click any step card in the workflow diagram on the left to inspect data contracts, boundary conditions, hydraulic equations, and source verification.";
+      document.getElementById('hsSrc').textContent = "—";
+      document.getElementById('hsInputs').textContent = "—";
+      document.getElementById('hsOutputs').textContent = "—";
+      document.getElementById('hsEq').textContent = "—";
+      document.getElementById('hsStatus').innerHTML = '<span class="status-badge">STANDBY</span>';
+    }
+
+    // Default selection
+    window.addEventListener('DOMContentLoaded', () => selectHandoff('HS01'));
+  </script>
+</body>
+</html>

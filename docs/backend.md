@@ -39,43 +39,50 @@
                   HYDROCAST 12-STAGE ORCHESTRATION PIPELINE (src/orchestrator.py)
 ====================================================================================================
 
- [ Stage 01: Environment & Directory Initialization ]
-        |
+ [ Step 01: Open-Meteo Download (src/ecmwf/downloader.py) ]
+        |  - ECMWF IFS 0.1° HRES (90-Hour Lead Horizon)
+        |  - Grid Point Decoding & Intensity Extraction (max mm/hr)
         v
- [ Stage 02: Dynamic Station & Subbasin Selector (18 Stations) ]
-        |
+ [ Step 02: Gauge Station Fetch (src/processing/gauge_fetcher.py) ]
+        |  - Ingests 20-station telemetry & ThingSpeak IoT channel 3424513
+        |  - Records inserted into observed_rainfall_qc
         v
- [ Stage 03: ECMWF 9km HRES Precipitation Ingestion via Open-Meteo SDK ]
-        |
+ [ Step 03: Data Validation & QC (src/processing/validator.py) ]
+        |  - Automated outlier rejection, rate-of-change, physical range filters
+        |  - Aborts on critical QC failures
         v
- [ Stage 04: ThingSpeak Channel 3424513 Ultrasonic Telemetry Ingestion ]
-        |
+ [ Step 04: Station Selection (src/ecmwf/station_selector.py) ]
+        |  - Dynamic spatial mapping across 9 subbasins (S1–S9)
+        |  - Records selection decision into simulation database
         v
- [ Stage 05: Physics-Informed Adaptive ML Calibrator (Levenberg-Marquardt Loss Minimization) ]
-        |
+ [ Step 05: HEC-DSS Binary Write (src/dss/writer.py) ]
+        |  - Formats precipitation hyetographs into HEC-DSS records
+        |  - Verifies DSS file integrity (data/hms/HMS_Automation_RJKT/...)
         v
- [ Stage 06: HEC-HMS 4.13 Simulation / Pure-Python Vectorized Physical Solver ]
-        |  - SCS-CN Loss Method with Dynamic AMC-I/II/III
-        |  - SCS Dimensionless Unit Hydrograph (SCS-UH)
-        |  - Muskingum Reach Routing Network (R1–R5) with Sub-stepping
-        |  - Exponential Baseflow Recession (k=0.002/hr; Q₀ from live sensor, no floor)
+ [ Step 06: HMS Parameter Check (src/hms/runner.py) ]
+        |  - Verifies subbasin geometry, CN, Kirpich lag times, Muskingum K/X
         v
- [ Stage 07: WRD-Anchored PCHIP Hydraulic Rating Curve Conversion (Shivaji & Rajaram) ]
-        |
+ [ Step 07: HEC-HMS Headless Execution (src/hms/runner.py) ]
+        |  - Executes headless HEC-HMS 4.12 via Jython script compute.py
+        |  - Automatic fallback to vectorized physical SCS-CN & Muskingum solver
         v
- [ Stage 08: CWC Flood Alert Evaluation & Government Threshold Breach Detection ]
-        |
+ [ Step 08: Result Hydrograph Extraction (src/hms/runner.py) ]
+        |  - Parses outlet hydrograph (J_Outlet), computes peak Q & time of peak
         v
- [ Stage 09: Automated Telegram Bot Emergency Bulletin Dispatch to DDMA/WRD ]
-        |
+ [ Step 09: Stage Conversion (src/hydrology/post_process.py) ]
+        |  - WRD PCHIP rating curve conversion (Shivaji Bridge & Rajaram Weir)
+        |  - Computes stage (m MSL) and datum elevation offsets
         v
- [ Stage 10: Relational State Persistence & Supabase PostgreSQL Sync ]
-        |
+ [ Step 10: PostgreSQL State Persistence (src/db/store_results.py) ]
+        |  - Commits hydrograph_results and bridge_stage_forecast to DB
         v
- [ Stage 11: Apache Parquet Cold Storage Archival Engine (90-Day Retention) ]
-        |
+ [ Step 11: Alert & CWC Evaluation (src/alerts/evaluator.py) ]
+        |  - Evaluates Warning (542.10m) & Danger (543.30m) thresholds
+        |  - Dispatches automated Telegram emergency flood bulletins
         v
- [ Stage 12: Pipeline State Emission & WebSocket Live Broadcast ]
+ [ Step 12: Dashboard Broadcast (src/api/notifier.py) ]
+        |  - Pushes cycle completion event via WebSocket (/ws/live) to Next.js EOC
+====================================================================================================
 ```
 
 - **Runtime:** Python 3.12 (64-bit)

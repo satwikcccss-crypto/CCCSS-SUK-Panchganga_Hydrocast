@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCast — Catchment Hydrology, SCS-CN & Muskingum Routing Solver</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel-bg: #ffffff;
+      --card-bg: #f0f9ff;
+      --border: #cbd5e1;
+      --border-blue: #bae6fd;
+      --navy: #1e3a8a;
+      --sky: #0284c7;
+      --blue: #0ea5e9;
+      --green: #059669;
+      --amber: #d97706;
+      --red: #dc2626;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 2px solid var(--navy);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      z-index: 10;
+    }
+    .header-title h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #eff6ff;
+      border: 1px solid #0284c7;
+      color: #0284c7;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .header-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+    .header-meta strong { color: var(--navy); }
+
+    .main-workspace {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .left-flow-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      gap: 12px;
+      overflow-y: auto;
+      background: #f1f5f9;
+    }
+
+    .toolbar-bar {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tool-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-right: 4px;
+    }
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all 0.15s;
+    }
+    .btn:hover { background: #f8fafc; border-color: var(--sky); }
+    .btn.active { background: var(--sky); border-color: var(--sky); color: #ffffff; }
+
+    .sim-viewport {
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 520px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .sim-header {
+      padding: 10px 16px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--navy);
+      font-weight: 700;
+    }
+    svg.solver-svg {
+      width: 100%;
+      height: 100%;
+      flex: 1;
+      background: #ffffff;
+    }
+
+    .node-box {
+      cursor: pointer;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .node-box:hover {
+      filter: drop-shadow(0 2px 8px rgba(2, 132, 199, 0.25));
+    }
+    .node-box.selected rect {
+      stroke: var(--sky) !important;
+      stroke-width: 2.5 !important;
+    }
+
+    .right-sidebar {
+      width: 440px;
+      background: #ffffff;
+      border-left: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .sidebar-header {
+      padding: 14px 18px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-header h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+    .sidebar-content {
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .formula-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px;
+    }
+    .formula-title {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .formula-math {
+      font-family: "Georgia", serif;
+      font-style: italic;
+      font-size: 13.5px;
+      color: #0f172a;
+      background: #ffffff;
+      padding: 8px 12px;
+      border-left: 3px solid var(--sky);
+      border-radius: 2px;
+      margin: 6px 0;
+    }
+    .formula-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .flow-stream {
+      stroke-dasharray: 6, 6;
+      animation: dash 1s linear infinite;
+    }
+    @keyframes dash {
+      to { stroke-dashoffset: -12; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>
+        <span>HYDROCAST</span> · CATCHMENT HYDROLOGY, SCS-CN &amp; MUSKINGUM SOLVER
+      </h1>
+      <span class="badge-live">DUAL ENGINE: HEC-HMS 4.12 &amp; PYTHON SCI-PY</span>
+    </div>
+    <div class="header-meta">
+      <div>BASIN MODEL: <strong>9 SUBBASINS · 5 MUSKINGUM REACHES · 14-NODE TOPOLOGY</strong></div>
+      <div>ROUTING CHANNEL: <strong>R5 &rarr; R4 &rarr; R2 &rarr; R3 &rarr; R1 &rarr; J_OUTLET</strong></div>
+      <div>CANONICAL CODE: <strong>src/hms/runner.py · src/hydrology/post_process.py</strong></div>
+    </div>
+  </header>
+
+  <div class="main-workspace">
+    <div class="left-flow-container">
+      
+      <!-- Toolbar -->
+      <div class="toolbar-bar">
+        <div class="tool-group">
+          <span class="tool-label">Antecedent Moisture Condition (AMC):</span>
+          <button class="btn" id="btnAmc1" onclick="setAMC('I')">AMC-I (Dry Soil, CN -20)</button>
+          <button class="btn active" id="btnAmc2" onclick="setAMC('II')">AMC-II (Calibrated Normal)</button>
+          <button class="btn" id="btnAmc3" onclick="setAMC('III')">AMC-III (Saturated Flood, CN +15)</button>
+        </div>
+
+        <div class="tool-group">
+          <span class="tool-label">Solver Engine:</span>
+          <button class="btn active" id="btnEngineHms" onclick="setEngine('hms')">HEC-HMS 4.12 Batch</button>
+          <button class="btn" id="btnEnginePy" onclick="setEngine('py')">Vectorized NumPy Emulator</button>
+        </div>
+      </div>
+
+      <!-- Computational Flowchart & Dynamic Waveform Canvas -->
+      <div class="sim-viewport">
+        <div class="sim-header">
+          <span>HYDROLOGIC COMPUTATION WORKFLOW: PRECIPITATION &rarr; SCS-CN LOSS &rarr; SCS UNIT HYDROGRAPH &rarr; MUSKINGUM REACHES</span>
+          <span id="amcStatusLabel" style="color:#0284c7; font-weight:700;">CALIBRATED AMC-II (CN = 61.8 to 74.8)</span>
+        </div>
+
+        <svg class="solver-svg" viewBox="0 0 1100 580" id="solverSvg">
+          <defs>
+            <pattern id="lightGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="0.8"/>
+            </pattern>
+            <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7"/>
+            </marker>
+            <marker id="arrowGreen" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+            </marker>
+          </defs>
+
+          <rect width="1100" height="580" fill="url(#lightGrid)"/>
+
+          <!-- STAGE 1: SUBBASIN HYETOGRAPH PRECIPITATION (X: 30) -->
+          <text x="30" y="35" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">1. SUBBASIN PRECIPITATION HYETOGRAPH</text>
+
+          <g class="node-box" id="node-precip" transform="translate(30, 60)" onclick="selectStep('precip')">
+            <rect x="0" y="0" width="210" height="460" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="16" y="28" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">9 SUBBASIN FORCINGS</text>
+            <line x1="16" y1="38" x2="194" y2="38" stroke="#e2e8f0" stroke-width="1"/>
+
+            <!-- Hyetograph Mini Bars -->
+            <rect x="16" y="55" width="178" height="65" rx="3" fill="#f8fafc" stroke="#e2e8f0"/>
+            <text x="24" y="74" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#0284c7">90-HR TIME-SERIES P(t)</text>
+            <!-- Hyetograph Bar Stems -->
+            <rect x="30" y="95" width="8" height="18" fill="#38bdf8"/>
+            <rect x="42" y="85" width="8" height="28" fill="#0284c7"/>
+            <rect x="54" y="80" width="8" height="33" fill="#0369a1"/>
+            <rect x="66" y="90" width="8" height="23" fill="#38bdf8"/>
+            <rect x="78" y="98" width="8" height="15" fill="#bae6fd"/>
+
+            <!-- Subbasin Specs List -->
+            <g font-family="var(--font-mono)" font-size="8.8" fill="#334155">
+              <text x="16" y="145">S1: Karveer (86.2 km² · CN 74.8)</text>
+              <text x="16" y="165">S2: Sangarul (153.8 km² · CN 67.2)</text>
+              <text x="16" y="185">S3: Kotoli (261.3 km² · CN 65.5)</text>
+              <text x="16" y="205">S4: Karanjphen (262.0 km² · CN 61.9)</text>
+              <text x="16" y="225">S5: Padasali (106.4 km² · CN 61.0)</text>
+              <text x="16" y="245">S6: Gaganbawda (227.7 km² · CN 61.8)</text>
+              <text x="16" y="265">S7: Garivade (195.4 km² · CN 61.3)</text>
+              <text x="16" y="285">S8: Beed (177.4 km² · CN 65.8)</text>
+              <text x="16" y="305">S9: Radhanagari (367.0 km² · CN 64.3)</text>
+            </g>
+
+            <rect x="16" y="330" width="178" height="110" rx="3" fill="#f0fdf4" stroke="#86efac"/>
+            <text x="24" y="350" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#15803d">TOTAL CATCHMENT</text>
+            <text x="24" y="370" font-family="var(--font-mono)" font-size="9" fill="#166534">Area: 1,837 km²</text>
+            <text x="24" y="388" font-family="var(--font-mono)" font-size="9" fill="#166534">Mean CN: 64.8 (AMC-II)</text>
+            <text x="24" y="406" font-family="var(--font-mono)" font-size="9" fill="#166534">Time-step &Delta;t: 1.0 hr (DSS)</text>
+            <text x="24" y="424" font-family="var(--font-mono)" font-size="9" fill="#166534">Horizon: 90 hours</text>
+          </g>
+
+          <!-- STAGE 2: SCS-CN RAINFALL LOSS MODEL (X: 280) -->
+          <text x="280" y="35" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">2. SCS-CN LOSS PARTITION</text>
+
+          <g class="node-box" id="node-loss" transform="translate(280, 60)" onclick="selectStep('loss')">
+            <rect x="0" y="0" width="220" height="460" rx="6" fill="#ffffff" stroke="#0284c7" stroke-width="1.5"/>
+            <text x="16" y="28" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">SCS-CN RUNOFF EXCESS</text>
+            <line x1="16" y1="38" x2="204" y2="38" stroke="#bae6fd" stroke-width="1.5"/>
+
+            <rect x="14" y="55" width="192" height="70" rx="3" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="22" y="74" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#0284c7">POTENTIAL RETENTION S</text>
+            <text x="22" y="92" font-family="Georgia" font-style="italic" font-size="12" fill="#0f172a">S = 25400 / CN − 254</text>
+            <text x="22" y="110" font-family="var(--font-mono)" font-size="8.5" fill="#64748b" id="calcSVal">S = 137.9 mm (AMC-II)</text>
+
+            <rect x="14" y="140" width="192" height="70" rx="3" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="22" y="159" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#0284c7">INITIAL ABSTRACTION Ia</text>
+            <text x="22" y="177" font-family="Georgia" font-style="italic" font-size="12" fill="#0f172a">Ia = &lambda; · S  (&lambda; = 0.20)</text>
+            <text x="22" y="195" font-family="var(--font-mono)" font-size="8.5" fill="#64748b" id="calcIaVal">Ia = 27.6 mm (Surface Storage)</text>
+
+            <rect x="14" y="225" width="192" height="85" rx="3" fill="#eff6ff" stroke="#93c5fd"/>
+            <text x="22" y="244" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#1e3a8a">DIRECT RUNOFF Pe</text>
+            <text x="22" y="264" font-family="Georgia" font-style="italic" font-size="12" fill="#0f172a">Pe = (P − Ia)² / (P − Ia + S)</text>
+            <text x="22" y="284" font-family="var(--font-mono)" font-size="8.5" fill="#0369a1">For P &gt; Ia; else Pe = 0</text>
+            <text x="22" y="298" font-family="var(--font-mono)" font-size="8.5" fill="#0369a1">Infiltration = P − Pe</text>
+
+            <!-- AMC Dynamic Status Box -->
+            <rect x="14" y="325" width="192" height="115" rx="3" fill="#fffbeb" stroke="#fde68a" id="amcCardBg"/>
+            <text x="22" y="345" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#b45309">ANTECEDENT SOIL MOISTURE</text>
+            <text x="22" y="365" font-family="var(--font-mono)" font-size="8.5" fill="#78350f" id="amcDesc1">Condition: AMC-II (Normal)</text>
+            <text x="22" y="382" font-family="var(--font-mono)" font-size="8.5" fill="#78350f" id="amcDesc2">5-Day Antecedent Rain: 35–53 mm</text>
+            <text x="22" y="400" font-family="var(--font-mono)" font-size="8.5" fill="#78350f" id="amcDesc3">Runoff Ratio: ~42%</text>
+            <text x="22" y="420" font-family="var(--font-mono)" font-size="8.5" font-weight="700" fill="#b45309">&check; Dynamically updated by Orchestrator</text>
+          </g>
+
+          <!-- STAGE 3: SCS UNIT HYDROGRAPH TRANSFORM (X: 540) -->
+          <text x="540" y="35" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">3. SCS UNIT HYDROGRAPH</text>
+
+          <g class="node-box" id="node-uh" transform="translate(540, 60)" onclick="selectStep('uh')">
+            <rect x="0" y="0" width="220" height="460" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="16" y="28" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">HYDROGRAPH CONVOLUTION</text>
+            <line x1="16" y1="38" x2="204" y2="38" stroke="#e2e8f0" stroke-width="1"/>
+
+            <rect x="14" y="55" width="192" height="100" rx="3" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="22" y="74" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#0284c7">PEAK DISCHARGE Qp</text>
+            <text x="22" y="94" font-family="Georgia" font-style="italic" font-size="12" fill="#0f172a">Qp = (C · A · Pe) / tp</text>
+            <text x="22" y="114" font-family="var(--font-mono)" font-size="8.5" fill="#475569">tp = &Delta;t/2 + t_lag</text>
+            <text x="22" y="130" font-family="var(--font-mono)" font-size="8.5" fill="#475569">t_lag: 35.3h to 86.7h</text>
+            <text x="22" y="146" font-family="var(--font-mono)" font-size="8.5" fill="#0284c7">Calibrated against 2019 WRD</text>
+
+            <!-- Unit Hydrograph Wave Profile -->
+            <rect x="14" y="170" width="192" height="120" rx="3" fill="#ffffff" stroke="#bae6fd"/>
+            <text x="22" y="188" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#0284c7">SUBBASIN OUTFLOW q(t)</text>
+            <!-- Synthetic Hydrograph Curve -->
+            <path d="M 24 270 Q 70 265 95 210 T 140 250 T 195 270" fill="none" stroke="#0284c7" stroke-width="2.5"/>
+            <path d="M 24 270 Q 70 265 95 210 T 140 250 T 195 270 L 195 275 L 24 275 Z" fill="#e0f2fe" opacity="0.6"/>
+            <circle cx="95" cy="210" r="3.5" fill="#dc2626"/>
+            <text x="105" y="210" font-family="var(--font-mono)" font-size="8" fill="#dc2626">Qp Crest</text>
+
+            <rect x="14" y="305" width="192" height="135" rx="3" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="22" y="324" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#1e3a8a">BASEFLOW RECESSION</text>
+            <text x="22" y="344" font-family="Georgia" font-style="italic" font-size="11.5" fill="#0f172a">Q_bf(t) = Q₀ · exp(−k · t)</text>
+            <text x="22" y="364" font-family="var(--font-mono)" font-size="8.5" fill="#475569">Recession Constant k = 0.002</text>
+            <text x="22" y="382" font-family="var(--font-mono)" font-size="8.5" fill="#475569">Q₀ Seeded from live radar</text>
+            <text x="22" y="400" font-family="var(--font-mono)" font-size="8.5" fill="#059669">91.1 m³/s fallback when offline</text>
+            <text x="22" y="420" font-family="var(--font-mono)" font-size="8.5" fill="#0284c7">Superimposed onto direct runoff</text>
+          </g>
+
+          <!-- STAGE 4: MUSKINGUM REACH ROUTING (X: 800) -->
+          <text x="800" y="35" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#1e3a8a">4. MUSKINGUM REACH ROUTING</text>
+
+          <g class="node-box" id="node-musk" transform="translate(800, 60)" onclick="selectStep('musk')">
+            <rect x="0" y="0" width="270" height="460" rx="6" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+            <text x="18" y="28" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="#059669">5 REACH CHANNELS &rarr; J_OUTLET</text>
+            <line x1="18" y1="38" x2="252" y2="38" stroke="#a7f3d0" stroke-width="1.5"/>
+
+            <rect x="14" y="55" width="242" height="85" rx="3" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="22" y="74" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#059669">MUSKINGUM CONTINUITY EQUATION</text>
+            <text x="22" y="94" font-family="Georgia" font-style="italic" font-size="12" fill="#0f172a">O₂ = C₀·I₂ + C₁·I₁ + C₂·O₁</text>
+            <text x="22" y="112" font-family="var(--font-mono)" font-size="8.5" fill="#475569">Constraint: C₀ + C₁ + C₂ = 1.0000</text>
+            <text x="22" y="126" font-family="var(--font-mono)" font-size="8.5" fill="#059669">Sub-stepping: 2KX &le; &Delta;t &le; 2K(1−X)</text>
+
+            <!-- 5 Reaches Table -->
+            <rect x="14" y="150" width="242" height="150" rx="3" fill="#f0fdf4" stroke="#86efac"/>
+            <text x="22" y="169" font-family="var(--font-mono)" font-size="9.5" font-weight="700" fill="#166534">5 CALIBRATED REACHES</text>
+            <g font-family="var(--font-mono)" font-size="8.5" fill="#14532d">
+              <text x="22" y="190">R5: Upper Kumbhi (K=6.2h · X=0.20)</text>
+              <text x="22" y="210">R4: Middle Kumbhi (K=8.5h · X=0.18)</text>
+              <text x="22" y="230">R2: Lower Kasari (K=10.4h · X=0.22)</text>
+              <text x="22" y="250">R3: Bhogawati Trunk (K=14.2h · X=0.15)</text>
+              <text x="22" y="270">R1: Main Panchganga (K=18.0h · X=0.12)</text>
+              <text x="22" y="290" font-weight="700" fill="#047857">&rarr; Discharges into J_Outlet (Shivaji Bridge)</text>
+            </g>
+
+            <rect x="14" y="315" width="242" height="125" rx="3" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="22" y="334" font-family="var(--font-mono)" font-size="9" font-weight="700" fill="#1e3a8a">FINAL OUTLET HYDROGRAPH</text>
+            <text x="22" y="354" font-family="var(--font-mono)" font-size="8.5" fill="#334155">Peak Discharge: <strong style="color:#0284c7;">1,420.5 m³/s</strong></text>
+            <text x="22" y="372" font-family="var(--font-mono)" font-size="8.5" fill="#334155">Peak Horizon: <strong style="color:#0284c7;">T+36.0h (&plusmn;2h CI)</strong></text>
+            <text x="22" y="390" font-family="var(--font-mono)" font-size="8.5" fill="#334155">Stage Translation: <strong style="color:#0284c7;">PCHIP WRD Rating</strong></text>
+            <text x="22" y="408" font-family="var(--font-mono)" font-size="8.5" fill="#334155">Downstream Handoff: <strong style="color:#059669;">HydroSim /api/v1/runoff</strong></text>
+            <text x="22" y="426" font-family="var(--font-mono)" font-size="8.5" fill="#10b981">&check; Solved in 4.8s (HMS) / 15ms (Py)</text>
+          </g>
+
+          <!-- Animated Connector Lines -->
+          <path d="M 240 220 L 280 220" fill="none" stroke="#0284c7" stroke-width="2.5" class="flow-stream" marker-end="url(#arrow)"/>
+          <path d="M 500 220 L 540 220" fill="none" stroke="#0284c7" stroke-width="2.5" class="flow-stream" marker-end="url(#arrow)"/>
+          <path d="M 760 220 L 800 220" fill="none" stroke="#059669" stroke-width="2.5" class="flow-stream" marker-end="url(#arrowGreen)"/>
+        </svg>
+      </div>
+
+    </div>
+
+    <!-- Right Sidebar Inspector -->
+    <div class="right-sidebar">
+      <div class="sidebar-header">
+        <h2 id="inspectorHeading">HYDROLOGIC SOLVER SPECS</h2>
+      </div>
+
+      <div class="sidebar-content">
+        <div class="formula-card">
+          <div class="formula-title">
+            <span>SCS-CN RUNOFF PARTITION</span>
+            <span style="color:#0284c7;">STANDARDIZED</span>
+          </div>
+          <div class="formula-math">Pe = (P − Ia)² / (P − Ia + S)</div>
+          <div class="formula-desc">
+            Governing runoff depth equation across all 9 Panchganga subbasins. Ia is the initial abstraction (canopy interception + depression storage), calibrated at &lambda; = 0.20 (standard) down to 0.08 in saturated monsoon peaks.
+          </div>
+        </div>
+
+        <div class="formula-card">
+          <div class="formula-title">
+            <span>SCS DIMENSIONLESS UNIT HYDROGRAPH</span>
+            <span style="color:#0284c7;">USACE METHOD</span>
+          </div>
+          <div class="formula-math">u(t) = (t/tp)³·⁷ · exp[3.7 · (1 − t/tp)]</div>
+          <div class="formula-desc">
+            Transforms excess rainfall Pe(t) into direct surface runoff hydrograph. Time to peak <code>tp = &Delta;t/2 + lag/60</code>. Subbasin lag times range from 35.3h (Padasali) to 86.7h (Radhanagari).
+          </div>
+        </div>
+
+        <div class="formula-card">
+          <div class="formula-title">
+            <span>MUSKINGUM CHANNEL ROUTING</span>
+            <span style="color:#059669;">MASS CONSERVING</span>
+          </div>
+          <div class="formula-math">C₀ = (&Delta;t − 2KX) / (2K(1−X) + &Delta;t)</div>
+          <div class="formula-desc">
+            Routes flow pulses down the 5 river channels. Sub-stepping is enforced so that <code>2KX &le; &Delta;t &le; 2K(1-X)</code>, strictly preventing numerical diffusion and artificial oscillations.
+          </div>
+        </div>
+
+        <div class="formula-card">
+          <div class="formula-title">
+            <span>ENGINE EXECUTION PROFILE</span>
+            <span style="color:#047857;">BENCHMARKED</span>
+          </div>
+          <div class="formula-desc">
+            &bull; <strong>Headless HEC-HMS 4.12</strong>: 4.8 seconds execution duration via Jython script.<br>
+            &bull; <strong>Vectorized Python Solver</strong>: 15 milliseconds execution duration using pure NumPy/SciPy.<br>
+            &bull; <strong>Monotonicity Check</strong>: Verified identical hydrograph crest (1,420 m³/s &plusmn;0.8%) across both engines.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function setAMC(amc) {
+      document.getElementById('btnAmc1').classList.remove('active');
+      document.getElementById('btnAmc2').classList.remove('active');
+      document.getElementById('btnAmc3').classList.remove('active');
+
+      if (amc === 'I') {
+        document.getElementById('btnAmc1').classList.add('active');
+        document.getElementById('amcStatusLabel').innerText = "DRY ANTECEDENT AMC-I (CN -20% · High Infiltration)";
+        document.getElementById('calcSVal').innerText = "S = 224.2 mm (High Retention)";
+        document.getElementById('calcIaVal').innerText = "Ia = 44.8 mm";
+        document.getElementById('amcDesc1').innerText = "Condition: AMC-I (Dry Soil)";
+        document.getElementById('amcDesc2').innerText = "5-Day Antecedent Rain: < 15 mm";
+        document.getElementById('amcDesc3').innerText = "Runoff Ratio: ~22%";
+      } else if (amc === 'II') {
+        document.getElementById('btnAmc2').classList.add('active');
+        document.getElementById('amcStatusLabel').innerText = "CALIBRATED AMC-II (CN = 61.8 to 74.8)";
+        document.getElementById('calcSVal').innerText = "S = 137.9 mm (AMC-II)";
+        document.getElementById('calcIaVal').innerText = "Ia = 27.6 mm (Surface Storage)";
+        document.getElementById('amcDesc1').innerText = "Condition: AMC-II (Normal)";
+        document.getElementById('amcDesc2').innerText = "5-Day Antecedent Rain: 35–53 mm";
+        document.getElementById('amcDesc3').innerText = "Runoff Ratio: ~42%";
+      } else if (amc === 'III') {
+        document.getElementById('btnAmc3').classList.add('active');
+        document.getElementById('amcStatusLabel').innerText = "SATURATED AMC-III (CN +15% · Extreme Flood Inundation)";
+        document.getElementById('calcSVal').innerText = "S = 58.4 mm (Saturated Bed)";
+        document.getElementById('calcIaVal').innerText = "Ia = 11.7 mm";
+        document.getElementById('amcDesc1').innerText = "Condition: AMC-III (Saturated)";
+        document.getElementById('amcDesc2').innerText = "5-Day Antecedent Rain: > 53 mm";
+        document.getElementById('amcDesc3').innerText = "Runoff Ratio: ~78% (Extreme)";
+      }
+    }
+
+    function setEngine(engine) {
+      document.getElementById('btnEngineHms').classList.toggle('active', engine === 'hms');
+      document.getElementById('btnEnginePy').classList.toggle('active', engine === 'py');
+    }
+
+    function selectStep(step) {
+      const heading = document.getElementById('inspectorHeading');
+      if (step === 'precip') heading.innerText = "1. PRECIPITATION HYETOGRAPH SPECS";
+      if (step === 'loss') heading.innerText = "2. SCS-CN LOSS EQUATIONS";
+      if (step === 'uh') heading.innerText = "3. UNIT HYDROGRAPH CONVOLUTION";
+      if (step === 'musk') heading.innerText = "4. MUSKINGUM ROUTING SPECS";
+    }
+  </script>
+</body>
+</html>

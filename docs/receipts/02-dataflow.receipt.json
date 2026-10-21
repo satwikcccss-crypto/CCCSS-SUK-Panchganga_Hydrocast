@@ -1,0 +1,28 @@
+{
+  "receipt_id": "RCP-02-DATA-20261021",
+  "diagram_file": "docs/diagrams/02-dataflow.html",
+  "diagram_type": "dataflow",
+  "title": "HydroCast Telemetry & Meteorology Data Flow",
+  "validation_timestamp": "2026-10-21T14:43:00Z",
+  "validation_standard": "Archify Strict Source Audit v2",
+  "total_streams": 4,
+  "total_nodes": 14,
+  "verified_nodes": 12,
+  "to_confirm_nodes": 2,
+  "source_files_verified": [
+    "src/ecmwf/downloader.py:19-65",
+    "src/ecmwf/station_selector.py:20-80",
+    "src/sensors/thingspeak_gauge.py:20-55",
+    "src/hydrology/realtime_telemetry_validator.py:130-180",
+    "src/db/store_results.py:110",
+    "src/processing/gauge_fetcher.py:27-50",
+    "src/processing/validator.py:10-40",
+    "database/supabase_schema.sql:54, 228, 291, 354-419",
+    "windows/storage_setup.sql:11-40, 58-64"
+  ],
+  "to_confirm_items": [
+    "docs/OPEN_ITEMS.md:OI-002 (RTDAS Stage Scraper & Parser)"
+  ],
+  "status": "VALIDATED",
+  "trace_motion_enabled": true
+}

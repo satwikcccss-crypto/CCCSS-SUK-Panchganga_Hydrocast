@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCast — End-to-End System Architecture (Panchganga Basin)</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #cbd5e1;
+      --border-dark: #64748b;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --navy: #1e3a8a;
+      --navy-light: #eff6ff;
+      --accent: #b91c1c;
+      --accent-light: #fef2f2;
+      --confirm-border: #d97706;
+      --confirm-bg: #fffbeb;
+      --font-serif: "Georgia", "Cambria", "Times New Roman", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 2px solid var(--navy);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header-title h1 {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+    }
+    .header-title p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .header-meta {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .header-meta strong {
+      color: var(--text);
+    }
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .diagram-viewport {
+      flex: 1;
+      overflow: auto;
+      padding: 24px;
+      background: #ffffff;
+      position: relative;
+    }
+    .controls-bar {
+      position: absolute;
+      top: 14px;
+      left: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+      background: #ffffff;
+      padding: 4px;
+      border: 1px solid var(--border);
+    }
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border: 1px solid var(--border-dark);
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: var(--navy-light);
+      color: var(--navy);
+    }
+    .side-panel {
+      width: 380px;
+      background: #ffffff;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .panel-header {
+      background: var(--navy);
+      color: #ffffff;
+      padding: 12px 16px;
+    }
+    .panel-header h2 {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .panel-header span {
+      font-size: 11px;
+      opacity: 0.85;
+      font-family: var(--font-mono);
+    }
+    .panel-content {
+      padding: 16px;
+      font-size: 12px;
+    }
+    .prop-group {
+      margin-bottom: 14px;
+    }
+    .prop-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .prop-value {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      border-radius: 2px;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .prop-value.code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--navy);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1px solid var(--navy);
+      color: var(--navy);
+      background: var(--navy-light);
+    }
+    .status-badge.confirm {
+      border-color: var(--confirm-border);
+      color: #b45309;
+      background: var(--confirm-bg);
+    }
+
+    /* Diagram Grid Layout */
+    .arch-canvas {
+      display: grid;
+      grid-template-columns: repeat(7, 210px);
+      gap: 16px;
+      min-width: 1550px;
+      padding-top: 40px;
+    }
+    .stage-column {
+      background: #fafafa;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      border-top: 3px solid var(--navy);
+    }
+    .stage-header {
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 10px;
+      font-family: var(--font-serif);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stage-header span {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .stage-body {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+    .node-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 10px;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .node-card:hover {
+      border-color: var(--navy);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .node-card.active {
+      border: 2px solid var(--navy);
+      background: var(--navy-light);
+    }
+    .node-card.to-confirm {
+      border: 1px dashed var(--confirm-border);
+      background: #fffdfa;
+    }
+    .node-card.to-confirm.active {
+      border: 2px dashed var(--confirm-border);
+      background: var(--confirm-bg);
+    }
+    .node-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .node-card.to-confirm .node-title {
+      color: #b45309;
+    }
+    .node-src {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--text-muted);
+      word-break: break-all;
+      background: #f8fafc;
+      padding: 3px 5px;
+      border: 1px solid #e2e8f0;
+      margin-top: 6px;
+    }
+    .node-tag {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* Edge Connector Indicator */
+    .edge-indicator {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--border-dark);
+      text-align: center;
+      padding: 2px 0;
+    }
+    footer {
+      background: #f1f5f9;
+      border-top: 1px solid var(--border);
+      padding: 6px 20px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>HydroCast — End-to-End System Architecture</h1>
+      <p>Panchganga River Basin Operational Flood Intelligence · Shivaji University Kolhapur (CCCSS) · DST-SERB</p>
+    </div>
+    <div class="header-meta">
+      <div>DIAGRAM: <strong>01-ARCHITECTURE</strong></div>
+      <div>STANDARD: <strong>GOVERNMENT-RECORD / PLAIN LIGHT</strong></div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div class="diagram-viewport">
+      <div class="controls-bar">
+        <button class="btn" onclick="filterNodes('all')">Show All Nodes</button>
+        <button class="btn" onclick="filterNodes('verified')">Verified Code Only</button>
+        <button class="btn" onclick="filterNodes('confirm')">Highlight TO CONFIRM</button>
+        <button class="btn" onclick="resetSelection()">Reset Inspector</button>
+      </div>
+
+      <div class="arch-canvas" id="canvas">
+
+        <!-- Stage 1: Data Sources -->
+        <div class="stage-column">
+          <div class="stage-header">
+            1. DATA SOURCES
+            <span>SRC 01-05</span>
+          </div>
+          <div class="stage-body">
+            <div class="node-card" id="N01" onclick="selectNode('N01')">
+              <span class="node-tag">Meteorology Grid</span>
+              <div class="node-title">ECMWF IFS HRES 9km</div>
+              <p>Automated 90-hr precipitation forecast grid over Panchganga basin (0.1° / ~9km).</p>
+              <div class="node-src">src/ecmwf/downloader.py:19-65</div>
+            </div>
+
+            <div class="node-card" id="N02" onclick="selectNode('N02')">
+              <span class="node-tag">IoT Altimeter</span>
+              <div class="node-title">ThingSpeak Radar (Ch. 3424513)</div>
+              <p>Live ultrasonic river water level at Shivaji Bridge (549.35m MSL datum).</p>
+              <div class="node-src">src/sensors/thingspeak_gauge.py:20-55</div>
+            </div>
+
+            <div class="node-card" id="N03" onclick="selectNode('N03')">
+              <span class="node-tag">Field Network</span>
+              <div class="node-title">20-Station Rain Gauges</div>
+              <p>Primary & alternate telemetric rain gauge network across subbasins S1–S9.</p>
+              <div class="node-src">data/stations/raingauge_stations.csv</div>
+            </div>
+
+            <div class="node-card" id="N04" onclick="selectNode('N04')">
+              <span class="node-tag">River Geometry</span>
+              <div class="node-title">WRD Surveyed Cross-Sections</div>
+              <p>Field survey points for Shivaji Bridge (17 pts) & Rajaram Weir (29 pts).</p>
+              <div class="node-src">data/wrd_cross_sections/shivaji_xsection_17_survey.txt</div>
+            </div>
+
+            <div class="node-card to-confirm" id="N05" onclick="selectNode('N05')">
+              <span class="node-tag">Telemetry Scraper</span>
+              <div class="node-title">RTDAS Stage Scraper [TO CONFIRM]</div>
+              <p>Maharashtra WRD portal scraper referenced in UI; external ingestion microservice.</p>
+              <div class="node-src">docs/OPEN_ITEMS.md:OI-002</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 2: Ingestion & Preprocessing -->
+        <div class="stage-column">
+          <div class="stage-header">
+            2. INGESTION
+            <span>ING 06-08</span>
+          </div>
+          <div class="stage-body">
+            <div class="node-card" id="N06" onclick="selectNode('N06')">
+              <span class="node-tag">Pipeline Runner</span>
+              <div class="node-title">Pipeline Orchestrator</div>
+              <p>12-step synchronized execution engine (CLI, GH Actions, or Scheduled Task).</p>
+              <div class="node-src">src/orchestrator.py:96-125</div>
+            </div>
+
+            <div class="node-card" id="N07" onclick="selectNode('N07')">
+              <span class="node-tag">Selection Logic</span>
+              <div class="node-title">Station Selector Engine</div>
+              <p>Dynamically selects primary vs alternate station by MAX_RAIN_VOLUME.</p>
+              <div class="node-src">src/ecmwf/station_selector.py:20-80</div>
+            </div>
+
+            <div class="node-card" id="N08" onclick="selectNode('N08')">
+              <span class="node-tag">Quality Control</span>
+              <div class="node-title">Telemetry QC Validator</div>
+              <p>Range, rate-of-change, and missing record quality assurance filtering.</p>
+              <div class="node-src">src/processing/validator.py:10-50</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 3: Storage Layer -->
+        <div class="stage-column">
+          <div class="stage-header">
+            3. STORAGE
+            <span>STR 09-11</span>
+          </div>
+          <div class="stage-body">
+            <div class="node-card" id="N09" onclick="selectNode('N09')">
+              <span class="node-tag">Relational / Spatial</span>
+              <div class="node-title">PostgreSQL 15/16 + PostGIS</div>
+              <p>10 core tables, 3 analytical views, GIS geometry & subbasin spatial registry.</p>
+              <div class="node-src">database/supabase_schema.sql:1-419</div>
+            </div>
+
+            <div class="node-card" id="N10" onclick="selectNode('N10')">
+              <span class="node-tag">Time-Series Engine</span>
+              <div class="node-title">TimescaleDB Hypertables</div>
+              <p>Hypertables on dedicated 3512GB tablespace on E:\ with automatic compression.</p>
+              <div class="node-src">windows/storage_setup.sql:1-75</div>
+            </div>
+
+            <div class="node-card" id="N11" onclick="selectNode('N11')">
+              <span class="node-tag">Binary Hydrology DSS</span>
+              <div class="node-title">HEC-DSS Time-Series File</div>
+              <p>Direct pydsstools bridge formatting 90-hr hyetographs into HEC-DSS records.</p>
+              <div class="node-src">src/dss/writer.py:38-58</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 4: Hydrologic Modeling -->
+        <div class="stage-column">
+          <div class="stage-header">
+            4. HEC-HMS MODEL
+            <span>MDL 12-14</span>
+          </div>
+          <div class="stage-body">
+            <div class="node-card" id="N12" onclick="selectNode('N12')">
+              <span class="node-tag">Hydrologic Engine</span>
+              <div class="node-title">HEC-HMS 4.13 Batch Engine</div>
+              <p>Headless Jython runner executing SCS-CN loss + Muskingum reach cascade (R1–R5).</p>
+              <div class="node-src">src/hms/runner.py:48-120</div>
+            </div>
+
+            <div class="node-card" id="N13" onclick="selectNode('N13')">
+              <span class="node-tag">Software Fallback</span>
+              <div class="node-title">Calibrated Python Emulator</div>
+              <p>Pure-Python numerical emulator matching HEC-HMS output if binary is missing.</p>
+              <div class="node-src">src/hms/runner.py:227-280</div>
+            </div>
+
+            <div class="node-card" id="N14" onclick="selectNode('N14')">
+              <span class="node-tag">Hydraulics</span>
+              <div class="node-title">PCHIP Stage-Discharge Converter</div>
+              <p>Converts outlet discharge (m³/s) to bridge stage (m MSL) via WRD field rating curve.</p>
+              <div class="node-src">src/hydrology/stage_converter.py:1-60</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 5: Operational API -->
+        <div class="stage-column">
+          <div class="stage-header">
+            5. API SERVICES
+            <span>API 15-18</span>
+          </div>
+          <div class="stage-body">
+            <div class="node-card" id="N15" onclick="selectNode('N15')">
+              <span class="node-tag">Backend Gateway</span>
+              <div class="node-title">FastAPI Backend Gateway</div>
+              <p>High-performance ASGI server exposing 15 REST endpoints on port 8000.</p>
+              <div class="node-src">src/api/main.py:59-107</div>
+            </div>
+
+            <div class="node-card" id="N16" onclick="selectNode('N16')">
+              <span class="node-tag">Authentication</span>
+              <div class="node-title">Security & Auth Engine</div>
+              <p>Dual-mode security: HS256 JWT for Admin operations, X-API-Key for consumers.</p>
+              <div class="node-src">src/api/security.py:20-45, 109-132</div>
+            </div>
+
+            <div class="node-card" id="N17" onclick="selectNode('N17')">
+              <span class="node-tag">Realtime Stream</span>
+              <div class="node-title">WebSocket Broadcast (/ws/live)</div>
+              <p>Pushes cycle completion packets to connected browser dashboards immediately.</p>
+              <div class="node-src">src/api/notifier.py:10-40</div>
+            </div>
+
+            <div class="node-card" id="N18" onclick="selectNode('N18')">
+              <span class="node-tag">Alert Dispatch</span>
+              <div class="node-title">Telegram Alert Bot</div>
+              <p>Dispatches warning bulletins to emergency authorities when stages exceed thresholds.</p>
+              <div class="node-src">src/alerts/telegram_bot.py:15-60</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 6: Dashboard Interface -->
+        <div class="stage-column">
+          <div class="stage-header">
+            6. DASHBOARD
+            <span>UI 19-21</span>
+          </div>
+          <div class="stage-body">
+            <div class="node-card" id="N19" onclick="selectNode('N19')">
+              <span class="node-tag">Frontend Application</span>
+              <div class="node-title">Next.js 14 Executive Portal</div>
+              <p>Institutional dashboard with responsive hydrological panels, charts & GIS map.</p>
+              <div class="node-src">frontend/app/page.tsx:1-120</div>
+            </div>
+
+            <div class="node-card" id="N20" onclick="selectNode('N20')">
+              <span class="node-tag">Cross-Section</span>
+              <div class="node-title">2D Hydraulic Section Viewer</div>
+              <p>Interactive water level simulator rendering water stage against bridge piers.</p>
+              <div class="node-src">frontend/components/CrossSectionViewer.tsx:1-80</div>
+            </div>
+
+            <div class="node-card" id="N21" onclick="selectNode('N21')">
+              <span class="node-tag">Validation UI</span>
+              <div class="node-title">Accuracy Matrix Panel</div>
+              <p>Live display of Spearman rho (0.988), NSE (0.987), RMSE (0.031m), & MAE.</p>
+              <div class="node-src">frontend/components/AccuracyPanel.tsx:1-90</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 7: Downstream Handoff -->
+        <div class="stage-column">
+          <div class="stage-header">
+            7. HYDROSYS HANDOFF
+            <span>EXT 22-23</span>
+          </div>
+          <div class="stage-body">
+            <div class="node-card to-confirm" id="N22" onclick="selectNode('N22')">
+              <span class="node-tag">External Consumer</span>
+              <div class="node-title">HydroSim Handoff [TO CONFIRM]</div>
+              <p>Downstream system consuming forecast hydrographs via authenticated API key.</p>
+              <div class="node-src">docs/OPEN_ITEMS.md:OI-001</div>
+            </div>
+
+            <div class="node-card to-confirm" id="N23" onclick="selectNode('N23')">
+              <span class="node-tag">Hydraulic 2D</span>
+              <div class="node-title">HEC-RAS Inundation [TO CONFIRM]</div>
+              <p>External 1D/2D unsteady flow modeling generating flood inundation polygons.</p>
+              <div class="node-src">docs/OPEN_ITEMS.md:OI-001</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Inspector Side Panel -->
+    <div class="side-panel" id="sidePanel">
+      <div class="panel-header">
+        <h2 id="insTitle">System Node Inspector</h2>
+        <span id="insId">Select any node to inspect repository verification</span>
+      </div>
+      <div class="panel-content" id="insBody">
+        <div class="prop-group">
+          <div class="prop-label">Operational Function</div>
+          <div class="prop-value" id="insFunc">Select a component from the architecture layout on the left to view its verified parameters, code linkage, and operational scope.</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Source File Path</div>
+          <div class="prop-value code" id="insSrc">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Upstream Inputs</div>
+          <div class="prop-value" id="insInputs">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Downstream Outputs</div>
+          <div class="prop-value" id="insOutputs">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Technology & Runtime</div>
+          <div class="prop-value" id="insTech">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Audit Status</div>
+          <div id="insStatus"><span class="status-badge">STANDBY</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>CCCSS Shivaji University Kolhapur · Centre for Climate Change & Water Research</div>
+    <div>Receipts: docs/receipts/01-architecture.receipt.json · Zero Guessing Policy</div>
+  </footer>
+
+  <script>
+    const nodeData = {
+      N01: {
+        id: "N01",
+        title: "ECMWF IFS HRES 9km Weather Grid",
+        func: "Downloads and extracts 90-hour precipitation forecast grid (total precipitation tp in mm/hr) over bounding box 16.20°N–17.20°N, 73.70°E–74.50°E.",
+        src: "src/ecmwf/downloader.py:19-65",
+        inputs: "ECMWF Open Data API / MARS archive credentials",
+        outputs: "NetCDF archive files in data/raw/ecmwf_<date>_<hour>.nc; xarray Dataset with tp_mm_hr",
+        tech: "Python 3.12, ecmwf-opendata, xarray, cfgrib, eccodes",
+        status: "VERIFIED IN REPO"
+      },
+      N02: {
+        id: "N02",
+        title: "ThingSpeak Radar Altimeter (Ch. 3424513)",
+        func: "Polls live ultrasonic river water level sensor at Chhatrapati Shivaji Maharaj Bridge every 1–3 hours. Converts feet down from sensor datum (549.35m MSL) to water level in meters MSL.",
+        src: "src/sensors/thingspeak_gauge.py:20-55",
+        inputs: "ThingSpeak Channel 3424513 REST API via HTTPS",
+        outputs: "Live water stage (meters MSL) and raw distance down (feet)",
+        tech: "Python 3.12, requests, ultrasonic river radar transmitter",
+        status: "VERIFIED IN REPO"
+      },
+      N03: {
+        id: "N03",
+        title: "20-Station Primary & Alternate Rain Gauges",
+        func: "Master spatial raingauge station registry across 9 Panchganga subbasins (S1 Karveer to S9 Radhanagari). Coordinates, elevation, and governing station hierarchy.",
+        src: "data/stations/raingauge_stations.csv",
+        inputs: "Field survey station metadata and WRD hydrological records",
+        outputs: "Database records in table `gauge_stations` with geometry Point(4326)",
+        tech: "CSV, PostGIS ST_MakePoint, PostgreSQL 15/16",
+        status: "VERIFIED IN REPO"
+      },
+      N04: {
+        id: "N04",
+        title: "WRD Surveyed Cross-Sections",
+        func: "Provides official physical cross-section geometry vertices (distance, elevation) for Shivaji Bridge (17 pts) and Rajaram KT Weir (29 pts) used to build compound Manning channel hydraulics.",
+        src: "data/wrd_cross_sections/shivaji_xsection_17_survey.txt",
+        inputs: "Maharashtra Water Resources Department (WRD) hydrographic surveys",
+        outputs: "Compound cross-section geometry and Manning flow parameters",
+        tech: "ASCII survey points, NumPy structured arrays",
+        status: "VERIFIED IN REPO"
+      },
+      N05: {
+        id: "N05",
+        title: "RTDAS Stage Scraper [TO CONFIRM]",
+        func: "Scrapes real-time river stage from Maharashtra WRD RTDAS portal. Labelled in UI (AccuracyPanel.tsx:917), but automated scraping script is uncommitted.",
+        src: "docs/OPEN_ITEMS.md:OI-002",
+        inputs: "Maharashtra WRD RTDAS public website",
+        outputs: "Live river level observations (unconfirmed pipeline)",
+        tech: "External scraper or manual entry (unverified)",
+        status: "TO CONFIRM"
+      },
+      N06: {
+        id: "N06",
+        title: "Pipeline Orchestrator",
+        func: "Synchronizes the full 12-step predictive simulation cycle from weather ingestion, DSS generation, HEC-HMS headless execution, stage conversion, DB write, alerts and WebSocket broadcast.",
+        src: "src/orchestrator.py:96-125",
+        inputs: "CLI arguments (--date, --hour) or cron scheduler triggers",
+        outputs: "Complete forecast run state and pipeline_step_log records",
+        tech: "Python 3.12, psycopg2, timed_step context managers",
+        status: "VERIFIED IN REPO"
+      },
+      N07: {
+        id: "N07",
+        title: "Station Selector Engine",
+        func: "Determines whether to assign primary or alternate raingauge station for each subbasin based on cumulative 90-hour rainfall volume (MAX_RAIN_VOLUME algorithm).",
+        src: "src/ecmwf/station_selector.py:20-80",
+        inputs: "ECMWF gridded dataset and gauge_stations registry",
+        outputs: "SubbasinRainfall objects mapped to subbasins S1–S9",
+        tech: "Python 3.12, NumPy, PostgreSQL spatial queries",
+        status: "VERIFIED IN REPO"
+      },
+      N08: {
+        id: "N08",
+        title: "Telemetry QC Validator",
+        func: "Executes quality control checks on incoming rainfall and sensor feeds: range checks (0–300 mm/hr), rate-of-change, and missing observation thresholds before model ingestion.",
+        src: "src/processing/validator.py:10-50",
+        inputs: "Raw hourly telemetry records",
+        outputs: "Validation QC report dictionary; critical failure trigger if error threshold exceeded",
+        tech: "Python 3.12, statistical QC rules",
+        status: "VERIFIED IN REPO"
+      },
+      N09: {
+        id: "N09",
+        title: "PostgreSQL 15/16 + PostGIS",
+        func: "Primary operational database storing subbasins, gauge network, simulation runs, hydrograph results, bridge forecasts, WRD rating curve benchmarks, and execution logs.",
+        src: "database/supabase_schema.sql:1-419",
+        inputs: "Pipeline orchestrator writes and telemetry validator writes",
+        outputs: "Relational tables and 3 operational analytical views (v_model_accuracy_summary, v_bridge_alert_summary, v_historical_runs_ledger)",
+        tech: "PostgreSQL 15/16, PostGIS 3.4, asyncpg, psycopg2",
+        status: "VERIFIED IN REPO"
+      },
+      N10: {
+        id: "N10",
+        title: "TimescaleDB Hypertables & Storage Engine",
+        func: "High-volume time-series storage with continuous aggregates and automatic 7-day chunk compression. Configured on dedicated 3512GB tablespace on E:\\.",
+        src: "windows/storage_setup.sql:1-75",
+        inputs: "ecmwf_forecast, subbasin_rainfall_ts, rainfall_data, hydrograph_results",
+        outputs: "Compressed storage chunks and materialized views (daily_subbasin_rainfall)",
+        tech: "TimescaleDB 2.15.3, pg_cron",
+        status: "VERIFIED IN REPO"
+      },
+      N11: {
+        id: "N11",
+        title: "HEC-DSS Time-Series File",
+        func: "Official USACE binary hydrology file (HMS_Automation_RJKT.dss) storing 1-hour incremental precipitation time-series for HEC-HMS simulation runs.",
+        src: "src/dss/writer.py:38-58",
+        inputs: "Subbasin hyetographs generated by station selector",
+        outputs: "Binary DSS records with pathname //GAGE/PRECIP-INC/<start>/1HOUR/GAGE/",
+        tech: "pydsstools, Java HecDss native library",
+        status: "VERIFIED IN REPO"
+      },
+      N12: {
+        id: "N12",
+        title: "HEC-HMS 4.13 Batch Engine",
+        func: "Executes headless batch hydrologic simulation using USACE HEC-HMS 4.13. Generates Jython script (compute.jy), computes SCS-CN loss and Muskingum routing cascade (R1–R5).",
+        src: "src/hms/runner.py:48-120",
+        inputs: "HMS_Automation_RJKT.hms, Control_1.control, HMS_Automation_RJKT.dss",
+        outputs: "Run_1.dss and Run_1.log with 90-hour discharge hydrograph at J_Outlet",
+        tech: "USACE HEC-HMS 4.13, Jython 2.7, OpenJDK 17",
+        status: "VERIFIED IN REPO"
+      },
+      N13: {
+        id: "N13",
+        title: "Calibrated Python Physical Emulator",
+        func: "Full mathematical emulator of the SCS-CN unit-hydrograph and Muskingum channel routing cascade. Guarantees 100% operational uptime if HEC-HMS binary is absent.",
+        src: "src/hms/runner.py:227-280",
+        inputs: "Subbasin hyetographs and immutable basin parameters from Basin_1.basin",
+        outputs: "Identical 90-hour outlet discharge hydrograph (peak Q and volume)",
+        tech: "Python 3.12, NumPy, SciPy",
+        status: "VERIFIED IN REPO"
+      },
+      N14: {
+        id: "N14",
+        title: "PCHIP Stage-Discharge Converter",
+        func: "Converts outlet discharge hydrograph (m³/s) to water surface elevations (m MSL) at Shivaji Bridge and Rajaram Weir using Piecewise Cubic Hermite Interpolating Polynomials.",
+        src: "src/hydrology/stage_converter.py:1-60",
+        inputs: "Discharge hydrograph (m³/s) and 19 official WRD empirical rating points",
+        outputs: "90-hour bridge stage forecast series in table `bridge_stage_forecast`",
+        tech: "SciPy PchipInterpolator, Manning compound hydraulics",
+        status: "VERIFIED IN REPO"
+      },
+      N15: {
+        id: "N15",
+        title: "FastAPI Backend Gateway",
+        func: "High-concurrency ASGI REST API serving hydrologic summaries, hyetographs, hydrographs, bridge alerts, validation metrics, and historical run ledgers.",
+        src: "src/api/main.py:59-107",
+        inputs: "HTTP GET/POST requests from dashboard or external consumers",
+        outputs: "JSON REST payloads with RFC 7807 error structures",
+        tech: "FastAPI 0.111, Uvicorn, asyncpg, slowapi rate limiting",
+        status: "VERIFIED IN REPO"
+      },
+      N16: {
+        id: "N16",
+        title: "Security & Authentication Engine",
+        func: "Enforces enterprise access control: HS256 JWT tokens for administrative routes (/api/v1/admin/*) and constant-time X-API-Key validation for external consumers.",
+        src: "src/api/security.py:20-45, 109-132",
+        inputs: "Authorization: Bearer <JWT> or X-API-Key headers",
+        outputs: "Validated user identity claims or HTTP 401 Unauthorized exceptions",
+        tech: "PyJWT, bcrypt, hmac.compare_digest",
+        status: "VERIFIED IN REPO"
+      },
+      N17: {
+        id: "N17",
+        title: "WebSocket Broadcast Engine",
+        func: "Maintains active WebSocket connections at `/ws/live` to immediately notify connected executive dashboards upon completion of every 6-hour forecast cycle.",
+        src: "src/api/notifier.py:10-40",
+        inputs: "Internal notification dispatch from step 12 of orchestrator",
+        outputs: "JSON message: {\"type\": \"CYCLE_COMPLETE\", \"cycle_id\": cycle_id}",
+        tech: "FastAPI WebSocket, asyncio",
+        status: "VERIFIED IN REPO"
+      },
+      N18: {
+        id: "N18",
+        title: "Telegram Alert Bot",
+        func: "Evaluates bridge stages against official warning datums (Alert 542.10m, Warning 542.70m, Danger 543.30m, HFL 545.33m). Automatically dispatches emergency alerts.",
+        src: "src/alerts/telegram_bot.py:15-60",
+        inputs: "Bridge stage forecast and alert threshold classifications",
+        outputs: "Telegram messages sent to designated district disaster group chats",
+        tech: "Python requests, Telegram Bot API",
+        status: "VERIFIED IN REPO"
+      },
+      N19: {
+        id: "N19",
+        title: "Next.js 14 Executive Portal",
+        func: "Government-record dashboard presenting real-time basin flood status, 90-hr forward forecast hydrographs, dynamic precipitation hyetographs, and active alert banners.",
+        src: "frontend/app/page.tsx:1-120",
+        inputs: "FastAPI REST endpoints and WebSocket stream",
+        outputs: "Interactive DOM rendering with Tailwind CSS, Lucide icons, Leaflet GIS",
+        tech: "Next.js 14 (App Router), React 18, TypeScript",
+        status: "VERIFIED IN REPO"
+      },
+      N20: {
+        id: "N20",
+        title: "2D Hydraulic Cross-Section Viewer",
+        func: "Renders interactive cross-section elevation geometry and simulated water surface level against bridge piers and flood plain thresholds.",
+        src: "frontend/components/CrossSectionViewer.tsx:1-80",
+        inputs: "Survey coordinate vertices and live forecasted water level",
+        outputs: "Interactive SVG cross-section profile with water level elevation readout",
+        tech: "React, SVG, HTML5 Canvas",
+        status: "VERIFIED IN REPO"
+      },
+      N21: {
+        id: "N21",
+        title: "Accuracy Matrix Panel",
+        func: "Displays statistical verification metrics for the active forecast cycle: Spearman rank correlation (rho), Nash-Sutcliffe efficiency (NSE), RMSE, and MAE.",
+        src: "frontend/components/AccuracyPanel.tsx:1-90",
+        inputs: "GET /api/v1/accuracy and v_model_accuracy_summary",
+        outputs: "Statistical skill metrics and performance grade badge (EXCELLENT)",
+        tech: "React, TypeScript, CSS",
+        status: "VERIFIED IN REPO"
+      },
+      N22: {
+        id: "N22",
+        title: "HydroSim Handoff [TO CONFIRM]",
+        func: "Downstream hydraulic modeling system consuming 90-hr forecast discharge hydrographs via API key. Mentioned in requirements but external to repo.",
+        src: "docs/OPEN_ITEMS.md:OI-001",
+        inputs: "GET /api/v1/runoff/hydrograph with X-API-Key",
+        outputs: "External hydraulic boundary conditions",
+        tech: "External client system (TO CONFIRM)",
+        status: "TO CONFIRM"
+      },
+      N23: {
+        id: "N23",
+        title: "HEC-RAS Inundation [TO CONFIRM]",
+        func: "Downstream 1D/2D unsteady flow modeling generating spatial inundation depths and velocity vectors across Kolhapur urban area.",
+        src: "docs/OPEN_ITEMS.md:OI-001",
+        inputs: "HydroSim upstream hydrograph and river geometry",
+        outputs: "Flood inundation depth maps and GIS hazard shapefiles",
+        tech: "USACE HEC-RAS 6.x (External system, TO CONFIRM)",
+        status: "TO CONFIRM"
+      }
+    };
+
+    function selectNode(id) {
+      document.querySelectorAll('.node-card').forEach(c => c.classList.remove('active'));
+      const card = document.getElementById(id);
+      if (card) card.classList.add('active');
+
+      const data = nodeData[id];
+      if (!data) return;
+
+      document.getElementById('insTitle').textContent = data.title;
+      document.getElementById('insId').textContent = "NODE IDENTIFIER: " + data.id;
+      document.getElementById('insFunc').textContent = data.func;
+      document.getElementById('insSrc').textContent = data.src;
+      document.getElementById('insInputs').textContent = data.inputs;
+      document.getElementById('insOutputs').textContent = data.outputs;
+      document.getElementById('insTech').textContent = data.tech;
+
+      const badge = document.getElementById('insStatus');
+      if (data.status === "TO CONFIRM") {
+        badge.innerHTML = '<span class="status-badge confirm">TO CONFIRM (EXTERNAL / UNCOMMITTED)</span>';
+      } else {
+        badge.innerHTML = '<span class="status-badge">VERIFIED IN REPOSITORY</span>';
+      }
+    }
+
+    function filterNodes(type) {
+      const cards = document.querySelectorAll('.node-card');
+      cards.forEach(card => {
+        if (type === 'all') {
+          card.style.display = 'block';
+        } else if (type === 'verified') {
+          card.style.display = card.classList.contains('to-confirm') ? 'none' : 'block';
+        } else if (type === 'confirm') {
+          card.style.display = card.classList.contains('to-confirm') ? 'block' : 'opacity: 0.35';
+        }
+      });
+    }
+
+    function resetSelection() {
+      document.querySelectorAll('.node-card').forEach(c => {
+        c.classList.remove('active');
+        c.style.display = 'block';
+      });
+      document.getElementById('insTitle').textContent = "System Node Inspector";
+      document.getElementById('insId').textContent = "Select any node to inspect repository verification";
+      document.getElementById('insFunc').textContent = "Select a component from the architecture layout on the left to view its verified parameters, code linkage, and operational scope.";
+      document.getElementById('insSrc').textContent = "—";
+      document.getElementById('insInputs').textContent = "—";
+      document.getElementById('insOutputs').textContent = "—";
+      document.getElementById('insTech').textContent = "—";
+      document.getElementById('insStatus').innerHTML = '<span class="status-badge">STANDBY</span>';
+    }
+
+    // Default selection
+    window.addEventListener('DOMContentLoaded', () => selectNode('N01'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "receipt_id": "RCP-07-HAND-20261021",
+  "diagram_file": "docs/diagrams/07-workflow-hydrosim-handoff.html",
+  "diagram_type": "workflow-handoff",
+  "title": "HydroCast HydroSim Hydraulic Handoff & Inundation Workflow",
+  "validation_timestamp": "2026-10-21T14:43:00Z",
+  "validation_standard": "Archify Strict Source Audit v2",
+  "in_repo_steps": 6,
+  "external_steps": 5,
+  "source_files_verified": [
+    "src/hms/runner.py:163-174",
+    "src/hydrology/stage_converter.py:24-60",
+    "data/wrd_cross_sections/shivaji_xsection_17_survey.txt",
+    "data/wrd_cross_sections/rajaram_xsection_29_survey.txt",
+    "src/hydrology/post_process.py:10-40",
+    "database/supabase_schema.sql:251-287",
+    "src/api/main.py:347-410",
+    "src/api/security.py:34-42, 124-126"
+  ],
+  "to_confirm_items": [
+    "docs/OPEN_ITEMS.md:OI-001 (HydroSim Ingestion Gateway, HEC-RAS 2D Unsteady Flow Simulation, Inundation Depth Mapping, Emergency Dispatch)"
+  ],
+  "status": "VALIDATED",
+  "trace_motion_enabled": true
+}

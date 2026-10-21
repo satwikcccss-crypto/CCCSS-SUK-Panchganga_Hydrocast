@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCast — API Authentication & Data Access Sequence</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #cbd5e1;
+      --border-dark: #64748b;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --navy: #1e3a8a;
+      --navy-light: #eff6ff;
+      --accent: #b91c1c;
+      --accent-light: #fef2f2;
+      --confirm-border: #d97706;
+      --confirm-bg: #fffbeb;
+      --font-serif: "Georgia", "Cambria", "Times New Roman", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 2px solid var(--navy);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header-title h1 {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+    }
+    .header-title p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .header-meta {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .header-meta strong {
+      color: var(--text);
+    }
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .diagram-viewport {
+      flex: 1;
+      overflow: auto;
+      padding: 24px;
+      background: #ffffff;
+      position: relative;
+    }
+    .controls-bar {
+      position: absolute;
+      top: 14px;
+      left: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+      background: #ffffff;
+      padding: 4px;
+      border: 1px solid var(--border);
+    }
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border: 1px solid var(--border-dark);
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .btn.active {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+    }
+    .btn:hover:not(.active) {
+      background: var(--navy-light);
+      color: var(--navy);
+    }
+    .side-panel {
+      width: 400px;
+      background: #ffffff;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .panel-header {
+      background: var(--navy);
+      color: #ffffff;
+      padding: 12px 16px;
+    }
+    .panel-header h2 {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .panel-header span {
+      font-size: 11px;
+      opacity: 0.85;
+      font-family: var(--font-mono);
+    }
+    .panel-content {
+      padding: 16px;
+      font-size: 12px;
+    }
+    .prop-group {
+      margin-bottom: 14px;
+    }
+    .prop-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .prop-value {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      border-radius: 2px;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .prop-value.code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--navy);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1px solid var(--navy);
+      color: var(--navy);
+      background: var(--navy-light);
+    }
+    .status-badge.confirm {
+      border-color: var(--confirm-border);
+      color: #b45309;
+      background: var(--confirm-bg);
+    }
+
+    /* SVG Sequence Diagram */
+    svg.seq-svg {
+      width: 1250px;
+      height: 980px;
+      background: #fafbfc;
+      border: 1px solid var(--border);
+    }
+    .actor-box rect {
+      fill: #ffffff;
+      stroke: var(--navy);
+      stroke-width: 1.5;
+      rx: 2;
+    }
+    .actor-box.confirm rect {
+      stroke: var(--confirm-border);
+      stroke-dasharray: 4, 3;
+      fill: var(--confirm-bg);
+    }
+    .actor-box text {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      fill: var(--navy);
+      text-anchor: middle;
+    }
+    .actor-box.confirm text {
+      fill: #b45309;
+    }
+    .lifeline {
+      stroke: #cbd5e1;
+      stroke-width: 1.5;
+      stroke-dasharray: 4, 4;
+    }
+    .msg-line {
+      stroke: var(--navy);
+      stroke-width: 1.5;
+      fill: none;
+      cursor: pointer;
+    }
+    .msg-line:hover {
+      stroke-width: 2.5;
+    }
+    .msg-line.reply {
+      stroke: #64748b;
+      stroke-dasharray: 4, 4;
+    }
+    .msg-line.confirm {
+      stroke: var(--confirm-border);
+    }
+    .msg-text {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      fill: #0f172a;
+      cursor: pointer;
+    }
+    .msg-text:hover {
+      fill: var(--navy);
+      font-weight: 700;
+    }
+    .sec-block {
+      fill: #f1f5f9;
+      stroke: #cbd5e1;
+      stroke-width: 1;
+    }
+    .sec-label {
+      font-family: var(--font-serif);
+      font-size: 11.5px;
+      font-weight: 700;
+      fill: var(--navy);
+    }
+
+    footer {
+      background: #f1f5f9;
+      border-top: 1px solid var(--border);
+      padding: 6px 20px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>HydroCast — API Authentication & Data Access Sequence</h1>
+      <p>Dual-Mode Security Model: Admin JWT Bearer Token vs External HydroSim Master X-API-Key</p>
+    </div>
+    <div class="header-meta">
+      <div>DIAGRAM: <strong>04-SEQUENCE-AUTH-API</strong></div>
+      <div>STANDARD: <strong>GOVERNMENT-RECORD / STATIC SEQUENCE</strong></div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div class="diagram-viewport">
+      <div class="controls-bar">
+        <button class="btn active" onclick="filterSeq('all')">Show Complete Sequence</button>
+        <button class="btn" onclick="filterSeq('jwt')">Path A: Admin JWT</button>
+        <button class="btn" onclick="filterSeq('apikey')">Path B: HydroSim API-Key</button>
+        <button class="btn" onclick="resetSeqInspector()">Reset Inspector</button>
+      </div>
+
+      <svg class="seq-svg" viewBox="0 0 1250 980" id="seqSvg">
+        <defs>
+          <marker id="seq-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e3a8a" />
+          </marker>
+          <marker id="seq-arrow-reply" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
+          </marker>
+          <marker id="seq-arrow-confirm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706" />
+          </marker>
+        </defs>
+
+        <!-- Actors & Headers -->
+        <!-- Actor 1: Client Admin -->
+        <g class="actor-box">
+          <rect x="50" y="30" width="160" height="40" />
+          <text x="130" y="55">Admin / Dashboard UI</text>
+        </g>
+        <line x1="130" y1="70" x2="130" y2="920" class="lifeline" />
+
+        <!-- Actor 2: HydroSim System [TO CONFIRM] -->
+        <g class="actor-box confirm">
+          <rect x="250" y="30" width="180" height="40" />
+          <text x="340" y="55">HydroSim (External) [CONFIRM]</text>
+        </g>
+        <line x1="340" y1="70" x2="340" y2="920" class="lifeline" />
+
+        <!-- Actor 3: FastAPI Gateway -->
+        <g class="actor-box">
+          <rect x="480" y="30" width="160" height="40" />
+          <text x="560" y="55">FastAPI Gateway</text>
+        </g>
+        <line x1="560" y1="70" x2="560" y2="920" class="lifeline" />
+
+        <!-- Actor 4: Security & Limiter -->
+        <g class="actor-box">
+          <rect x="690" y="30" width="180" height="40" />
+          <text x="780" y="55">Security & Slowapi Limiter</text>
+        </g>
+        <line x1="780" y1="70" x2="780" y2="920" class="lifeline" />
+
+        <!-- Actor 5: Admin Router & Runner -->
+        <g class="actor-box">
+          <rect x="910" y="30" width="160" height="40" />
+          <text x="990" y="55">Admin Router / Runner</text>
+        </g>
+        <line x1="990" y1="70" x2="990" y2="920" class="lifeline" />
+
+        <!-- Actor 6: PostgreSQL Database -->
+        <g class="actor-box">
+          <rect x="1100" y="30" width="130" height="40" />
+          <text x="1165" y="55">PostgreSQL DB</text>
+        </g>
+        <line x1="1165" y1="70" x2="1165" y2="920" class="lifeline" />
+
+        <!-- SECTION 1: ADMIN JWT AUTHENTICATION -->
+        <rect x="40" y="90" width="1180" height="290" class="sec-block" />
+        <text x="55" y="112" class="sec-label">PATH A: DISASTER MANAGEMENT AUTHORITY ADMIN (JWT AUTHENTICATION)</text>
+
+        <!-- Msg 1 -->
+        <path d="M 130 140 L 560 140" class="msg-line" id="SQ01" onclick="selectSeq('SQ01')" marker-end="url(#seq-arrow)" />
+        <text x="145" y="132" class="msg-text" onclick="selectSeq('SQ01')">1. POST /api/v1/admin/auth/token {username, password}</text>
+
+        <!-- Msg 2 -->
+        <path d="M 560 165 L 780 165" class="msg-line" id="SQ02" onclick="selectSeq('SQ02')" marker-end="url(#seq-arrow)" />
+        <text x="575" y="157" class="msg-text" onclick="selectSeq('SQ02')">2. verify_admin_credentials(hmac.compare_digest)</text>
+
+        <!-- Msg 3 -->
+        <path d="M 780 190 L 560 190" class="msg-line reply" id="SQ03" onclick="selectSeq('SQ03')" marker-end="url(#seq-arrow-reply)" />
+        <text x="585" y="182" class="msg-text" onclick="selectSeq('SQ03')">3. create_access_token() -> HS256 JWT Token</text>
+
+        <!-- Msg 4 -->
+        <path d="M 560 215 L 130 215" class="msg-line reply" id="SQ04" onclick="selectSeq('SQ04')" marker-end="url(#seq-arrow-reply)" />
+        <text x="145" y="207" class="msg-text" onclick="selectSeq('SQ04')">4. 200 OK {access_token, token_type: "bearer", expires_in: 86400}</text>
+
+        <!-- Msg 5 -->
+        <path d="M 130 260 L 560 260" class="msg-line" id="SQ05" onclick="selectSeq('SQ05')" marker-end="url(#seq-arrow)" />
+        <text x="145" y="252" class="msg-text" onclick="selectSeq('SQ05')">5. POST /api/v1/admin/trigger-run (Header: Authorization: Bearer &lt;token&gt;)</text>
+
+        <!-- Msg 6 -->
+        <path d="M 560 285 L 780 285" class="msg-line" id="SQ06" onclick="selectSeq('SQ06')" marker-end="url(#seq-arrow)" />
+        <text x="575" y="277" class="msg-text" onclick="selectSeq('SQ06')">6. verify_admin_auth() -> decode_access_token(JWT_SECRET)</text>
+
+        <!-- Msg 7 -->
+        <path d="M 780 310 L 990 310" class="msg-line" id="SQ07" onclick="selectSeq('SQ07')" marker-end="url(#seq-arrow)" />
+        <text x="795" y="302" class="msg-text" onclick="selectSeq('SQ07')">7. BackgroundTasks: launch run_pipeline(date, hour)</text>
+
+        <!-- Msg 8 -->
+        <path d="M 560 350 L 130 350" class="msg-line reply" id="SQ08" onclick="selectSeq('SQ08')" marker-end="url(#seq-arrow-reply)" />
+        <text x="145" y="342" class="msg-text" onclick="selectSeq('SQ08')">8. 202 Accepted {status: "queued", cycle_id: "CYC_..."}</text>
+
+        <!-- SECTION 2: HYDROSIN API KEY PATH -->
+        <rect x="40" y="410" width="1180" height="340" class="sec-block" />
+        <text x="55" y="432" class="sec-label">PATH B: HYDROSIN DOWNSTREAM SYSTEM (MASTER X-API-KEY PATH)</text>
+
+        <!-- Msg 9 -->
+        <path d="M 340 460 L 560 460" class="msg-line confirm" id="SQ09" onclick="selectSeq('SQ09')" marker-end="url(#seq-arrow-confirm)" />
+        <text x="355" y="452" class="msg-text" onclick="selectSeq('SQ09')">9. GET /api/v1/runoff/hydrograph (Header: X-API-Key: &lt;API_KEY&gt;)</text>
+
+        <!-- Msg 10 -->
+        <path d="M 560 485 L 780 485" class="msg-line" id="SQ10" onclick="selectSeq('SQ10')" marker-end="url(#seq-arrow)" />
+        <text x="575" y="477" class="msg-text" onclick="selectSeq('SQ10')">10. limiter: evaluate remote IP (quota: 100/min)</text>
+
+        <!-- Msg 11 -->
+        <path d="M 560 515 L 780 515" class="msg-line" id="SQ11" onclick="selectSeq('SQ11')" marker-end="url(#seq-arrow)" />
+        <text x="575" y="507" class="msg-text" onclick="selectSeq('SQ11')">11. verify_public_or_key(): compare_digest(x_api_key, API_KEY)</text>
+
+        <!-- Msg 12 -->
+        <path d="M 560 550 L 1165 550" class="msg-line" id="SQ12" onclick="selectSeq('SQ12')" marker-end="url(#seq-arrow)" />
+        <text x="575" y="542" class="msg-text" onclick="selectSeq('SQ12')">12. SQL: SELECT * FROM hydrograph_results WHERE run_id = latest_cycle</text>
+
+        <!-- Msg 13 -->
+        <path d="M 1165 580 L 560 580" class="msg-line reply" id="SQ13" onclick="selectSeq('SQ13')" marker-end="url(#seq-arrow-reply)" />
+        <text x="585" y="572" class="msg-text" onclick="selectSeq('SQ13')">13. Recordset: 90 hourly records (timestamp, lead_hours, discharge_m3s)</text>
+
+        <!-- Msg 14 -->
+        <path d="M 560 610 L 340 610" class="msg-line reply confirm" id="SQ14" onclick="selectSeq('SQ14')" marker-end="url(#seq-arrow-confirm)" />
+        <text x="355" y="602" class="msg-text" onclick="selectSeq('SQ14')">14. 200 OK JSON {run_id, outlet_node: "J_Outlet", series: [...]}</text>
+
+        <!-- Msg 15 -->
+        <path d="M 340 655 L 560 655" class="msg-line confirm" id="SQ15" onclick="selectSeq('SQ15')" marker-end="url(#seq-arrow-confirm)" />
+        <text x="355" y="647" class="msg-text" onclick="selectSeq('SQ15')">15. GET /api/v1/runoff/stage/SHIVAJI_BRIDGE (X-API-Key: &lt;API_KEY&gt;)</text>
+
+        <!-- Msg 16 -->
+        <path d="M 560 685 L 1165 685" class="msg-line" id="SQ16" onclick="selectSeq('SQ16')" marker-end="url(#seq-arrow)" />
+        <text x="575" y="677" class="msg-text" onclick="selectSeq('SQ16')">16. SQL: SELECT * FROM bridge_stage_forecast WHERE site_id='SHIVAJI_BRIDGE'</text>
+
+        <!-- Msg 17 -->
+        <path d="M 560 720 L 340 720" class="msg-line reply confirm" id="SQ17" onclick="selectSeq('SQ17')" marker-end="url(#seq-arrow-confirm)" />
+        <text x="355" y="712" class="msg-text" onclick="selectSeq('SQ17')">17. 200 OK JSON {site_id, alert_level, water_stage_m, danger_stage: 543.30}</text>
+
+        <!-- SECTION 3: PUBLIC HEALTH CHECK -->
+        <rect x="40" y="775" width="1180" height="150" class="sec-block" />
+        <text x="55" y="797" class="sec-label">PATH C: PUBLIC / UNCREDENTIALLED HEALTH PROBE</text>
+
+        <!-- Msg 18 -->
+        <path d="M 130 835 L 560 835" class="msg-line" id="SQ18" onclick="selectSeq('SQ18')" marker-end="url(#seq-arrow)" />
+        <text x="145" y="827" class="msg-text" onclick="selectSeq('SQ18')">18. GET /api/v1/health (No credentials required)</text>
+
+        <!-- Msg 19 -->
+        <path d="M 560 865 L 1165 865" class="msg-line" id="SQ19" onclick="selectSeq('SQ19')" marker-end="url(#seq-arrow)" />
+        <text x="575" y="857" class="msg-text" onclick="selectSeq('SQ19')">19. SELECT 1 (Database Ping)</text>
+
+        <!-- Msg 20 -->
+        <path d="M 560 900 L 130 900" class="msg-line reply" id="SQ20" onclick="selectSeq('SQ20')" marker-end="url(#seq-arrow-reply)" />
+        <text x="145" y="892" class="msg-text" onclick="selectSeq('SQ20')">20. 200 OK {"status": "ok", "version": "2.0.0"}</text>
+
+      </svg>
+    </div>
+
+    <!-- Sequence Inspector Panel -->
+    <div class="side-panel">
+      <div class="panel-header">
+        <h2 id="sqTitle">Sequence Step Inspector</h2>
+        <span id="sqId">Click on any request or reply message</span>
+      </div>
+      <div class="panel-content">
+        <div class="prop-group">
+          <div class="prop-label">Interaction Summary</div>
+          <div class="prop-value" id="sqDesc">Click any numbered message arrow in the sequence diagram to view the exact endpoint, authentication mechanism, payload schema, and repository source.</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Source Implementation File</div>
+          <div class="prop-value code" id="sqSrc">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Authentication & Headers</div>
+          <div class="prop-value" id="sqAuth">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Request / Response Schema</div>
+          <div class="prop-value code" id="sqSchema">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Audit Verification</div>
+          <div id="sqStatus"><span class="status-badge">STANDBY</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>CCCSS Shivaji University Kolhapur · Enterprise API Security Architecture</div>
+    <div>Receipts: docs/receipts/04-sequence-auth-api.receipt.json · Plain Light Standard</div>
+  </footer>
+
+  <script>
+    const seqData = {
+      SQ01: {
+        title: "Admin Login Request",
+        desc: "Administrator posts credentials (username, password) to obtain a signed JSON Web Token.",
+        src: "src/api/admin.py:52-65",
+        auth: "None (Public endpoint for credential exchange)",
+        schema: "POST /api/v1/admin/auth/token -> Body: {username: str, password: str}",
+        status: "VERIFIED IN REPO"
+      },
+      SQ02: {
+        title: "Credential Verification",
+        desc: "Validates incoming username and password against ADMIN_USERNAME and ADMIN_PASSWORD environment variables using constant-time comparison.",
+        src: "src/api/security.py:59-63",
+        auth: "Internal function verify_admin_credentials() using hmac.compare_digest()",
+        schema: "bool = compare_digest(u, ADMIN_USER) and compare_digest(p, ADMIN_PASS)",
+        status: "VERIFIED IN REPO"
+      },
+      SQ03: {
+        title: "HS256 Token Generation",
+        desc: "Generates signed HMAC-SHA256 JWT access token with 24-hour expiration delta (JWT_EXPIRATION_MINUTES=1440).",
+        src: "src/api/security.py:66-83",
+        auth: "Signed with JWT_SECRET using HS256 algorithm",
+        schema: "Payload: {sub: username, role: 'admin', iss: 'hydrocast-api', exp: timestamp}",
+        status: "VERIFIED IN REPO"
+      },
+      SQ04: {
+        title: "Token Response Dispatch",
+        desc: "Returns bearer token payload to client with expiration lifetime in seconds.",
+        src: "src/api/admin.py:67-80",
+        auth: "Bearer Token delivered over HTTPS",
+        schema: "HTTP 200: {access_token: str, token_type: 'bearer', expires_in_seconds: 86400}",
+        status: "VERIFIED IN REPO"
+      },
+      SQ05: {
+        title: "Admin Run Trigger Invocation",
+        desc: "Client invokes manual computation run. Attaches JWT token in Authorization header.",
+        src: "src/api/admin.py:82-130",
+        auth: "Authorization: Bearer <access_token>",
+        schema: "POST /api/v1/admin/trigger-run -> Body: {date: 'YYYYMMDD', hour: 6}",
+        status: "VERIFIED IN REPO"
+      },
+      SQ06: {
+        title: "Security Dependency Verification",
+        desc: "Dependency verify_admin_auth validates the Bearer token, checks signature, issuer, and expiration.",
+        src: "src/api/security.py:85-132",
+        auth: "FastAPI Depends(verify_admin_auth)",
+        schema: "PyJWT decode; raises HTTP 401 if expired or invalid signature",
+        status: "VERIFIED IN REPO"
+      },
+      SQ07: {
+        title: "Background Pipeline Dispatch",
+        desc: "Spawns asynchronous background thread to execute 12-step forecast cycle without blocking HTTP response.",
+        src: "src/api/admin.py:120-128",
+        auth: "Server-side background task execution",
+        schema: "background_tasks.add_task(run_pipeline, run_dt, cycle_id)",
+        status: "VERIFIED IN REPO"
+      },
+      SQ08: {
+        title: "Trigger Accepted Response",
+        desc: "Immediate HTTP 202 Accepted response returning assigned cycle identifier.",
+        src: "src/api/admin.py:126-130",
+        auth: "Authenticated Admin session",
+        schema: "HTTP 202: {status: 'queued', cycle_id: 'CYC_20261021_06z', queued_at: ISO}",
+        status: "VERIFIED IN REPO"
+      },
+      SQ09: {
+        title: "HydroSim Forecast Hydrograph Query",
+        desc: "External HydroSim system requests 90-hour forecast discharge hydrograph at river outlet using Master API Key.",
+        src: "src/api/main.py:347-380 · docs/OPEN_ITEMS.md:OI-001",
+        auth: "Header: X-API-Key: <API_KEY>",
+        schema: "GET /api/v1/runoff/hydrograph?cycle_id=latest",
+        status: "TO CONFIRM (EXTERNAL CONSUMER)"
+      },
+      SQ10: {
+        title: "Slowapi Rate Limiter Check",
+        desc: "Checks remote client IP address against RATE_LIMIT_PUBLIC default quota (100 requests per minute).",
+        src: "src/api/main.py:56-58, 113-125",
+        auth: "Rate limit evaluation by remote IP",
+        schema: "Raises HTTP 429 Too Many Requests if rate exceeded with Retry-After header",
+        status: "VERIFIED IN REPO"
+      },
+      SQ11: {
+        title: "Master API-Key Verification",
+        desc: "Dependency verify_public_or_key compares X-API-Key against configured API_KEY using constant-time compare.",
+        src: "src/api/main.py:202-212",
+        auth: "hmac.compare_digest(x_api_key, API_KEY)",
+        schema: "Raises HTTP 401 Unauthorized if key is invalid",
+        status: "VERIFIED IN REPO"
+      },
+      SQ12: {
+        title: "Database Hydrograph Query",
+        desc: "Queries hydrograph_results table for all 90 lead hours of active computation run.",
+        src: "src/api/main.py:360-375 · database/supabase_schema.sql:251-267",
+        auth: "Database connection pool via asyncpg / psycopg2",
+        schema: "SELECT timestamp, lead_hours, discharge_m3s FROM hydrograph_results",
+        status: "VERIFIED IN REPO"
+      },
+      SQ13: {
+        title: "Hydrograph Recordset Return",
+        desc: "Database returns 90 hourly timestep records of modeled discharge.",
+        src: "database/supabase_schema.sql:251-267",
+        auth: "Internal database query",
+        schema: "List of tuples: [(ts, lead_h, q_m3s), ...]",
+        status: "VERIFIED IN REPO"
+      },
+      SQ14: {
+        title: "Hydrograph Payload to HydroSim",
+        desc: "Delivers 90-hour discharge hydrograph for downstream HEC-RAS unsteady flow simulation.",
+        src: "src/api/main.py:375-385",
+        auth: "Validated X-API-Key session",
+        schema: "HTTP 200: {run_id: str, outlet: 'J_Outlet', peak_q: float, hydrograph: [...]}",
+        status: "TO CONFIRM (EXTERNAL CONSUMER)"
+      },
+      SQ15: {
+        title: "HydroSim Bridge Stage Query",
+        desc: "HydroSim requests 90-hour water surface elevations at Shivaji Bridge gauge site.",
+        src: "src/api/main.py:387-410",
+        auth: "Header: X-API-Key: <API_KEY>",
+        schema: "GET /api/v1/runoff/stage/SHIVAJI_BRIDGE",
+        status: "TO CONFIRM (EXTERNAL CONSUMER)"
+      },
+      SQ16: {
+        title: "Database Bridge Forecast Query",
+        desc: "Queries bridge_stage_forecast table and joins with bridge_sites alert thresholds.",
+        src: "src/api/main.py:395-405 · database/supabase_schema.sql:271-287",
+        auth: "Database connection pool",
+        schema: "SELECT forecast_time, stage_m, alert_level FROM bridge_stage_forecast",
+        status: "VERIFIED IN REPO"
+      },
+      SQ17: {
+        title: "Bridge Stage Delivery to HydroSim",
+        desc: "Returns 90-hour water level time-series along with Warning (542.70m) and Danger (543.30m) thresholds.",
+        src: "src/api/main.py:405-410",
+        auth: "Validated X-API-Key session",
+        schema: "HTTP 200: {site_id: 'SHIVAJI_BRIDGE', stages: [...], alert_status: str}",
+        status: "TO CONFIRM (EXTERNAL CONSUMER)"
+      },
+      SQ18: {
+        title: "Container Liveness Health Probe",
+        desc: "Docker, Kubernetes, or load balancer polls health endpoint to verify backend responsiveness.",
+        src: "src/api/main.py:228-230 · Dockerfile:129-130",
+        auth: "None (Exempt from authentication)",
+        schema: "GET /api/v1/health",
+        status: "VERIFIED IN REPO"
+      },
+      SQ19: {
+        title: "Database Liveness Check",
+        desc: "Executes lightweight query to verify active PostgreSQL pool health.",
+        src: "src/api/main.py:228-230",
+        auth: "Internal pool query",
+        schema: "SELECT 1",
+        status: "VERIFIED IN REPO"
+      },
+      SQ20: {
+        title: "Health Probe 200 OK",
+        desc: "Returns operational health confirmation.",
+        src: "src/api/main.py:228-230",
+        auth: "Unauthenticated public probe",
+        schema: "HTTP 200: {status: 'ok', version: '2.0.0'}",
+        status: "VERIFIED IN REPO"
+      }
+    };
+
+    function selectSeq(id) {
+      document.querySelectorAll('.msg-line').forEach(l => l.style.strokeWidth = '');
+      const line = document.getElementById(id);
+      if (line) line.style.strokeWidth = '3px';
+
+      const data = seqData[id];
+      if (!data) return;
+
+      document.getElementById('sqTitle').textContent = data.title;
+      document.getElementById('sqId').textContent = "SEQUENCE INTERACTION ID: " + id;
+      document.getElementById('sqDesc').textContent = data.desc;
+      document.getElementById('sqSrc').textContent = data.src;
+      document.getElementById('sqAuth').textContent = data.auth;
+      document.getElementById('sqSchema').textContent = data.schema;
+
+      const badge = document.getElementById('sqStatus');
+      if (data.status.includes("TO CONFIRM")) {
+        badge.innerHTML = '<span class="status-badge confirm">TO CONFIRM (EXTERNAL CLIENT)</span>';
+      } else {
+        badge.innerHTML = '<span class="status-badge">VERIFIED IN REPOSITORY</span>';
+      }
+    }
+
+    function filterSeq(path) {
+      const blocks = document.querySelectorAll('.sec-block');
+      if (path === 'jwt') {
+        selectSeq('SQ01');
+      } else if (path === 'apikey') {
+        selectSeq('SQ09');
+      } else {
+        resetSeqInspector();
+      }
+    }
+
+    function resetSeqInspector() {
+      document.querySelectorAll('.msg-line').forEach(l => l.style.strokeWidth = '');
+      document.getElementById('sqTitle').textContent = "Sequence Step Inspector";
+      document.getElementById('sqId').textContent = "Click on any request or reply message";
+      document.getElementById('sqDesc').textContent = "Click any numbered message arrow in the sequence diagram to view the exact endpoint, authentication mechanism, payload schema, and repository source.";
+      document.getElementById('sqSrc').textContent = "—";
+      document.getElementById('sqAuth').textContent = "—";
+      document.getElementById('sqSchema').textContent = "—";
+      document.getElementById('sqStatus').innerHTML = '<span class="status-badge">STANDBY</span>';
+    }
+
+    // Default selection
+    window.addEventListener('DOMContentLoaded', () => selectSeq('SQ01'));
+  </script>
+</body>
+</html>

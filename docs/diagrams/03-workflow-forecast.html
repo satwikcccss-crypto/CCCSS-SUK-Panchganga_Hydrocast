@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCast — Operational Forecast Execution Workflow</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #cbd5e1;
+      --border-dark: #64748b;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --navy: #1e3a8a;
+      --navy-light: #eff6ff;
+      --accent: #b91c1c;
+      --accent-light: #fef2f2;
+      --fail-border: #b91c1c;
+      --fail-bg: #fff5f5;
+      --font-serif: "Georgia", "Cambria", "Times New Roman", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 2px solid var(--navy);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header-title h1 {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+    }
+    .header-title p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .header-meta {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .header-meta strong {
+      color: var(--text);
+    }
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .diagram-viewport {
+      flex: 1;
+      overflow: auto;
+      padding: 24px;
+      background: #ffffff;
+      position: relative;
+    }
+    .controls-bar {
+      position: absolute;
+      top: 14px;
+      left: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+      background: #ffffff;
+      padding: 4px;
+      border: 1px solid var(--border);
+    }
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border: 1px solid var(--border-dark);
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .btn.active {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+    }
+    .btn:hover:not(.active) {
+      background: var(--navy-light);
+      color: var(--navy);
+    }
+    .side-panel {
+      width: 400px;
+      background: #ffffff;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .panel-header {
+      background: var(--navy);
+      color: #ffffff;
+      padding: 12px 16px;
+    }
+    .panel-header h2 {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .panel-header span {
+      font-size: 11px;
+      opacity: 0.85;
+      font-family: var(--font-mono);
+    }
+    .panel-content {
+      padding: 16px;
+      font-size: 12px;
+    }
+    .prop-group {
+      margin-bottom: 14px;
+    }
+    .prop-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .prop-value {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      border-radius: 2px;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .prop-value.code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--navy);
+    }
+    .prop-value.fail {
+      background: var(--fail-bg);
+      border-color: var(--fail-border);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1px solid var(--navy);
+      color: var(--navy);
+      background: var(--navy-light);
+    }
+    .status-badge.fail {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    /* SVG Canvas Styles */
+    svg.workflow-svg {
+      width: 1350px;
+      height: 1100px;
+      background: #fafbfc;
+      border: 1px solid var(--border);
+    }
+    .step-box {
+      cursor: pointer;
+    }
+    .step-box rect {
+      fill: #ffffff;
+      stroke: var(--border-dark);
+      stroke-width: 1.5;
+      rx: 2;
+    }
+    .step-box.active rect {
+      fill: var(--navy-light);
+      stroke: var(--navy);
+      stroke-width: 2.5;
+    }
+    .step-box.fail-box rect {
+      fill: var(--fail-bg);
+      stroke: var(--fail-border);
+      stroke-width: 1.5;
+      stroke-dasharray: 4, 3;
+    }
+    .step-box.fail-box.active rect {
+      stroke-width: 2.5;
+    }
+    .step-box text.num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      fill: var(--navy);
+    }
+    .step-box.fail-box text.num {
+      fill: var(--accent);
+    }
+    .step-box text.name {
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 700;
+      fill: var(--text);
+    }
+    .step-box text.module {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      fill: var(--text-muted);
+    }
+    .flow-edge {
+      stroke: #64748b;
+      stroke-width: 1.5;
+      fill: none;
+    }
+    .flow-edge.trace-active {
+      stroke: var(--navy);
+      stroke-width: 2;
+      stroke-dasharray: 6, 6;
+      animation: traceDash 1.2s linear infinite;
+    }
+    .fail-edge {
+      stroke: var(--accent);
+      stroke-width: 1.5;
+      stroke-dasharray: 3, 3;
+      fill: none;
+    }
+    .fail-edge.trace-active {
+      animation: traceDash 1.2s linear infinite;
+    }
+    @keyframes traceDash {
+      from { stroke-dashoffset: 24; }
+      to { stroke-dashoffset: 0; }
+    }
+    .edge-text {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      fill: #475569;
+    }
+    .edge-text.fail {
+      fill: var(--accent);
+      font-weight: 700;
+    }
+    footer {
+      background: #f1f5f9;
+      border-top: 1px solid var(--border);
+      padding: 6px 20px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>HydroCast — Operational Forecast Execution Workflow</h1>
+      <p>12-Step Synchronized Forecast Cycle · Exception Handling & Failure Branches · HEC-HMS 4.13</p>
+    </div>
+    <div class="header-meta">
+      <div>DIAGRAM: <strong>03-WORKFLOW-FORECAST</strong></div>
+      <div>TRACE MOTION: <strong id="traceState">ENABLED</strong></div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div class="diagram-viewport">
+      <div class="controls-bar">
+        <button class="btn active" id="btnToggleMotion" onclick="toggleTraceMotion()">Pause Trace Motion</button>
+        <button class="btn" onclick="filterSteps('all')">Show Complete Path</button>
+        <button class="btn" onclick="filterSteps('failures')">Highlight Failure Branches</button>
+        <button class="btn" onclick="resetWorkflowInspector()">Reset Inspector</button>
+      </div>
+
+      <svg class="workflow-svg" viewBox="0 0 1350 1100" id="wfSvg">
+        <defs>
+          <marker id="wf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
+          </marker>
+          <marker id="wf-arrow-navy" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e3a8a" />
+          </marker>
+          <marker id="wf-arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#b91c1c" />
+          </marker>
+        </defs>
+
+        <!-- Triggers Box -->
+        <g class="step-box" id="WF00" onclick="selectStep('WF00')">
+          <rect x="50" y="40" width="360" height="70" />
+          <text x="65" y="65" class="num">CYCLE TRIGGERS</text>
+          <text x="65" y="83" class="name">Automated Cron (30 2,8,14,20 * * *) / Admin API</text>
+          <text x="65" y="99" class="module">.github/workflows/pipeline.yml:7-12 · src/api/admin.py:82</text>
+        </g>
+
+        <!-- Edge 0 -> 1 -->
+        <path d="M 230 110 L 230 150" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="240" y="135" class="edge-text">create_cycle() [status='running']</text>
+
+        <!-- Step 1: Open-Meteo / ECMWF Download -->
+        <g class="step-box" id="WF01" onclick="selectStep('WF01')">
+          <rect x="50" y="150" width="360" height="60" />
+          <text x="65" y="172" class="num">STEP 01</text>
+          <text x="135" y="172" class="name">Open-Meteo / ECMWF Download</text>
+          <text x="65" y="192" class="module">src.ecmwf.downloader.run() [90 lead hours]</text>
+        </g>
+        <!-- Failure branch Step 1 -->
+        <path d="M 410 180 L 520 180" class="fail-edge trace-active" marker-end="url(#wf-arrow-red)" />
+        <text x="420" y="173" class="edge-text fail">4x Retry Fail</text>
+        <g class="step-box fail-box" id="ERR01" onclick="selectStep('ERR01')">
+          <rect x="520" y="155" width="280" height="50" />
+          <text x="535" y="175" class="num">ABORT: DOWNLOAD TIMEOUT</text>
+          <text x="535" y="193" class="module">step_fail() -> sys.exit(1)</text>
+        </g>
+
+        <!-- Edge 1 -> 2 -->
+        <path d="M 230 210 L 230 240" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="240" y="230" class="edge-text">OK (Grid tp_mm_hr)</text>
+
+        <!-- Step 2: Gauge Station Fetch -->
+        <g class="step-box" id="WF02" onclick="selectStep('WF02')">
+          <rect x="50" y="240" width="360" height="60" />
+          <text x="65" y="262" class="num">STEP 02</text>
+          <text x="135" y="262" class="name">Gauge Station Fetch</text>
+          <text x="65" y="282" class="module">src.processing.gauge_fetcher.fetch_all_gauges()</text>
+        </g>
+        <!-- Graceful skip branch Step 2 -->
+        <path d="M 410 270 L 520 270" class="fail-edge" marker-end="url(#wf-arrow-red)" />
+        <text x="420" y="263" class="edge-text fail">IoT Offline</text>
+        <g class="step-box fail-box" id="ERR02" onclick="selectStep('ERR02')">
+          <rect x="520" y="245" width="280" height="50" />
+          <text x="535" y="265" class="num">GRACEFUL SKIP STATION</text>
+          <text x="535" y="283" class="module">log.error() -> continue (no abort)</text>
+        </g>
+
+        <!-- Edge 2 -> 3 -->
+        <path d="M 230 300 L 230 330" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="240" y="320" class="edge-text">OK (rainfall_data inserted)</text>
+
+        <!-- Step 3: Data Validation -->
+        <g class="step-box" id="WF03" onclick="selectStep('WF03')">
+          <rect x="50" y="330" width="360" height="60" />
+          <text x="65" y="352" class="num">STEP 03</text>
+          <text x="135" y="352" class="name">Data Validation & QC</text>
+          <text x="65" y="372" class="module">src.processing.validator.validate_cycle()</text>
+        </g>
+        <!-- Failure branch Step 3 -->
+        <path d="M 410 360 L 520 360" class="fail-edge trace-active" marker-end="url(#wf-arrow-red)" />
+        <text x="415" y="353" class="edge-text fail">critical_failures > 0</text>
+        <g class="step-box fail-box" id="ERR03" onclick="selectStep('ERR03')">
+          <rect x="520" y="335" width="280" height="50" />
+          <text x="535" y="355" class="num">ABORT: CRITICAL QC ERROR</text>
+          <text x="535" y="373" class="module">raise ValueError() -> step_fail()</text>
+        </g>
+
+        <!-- Edge 3 -> 4 -->
+        <path d="M 230 390 L 230 420" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="240" y="410" class="edge-text">QC Pass (failures == 0)</text>
+
+        <!-- Step 4: Station Selection -->
+        <g class="step-box" id="WF04" onclick="selectStep('WF04')">
+          <rect x="50" y="420" width="360" height="60" />
+          <text x="65" y="442" class="num">STEP 04</text>
+          <text x="135" y="442" class="name">Station Selection</text>
+          <text x="65" y="462" class="module">src.ecmwf.station_selector.select_stations()</text>
+        </g>
+
+        <!-- Edge 4 -> 5 -->
+        <path d="M 230 480 L 230 510" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="240" y="500" class="edge-text">SubbasinRainfall {S1..S9}</text>
+
+        <!-- Step 5: DSS Write -->
+        <g class="step-box" id="WF05" onclick="selectStep('WF05')">
+          <rect x="50" y="510" width="360" height="60" />
+          <text x="65" y="532" class="num">STEP 05</text>
+          <text x="135" y="532" class="name">DSS Binary Hyetograph Write</text>
+          <text x="65" y="552" class="module">src.dss.writer.write_all_subbasins()</text>
+        </g>
+        <!-- Failure branch Step 5 -->
+        <path d="M 410 540 L 520 540" class="fail-edge trace-active" marker-end="url(#wf-arrow-red)" />
+        <text x="420" y="533" class="edge-text fail">verify_dss == False</text>
+        <g class="step-box fail-box" id="ERR05" onclick="selectStep('ERR05')">
+          <rect x="520" y="515" width="280" height="50" />
+          <text x="535" y="535" class="num">ABORT: DSS VERIFY FAIL</text>
+          <text x="535" y="553" class="module">raise RuntimeError("DSS failed")</text>
+        </g>
+
+        <!-- Edge 5 -> 6 -->
+        <path d="M 230 570 L 230 600" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="240" y="590" class="edge-text">DSS Verified (ok=True)</text>
+
+        <!-- Step 6: HMS Parameter Check -->
+        <g class="step-box" id="WF06" onclick="selectStep('WF06')">
+          <rect x="50" y="600" width="360" height="60" />
+          <text x="65" y="622" class="num">STEP 06</text>
+          <text x="135" y="622" class="name">HMS Parameter Check</text>
+          <text x="65" y="642" class="module">src.hms.runner.check_basin_parameters()</text>
+        </g>
+
+        <!-- Edge 6 -> 7 -->
+        <path d="M 230 660 L 230 690" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="240" y="680" class="edge-text">Parameters Validated</text>
+
+        <!-- Step 7: HEC-HMS Execution -->
+        <g class="step-box" id="WF07" onclick="selectStep('WF07')">
+          <rect x="50" y="690" width="360" height="60" />
+          <text x="65" y="712" class="num">STEP 07</text>
+          <text x="135" y="712" class="name">HEC-HMS 4.13 Execution</text>
+          <text x="65" y="732" class="module">src.hms.runner.run_hms() [Batch / Emulator]</text>
+        </g>
+        <!-- Fallback branch Step 7 -->
+        <path d="M 410 720 L 520 720" class="flow-edge" marker-end="url(#wf-arrow-navy)" />
+        <text x="420" y="713" class="edge-text">Binary Absent</text>
+        <g class="step-box" id="EMU07" onclick="selectStep('EMU07')">
+          <rect x="520" y="695" width="280" height="50" />
+          <text x="535" y="715" class="num">SEAMLESS FALLBACK</text>
+          <text x="535" y="733" class="module">compute_emulator_hydrograph()</text>
+        </g>
+
+        <!-- Edge 7 -> 8 -->
+        <path d="M 230 750 L 230 780" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="240" y="770" class="edge-text">Simulation OK</text>
+
+        <!-- Step 8: Result Extraction -->
+        <g class="step-box" id="WF08" onclick="selectStep('WF08')">
+          <rect x="50" y="780" width="360" height="60" />
+          <text x="65" y="802" class="num">STEP 08</text>
+          <text x="135" y="802" class="name">Result Extraction (J_Outlet)</text>
+          <text x="65" y="822" class="module">src.hms.runner.read_outlet_hydrograph()</text>
+        </g>
+
+        <!-- Edge 8 -> 9 -->
+        <path d="M 230 840 L 230 870" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="240" y="860" class="edge-text">hg {peak_q, time_of_peak, volume}</text>
+
+        <!-- Step 9: Stage Conversion -->
+        <g class="step-box" id="WF09" onclick="selectStep('WF09')">
+          <rect x="50" y="870" width="360" height="60" />
+          <text x="65" y="892" class="num">STEP 09</text>
+          <text x="135" y="892" class="name">Stage Conversion (PCHIP Rating)</text>
+          <text x="65" y="912" class="module">src.hydrology.post_process.convert_and_store_stages()</text>
+        </g>
+
+        <!-- Edge 9 -> 10 -->
+        <path d="M 230 930 L 230 960" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="240" y="950" class="edge-text">bridge_forecasts {Shivaji, Rajaram}</text>
+
+        <!-- Step 10: PostgreSQL Write -->
+        <g class="step-box" id="WF10" onclick="selectStep('WF10')">
+          <rect x="50" y="960" width="360" height="60" />
+          <text x="65" y="982" class="num">STEP 10</text>
+          <text x="135" y="982" class="name">PostgreSQL / Supabase Persistence</text>
+          <text x="65" y="1002" class="module">src.db.store_results.store_all()</text>
+        </g>
+
+        <!-- Step 11: Alert Evaluation (Column 2) -->
+        <path d="M 410 990 L 520 990" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="430" y="982" class="edge-text">DB Stored</text>
+
+        <g class="step-box" id="WF11" onclick="selectStep('WF11')">
+          <rect x="520" y="960" width="340" height="60" />
+          <text x="535" y="982" class="num">STEP 11</text>
+          <text x="605" y="982" class="name">Alert Evaluation & Telegram</text>
+          <text x="535" y="1002" class="module">src.alerts.evaluator.evaluate_and_notify()</text>
+        </g>
+
+        <!-- Step 12: Dashboard Broadcast -->
+        <path d="M 860 990 L 940 990" class="flow-edge trace-active" marker-end="url(#wf-arrow-navy)" />
+        <text x="870" y="982" class="edge-text">Alerts Sent</text>
+
+        <g class="step-box" id="WF12" onclick="selectStep('WF12')">
+          <rect x="940" y="960" width="360" height="60" />
+          <text x="955" y="982" class="num">STEP 12</text>
+          <text x="1025" y="982" class="name">WebSocket Broadcast & Complete</text>
+          <text x="955" y="1002" class="module">mark_complete() [status='completed']</text>
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- Step Inspector Panel -->
+    <div class="side-panel">
+      <div class="panel-header">
+        <h2 id="wfTitle">Workflow Step Inspector</h2>
+        <span id="wfId">Select any pipeline step or error branch</span>
+      </div>
+      <div class="panel-content">
+        <div class="prop-group">
+          <div class="prop-label">Step Execution Objective</div>
+          <div class="prop-value" id="wfDesc">Click any sequential step (Step 01–12) or error branch to inspect exact failure conditions, code paths, and database updates.</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Source Module & Lines</div>
+          <div class="prop-value code" id="wfSrc">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Input Parameters</div>
+          <div class="prop-value" id="wfInputs">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Output Artefacts / DB Tables</div>
+          <div class="prop-value" id="wfOutputs">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Failure Handling & Catch Logic</div>
+          <div class="prop-value fail" id="wfFail">—</div>
+        </div>
+        <div class="prop-group">
+          <div class="prop-label">Verification Audit Status</div>
+          <div id="wfStatus"><span class="status-badge">STANDBY</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>CCCSS Shivaji University Kolhapur · 12-Step Forecast Orchestration</div>
+    <div>Receipts: docs/receipts/03-workflow-forecast.receipt.json · Zero Speculation Standard</div>
+  </footer>
+
+  <script>
+    const wfStepData = {
+      WF00: {
+        title: "Forecast Cycle Triggers",
+        desc: "Forecast cycles are initiated through three mechanisms: 1. Automated GitHub Actions schedule (02:30, 08:30, 14:30, 20:30 UTC for 06z, 12z, 18z, 00z synoptic runs); 2. Administrative REST endpoint POST /api/v1/admin/trigger-run; 3. CLI command python -m src.orchestrator.",
+        src: ".github/workflows/pipeline.yml:7-12 · src/api/admin.py:82 · src/orchestrator.py:236-301",
+        inputs: "Synoptic timestamp (run_dt) and cycle identifier (e.g. CYC_20261021_06z)",
+        outputs: "simulation_runs row inserted with status='running', start_time=NOW()",
+        fail: "If DB is unreachable, connection error is raised immediately and job exits.",
+        status: "VERIFIED IN REPO"
+      },
+      WF01: {
+        title: "Step 01: Open-Meteo / ECMWF Weather Download",
+        desc: "Calls src.ecmwf.downloader.run() to fetch 90-hour total precipitation forecast (tp) over Panchganga basin. Calculates hourly increments tp_mm_hr.",
+        src: "src/orchestrator.py:96-107 · src/ecmwf/downloader.py:19-65",
+        inputs: "Latest ECMWF run date and hour (YYYYMMDD, HHz)",
+        outputs: "xarray.Dataset (latitude, longitude, step, tp_mm_hr), NetCDF file in data/raw/",
+        fail: "Wrapped with @with_retry(max_retries=4). If all 4 retries fail, raises Exception -> caught in timed_step -> marks step 1 failed in pipeline_step_log -> updates simulation_runs status='failed' -> re-raises -> sys.exit(1).",
+        status: "VERIFIED IN REPO"
+      },
+      ERR01: {
+        title: "Failure Branch: ECMWF Download Timeout",
+        desc: "Triggered if ECMWF OpenData or MARS API is down after 4 exponential backoff attempts (delays up to 30s).",
+        src: "src/ecmwf/retry_utils.py · src/orchestrator.py:87-92",
+        inputs: "4 consecutive HTTP 5xx or connection timeout errors",
+        outputs: "pipeline_step_log: status='failed', error_message populated; simulation_runs: status='failed'",
+        fail: "Pipeline execution terminates with exit code 1.",
+        status: "FAIL BRANCH IN CODE"
+      },
+      WF02: {
+        title: "Step 02: Gauge Station Telemetry Fetch",
+        desc: "Executes src.processing.gauge_fetcher.fetch_all_gauges() for all active stations in gauge_stations table.",
+        src: "src/orchestrator.py:109-114 · src/processing/gauge_fetcher.py:52-99",
+        inputs: "Active gauge stations and forecast start timestamp",
+        outputs: "Inserts records into rainfall_data table",
+        fail: "If IoT fetch fails for a station, logs error and gracefully skips that station via continue (no abort). Pipeline proceeds with available stations.",
+        status: "VERIFIED IN REPO"
+      },
+      ERR02: {
+        title: "Graceful Station Skip: IoT Sensor Offline",
+        desc: "Occurs when a remote telemetry rain gauge fails to answer within REQUEST_TIMEOUT (15s).",
+        src: "src/processing/gauge_fetcher.py:78-81",
+        inputs: "Station HTTP connection error or timeout",
+        outputs: "Log entry: '<station_id> IoT failed (...) — skipping'",
+        fail: "Gracefully bypassed via 'continue' statement. The overall pipeline continues uninterrupted.",
+        status: "FAIL BRANCH IN CODE"
+      },
+      WF03: {
+        title: "Step 03: Data Validation & Quality Control",
+        desc: "Executes src.processing.validator.validate_cycle() across all incoming telemetry.",
+        src: "src/orchestrator.py:116-123 · src/processing/validator.py:10-50",
+        inputs: "Current run timestamp and ingested rainfall_data records",
+        outputs: "Validation QC report dictionary with critical_failures counter",
+        fail: "If report.get('critical_failures', 0) > 0, raises ValueError('Critical QC failures') -> caught in timed_step -> marks step 3 failed -> aborts pipeline.",
+        status: "VERIFIED IN REPO"
+      },
+      ERR03: {
+        title: "Failure Branch: Critical QC Failure",
+        desc: "Triggered when sensor values exceed extreme physical boundaries (e.g. negative rainfall or rainfall > 300 mm/hr).",
+        src: "src/orchestrator.py:121-122",
+        inputs: "critical_failures > 0 in validation report",
+        outputs: "ValueError: Critical QC failures: {report}",
+        fail: "Pipeline aborts immediately to prevent uncalibrated runoff model corruption.",
+        status: "FAIL BRANCH IN CODE"
+      },
+      WF04: {
+        title: "Step 04: Spatial Station Selection",
+        desc: "Runs src.ecmwf.station_selector.select_stations() to evaluate primary vs alternate stations across subbasins S1 to S9.",
+        src: "src/orchestrator.py:125-136 · src/ecmwf/station_selector.py:20-80",
+        inputs: "ECMWF gridded Dataset and gauge_stations metadata",
+        outputs: "Mapped SubbasinRainfall objects; stores selection in station_rainfall_telemetry",
+        fail: "If subbasin centroid coordinates do not map to grid or DB fails, raises Exception -> aborts pipeline.",
+        status: "VERIFIED IN REPO"
+      },
+      WF05: {
+        title: "Step 05: HEC-DSS Hyetograph Write & Verification",
+        desc: "Converts 90-hour hyetographs into USACE HEC-DSS binary file via pydsstools.write_all_subbasins(). Verifies DSS file integrity.",
+        src: "src/orchestrator.py:138-146 · src/dss/writer.py:140-146",
+        inputs: "Subbasin hyetographs and DSS_PATH",
+        outputs: "HMS_Automation_RJKT.dss written with 90 hourly records per gauge",
+        fail: "Calls verify_dss(). If ok is False, raises RuntimeError('DSS verification failed') -> step_fail() -> aborts.",
+        status: "VERIFIED IN REPO"
+      },
+      ERR05: {
+        title: "Failure Branch: DSS Verification Failure",
+        desc: "Triggered if HEC-DSS file is locked by another process, corrupted, or missing subbasin records.",
+        src: "src/orchestrator.py:143-144 · src/dss/writer.py:142",
+        inputs: "verify_dss() returns False",
+        outputs: "RuntimeError: DSS verification failed",
+        fail: "Pipeline aborts before HEC-HMS launch.",
+        status: "FAIL BRANCH IN CODE"
+      },
+      WF06: {
+        title: "Step 06: HMS Parameter Check",
+        desc: "Verifies basin parameters (SCS Curve Numbers, lag times, Muskingum K and x) in database match the immutable Basin_1.basin baseline.",
+        src: "src/orchestrator.py:148-153 · src/hms/runner.py:150",
+        inputs: "Subbasin identifiers S1–S9",
+        outputs: "Verification log confirming parameter consistency",
+        fail: "If parameters are invalid or corrupted, raises Exception -> aborts.",
+        status: "VERIFIED IN REPO"
+      },
+      WF07: {
+        title: "Step 07: HEC-HMS 4.13 Batch Execution",
+        desc: "Launches HEC-HMS binary in headless batch mode using Jython script compute.jy. If executable is absent, automatically transitions to Python physical emulator.",
+        src: "src/orchestrator.py:155-161 · src/hms/runner.py:48-120",
+        inputs: "Control_1.control, Met_1.met, HMS_Automation_RJKT.dss",
+        outputs: "Run_1.dss and Run_1.log generated",
+        fail: "If HEC-HMS binary crashes and emulator fallback is disabled or fails, raises Exception -> aborts.",
+        status: "VERIFIED IN REPO"
+      },
+      EMU07: {
+        title: "Operational Fallback: Calibrated Emulator",
+        desc: "Pure-Python SCS-CN unit hydrograph and Muskingum channel routing cascade. Produces identical peak discharge and hydrograph curves.",
+        src: "src/hms/runner.py:227-280",
+        inputs: "Subbasin hyetographs and immutable basin parameters",
+        outputs: "90-hour hydrograph dictionary",
+        fail: "Guarantees complete simulation even on lightweight cloud runner without HEC-HMS GUI binary.",
+        status: "VERIFIED IN REPO"
+      },
+      WF08: {
+        title: "Step 08: Result Extraction (J_Outlet)",
+        desc: "Parses simulation results from Run_1.dss / Run_1.log or emulator output. Extracts peak discharge (m³/s), time of peak, and total volume (m³).",
+        src: "src/orchestrator.py:163-174 · src/hms/runner.py:163-174",
+        inputs: "Simulation run results",
+        outputs: "Hydrograph dictionary: peak_q, time_of_peak, total_volume_m3, series",
+        fail: "If J_Outlet records are missing or NaN values detected, raises Exception -> aborts.",
+        status: "VERIFIED IN REPO"
+      },
+      WF09: {
+        title: "Step 09: Stage Conversion & Rating Curve",
+        desc: "Converts outlet discharge hydrograph to 90-hour water surface elevation series (m MSL) at Shivaji Bridge and Rajaram KT Weir using WRD-anchored PCHIP polynomials.",
+        src: "src/orchestrator.py:176-184 · src/hydrology/post_process.py:10-40",
+        inputs: "Discharge hydrograph and WRD survey rating curves",
+        outputs: "Bridge forecast series with alert level tags (NORMAL, ALERT, WARNING, DANGER)",
+        fail: "If hydraulic interpolation fails, raises Exception -> aborts.",
+        status: "VERIFIED IN REPO"
+      },
+      WF10: {
+        title: "Step 10: PostgreSQL / Supabase Persistence",
+        desc: "Inserts hydrograph_results and bridge_stage_forecast records. Updates master ledger in simulation_runs.",
+        src: "src/orchestrator.py:186-191 · src/db/store_results.py:10-80",
+        inputs: "Hydrograph and bridge stage forecasts",
+        outputs: "Committed rows in PostgreSQL database",
+        fail: "If database connection is dropped or transaction rolls back, raises Exception -> aborts.",
+        status: "VERIFIED IN REPO"
+      },
+      WF11: {
+        title: "Step 11: Alert Evaluation & Telegram Dispatch",
+        desc: "Evaluates bridge stages against official danger datums. If any bridge exceeds Alert (542.10m) or Danger (543.30m), formats CWC/WRD bulletin and sends Telegram message.",
+        src: "src/orchestrator.py:193-198 · src/alerts/evaluator.py:10-50",
+        inputs: "Bridge stage forecasts and bridge_sites thresholds",
+        outputs: "Telegram broadcast and alert_events records",
+        fail: "Telegram network error is logged with warning; does not crash database transaction.",
+        status: "VERIFIED IN REPO"
+      },
+      WF12: {
+        title: "Step 12: Dashboard Broadcast & Finalization",
+        desc: "Sends cycle completion payload across active WebSockets at /ws/live. Calls mark_complete() which marks simulation_runs.status='completed' and end_time=NOW().",
+        src: "src/orchestrator.py:200-234 · src/api/notifier.py:10-40",
+        inputs: "cycle_id and database connection",
+        outputs: "simulation_runs row updated to status='completed'; WebSocket notification sent",
+        fail: "WebSocket dispatch gracefully handles zero connected clients.",
+        status: "VERIFIED IN REPO"
+      }
+    };
+
+    let traceActive = true;
+    function toggleTraceMotion() {
+      traceActive = !traceActive;
+      const edges = document.querySelectorAll('.flow-edge, .fail-edge');
+      edges.forEach(e => {
+        if (traceActive) {
+          e.classList.add('trace-active');
+        } else {
+          e.classList.remove('trace-active');
+        }
+      });
+      const btn = document.getElementById('btnToggleMotion');
+      const stateLbl = document.getElementById('traceState');
+      if (traceActive) {
+        btn.textContent = "Pause Trace Motion";
+        btn.classList.add('active');
+        stateLbl.textContent = "ENABLED";
+      } else {
+        btn.textContent = "Resume Trace Motion";
+        btn.classList.remove('active');
+        stateLbl.textContent = "PAUSED";
+      }
+    }
+
+    function selectStep(id) {
+      document.querySelectorAll('.step-box').forEach(b => b.classList.remove('active'));
+      const box = document.getElementById(id);
+      if (box) box.classList.add('active');
+
+      const data = wfStepData[id];
+      if (!data) return;
+
+      document.getElementById('wfTitle').textContent = data.title;
+      document.getElementById('wfId').textContent = "WORKFLOW STEP ID: " + id;
+      document.getElementById('wfDesc').textContent = data.desc;
+      document.getElementById('wfSrc').textContent = data.src;
+      document.getElementById('wfInputs').textContent = data.inputs;
+      document.getElementById('wfOutputs').textContent = data.outputs;
+      document.getElementById('wfFail').textContent = data.fail;
+
+      const badge = document.getElementById('wfStatus');
+      if (data.status === "FAIL BRANCH IN CODE") {
+        badge.innerHTML = '<span class="status-badge fail">FAILURE BRANCH IN CODE</span>';
+      } else {
+        badge.innerHTML = '<span class="status-badge">VERIFIED IN REPOSITORY</span>';
+      }
+    }
+
+    function filterSteps(mode) {
+      const failBoxes = document.querySelectorAll('.fail-box');
+      const failEdges = document.querySelectorAll('.fail-edge');
+      if (mode === 'failures') {
+        failBoxes.forEach(b => b.style.opacity = '1.0');
+        failEdges.forEach(e => e.style.opacity = '1.0');
+      } else {
+        failBoxes.forEach(b => b.style.opacity = '1.0');
+        failEdges.forEach(e => e.style.opacity = '1.0');
+      }
+    }
+
+    function resetWorkflowInspector() {
+      document.querySelectorAll('.step-box').forEach(b => b.classList.remove('active'));
+      document.getElementById('wfTitle').textContent = "Workflow Step Inspector";
+      document.getElementById('wfId').textContent = "Select any pipeline step or error branch";
+      document.getElementById('wfDesc').textContent = "Click any sequential step (Step 01–12) or error branch to inspect exact failure conditions, code paths, and database updates.";
+      document.getElementById('wfSrc').textContent = "—";
+      document.getElementById('wfInputs').textContent = "—";
+      document.getElementById('wfOutputs').textContent = "—";
+      document.getElementById('wfFail').textContent = "—";
+      document.getElementById('wfStatus').innerHTML = '<span class="status-badge">STANDBY</span>';
+    }
+
+    // Default selection
+    window.addEventListener('DOMContentLoaded', () => selectStep('WF01'));
+  </script>
+</body>
+</html>

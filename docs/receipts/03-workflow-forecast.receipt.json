@@ -1,0 +1,36 @@
+{
+  "receipt_id": "RCP-03-WORK-20261021",
+  "diagram_file": "docs/diagrams/03-workflow-forecast.html",
+  "diagram_type": "workflow",
+  "title": "HydroCast Operational Forecast Execution Workflow",
+  "validation_timestamp": "2026-10-21T14:43:00Z",
+  "validation_standard": "Archify Strict Source Audit v2",
+  "total_steps": 12,
+  "failure_branches_mapped": 4,
+  "fallback_branches_mapped": 1,
+  "source_files_verified": [
+    ".github/workflows/pipeline.yml:7-12",
+    "src/api/admin.py:82-130",
+    "src/orchestrator.py:96-275",
+    "src/ecmwf/downloader.py:19-65",
+    "src/ecmwf/retry_utils.py",
+    "src/processing/gauge_fetcher.py:52-99",
+    "src/processing/validator.py:10-50",
+    "src/ecmwf/station_selector.py:20-80",
+    "src/dss/writer.py:140-146",
+    "src/hms/runner.py:48-120, 227-280",
+    "src/hydrology/post_process.py:10-40",
+    "src/db/store_results.py:10-80",
+    "src/alerts/evaluator.py:10-50",
+    "src/api/notifier.py:10-40"
+  ],
+  "failure_branches": [
+    "Step 01: ECMWF 4x retry timeout -> step_fail() -> abort",
+    "Step 02: Station IoT offline -> log warning -> graceful continue (pipeline uninterrupted)",
+    "Step 03: critical_failures > 0 -> ValueError -> step_fail() -> abort",
+    "Step 05: verify_dss() == False -> RuntimeError -> step_fail() -> abort",
+    "Step 07: HEC-HMS binary absent -> seamless compute_emulator_hydrograph() fallback"
+  ],
+  "status": "VALIDATED",
+  "trace_motion_enabled": true
+}
