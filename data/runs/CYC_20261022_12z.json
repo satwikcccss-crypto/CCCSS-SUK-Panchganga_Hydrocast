@@ -23960,7 +23960,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20261022_12z",
-    "validation_timestamp": "2026-10-22T14:14:02.177094+00:00",
+    "validation_timestamp": "2026-10-22T20:58:12.821371+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -23973,21 +23973,21 @@
       "upstream_weir": "Rajaram K.T. Weir (3,858 m upstream, bed datum +0.648 m)"
     },
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 2,
+    "verified_hours": 3,
     "total_forecast_hours": 90,
-    "completion_pct": 2.2,
+    "completion_pct": 3.3,
     "observation_gap": {
       "is_gap": false,
-      "missing_hours": 88,
+      "missing_hours": 87,
       "hours_past_window": null,
       "grace_hours": 12.0,
       "note": null
     },
     "metrics": {
       "status": "ACCUMULATING_TELEMETRY",
-      "sample_size_hours": 2,
-      "matched_pairs": 2,
-      "observed_stage_std_m": 0.0,
+      "sample_size_hours": 3,
+      "matched_pairs": 3,
+      "observed_stage_std_m": 0.0047,
       "skill_metrics_reliable": false,
       "rmse_stage_m": 0.0,
       "mae_stage_m": 0.0,
@@ -24023,6 +24023,12 @@
         "predicted_stage": 531.66,
         "lead_hours": 1,
         "actual_distance_ft": 58.03
+      },
+      {
+        "actual_stage": 531.65,
+        "predicted_stage": 531.65,
+        "lead_hours": 6,
+        "actual_distance_ft": 58.08
       }
     ],
     "actual_observed_series": [
@@ -24109,13 +24115,13 @@
         "timestamp": "2026-10-22T18:00:00+00:00",
         "predicted_stage_m": 531.65,
         "predicted_discharge_m3s": 10.2,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 531.65,
+        "observed_distance_ft": 58.08,
+        "observed_discharge_m3s": 10.2,
+        "error_delta_m": 0.0,
+        "error_delta_ft": 0.0,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 7,

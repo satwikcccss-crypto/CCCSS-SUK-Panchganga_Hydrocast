@@ -23944,7 +23944,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20261019_18z",
-    "validation_timestamp": "2026-10-22T14:13:07.839428+00:00",
+    "validation_timestamp": "2026-10-22T20:57:15.242415+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -23957,41 +23957,41 @@
       "upstream_weir": "Rajaram K.T. Weir (3,858 m upstream, bed datum +0.648 m)"
     },
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 3,
+    "verified_hours": 4,
     "total_forecast_hours": 90,
-    "completion_pct": 3.3,
+    "completion_pct": 4.4,
     "observation_gap": {
       "is_gap": false,
-      "missing_hours": 87,
+      "missing_hours": 86,
       "hours_past_window": null,
       "grace_hours": 12.0,
       "note": null
     },
     "metrics": {
       "status": "ACCUMULATING_TELEMETRY",
-      "sample_size_hours": 3,
-      "matched_pairs": 3,
-      "observed_stage_std_m": 0.0283,
+      "sample_size_hours": 4,
+      "matched_pairs": 4,
+      "observed_stage_std_m": 0.0249,
       "skill_metrics_reliable": false,
-      "rmse_stage_m": 0.525,
-      "mae_stage_m": 0.523,
+      "rmse_stage_m": 0.529,
+      "mae_stage_m": 0.527,
       "nse_stage": null,
       "pbias_stage_pct": -0.1,
       "spearman_rho": null,
       "pearson_r2": null,
       "discharge_metrics_source": "RATING_IMPLIED_DERIVED",
       "discharge_metrics_note": "Observed discharge is derived from the observed stage via the same rating curve used for the forecast; it is NOT an independent discharge measurement.",
-      "rmse_q_m3s": 3.91,
-      "mae_q_m3s": 3.9,
+      "rmse_q_m3s": 3.93,
+      "mae_q_m3s": 3.93,
       "nse_discharge": null,
-      "pbias_discharge_pct": -38.49,
+      "pbias_discharge_pct": -38.67,
       "spearman_rho_q": null,
       "pearson_r2_q": null,
-      "baseflow_stage_offset_m": -0.523,
+      "baseflow_stage_offset_m": -0.527,
       "observed_ungauged_fraction": 1.0,
       "rating_extrapolated": true,
       "constant_baseflow_bias": true,
-      "baseflow_note": "Constant baseflow stage offset of -0.52 m (observed spread 0.028 m). This is a datum/baseflow anchor bias, not a runoff-coefficient error; it cannot be fixed by tuning CN / lag / K. 100% of observed hours sit below the lowest WRD-gauged stage, where the rating curve is a shape extrapolation.",
+      "baseflow_note": "Constant baseflow stage offset of -0.53 m (observed spread 0.025 m). This is a datum/baseflow anchor bias, not a runoff-coefficient error; it cannot be fixed by tuning CN / lag / K. 100% of observed hours sit below the lowest WRD-gauged stage, where the rating curve is a shape extrapolation.",
       "basin_rainfall_accuracy_pct": null,
       "performance_grade": "BASEFLOW_MISMATCH"
     },
@@ -24013,6 +24013,12 @@
         "predicted_stage": 531.11,
         "lead_hours": 67,
         "actual_distance_ft": 58.03
+      },
+      {
+        "actual_stage": 531.65,
+        "predicted_stage": 531.11,
+        "lead_hours": 72,
+        "actual_distance_ft": 58.08
       }
     ],
     "actual_observed_series": [
@@ -24957,13 +24963,13 @@
         "timestamp": "2026-10-22T18:00:00+00:00",
         "predicted_stage_m": 531.11,
         "predicted_discharge_m3s": 6.2,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 531.65,
+        "observed_distance_ft": 58.08,
+        "observed_discharge_m3s": 10.2,
+        "error_delta_m": -0.54,
+        "error_delta_ft": -1.77,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 73,
