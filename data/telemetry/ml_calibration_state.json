@@ -1,15 +1,15 @@
 {
-  "last_calibrated_at": "2026-10-13T02:12:56.898330+00:00",
+  "last_calibrated_at": "2026-10-22T14:12:39.797147+00:00",
   "is_recalibrated": true,
-  "trigger_reason": "Offset \u0394t=+0.0h, stage_err=-0.20m",
-  "timing_offset_hours": 0.0,
-  "stage_discrepancy_m": -0.197,
-  "peak_discharge_error_m3s": 2.799999999999999,
-  "alpha_k": 1.0,
-  "alpha_lag": 1.0,
-  "delta_cn": 0.89,
-  "muskingum_x": 0.25,
-  "confidence_pct": 99.9,
+  "trigger_reason": "Offset \u0394t=+3.0h, stage_err=-0.41m",
+  "timing_offset_hours": 3.0,
+  "stage_discrepancy_m": -0.41,
+  "peak_discharge_error_m3s": 3.3000000000000007,
+  "alpha_k": 1.218,
+  "alpha_lag": 1.171,
+  "delta_cn": 1.84,
+  "muskingum_x": 0.19,
+  "confidence_pct": 51.6,
   "baseline_sub_models": {
     "S6": {
       "name": "Gaganbawda",
@@ -92,78 +92,78 @@
     "S6": {
       "name": "Gaganbawda",
       "area_km2": 227.72,
-      "cn": 62.67,
-      "lag_min": 3318.1
+      "cn": 63.62,
+      "lag_min": 3885.5
     },
     "S7": {
       "name": "Garivade",
       "area_km2": 195.39,
-      "cn": 62.17,
-      "lag_min": 3362.3
+      "cn": 63.12,
+      "lag_min": 3937.2
     },
     "S9": {
       "name": "Radhanagari",
       "area_km2": 366.97,
-      "cn": 65.2,
-      "lag_min": 5199.0
+      "cn": 66.15,
+      "lag_min": 6088.1
     },
     "S8": {
       "name": "Beed",
       "area_km2": 177.44,
-      "cn": 66.65,
-      "lag_min": 3387.1
+      "cn": 67.6,
+      "lag_min": 3966.4
     },
     "S4": {
       "name": "Karanjphen",
       "area_km2": 262.0,
-      "cn": 62.78,
-      "lag_min": 3115.5
+      "cn": 63.73,
+      "lag_min": 3648.3
     },
     "S5": {
       "name": "Padasali",
       "area_km2": 106.39,
-      "cn": 61.86,
-      "lag_min": 2117.1
+      "cn": 62.81,
+      "lag_min": 2479.1
     },
     "S3": {
       "name": "Kotoli",
       "area_km2": 261.32,
-      "cn": 65.71,
-      "lag_min": 3997.7
+      "cn": 66.66,
+      "lag_min": 4681.3
     },
     "S2": {
       "name": "Sangarul",
       "area_km2": 153.77,
-      "cn": 66.63,
-      "lag_min": 3154.3
+      "cn": 67.58,
+      "lag_min": 3693.6
     },
     "S1": {
       "name": "Karveer",
       "area_km2": 86.213,
-      "cn": 75.74,
-      "lag_min": 2152.0
+      "cn": 76.69,
+      "lag_min": 2519.9
     }
   },
   "active_reaches": {
     "R5": {
-      "k_hr": 4.619,
-      "x": 0.25
+      "k_hr": 5.626,
+      "x": 0.19
     },
     "R4": {
-      "k_hr": 1.224,
-      "x": 0.25
+      "k_hr": 1.491,
+      "x": 0.19
     },
     "R2": {
-      "k_hr": 11.827,
-      "x": 0.25
+      "k_hr": 14.405,
+      "x": 0.19
     },
     "R3": {
-      "k_hr": 3.829,
-      "x": 0.25
+      "k_hr": 4.664,
+      "x": 0.19
     },
     "R1": {
-      "k_hr": 2.899,
-      "x": 0.25
+      "k_hr": 3.531,
+      "x": 0.19
     }
   },
   "history": [
@@ -188,6 +188,17 @@
       "delta_cn": 0.89,
       "muskingum_x": 0.25,
       "confidence_pct": 99.9
+    },
+    {
+      "timestamp": "2026-10-22T14:12:39.797147+00:00",
+      "timing_offset_hours": 3.0,
+      "stage_error_m": -0.41,
+      "peak_discharge_error_m3s": 3.3000000000000007,
+      "alpha_k": 1.218,
+      "alpha_lag": 1.171,
+      "delta_cn": 1.84,
+      "muskingum_x": 0.19,
+      "confidence_pct": 51.6
     }
   ]
 }
