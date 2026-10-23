@@ -16,9 +16,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.04,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261023_06z",
@@ -37,9 +37,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.049,
+    "rmse": 0.05,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 2
+    "verified_hours": 3
   },
   {
     "cycle_id": "CYC_20261022_18z",
@@ -58,9 +58,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": 0.056,
+    "rmse": 0.055,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 4
+    "verified_hours": 5
   },
   {
     "cycle_id": "CYC_20261022_12z",
@@ -77,11 +77,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.6269,
-    "nse": 0.3167,
-    "rmse": 0.044,
+    "spearman_rho": 0.7156,
+    "nse": 0.4196,
+    "rmse": 0.043,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 6
+    "verified_hours": 7
   },
   {
     "cycle_id": "CYC_20261022_06z",
@@ -98,11 +98,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.2357,
-    "nse": -67.4381,
-    "rmse": 0.414,
+    "spearman_rho": 0.3894,
+    "nse": -57.1582,
+    "rmse": 0.407,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 7
+    "verified_hours": 8
   },
   {
     "cycle_id": "CYC_20261021_18z",
@@ -119,11 +119,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.2572,
-    "nse": -75.0765,
-    "rmse": 0.437,
+    "spearman_rho": 0.4783,
+    "nse": -64.3495,
+    "rmse": 0.431,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 7
+    "verified_hours": 8
   },
   {
     "cycle_id": "CYC_20261021_12z",
@@ -140,11 +140,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.2357,
-    "nse": -77.6474,
-    "rmse": 0.444,
+    "spearman_rho": 0.3894,
+    "nse": -65.9934,
+    "rmse": 0.436,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 7
+    "verified_hours": 8
   },
   {
     "cycle_id": "CYC_20261021_06z",
@@ -161,11 +161,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.2357,
-    "nse": -81.7516,
-    "rmse": 0.455,
+    "spearman_rho": 0.3894,
+    "nse": -69.4967,
+    "rmse": 0.448,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 7
+    "verified_hours": 8
   },
   {
     "cycle_id": "CYC_20261020_18z",
@@ -182,11 +182,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.0589,
-    "nse": -91.3168,
-    "rmse": 0.481,
+    "spearman_rho": 0.342,
+    "nse": -78.6967,
+    "rmse": 0.476,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 7
+    "verified_hours": 8
   },
   {
     "cycle_id": "CYC_20261020_12z",
@@ -203,11 +203,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.3365,
-    "nse": -96.145,
-    "rmse": 0.493,
+    "spearman_rho": 0.5276,
+    "nse": -82.811,
+    "rmse": 0.488,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 7
+    "verified_hours": 8
   },
   {
     "cycle_id": "CYC_20261020_06z",
@@ -224,11 +224,11 @@
     "alert_level": "NORMAL",
     "status": "completed",
     "has_validation": true,
-    "spearman_rho": 0.3716,
-    "nse": -100.7052,
-    "rmse": 0.505,
+    "spearman_rho": 0.5653,
+    "nse": -87.1363,
+    "rmse": 0.501,
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 7
+    "verified_hours": 8
   },
   {
     "cycle_id": "CYC_20261019_18z",
@@ -269,7 +269,7 @@
     "spearman_rho": null,
     "nse": null,
     "rmse": 0.551,
-    "lifecycle_status": "AWAITING_OBSERVATIONS",
+    "lifecycle_status": "OBSERVATION_GAP",
     "verified_hours": 5
   },
   {
