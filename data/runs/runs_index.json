@@ -4,7 +4,7 @@
     "run_date": "24 Oct 2026",
     "cycle_time": "12z",
     "start_time": "2026-10-24T12:00:00+00:00",
-    "duration_seconds": 5.3,
+    "duration_seconds": 4.6,
     "peak_discharge_m3s": 9.4,
     "lead_hours_to_peak": 0,
     "total_volume_mcm": 2.9,
@@ -269,7 +269,7 @@
     "spearman_rho": 0.5276,
     "nse": -82.811,
     "rmse": 0.488,
-    "lifecycle_status": "AWAITING_OBSERVATIONS",
+    "lifecycle_status": "OBSERVATION_GAP",
     "verified_hours": 8
   },
   {
