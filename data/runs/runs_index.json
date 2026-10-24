@@ -227,7 +227,7 @@
     "spearman_rho": 0.342,
     "nse": -78.6967,
     "rmse": 0.476,
-    "lifecycle_status": "IN_PROGRESS",
+    "lifecycle_status": "AWAITING_OBSERVATIONS",
     "verified_hours": 8
   },
   {
@@ -269,7 +269,7 @@
     "spearman_rho": 0.5653,
     "nse": -87.1363,
     "rmse": 0.501,
-    "lifecycle_status": "AWAITING_OBSERVATIONS",
+    "lifecycle_status": "OBSERVATION_GAP",
     "verified_hours": 8
   },
   {
