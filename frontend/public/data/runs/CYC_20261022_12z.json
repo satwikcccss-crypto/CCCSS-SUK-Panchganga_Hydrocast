@@ -23960,7 +23960,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20261022_12z",
-    "validation_timestamp": "2026-10-26T05:32:50.617923+00:00",
+    "validation_timestamp": "2026-10-26T17:45:56.684275+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -23972,16 +23972,16 @@
       "travel_time_from_hms_outlet_hours": 1.5,
       "upstream_weir": "Rajaram K.T. Weir (3,858 m upstream, bed datum +0.648 m)"
     },
-    "lifecycle_status": "AWAITING_OBSERVATIONS",
+    "lifecycle_status": "OBSERVATION_GAP",
     "verified_hours": 7,
     "total_forecast_hours": 90,
     "completion_pct": 7.8,
     "observation_gap": {
-      "is_gap": false,
+      "is_gap": true,
       "missing_hours": 83,
-      "hours_past_window": 0.5,
+      "hours_past_window": 12.8,
       "grace_hours": 12.0,
-      "note": null
+      "note": "The full 90-hour forecast window has elapsed and the missing telemetry has not arrived within the grace period, so this cycle is permanently unverifiable against ground truth. Metrics are reported only for the hours that were observed."
     },
     "metrics": {
       "status": "VALIDATED",
