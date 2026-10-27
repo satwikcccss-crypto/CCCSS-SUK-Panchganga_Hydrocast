@@ -1,9 +1,38 @@
-# HydroCast Historical Flood Event Validation - Documentation
+# HydroCast Historical Flood Event Validation Framework
+
+## Directory Organization & Structure
+
+The historical validation framework is structured into dedicated functional layers separating inputs, scripts, simulation outputs, and analytical reports:
+
+```
+historical_checks/
+├── README.md                      # Master Guide & validation documentation (this file)
+├── scripts/                       # Runner, preprocessing & comparative evaluation scripts
+│   ├── run_historical_event.py    # Master multi-event validation conductor
+│   ├── compare_window_strategies.py # Rolling vs independent 90-h window strategy analysis
+│   └── preprocess_shivaji_2025.py # Ultrasonic telemetry filtering & 1-h resampling
+├── results/                       # Standardized simulation run output JSON artifacts
+│   ├── historical_event_2019_august_results.json # August 2019 flood simulation output
+│   ├── historical_event_2021_july_results.json   # July 2021 flood simulation output
+│   ├── historical_event_2025_august_results.json # August 2025 flood simulation output
+│   └── window_strategy_comparison.json          # Multi-window strategy comparison metrics
+├── reports/                       # Formal markdown validation reports & parameter studies
+│   ├── accuracy_comparison.md     # Single-point vs station selection accuracy benchmark
+│   └── parameter_study.md         # Hydrological sensitivity & AMC regime study
+├── data/                          # Benchmark registry & observed event specifications
+│   └── README.md                  # Observed flood benchmark metadata & ground truth
+└── 2025_august_shivaji_bridge/    # August 2025 deep-dive event case study
+    ├── data/                      # Raw and processed ultrasonic telemetry
+    ├── docs/                      # Session logs & validation notes
+    ├── results/                   # Calibration search results & hydrographs
+    └── scripts/                   # Simulation, comparison & preprocessing scripts
+```
+
+---
 
 ## Session Summary
 This document captures all work performed during the historical flood event validation session, including model setup, rainfall data ingestion, pipeline execution, and accuracy analysis.
 
-**Date**: October 13, 2026  
 **Project**: HydroCast - Panchganga Basin Flood Forecasting  
 **Goal**: Validate model capability to run historical flood events and calculate peak stage/discharge for comparison with observed data
 
@@ -12,7 +41,7 @@ This document captures all work performed during the historical flood event vali
 ## 1. Model Architecture & Components Used
 
 ### 1.1 Core Pipeline Elements
-- **`run_historical_event.py`** - Standalone script for historical event validation
+- **`scripts/run_historical_event.py`** - Standalone script for historical event validation
 - **Open-Meteo Archive API** (`/v1/archive`) - Historical rainfall data ingestion
 - **HEC-HMS Emulator** - Pure Python physical model (`src/hms/runner.py`)
   - `execute_hec_hms()` - Public entry point

@@ -14,8 +14,9 @@
   background: var(--md-code-bg-color);
   border: 1px solid var(--md-default-fg-color--lightest);
   border-radius: 10px;
-  overflow-x: auto;
-  overflow-y: hidden;
+  /* Never clip vertically: a diagram is exactly as tall as its rendered SVG,
+     and an overflow box here is what cuts figures in half on the page. */
+  overflow: visible;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -49,6 +50,22 @@
 .md-typeset .mermaid .edgeLabel {
   font-size: 13px;
   line-height: 1.4;
+}
+
+/* Node labels are rendered as HTML inside <foreignObject>, so they inherit
+   the PAGE's text colour instead of the diagram's own palette. In the dark
+   scheme that means near-white text on pastel node fills — i.e. invisible.
+   The theme config keeps node fills light in both colour schemes, so the
+   labels stay dark ink in both. */
+.md-typeset .mermaid .nodeLabel,
+.md-typeset .mermaid .nodeLabel p {
+  color: #111827;
+}
+
+.md-typeset .mermaid .nodeLabel {
+  -webkit-user-select: text;
+  user-select: text;
+  cursor: default;
 }
 
 /* Keep diagram blocks readable inside admonitions and tabs. */
@@ -277,7 +294,12 @@
 }
 .hydrocast-diagram-frame {
   width: 100%;
-  height: 540px;
+  height: auto;
+  /* Each embed declares its console's SVG viewBox as an inline aspect-ratio,
+     so the frame grows to the diagram's true shape instead of cropping it at
+     a fixed 540 px (which used to cut tall consoles in half). */
+  aspect-ratio: 16 / 10;
+  min-height: 420px;
   border: none;
   display: block;
   background: #ffffff;

@@ -225,6 +225,15 @@
 
   function boot() {
     renderAll();
+    /* Labels are measured with the fallback font before Roboto/Roboto Mono
+       finish loading; once real fonts land, re-render once so label boxes
+       match actual glyph metrics instead of being sized too small. */
+    if (!boot.fontsHook && document.fonts && document.fonts.ready) {
+      boot.fontsHook = true;
+      document.fonts.ready.then(function () {
+        window.setTimeout(rerenderAll, 60);
+      });
+    }
   }
 
   if (typeof document$ !== "undefined") {

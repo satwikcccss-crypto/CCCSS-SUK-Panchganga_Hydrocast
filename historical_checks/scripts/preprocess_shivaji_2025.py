@@ -14,12 +14,13 @@ Echo artifacts removed:
                         (528.67 m MSL), i.e. max-range / lost-return garbage —
                         2 readings (106.33 ft, 106.66 ft).
 """
-from pathlib import Path
+_HERE = Path(__file__).resolve()
+REPO = _HERE.parents[2] if _HERE.parent.name == "scripts" else _HERE.parents[1]
 
-import pandas as pd
-
-RAW_CSV = Path("data/Shivaji Bridge 2025 water levels.csv")
-OUT_CSV = Path("data/shivaji_bridge_2025_hourly_observed.csv")
+RAW_CSV = REPO / "data" / "Shivaji Bridge 2025 water levels.csv"
+if not RAW_CSV.exists():
+    RAW_CSV = REPO / "historical_checks" / "2025_august_shivaji_bridge" / "data" / "raw" / "Shivaji Bridge 2025 water levels.csv"
+OUT_CSV = REPO / "data" / "shivaji_bridge_2025_hourly_observed.csv"
 
 SENSOR_DATUM_MSL_M = 549.35   # Shivaji Bridge deck level (m MSL)
 FT_TO_M = 0.3048

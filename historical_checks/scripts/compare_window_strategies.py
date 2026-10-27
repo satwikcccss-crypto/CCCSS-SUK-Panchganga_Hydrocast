@@ -25,9 +25,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-REPO = Path(__file__).resolve().parents[1]
+_HERE = Path(__file__).resolve()
+REPO = _HERE.parents[2] if _HERE.parent.name == "scripts" else _HERE.parents[1]
 import sys
 sys.path.insert(0, str(REPO))
+sys.path.insert(0, str(REPO / "historical_checks" / "scripts"))
+sys.path.insert(0, str(REPO / "historical_checks"))
 
 from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_gages
 from src.hms.basin_parser import load_immutable_baseline
@@ -36,7 +39,6 @@ from src.hydrology.stage_converter import convert_discharge_to_stage_manning
 from src.hydrology.validation_metrics import (
     compute_nse, compute_rmse_mae, compute_kge, compute_pbias,
 )
-sys.path.insert(0, str(REPO / "historical_checks"))
 from run_historical_event import fetch_historical_rainfall_for_station  # noqa: E402
 
 START = "2025-08-08"
