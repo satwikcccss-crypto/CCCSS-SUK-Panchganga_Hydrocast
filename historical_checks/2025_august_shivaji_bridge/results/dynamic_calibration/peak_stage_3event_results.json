@@ -1,0 +1,499 @@
+{
+  "all": [
+    {
+      "alpha_k": 0.45,
+      "alpha_lag": 0.6,
+      "muskingum_x": 0.3,
+      "cn_uplift": 0.0,
+      "total_obj": 66.53,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 545.05,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -1.92,
+          "peak_stage_accuracy_pct": 89.1,
+          "sim_peak_q_m3s": 3725.0,
+          "sim_peak_ts": "2019-08-06 11:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 76.4,
+          "obj": 16.32
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.94,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -5.89,
+          "peak_stage_accuracy_pct": 68.2,
+          "sim_peak_q_m3s": 1705.0,
+          "sim_peak_ts": "2021-07-22 18:00:00",
+          "obj": 47.73
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.34,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.23,
+          "peak_stage_accuracy_pct": 98.3,
+          "sim_peak_q_m3s": 2432.0,
+          "sim_peak_ts": "2025-08-20 21:00:00",
+          "obj": 2.48
+        }
+      }
+    },
+    {
+      "alpha_k": 0.45,
+      "alpha_lag": 0.6,
+      "muskingum_x": 0.15,
+      "cn_uplift": 0.0,
+      "total_obj": 67.34,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 544.98,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -1.99,
+          "peak_stage_accuracy_pct": 88.7,
+          "sim_peak_q_m3s": 3691.0,
+          "sim_peak_ts": "2019-08-06 11:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 74.8,
+          "obj": 16.91
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.94,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -5.89,
+          "peak_stage_accuracy_pct": 68.2,
+          "sim_peak_q_m3s": 1704.0,
+          "sim_peak_ts": "2021-07-22 19:00:00",
+          "obj": 47.73
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.32,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.25,
+          "peak_stage_accuracy_pct": 98.2,
+          "sim_peak_q_m3s": 2414.0,
+          "sim_peak_ts": "2025-08-20 20:00:00",
+          "obj": 2.7
+        }
+      }
+    },
+    {
+      "alpha_k": 0.6,
+      "alpha_lag": 0.6,
+      "muskingum_x": 0.3,
+      "cn_uplift": 0.0,
+      "total_obj": 68.09,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 544.93,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -2.04,
+          "peak_stage_accuracy_pct": 88.4,
+          "sim_peak_q_m3s": 3670.0,
+          "sim_peak_ts": "2019-08-06 13:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 73.9,
+          "obj": 17.34
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.94,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -5.89,
+          "peak_stage_accuracy_pct": 68.2,
+          "sim_peak_q_m3s": 1703.0,
+          "sim_peak_ts": "2021-07-22 21:00:00",
+          "obj": 47.73
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.29,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.28,
+          "peak_stage_accuracy_pct": 98.0,
+          "sim_peak_q_m3s": 2391.0,
+          "sim_peak_ts": "2025-08-20 23:00:00",
+          "obj": 3.02
+        }
+      }
+    },
+    {
+      "alpha_k": 0.6,
+      "alpha_lag": 0.6,
+      "muskingum_x": 0.15,
+      "cn_uplift": 0.0,
+      "total_obj": 69.06,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 544.85,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -2.12,
+          "peak_stage_accuracy_pct": 88.0,
+          "sim_peak_q_m3s": 3627.0,
+          "sim_peak_ts": "2019-08-06 13:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 71.8,
+          "obj": 18.01
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.93,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -5.9,
+          "peak_stage_accuracy_pct": 68.1,
+          "sim_peak_q_m3s": 1699.0,
+          "sim_peak_ts": "2021-07-22 20:00:00",
+          "obj": 47.81
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.27,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.3,
+          "peak_stage_accuracy_pct": 97.8,
+          "sim_peak_q_m3s": 2370.0,
+          "sim_peak_ts": "2025-08-20 23:00:00",
+          "obj": 3.24
+        }
+      }
+    },
+    {
+      "alpha_k": 0.8,
+      "alpha_lag": 0.6,
+      "muskingum_x": 0.3,
+      "cn_uplift": 0.0,
+      "total_obj": 70.11,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 544.79,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -2.18,
+          "peak_stage_accuracy_pct": 87.7,
+          "sim_peak_q_m3s": 3599.0,
+          "sim_peak_ts": "2019-08-06 18:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 70.5,
+          "obj": 18.52
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.93,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -5.9,
+          "peak_stage_accuracy_pct": 68.1,
+          "sim_peak_q_m3s": 1698.0,
+          "sim_peak_ts": "2021-07-22 22:00:00",
+          "obj": 47.81
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.22,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.35,
+          "peak_stage_accuracy_pct": 97.5,
+          "sim_peak_q_m3s": 2328.0,
+          "sim_peak_ts": "2025-08-21 02:00:00",
+          "obj": 3.78
+        }
+      }
+    },
+    {
+      "alpha_k": 0.8,
+      "alpha_lag": 0.6,
+      "muskingum_x": 0.15,
+      "cn_uplift": 0.0,
+      "total_obj": 71.53,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 544.68,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -2.29,
+          "peak_stage_accuracy_pct": 87.0,
+          "sim_peak_q_m3s": 3537.0,
+          "sim_peak_ts": "2019-08-06 17:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 67.6,
+          "obj": 19.46
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.91,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -5.92,
+          "peak_stage_accuracy_pct": 68.0,
+          "sim_peak_q_m3s": 1688.0,
+          "sim_peak_ts": "2021-07-22 22:00:00",
+          "obj": 47.97
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.19,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.38,
+          "peak_stage_accuracy_pct": 97.3,
+          "sim_peak_q_m3s": 2303.0,
+          "sim_peak_ts": "2025-08-21 02:00:00",
+          "obj": 4.1
+        }
+      }
+    },
+    {
+      "alpha_k": 0.45,
+      "alpha_lag": 0.82,
+      "muskingum_x": 0.3,
+      "cn_uplift": 0.0,
+      "total_obj": 73.34,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 544.59,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -2.38,
+          "peak_stage_accuracy_pct": 86.5,
+          "sim_peak_q_m3s": 3490.0,
+          "sim_peak_ts": "2019-08-07 00:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 65.3,
+          "obj": 20.22
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.86,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -5.97,
+          "peak_stage_accuracy_pct": 67.8,
+          "sim_peak_q_m3s": 1661.0,
+          "sim_peak_ts": "2021-07-23 04:00:00",
+          "obj": 48.37
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.13,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.44,
+          "peak_stage_accuracy_pct": 96.8,
+          "sim_peak_q_m3s": 2259.0,
+          "sim_peak_ts": "2025-08-21 09:00:00",
+          "obj": 4.75
+        }
+      }
+    },
+    {
+      "alpha_k": 0.45,
+      "alpha_lag": 0.82,
+      "muskingum_x": 0.15,
+      "cn_uplift": 0.0,
+      "total_obj": 73.79,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 544.55,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -2.42,
+          "peak_stage_accuracy_pct": 86.3,
+          "sim_peak_q_m3s": 3468.0,
+          "sim_peak_ts": "2019-08-06 23:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 64.3,
+          "obj": 20.56
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.86,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -5.97,
+          "peak_stage_accuracy_pct": 67.8,
+          "sim_peak_q_m3s": 1658.0,
+          "sim_peak_ts": "2021-07-23 05:00:00",
+          "obj": 48.37
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.12,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.45,
+          "peak_stage_accuracy_pct": 96.8,
+          "sim_peak_q_m3s": 2247.0,
+          "sim_peak_ts": "2025-08-21 09:00:00",
+          "obj": 4.86
+        }
+      }
+    },
+    {
+      "alpha_k": 0.6,
+      "alpha_lag": 0.82,
+      "muskingum_x": 0.3,
+      "cn_uplift": 0.0,
+      "total_obj": 74.37,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 544.53,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -2.44,
+          "peak_stage_accuracy_pct": 86.2,
+          "sim_peak_q_m3s": 3454.0,
+          "sim_peak_ts": "2019-08-07 02:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 63.6,
+          "obj": 20.73
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.85,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -5.98,
+          "peak_stage_accuracy_pct": 67.7,
+          "sim_peak_q_m3s": 1654.0,
+          "sim_peak_ts": "2021-07-23 06:00:00",
+          "obj": 48.46
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.09,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.48,
+          "peak_stage_accuracy_pct": 96.5,
+          "sim_peak_q_m3s": 2231.0,
+          "sim_peak_ts": "2025-08-21 10:00:00",
+          "obj": 5.18
+        }
+      }
+    },
+    {
+      "alpha_k": 0.6,
+      "alpha_lag": 0.82,
+      "muskingum_x": 0.15,
+      "cn_uplift": 0.0,
+      "total_obj": 75.1,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 544.48,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -2.49,
+          "peak_stage_accuracy_pct": 85.9,
+          "sim_peak_q_m3s": 3426.0,
+          "sim_peak_ts": "2019-08-07 02:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 62.3,
+          "obj": 21.16
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.84,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -5.99,
+          "peak_stage_accuracy_pct": 67.6,
+          "sim_peak_q_m3s": 1650.0,
+          "sim_peak_ts": "2021-07-23 05:00:00",
+          "obj": 48.54
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.07,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.5,
+          "peak_stage_accuracy_pct": 96.4,
+          "sim_peak_q_m3s": 2216.0,
+          "sim_peak_ts": "2025-08-21 10:00:00",
+          "obj": 5.4
+        }
+      }
+    },
+    {
+      "alpha_k": 0.8,
+      "alpha_lag": 0.82,
+      "muskingum_x": 0.3,
+      "cn_uplift": 0.0,
+      "total_obj": 76.03,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 544.43,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -2.54,
+          "peak_stage_accuracy_pct": 85.6,
+          "sim_peak_q_m3s": 3401.0,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 61.1,
+          "obj": 21.58
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.83,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -6.0,
+          "peak_stage_accuracy_pct": 67.6,
+          "sim_peak_q_m3s": 1643.0,
+          "sim_peak_ts": "2021-07-23 08:00:00",
+          "obj": 48.62
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.03,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.54,
+          "peak_stage_accuracy_pct": 96.1,
+          "sim_peak_q_m3s": 2188.0,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "obj": 5.83
+        }
+      }
+    },
+    {
+      "alpha_k": 0.8,
+      "alpha_lag": 0.82,
+      "muskingum_x": 0.15,
+      "cn_uplift": 0.0,
+      "total_obj": 76.92,
+      "events": {
+        "2019_august": {
+          "sim_peak_wse_m": 544.36,
+          "obs_peak_wse_m": 546.97,
+          "peak_err_m": -2.61,
+          "peak_stage_accuracy_pct": 85.2,
+          "sim_peak_q_m3s": 3360.0,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.2,
+          "obj": 22.18
+        },
+        "2021_july": {
+          "sim_peak_wse_m": 541.82,
+          "obs_peak_wse_m": 547.83,
+          "peak_err_m": -6.01,
+          "peak_stage_accuracy_pct": 67.5,
+          "sim_peak_q_m3s": 1635.0,
+          "sim_peak_ts": "2021-07-23 09:00:00",
+          "obj": 48.7
+        },
+        "2025_august": {
+          "sim_peak_wse_m": 542.01,
+          "obs_peak_wse_m": 542.57,
+          "peak_err_m": -0.56,
+          "peak_stage_accuracy_pct": 96.0,
+          "sim_peak_q_m3s": 2168.0,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "obj": 6.04
+        }
+      }
+    }
+  ],
+  "best": {
+    "alpha_k": 0.45,
+    "alpha_lag": 0.6,
+    "muskingum_x": 0.3,
+    "cn_uplift": 0.0,
+    "total_obj": 66.53,
+    "events": {
+      "2019_august": {
+        "sim_peak_wse_m": 545.05,
+        "obs_peak_wse_m": 546.97,
+        "peak_err_m": -1.92,
+        "peak_stage_accuracy_pct": 89.1,
+        "sim_peak_q_m3s": 3725.0,
+        "sim_peak_ts": "2019-08-06 11:00:00",
+        "obs_q_m3s": 2111.0,
+        "peak_q_err_pct": 76.4,
+        "obj": 16.32
+      },
+      "2021_july": {
+        "sim_peak_wse_m": 541.94,
+        "obs_peak_wse_m": 547.83,
+        "peak_err_m": -5.89,
+        "peak_stage_accuracy_pct": 68.2,
+        "sim_peak_q_m3s": 1705.0,
+        "sim_peak_ts": "2021-07-22 18:00:00",
+        "obj": 47.73
+      },
+      "2025_august": {
+        "sim_peak_wse_m": 542.34,
+        "obs_peak_wse_m": 542.57,
+        "peak_err_m": -0.23,
+        "peak_stage_accuracy_pct": 98.3,
+        "sim_peak_q_m3s": 2432.0,
+        "sim_peak_ts": "2025-08-20 21:00:00",
+        "obj": 2.48
+      }
+    }
+  },
+  "metric": "acc = 1 - |sim-obs|/(obs-bed); Rajaram bed 529.318, Shivaji bed 528.670"
+}

@@ -17,6 +17,9 @@ site_dir: site
 exclude_docs: |
   README.md
   __pycache__/
+  # Standalone GitHub Pages landing page for the /docs source; superseded by
+  # index.md inside the MkDocs build, kept in the repo for direct Pages hosting.
+  index.html
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  PLUGINS
@@ -231,6 +234,7 @@ nav:
   - "System Diagrams":
       - Architecture Atlas: architecture-atlas.md
       - System Architecture: architecture.md
+      - Dataflow Pipeline: dataflow.md
 
   - "API Reference":
       - api-reference/index.md
@@ -263,6 +267,7 @@ nav:
       - Open-Meteo / ECMWF: open-meteo-ecmwf.md
       - Rainfall Validation Pipeline: rainfall-validation-pipeline.md
       - Calibration & Validation: calibration-validation.md
+      - Flood Event Documentation: flood-event-documentation.md
       - ML Calibration Engine: ml-calibration-engine.md
       - PI Accuracy Report: accuracy-analysis-pi-report.md
 

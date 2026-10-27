@@ -1,38 +1,24 @@
 # Open-Meteo & ECMWF Meteorological Data Pipeline
 
-```text
-========================================================================================
-             HYDROCAST METEOROLOGICAL INGESTION & FORECAST ENGINE
-========================================================================================
 
-           ECMWF Integrated Forecasting System (IFS HRES 9km / 0.1° Grid)
-                                       │
-                                       ▼
-                       Open-Meteo High-Performance REST API
-                                       │
-     ┌─────────────────────────────────┴─────────────────────────────────┐
-     ▼                                                                   ▼
-[ 90-Hour Forward Hyetograph ]                          [ Soil-Moisture Capture ]
-Hourly precipitation (mm/hr)                             Fetch-and-log ONLY:
-Horizon: T+0 to T+89h                                    IFS 90h VWC + ERA5-Land 5-day
-Resolution: 1 hour                                       antecedent (0-7 to 100-255 cm).
-      │                                                  Stored for FUTURE AMC refinement;
-      │                                                  never alters CN/K/routing today.
-      ▼
-[ AMC Classification (90h Rain Signal) ]
-Cumulative mean 90h forecast rain (mm)
-Evaluates Soil Moisture:
-AMC-I (Dry) / AMC-II / AMC-III (Wet)
-      │                                                   │
-      └─────────────────────────────────┬─────────────────┘
-                                        ▼
-                  Dynamic Subbasin Station Selector & Spatial Router
-                                        │
-                  Panchganga 18 Rain Gauge Network (S1 to S9)
-                                        │
-                                        ▼
-                    HEC-HMS Conservative Hyetograph Generation
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 02</span>
+      <strong>Rainfall-to-Alert Dataflow</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/02-dataflow.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/02-dataflow.html?embed=1" title="Rainfall-to-Alert Dataflow Console"></iframe>
+</div>
 
 ---
 
@@ -53,7 +39,7 @@ The HydroCast system requires forward-looking meteorological forcing data to dri
 
 The Panchganga river basin originates along the high-rainfall crest of the Western Ghats (Sahyadri ridge, receiving $3,000 - 6,000\text{ mm}$ annually) and drains eastward toward Kolhapur city.
 
-```text
+```
  Catchment Bounding Box:
  17.20° N  +-----------------------------------------------------------+ (North: Kasaba Walawe)
            |   Gaganbawda (680m)                                       |
@@ -78,30 +64,27 @@ The Panchganga river basin originates along the high-rainfall crest of the Weste
 
 The system tracks 18 distinct meteorological nodes across the 9 hydrologic subbasins ($S_1$ to $S_9$):
 
-```text
-+----+-------------------+----------+-----------+------------+------------+--------------------+
-| ID | Station Name      | Subbasin | Elevation | Longitude  | Latitude   | Hierarchy Role     |
-+----+-------------------+----------+-----------+------------+------------+--------------------+
-| 01 | KARVIR            | S1       | 550 m     | 74.248177° | 16.706369° | Primary Governing  |
-| 02 | SANGARUL          | S2       | 572 m     | 74.093163° | 16.684196° | Primary Governing  |
-| 03 | BALINGA           | S2       | 560 m     | 74.170310° | 16.687844° | Alternate Backup   |
-| 04 | KALE              | S2       | 580 m     | 74.056450° | 16.722809° | Alternate Backup   |
-| 05 | KOTOLI            | S3       | 585 m     | 74.051871° | 16.782017° | Primary Governing  |
-| 06 | BAJAR_BHOGAON     | S3       | 590 m     | 74.110782° | 16.808677° | Alternate Backup   |
-| 07 | PADAL             | S3       | 575 m     | 74.115187° | 16.744601° | Alternate Backup   |
-| 08 | BEED              | S4       | 565 m     | 74.128896° | 16.647984° | Primary Governing  |
-| 09 | SALWAN            | S5       | 595 m     | 73.973500° | 16.671200° | Primary Governing  |
-| 10 | KARANJPHEN        | S6       | 640 m     | 73.903649° | 16.785097° | Primary Governing  |
-| 11 | GAGANBAWDA        | S6       | 680 m     | 73.834674° | 16.546993° | Alternate Backup   |
-| 12 | RADHANAGARI       | S7       | 615 m     | 73.997182° | 16.410210° | Primary Governing  |
-| 13 | SHIROLI_DHUMALA   | S8       | 560 m     | 74.106283° | 16.616677° | Alternate Backup   |
-| 14 | HALADI            | S8       | 565 m     | 74.148293° | 16.583344° | Alternate Backup   |
-| 15 | RASHIWADE_BK      | S8       | 570 m     | 74.058300° | 16.541700° | Alternate Backup   |
-| 16 | AAVALI_BK         | S8       | 575 m     | 74.016700° | 16.500000° | Alternate Backup   |
-| 17 | KASABA_TARALE     | S8       | 580 m     | 73.966700° | 16.466700° | Primary Governing  |
-| 18 | KASABA_WALAWE     | S9       | 560 m     | 74.195610° | 16.824510° | Primary Governing  |
-+----+-------------------+----------+-----------+------------+------------+--------------------+
-```
+| ID | Station Name | Subbasin | Elevation | Longitude | Latitude | Hierarchy Role |
+|:---|:---|:---|:---|:---|:---|:---|
+| 01 | KARVIR | S1 | 550 m | 74.248177° | 16.706369° | Primary Governing |
+| 02 | SANGARUL | S2 | 572 m | 74.093163° | 16.684196° | Primary Governing |
+| 03 | BALINGA | S2 | 560 m | 74.170310° | 16.687844° | Alternate Backup |
+| 04 | KALE | S2 | 580 m | 74.056450° | 16.722809° | Alternate Backup |
+| 05 | KOTOLI | S3 | 585 m | 74.051871° | 16.782017° | Primary Governing |
+| 06 | BAJAR_BHOGAON | S3 | 590 m | 74.110782° | 16.808677° | Alternate Backup |
+| 07 | PADAL | S3 | 575 m | 74.115187° | 16.744601° | Alternate Backup |
+| 08 | BEED | S4 | 565 m | 74.128896° | 16.647984° | Primary Governing |
+| 09 | SALWAN | S5 | 595 m | 73.973500° | 16.671200° | Primary Governing |
+| 10 | KARANJPHEN | S6 | 640 m | 73.903649° | 16.785097° | Primary Governing |
+| 11 | GAGANBAWDA | S6 | 680 m | 73.834674° | 16.546993° | Alternate Backup |
+| 12 | RADHANAGARI | S7 | 615 m | 73.997182° | 16.410210° | Primary Governing |
+| 13 | SHIROLI_DHUMALA | S8 | 560 m | 74.106283° | 16.616677° | Alternate Backup |
+| 14 | HALADI | S8 | 565 m | 74.148293° | 16.583344° | Alternate Backup |
+| 15 | RASHIWADE_BK | S8 | 570 m | 74.058300° | 16.541700° | Alternate Backup |
+| 16 | AAVALI_BK | S8 | 575 m | 74.016700° | 16.500000° | Alternate Backup |
+| 17 | KASABA_TARALE | S8 | 580 m | 73.966700° | 16.466700° | Primary Governing |
+| 18 | KASABA_WALAWE | S9 | 560 m | 74.195610° | 16.824510° | Primary Governing |
+
 
 ---
 
@@ -115,7 +98,7 @@ The forecast fetcher in [`open_meteo.py`](file:///e:/hydrocast_complete/src/ecmw
 
 ### 4.2 Query Parameters
 
-```python
+```
 params = {
     "latitude":          round(lat, 4),
     "longitude":         round(lon, 4),
@@ -128,7 +111,7 @@ params = {
 
 ### 4.3 Hourly Precipitation Response Parsing
 
-```python
+```
 # Open-Meteo JSON Structure:
 {
   "latitude": 16.71,
@@ -189,15 +172,12 @@ To configure the hydrological runoff Curve Number ($CN$) accurately, the automat
 
 $$\bar{P}_{90} = \frac{1}{N}\sum_{\text{subbasins}_{i}} \sum_{h=0}^{89} P_i(h) \quad (\text{mean cumulative 90h forecast rainfall in mm})$$
 
-```text
-+-------------------+------------------------------+
 | Moisture Category | Mean 90h Forecast Rain (mm) |
-+-------------------+------------------------------+
-| AMC-I   (Dry)     | < 25.0 mm                    |
-| AMC-II  (Average) | 25.0 to 65.0 mm              |
-| AMC-III (Wet)     | >= 65.0 mm                   |
-+-------------------+------------------------------+
-```
+|:---|:---|
+| AMC-I   (Dry) | < 25.0 mm |
+| AMC-II  (Average) | 25.0 to 65.0 mm |
+| AMC-III (Wet) | >= 65.0 mm |
+
 
 The class drives both the Curve Numbers (TR-55 transforms) and the initial abstraction ratio:
 
@@ -220,16 +200,13 @@ Two best-effort fetches are issued per subbasin (both wrapped so any failure onl
 
 ### 7.1 Soil-Moisture Depth Layers (m³/m³ volumetric water content)
 
-```text
-+--------------------------+-------------------------------+
-| API Field                | Physical Depth Stored         |
-+--------------------------+-------------------------------+
-| soil_moisture_0_to_7cm   | 0–7 cm    (surface)          |
-| soil_moisture_7_to_28cm  | 7–28 cm                       |
-| soil_moisture_28_to_100cm| 28–100 cm                     |
-| soil_moisture_100_to_255cm | 100–255 cm                 |
-+--------------------------+-------------------------------+
-```
+| API Field | Physical Depth Stored |
+|:---|:---|
+| soil_moisture_0_to_7cm | 0–7 cm    (surface) |
+| soil_moisture_7_to_28cm | 7–28 cm |
+| soil_moisture_28_to_100cm | 28–100 cm |
+| soil_moisture_100_to_255cm | 100–255 cm |
+
 
 Values are clipped to the physical bound $[0.0,\; 0.60]\ \text{m}^3/\text{m}^3$ (`SOIL_MOISTURE_SANE_RANGE`), NaN/Inf are zeroed, and results are rounded to 4 decimals for JSON-safe archiving.
 

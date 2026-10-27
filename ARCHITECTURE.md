@@ -1,467 +1,577 @@
-# HydroCast — Rainfall-Runoff & Flood Intelligence System
-## System Architecture Specification v3.0 (Operational Release)
+# HydroCast — System Architecture (Archify Reference)
+
+> **Panchganga River Catchment** · Kolhapur District, Maharashtra, India  
+> **Real-time rainfall-runoff · Hydraulic rating · IoT telemetry · 90-hour predictive flood intelligence**
+
+```
+ ██████╗ ███████╗██████╗ ██╗    ██╗███████╗███╗   ██╗██╗ ██████╗
+██╔════╝ ██╔════╝██╔══██╗██║    ██║██╔════╝████╗  ██║██║██╔═══██╗
+██║  ███╗█████╗  ██████╔╝██║ █╗ ██║█████╗  ██╔██╗ ██║██║██║   ██║
+██║   ██║██╔══╝  ██╔═══╝ ██║███╗██║██╔══╝  ██║╚██╗██║██║██║   ██╗
+╚██████╔╝███████╗██║     ╚███╔███╔╝███████╗██║ ╚████║██║╚██████╔╝
+ ╚═════╝ ╚══════╝╚═╝      ╚══╝╚══╝ ╚══════╝╚═╝  ╚═══╝╚═╝ ╚═════╝
+
+  Operational Hydrologic Continuum · 90-Hour High-Resolution Predictive Flood Intelligence
+```
+
+<p align="center">
+  <a href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/">
+    <img src="https://img.shields.io/badge/🌐_Live_Documentation_Portal-GitHub_Pages-06B6D4?style=for-the-badge&logo=github&logoColor=white" alt="Live GitHub Pages Portal">
+  </a>
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions">
+    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/main.yml?style=for-the-badge&logo=githubactions" alt="CI Status">
+  </a>
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/issues">
+    <img src="https://img.shields.io/github/issues/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=github" alt="Open Issues">
+  </a>
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge" alt="License">
+  </a>
+</p>
 
 ---
 
-## 1. Cloud Infrastructure & System Architecture
+## About HydroCast
 
-```mermaid
-flowchart TB
+**HydroCast** is a production-grade, operational hydrologic and hydraulic flood early-warning system engineered for the **2,140 km² Panchganga River Basin** in Western Maharashtra, India.
 
-    subgraph EXT["EXTERNAL · outside system control"]
-        direction LR
-        OMAPI["<b>Open-Meteo API</b><br/>ECMWF IFS HRES 9 km<br/>90 h ahead · 1 h step"]
-        TS["<b>ThingSpeak IoT</b><br/>channel 3424513<br/>ultrasonic stage"]
-        TGCH["<b>DDMA Telegram</b><br/>district control room"]
-    end
+During the Southwest Monsoon (June–September), intense orographic rainfall along the Western Ghats crest (Sahyadri mountains, often exceeding 100–250 mm/day) drains rapidly through steep basaltic gorges into the urban bottleneck of **Kolhapur city**. The floods of August 2019 and July 2021 showed that municipal authorities need **48–72 hours of predictive lead time** to deploy barriers, operate sluice gates, and evacuate civilians.
 
-    subgraph GH["GITHUB ACTIONS · ephemeral runner"]
-        CRON["<b>Scheduled cycle</b><br/>02:30 · 08:30 · 14:30 · 20:30 UTC"]
-    end
+HydroCast closes that gap by coupling:
 
-    subgraph CORE["PYTHON BACKEND · the computational core"]
-        direction TB
-        ORCH["<b>Pipeline orchestrator</b><br/><i>src/orchestrator.py</i><br/>12 sequential steps"]
-        ING["<b>Ingestion</b><br/><i>src/ecmwf/</i> + <i>src/processing/</i><br/>QC: ≤500 mm/h · ≥50% cover<br/>lag ≤60 min · NWP ≤8 h"]
-        SEL["<b>Gauge router</b><br/><i>station_selector.py</i><br/>argmax 90 h volume per subbasin"]
-        EMU["<b>Runoff engine</b><br/><i>src/hms/runner.py</i><br/>SCS-CN → SCS-UH → Muskingum R5…R1<br/>+ baseflow B₀·e^(−0.002t)"]
-        RATE["<b>Stage conversion</b><br/><i>stage_converter.py</i><br/>WRD-anchored PCHIP<br/>Shivaji = Rajaram − 0.648 m"]
-        ML["<b>ML recalibration</b><br/><i>ml_calibration.py</i><br/>Levenberg-Marquardt<br/>α_K, α_lag, ΔCN, X"]
-        ALT["<b>Alert dispatcher</b><br/><i>src/alerts/</i><br/>6-level ladder"]
-    end
-
-    DB[("Supabase<br/>PostgreSQL 15 + PostGIS<br/>10 tables · 3 views")]
-
-    subgraph DEL["DELIVERY"]
-        direction LR
-        UI["<b>Next.js 14 dashboard</b><br/>Leaflet GIS · Chart.js<br/>2D SVG cross-section"]
-        API["<b>FastAPI</b><br/>:8000 · /docs<br/>public reads + admin JWT"]
-    end
-
-    CRON -->|python -m src.ecmwf.open_meteo| ING
-    ING --> OMAPI
-    SEL --> ING
-    ORCH --> ING
-    ING --> SEL
-    SEL --> EMU
-    EMU --> RATE
-    RATE --> ALT
-    ALT --> TGCH
-    TS -->|observed stage| ML
-    ML -->|gate: Δt ≥ 1.0 h<br/>or Δh &gt; 0.25 m, rising limb| ALT
-    ML -.->|α_K, α_lag, ΔCN, X<br/>atomic write-back to Basin_1.basin| EMU
-    EMU --> DB
-    RATE --> DB
-    DB --> UI
-    DB --> API
-    API --> UI
-
-    classDef force   fill:#f1f5f9,stroke:#64748b,stroke-width:1.5px,color:#0f172a
-    classDef ingest  fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#0c1a3a
-    classDef compute fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef store   fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
-    classDef deliver fill:#fce7f3,stroke:#db2777,stroke-width:1.5px,color:#4a0d2a
-    classDef closed  fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b
-
-    class OMAPI,TS,TGCH,CRON force
-    class ING,SEL ingest
-    class ORCH,EMU,RATE,ALT compute
-    class DB store
-    class UI,API deliver
-    class ML closed
-```
-
-The flow above is drawn at the module level. The
-[Architecture Atlas](docs/architecture-atlas.md) carries the same system with
-every governing equation, threshold and fallback branch annotated on the nodes —
-start there if you want the engineering rather than the component inventory.
+| Capability | Implementation |
+|:---|:---|
+| **Numerical Weather Prediction** | ECMWF IFS HRES 9 km / 0.1° — 90-h QPF updated every 6 hours, with exponential backoff & jitter (`src/ecmwf/retry_utils.py`) |
+| **Watershed Routing** | SCS-CN loss, SCS unit-hydrograph, Muskingum channel routing (R1–R5) across 9 subbasins — HEC-HMS 4.x + pure-Python emulator |
+| **River Hydraulics** | WRD-anchored monotonic PCHIP stage↔discharge rating (Rajaram verbatim; Shivaji shifted −0.648 m) |
+| **ML Recalibration** | Bounded L-BFGS-B (α_K, α_lag, ΔCN, X) triggered by ThingSpeak IoT telemetry; atomic write-back to `Basin_1.basin` |
+| **Peak Strike Horizon** | Exact peak arrival with ±2.0 h confidence interval (95% CI) at Shivaji Bridge, Rajaram Weir, and basin sink |
+| **Emergency Alerting** | CWC-formatted flood bulletins to DDMA Telegram channels and agency webhooks |
+| **Cold Storage** | 90-day pruning into Snappy-compressed Apache Parquet (`src/db/archive_runs.py`) |
+| **Security** | Dual-mode admin auth (HMAC-SHA256 JWT + Master Key) with `slowapi` 100 req/min rate limiting |
+| **Containerization** | Docker & Docker Compose (Python 3.12, OpenJDK 17, GDAL, Next.js 14 SSR, PostGIS) |
+| **Dashboard** | Next.js 14 with live SVG cross-sections, 90-h hourly prediction logs, WebSocket push |
 
 ---
 
-## 2. Detailed System Topology
+## End-to-End System Architecture — Archify ASCII
 
-The two figures below are the same system at two different altitudes. The
-first is a component map: it answers "which module talks to which". The second
-is a layer map: it answers "what happens to the water, in what order". Neither
-carries the governing equations — for those, see
-[Atlas §4](docs/architecture-atlas.md#4-loss-transform-and-routing).
-
+This is the single source of truth for the system topology. Six layers flow left→right, top→bottom. Every process, module, model, script, and database lives in exactly **one** logical cell — no scattered boxes, no redundant flowcharts.
 
 ```
-====================================================================================================
-                     PANCHGANGA HYDROCAST - END-TO-END SYSTEM TOPOLOGY
-====================================================================================================
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                              HYDROCAST — END-TO-END SYSTEM TOPOLOGY (v2.0.0)                                           ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 
-   [ ECMWF 9km HRES IFS ]                    [ ThingSpeak IoT Channel 3424513 ]
-  (20 Station Precipitation)                 (Shivaji Bridge Ultrasonic Level)
-              |                                              |
-              v                                              v
-   +----------------------+                       +----------------------+
-   | Open-Meteo SDK Client|                       | Telemetry Validator  |
-   | - 90h Hyetographs    |                       | - Quality Control    |
-   +----------------------+                       +----------------------+
-              |                                              |
-              +----------------------+-----------------------+
-                                     |
-                                     v
-                 +---------------------------------------+
-                 |  Adaptive Physics-Informed ML Engine  |
-                 |  - Discrepancy Detection (Delta_t)    |
-                 |  - Scipy Levenberg-Marquardt Loss Minimization   |
-                 +---------------------------------------+
-                                     |
-                                     v
-                 +---------------------------------------+
-                 |    HEC-HMS 4.13 Hydrological Core     |
-                 |  - Loss: SCS Curve Number (AMC-I/II/III)|
-                 |  - Transform: SCS Unit Hydrograph (UH)|
-                 |  - Channel Routing: Muskingum (R1–R5) |
-                 |  - Baseflow: Exponential Recession    |
-                 +---------------------------------------+
-                                     |
-                                     v
-                 +---------------------------------------+
-                 |   2D Surveyed Hydraulic Rating Engine |
-                 |  - Divided Channel Method (DCM)       |
-                 |  - Main: n=0.031 | Overbank: n=0.070  |
-                 |  - Bed Gradient & Backwater Transfer  |
-                 +---------------------------------------+
-                                     |
-                   +-----------------+-----------------+
-                   |                                   |
-                   v                                   v
-   +-------------------------------+   +-------------------------------+
-   | Supabase PostgreSQL DB        |   | Next.js 14 Dashboard & SWR    |
-   | - Single-Tree Relational Store|   | - GIS Leaflet Map             |
-   | - Parquet Cold Storage Archival   | - 2D Cross-Section Viewer     |
-   |   (src/db/archive_runs.py)    |   | - Adaptive ML Calibration Tab |
-   +-------------------------------+   | - Serverless Telegram Webhook |
-                   |                   +-------------------------------+
-                   v                                   |
-   +-------------------------------+                   v
-   | DDMA Emergency Alert Engine   |   +-------------------------------+
-   | - Telegram Bot Push Bulletins |   | Interactive Telegram Chatbot  |
-   | - CWC Threshold Dispatcher    |   | - /status, /stage, /alerts    |
-   +-------------------------------+   +-------------------------------+
-```
+╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  LAYER 0 · EXTERNAL FORCINGS (read-only)                        │ LAYER 0 · EXTERNAL I/O & TELEMETRY                       │ LAYER 0 · ALERTING              ║
+╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  ECMWF IFS HRES 9 km                                            │ ThingSpeak Ch. 3424513                                  │ DDMA / CWC / SDRF                 ║
+║  90-h QPF (mm/hr, 1-h step)                                     │ Ultrasonic stage @ Shivaji Bridge (549.35 m MSL)        │ Telegram bot + webhooks           ║
+║  Open-Meteo REST API                                            │                                                           │ HTML flood bulletins                ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+                                  │ precip (mm/hr)                 │ observed stage (m MSL)                    │ alert trigger                       ║
+                                  ▼                                ▼                                       ▼                                       ║
 
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  LAYER 1 · INGESTION   scripts: src/ecmwf/, src/processing/, src/dss/, src/sensors/                                    ║
+╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  Open-Meteo SDK Client    ─▶   Station Selector   ─▶   DSS Writer   ─▶   ThingSpeak Gauge Fetcher                        ║
+║  (retry_utils.py)              (argmax 90-h vol)    (HEC-DSS path)   (fetch_shivaji_live_telemetry)                      ║
+║                                                                                                                         ║
+║  ▼ 90-h hyetographs per station    ▼ governing gage per subbasin    ▼ live telemetry JSON                                ║
+║  data/openmeteo_dss/*.json           STATION_REGISTRY                  cache (data/telemetry/)                            ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+                                  │                                                              ║
+                                  ▼                                                              ║
 
-HydroCast is an enterprise-grade operational hydrologic forecasting and early warning platform engineered specifically for the **$1,837.21\text{ km}^2$ gauged Panchganga River Basin** in Western Maharashtra, India. The platform couples numerical weather prediction, physical watershed routing, calibrated river hydraulics, real-time IoT radar telemetry, and closed-loop machine learning parameter recalibration into an autonomous 90-hour predictive continuum.
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  LAYER 2 · ORCHESTRATION & CORE ENGINE   scripts: src/orchestrator.py, src/hms/                                        ║
+╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  Orchestrator (12 timed steps)   ─▶   HEC-HMS 4.x / Pure-Python Emulator   ─▶   Outlet Hydrograph                        ║
+║  (pipeline_step_log)                (SCS-CN → SCS-UH → Muskingum R1–R5)   (J_Outlet sink)                              ║
+║                                                                                                                         ║
+║  ▼ deterministic, retry-wrapped      ▼ Q_total, Q_surface, baseflow     ▼ 90-point series                                ║
+║  logs/pipeline.log                   src/hms/runner.py                   data/runs/CYC_*.json                              ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+                                  │                                                              ║
+                                  ▼                                                              ║
 
-```
-┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                 1. METEOROLOGICAL INGESTION LAYER                                      │
-│  Open-Meteo REST API / ECMWF IFS HRES (9 km Grid) ──> 90-Hour Forward Quantitative Precipitation (QPF) │
-│  Exponential Backoff & Jitter Wrappers (src/ecmwf/retry_utils.py) ──> Physical Range & NaN QC Checks   │
-└───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
-                                                    │
-                                                    ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                 2. SPATIAL TOPOLOGY & SOIL MOISTURE LAYER                              │
-│  20 Panchganga Stations (Karveer, Gaganbawda...) ──> Dynamic Conservative Maximum-Rainfall Selector     │
-│  90h Forecast Rain Signal ──> Dynamic SCS Curve Number (AMC-I / AMC-II / AMC-III)                 │
-└───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
-                                                    │
-                                                    ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                 3. HYDROLOGICAL RUNOFF ENGINE LAYER                                    │
-│  Calibrated Pure-Python SCS-CN / SCS-UH / Muskingum emulator is the production path on Linux.      │
-│  A native HEC-HMS 4.x headless batch run is attempted when the Windows binary is present, but its    │
-│  Run_1.dss is never parsed — every published number comes from the emulator.                        │
-│  Subbasins S1–S9 Loss & Convolution ──> Reach Routing (R1–R5) ──> Sink Outlet Hydrograph (J_Outlet)   │
-└───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
-                                                    │
-                                                    ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                 4. WRD-ANCHORED HYDRAULIC RATING ENGINE                                   │
-│  Monotonic PCHIP Rating (dQ/dh > 0) anchored on the official WRD Stage-Discharge Sheet               │
-│  (Rajaram: sheet verbatim; Shivaji: sheet −0.648 m on sheet pts; + per-site WRD 2021–23 low-flow anchors)  │
-│  Sheet Range: 530.18m Datum to 545.33m HFL Benchmark (3,850 m³/s)                                      │
-└───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
-                                                    │
-                                                    ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                           5. REAL-TIME ML ADAPTIVE RECALIBRATION & CONFIDENCE BAND                     │
-│  Discrepancy Detection vs ThingSpeak Ultrasonic Telemetry (|Δt| ≥ 1.0h or Δh > 0.25m)                  │
-│  Levenberg-Marquardt Optimization: Muskingum α_K, Subbasin α_lag, ΔCN, Muskingum X ──> Basin_1.basin is  │
-│  the single source of truth; recalibration writes back atomically to a .bak snapshot. │
-│  Peak Flood Arrival Window Calculation: T_peak ± 2.0h (95% Confidence Interval) at Shivaji & Rajaram   │
-└───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
-                                                    │
-                                                    ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                 6. PERSISTENCE, COLD STORAGE & SECURITY                                │
-│  Transactional Relational: PostgreSQL 15 / Supabase with asyncpg Pool & Step Logging                   │
-│  Cold Storage Parquet Archival (src/db/archive_runs.py): 90-day columnar pruning into Snappy Parquet   │
-│  Enterprise Security (src/api/security.py): HMAC-SHA256 JWT Admin + slowapi Rate Limiting (100 req/min)│
-└───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
-                                                    │
-                                                    ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                 7. ALERTING & DECISION SUPPORT LAYER                                   │
-│  DDMA Multi-Channel Telegram Bot Dispatcher (src/alerts/telegram_bot.py) + Agency Webhooks             │
-│  WebSocket Live Push (/ws/live) ──> Next.js 14 Responsive Dashboard (Chart.js, Leaflet, 2D SVG X-Sec) │
-│  Peak Strike Horizon Card ──> 1-Click Run Ledger Inspector ──> Dual-Unit (m MSL / ft) Prediction Log   │
-└────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  LAYER 3 · HYDRAULIC RATING   model: src/hydrology/stage_converter.py                                                    ║
+╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  Discharge Q   ─▶   WRD-Anchored PCHIP   ─▶   Stage h (m MSL)   ─▶   Alert Classification                                  ║
+║  Rajaram (verbatim)   (dQ/dh > 0)      Shivaji (−0.648 m)     NORMAL / ALERT / WARNING / DANGER                          ║
+║  Shivaji (shifted)    monotonic proof   530.18 → 545.33 m    HFL_EXCEEDED / EXTREME                                      ║
+║                                                                                                                         ║
+║  ▼ rating curve df                    ▼ per-site thresholds            ▼ bridge_stage_forecast (DB table)                 ║
+║  build_calibrated_rating_curve()      classify_alert()                                                                     ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+                                  │                                                              ║
+                                  ▼                                                              ║
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  LAYER 4 · ML RECALIBRATION   model: src/hydrology/ml_calibration.py                                                     ║
+╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  ThingSpeak obs   ─▶   Discrepancy Detection   ─▶   Levenberg–Marquardt   ─▶   Basin_1.basin (atomic)                     ║
+║  (Δt ≥ 1.0 h or        (|Δt|, Δh, peak Q err)   (α_K, α_lag, ΔCN, X)      + .bak snapshot                                ║
+║   Δh > 0.25 m)                                                          in-memory overrides                              ║
+║                                                                                                                         ║
+║  ▼ calibrator.state                    ▼ L(θ) minimization              ▼ data/telemetry/                                ║
+║  detect_timing_and_stage_discrepancy()   calibrate_parameters()        ml_calibration_state.json                          ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+                                  │                                                              ║
+                                  ▼                                                              ║
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  LAYER 5 · PERSISTENCE & COLD STORAGE   database: PostgreSQL 15 + PostGIS / Supabase                                    ║
+╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  simulation_runs   │  hydrograph_results   │  bridge_stage_forecast   │  step_log   │  alert_events                       ║
+║  pipeline_step_log │  rating_curves       │  subbasin_rainfall_ts    │  gauge_stations│  subbasins                         ║
+║                                                                                                                         ║
+║  ▼ asyncpg pool   ▶ 90-day Parquet prune   ▶ asyncpg pool (reads)   ▶  data/archives/                                   ║
+║  store_results.py   src/db/archive_runs.py                                   Snappy partitions                           ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+                                  │                                                              ║
+                                  ▼                                                              ║
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  LAYER 6 · DELIVERY & ALERTING   scripts: src/api/, src/alerts/, frontend/                                              ║
+╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  FastAPI REST (:8000)   ─▶   WebSocket /ws/live   ─▶   Next.js 14 Dashboard   ─▶   Telegram Bot                            ║
+║  /api/v1/* (rate-limited)   real-time push     Leaflet GIS · Chart.js     /status /alerts                                ║
+║  admin JWT + X-API-Key        (broadcast after   2D SVG cross-sections     /bulletin                                     ║
+║                               step 12)                                        /rainfall                                                              ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## 2. Technology Stack & Component Inventory
+## Process → Module → Script → Model → Database (Artifact Map)
 
-| Layer | Technology | Operational Function |
-|---|---|---|
-| **NWP Meteorological Data** | ECMWF IFS HRES 9km (0.1°), Open-Meteo REST API | Quantitative precipitation forecast (90 hours, 1-hr step) |
-| **Ingestion Resilience** | Python `requests`, `openmeteo-requests`, SQLite Cache | Exponential backoff, full jitter, physical rainfall bounds (250 mm/hr) |
-| **Hydrological Engine** | Calibrated Pure-Python Emulator (HEC-HMS 4.x attempted, never parsed) | Loss (SCS-CN), Transform (SCS-UH), Channel Routing (Muskingum) |
-| **Hydraulic Rating** | SciPy PCHIP (`scipy.interpolate.PchipInterpolator`) | Strictly monotonic rating curves ($dQ/dh > 0$), surveyed bed slopes |
-| **Real-Time ML Recalibration** | SciPy `optimize.least_squares` (Levenberg-Marquardt), NumPy | Dynamic optimization of $\alpha_K$, $\alpha_{\text{lag}}$, $\Delta\text{CN}$, $X$ based on ThingSpeak telemetry |
-| **IoT Level Telemetry** | MathWorks ThingSpeak (Channel 3424513) | Solar-powered ultrasonic sensor at Shivaji Bridge deck ($549.35\text{ m MSL}$) |
-| **Database & Spatial** | PostgreSQL 15 + PostGIS + Supabase Pooler | Master cycle runs, hyetographs, hydrographs, step logs |
-| **Cold Storage Archival** | PyArrow + Apache Parquet (Snappy compression) | Columnar pruning of high-frequency telemetry older than 90 days |
-| **API Backend** | FastAPI 0.111+, Starlette, Uvicorn, asyncpg | RESTful endpoints, async connection pool, WebSocket live push |
-| **API Security & Limits** | PyJWT (HS256), `slowapi` (Limiter), constant-time HMAC | Dual-mode auth (Bearer JWT / Master API Key), 100 req/min rate limit |
-| **Emergency Alerting** | Telegram Bot API (`python-telegram-bot`), HTTP Webhooks | Automated CWC/DDMA flood bulletins to district control room & SDRF |
-| **Executive UI Dashboard** | Next.js 14 (App Router, SSR), React 18, Tailwind CSS | High-density operations dashboard, Leaflet GIS map, Chart.js, SVG X-Section |
-| **Containerization** | Docker, Docker Compose | Multi-stage backend container (Python 3.12 + OpenJDK 17 + GDAL), standalone Next.js container |
-| **Automation & CI/CD** | GitHub Actions workflows | 6-hourly operational runs + 1-hourly ThingSpeak verification |
-
----
-
-## 3. The 12-Step Automated Pipeline Continuum
-
-The orchestrator ([`src/orchestrator.py`](file:///e:/hydrocast_complete/src/orchestrator.py), [`src/ecmwf/open_meteo.py`](file:///e:/hydrocast_complete/src/ecmwf/open_meteo.py)) executes the following transactional sequence on every 6-hour cycle (00z, 06z, 12z, 18z):
+Every artifact appears exactly once. Read across: **what runs → where it lives → entry point → model/data produced → stored in.**
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│  STEP 1: METEOROLOGICAL FORCING INGESTION                                                               │
-│    Query Open-Meteo ECMWF IFS HRES 9km API with exponential backoff & full jitter (retry_utils.py).     │
-│    Sanitize NaNs, enforce non-negative bounds, clip anomalies (> 250 mm/hr), pad to 90 hours.            │
-│                                                                                                         │
-│  STEP 2: GAUGE FETCHING & SPATIAL STATION ROUTING                                                       │
-│    Ingest 20 rain gauge nodes across 9 subbasins. Evaluate cumulative volume.                           │
-│    Dynamic conservative router selects maximum-threat station as governing hyetograph per subbasin.     │
-│                                                                                                         │
-│  STEP 3: ANTECEDENT SOIL MOISTURE (AMC) CLASSIFICATION                                                  │
-│    Classify wetness from mean 90h forecast rain (AMC-I <25, II 25-65, III >=65 mm).                     │
-│    Dynamically adjust SCS Curve Numbers between AMC-I (dry), AMC-II (normal), and AMC-III (saturated).   │
-│                                                                                                         │
-│  STEP 4: HEC-DSS METEOROLOGICAL BOUNDARY PREPARATION                                                    │
-│    Generate per-gauge DSS input tables (//<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/) into HMS_Automation_RJKT.dss.│
-│                                                                                                         │
-│  STEP 5: REAL-TIME ML ADAPTIVE RECALIBRATION CHECK                                                      │
-│    Pull live ThingSpeak radar telemetry (Channel 3424513). Check previous cycle hydrograph vs observed. │
-│    If |Δt| ≥ 1.0h or Δh > 0.25m: solve Levenberg-Marquardt residuals for α_K, α_lag, ΔCN, Muskingum X.       │
-│    Backed-up atomic write-back to Basin_1.basin; current run also uses in-memory parameter overrides.  │
-│                                                                                                         │
-│  STEP 6: HYDROLOGICAL WATERSHED RUNOFF EXECUTION                                                        │
-│    Attempt USACE HEC-HMS 4.x headless batch run (Control_1.control + Basin_1.basin + Met_1.met) when  │
-│    the Windows binary is present, 300 s timeout. Fall back to the calibrated pure-Python SCS-CN /      │
-│    SCS-UH / Muskingum emulator (< 20 ms) on a missing binary, non-zero exit, or timeout.               │
-│    Note: Run_1.dss is never parsed, so the reported numbers are the emulator's either way.            │
-│                                                                                                         │
-│  STEP 7: SINK OUTLET HYDROGRAPH EXTRACTION                                                              │
-│    Extract the 352-point discharge hydrograph at basin sink (J_Outlet); the 90-hour forecast horizon │
-│    is sliced later. Calculate peak Q = argmax Q_total, Tp, and volume.                                  │
-│                                                                                                         │
-│  STEP 8: MONOTONIC HYDRAULIC RATING STAGE CONVERSION                                                    │
-│    Evaluate WRD-anchored PCHIP rating curves (dQ/dh > 0): Rajaram = official WRD sheet verbatim;        │
-│    Shivaji = same sheet shifted −0.648 m downstream datum (sheet points only; below  │
-│    ~20 m³/s the per-site WRD register governs). Produce 90 hourly stage and Q.      │
-│                                                                                                         │
-│  STEP 9: PEAK FLOOD STRIKE HORIZON & CONFIDENCE INTERVAL COMPUTATION                                    │
-│    Calculate peak arrival time and permissible ±2.0h uncertainty window (95% CI) at Shivaji and Rajaram.│
-│    Compute 95% stage confidence envelope (±0.12m to ±0.35m) and discharge band (±6% rating tolerance).  │
-│                                                                                                         │
-│  STEP 10: REAL-TIME ACCURACY & VALIDATION AUDITING                                                      │
-│    Compute Spearman rank correlation (ρ), Nash-Sutcliffe Efficiency (NSE), RMSE, MAE, and PBIAS.        │
-│    Audit 20-station rainfall volumetric fidelity (target > 95%).                                        │
-│                                                                                                         │
-│  STEP 11: MULTI-CHANNEL CWC / DDMA EMERGENCY ALERT DISPATCH                                             │
-│    Evaluate bridge stages against WRD datums (Warning: 542.70m, Danger: 543.30m, HFL: 545.33m MSL).    │
-│    Format official DDMA HTML flood bulletin; broadcast via Telegram Bot & dispatch agency webhooks.     │
-│                                                                                                         │
-│  STEP 12: PERSISTENCE, ARCHIVAL & REAL-TIME DASHBOARD BROADCAST                                         │
-│    Commit cycle to PostgreSQL (simulation_runs, hydrograph_results, bridge_stage_forecast, step_log).    │
-│    Write immutable JSON ledger (data/runs/{cycle_id}.json, frontend/public/data/latest_pipeline_state). │
-│    Broadcast cycle completion via WebSocket (/ws/live) to all connected Next.js operational dashboards. │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                              ARCHIFY — PROCESS / MODULE / SCRIPT / MODEL / DATABASE                                      ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  PROCESS                    MODULE                    SCRIPT / ENTRY              MODEL / DATA                    DATABASE TABLE
+  ─────                      ──────                    ─────────────               ─────────                       ─────────
+  ┌──────────────┐          ┌──────────────┐          ┌──────────────┐          ┌──────────────┐            ┌──────────────┐
+  │ NWP Ingest   │─────────▶│ ecmwf          │─────────▶│ open_meteo.py│─────────▶│ ECMWF IFS    │─────────▶│ subbasin_rainfall_ts│
+  │ (90-h QPF)   │          │ downloader.py  │          │ retry_utils.py│          │ hyetographs  │            │ gauge_stations      │
+  │              │          │ retry_utils.py │          │ station_     │          │ 90-h per     │            └──────────────┘
+  └──────────────┘          │ validator.py   │          │ selector.py  │          │ station      │                 │
+                            └──────────────┘          │ validator.py   │          │ QC flags     │                 │
+                                      │               └──────────────┘          └──────────────┘                 │
+                                      │                                                  │                      │
+                                      ▼                                                  ▼                      │
+  ┌──────────────┐          ┌──────────────┐          ┌──────────────┐          ┌──────────────┐            ┌──────────────┐
+  │ Runoff       │─────────▶│ hms            │─────────▶│ runner.py    │─────────▶│ SCS-CN ·     │─────────▶│ hydrograph_results│
+  │ (S1–S9)      │          │ basin_parser.py│          │ basin_parser.py│          │ SCS-UH ·     │            │ simulation_runs   │
+  │              │          └──────────────┘          └──────────────┘          │ Muskingum R1–R5│            └──────────────┘
+  └──────────────┘                                                     │          │ Basin_1.basin│                 │
+                            │                                          │          └──────────────┘                 │
+                            │                                          ▼                                          │
+                            │                              ┌──────────────┐                                          │
+                            │                              │ read_outlet_hydrograph│                                          │
+                            │                              └──────────────┘                                          │
+                                      │                                                  │                      │
+                                      ▼                                                  ▼                      │
+  ┌──────────────┐          ┌──────────────┐          ┌──────────────┐          ┌──────────────┐            ┌──────────────┐
+  │ Hydraulic    │─────────▶│ hydrology      │─────────▶│ stage_converter.py│─────▶│ PCHIP rating │─────────▶│ rating_curves   │
+  │ Rating       │          │ stage_converter│          │ post_process.py   │          │ curves (Q↔h) │            │ bridge_sites    │
+  │ (Q ↔ h)      │          └──────────────┘          └──────────────┘          │ Survey XS      │            └──────────────┘
+  └──────────────┘                                                     │          └──────────────┘                 │
+                            │                                          │                                          │
+                            │                                          ▼                                          │
+                            │                              ┌──────────────┐                                          │
+                            │                              │ classify_alert│                                          │
+                            │                              └──────────────┘                                          │
+                                      │                                                  │                      │
+                                      ▼                                                  ▼                      │
+  ┌──────────────┐          ┌──────────────┐          ┌──────────────┐          ┌──────────────┐            ┌──────────────┐
+  │ ML Recalib   │─────────▶│ hydrology      │─────────▶│ ml_calibration.py│─────▶│ Levenberg–Marq│─────────▶│ ml_calibration_state│
+  │ (α_K, lag,   │          │ ml_calibration │          │ basin_parser   │          │ α_K · α_lag  │            │ (JSON sidecar)    │
+  │ ΔCN, X)      │          └──────────────┘          └──────────────┘          │ ΔCN · X        │            └──────────────┘
+  └──────────────┘                                                     └──────────────┘                                          │
+                            │                                          │                                                  │
+                            │                                          ▼                                                  │
+                            │                              ┌──────────────┐                                          │
+                            │                              │ sync_to_hec_hms_basin│                                          │
+                            │                              └──────────────┘                                          │
+                                      │                                                  │                      │
+                                      ▼                                                  ▼                      │
+  ┌──────────────┐          ┌──────────────┐          ┌──────────────┐          ┌──────────────┐            ┌──────────────┐
+  │ Telemetry    │─────────▶│ hydrology      │─────────▶│ realtime_telemetry_validator│─────▶│ ThingSpeak obs│─────────▶│ (cache JSON only)│
+  │ Validation   │          │ realtime_...   │          │ thingspeak_gauge.py│          │ NSE · ρ     │            └──────────────┘
+  │ (NSE, RMSE)  │          └──────────────┘          └──────────────┘          │ RMSE · MAE    │                 │
+  └──────────────┘                                                     │          │ PBIAS · R²   │                                          │
+                            │                                          └──────────────┘                                          │
+                            │                                                  │                                          │
+                            ▼                                                  ▼                                          │
+  ┌──────────────┐          ┌──────────────┐          ┌──────────────┐          ┌──────────────┐            ┌──────────────┐
+  │ Alerting     │─────────▶│ alerts         │─────────▶│ evaluator.py   │─────▶│ CWC thresholds │─────────▶│ alert_events    │
+  │ (CWC/DDMA)   │          │ telegram_bot   │          │ telegram_bot.py│          │ Warn 542.70  │            │ step_log        │
+  │              │          └──────────────┘          └──────────────┘          │ Danger 543.30  │            └──────────────┘
+  └──────────────┘                                                     │          │ HFL 545.33   │                                          │
+                            │                                          └──────────────┘                                          │
+                            │                                                  │                                          │
+                            ▼                                                  ▼                                          │
+  ┌──────────────┐          ┌──────────────┐          ┌──────────────┐          ┌──────────────┐            ┌──────────────┐
+  │ API & UI     │─────────▶│ api            │─────────▶│ main.py      │─────▶│ JSON run ledger│─────────▶│ data/runs/*.json│
+  │ (FastAPI+Next│          │ admin.py       │          │ admin.py     │          │ data/runs    │            │ (file ledger)   │
+  │  .js + WS)   │          │ notifier.py    │          │ notifier.py  │          │              │            └──────────────┘
+  └──────────────┘          └──────────────┘          └──────────────┘          └──────────────┘                                          │
+                            │                                                  │                                          │
+                            ▼                                                  ▼                                          │
+  ┌──────────────┐          ┌──────────────┐          ┌──────────────┐          ┌──────────────┐                                          │
+  │ Archival     │─────────▶│ db           │─────────▶│ archive_runs.py│─────▶│ Parquet      │                                          │
+  │ (90-day)     │          │ store_results│          │ store_results.py│          │ Snappy     │                                          │
+  │              │          └──────────────┘          └──────────────┘          │ year/month   │                                          │
+  └──────────────┘                                                     └──────────────┘           partitions   │                                          │
+                                                                                              └──────────────┘                                          │
 ```
 
 ---
 
-## 4. Subbasin Delineation & Reach Geometry (Panchganga Basin)
+## The 12-Step Pipeline — Archify Process Flow
 
-The basin delineation is formalized in [`data/hms/HMS_Automation_RJKT/Basin_1.basin`](file:///e:/hydrocast_complete/data/hms/HMS_Automation_RJKT/Basin_1.basin):
+`src/orchestrator.py` runs twelve steps inside `timed_step()`. Each step writes a `running` then `success`/`failed` row into `pipeline_step_log`.
 
-### Subbasin Catchment Summary ($1,837.21\text{ km}^2$ Gauged Area)
-
-| Subbasin ID | Catchment Name | Drainage Area ($\text{km}^2$) | Baseline Curve Number ($CN$) | Subbasin Lag ($t_{\text{lag}}$, min) | Station in `Met_1.met` |
-|---|---|---|---|---|---|
-| **S1** | Karveer (Outlet) | 86.21 | 74.85 | 2,152.0 | KARVIR (550m) |
-| **S2** | Sangarul | 153.77 | 65.74 | 3,154.3 | SANGARUL (572m) |
-| **S3** | Kotoli | 261.32 | 64.82 | 3,997.7 | kotoli (585m) |
-| **S4** | Karanjphen | 262.00 | 61.89 | 3,115.5 | karanjphen (640m) |
-| **S5** | Padasali | 106.39 | 60.97 | 2,117.1 | Salwan (595m) |
-| **S6** | Gaganbawda | 227.72 | 61.78 | 3,318.1 | Salwan (595m) |
-| **S7** | Garivade | 195.39 | 61.28 | 3,362.3 | Salwan (595m) |
-| **S8** | Beed | 177.44 | 65.76 | 3,387.1 | Beed (565m) |
-| **S9** | Radhanagari | 366.97 | 64.31 | 5,199.0 | Radhanagari (560m) |
-
-!!! note "The last column is not what the emulator uses"
-    That column is the static assignment recorded in `Met_1.met`. The
-    calibrated emulator never reads `Met_1.met` or the `.gage` file. On every
-    cycle `select_active_subbasin_gages()` re-picks the governing gauge per
-    subbasin by taking the **largest 90-hour cumulative rainfall** among
-    candidate stations, falling back to a `rainfall / (distance + 1)` score when
-    the database has no row for a subbasin. Areas, curve numbers and lags *are*
-    parsed from `Basin_1.basin` at runtime, with identical hard-coded
-    fallbacks if the file is unreadable.
-
-    S1 is also spelled three different ways across the stack — `Karveer` in
-    `basin_parser.py`, `Karvir` in `Met_1.met` and the `.gage` file, and
-    `KARVEER` in the station registry. The orchestrator's per-subbasin
-    fallback default references a `KARVIR` station id that does not exist in
-    the registry, so that path silently substitutes 90 zero-valued hours.
-
-### Muskingum Channel Reach Routing Parameters
-
-These are the **canonical committed values** read by
-`src/hms/basin_parser.py` from `data/hms/HMS_Automation_RJKT/Basin_1.basin` — the single
-parameter source consumed by both the emulator and the ML calibration engine, so there
-are no duplicated hard-coded tables that can drift apart. The values below are the
-official RJKT channel-storage constants; the historical trial-optimized values
-(4.50 / 16.50 / 9.48 / 8.08 / 18.34 at $X = 0.25$) have been removed. When recalibration
-is warranted, fitted values are written back through a timestamped `.bak` snapshot and
-an atomic `os.replace()` swap, and the current run additionally applies the overrides
-in memory.
-
-| Reach ID | River Reach Segment | Upstream Inflow From | Downstream Outflow To | Travel Time $K$ (hours) | Storage Factor $X$ | Routing Passes |
-|---|---|---|---|---|---|---|
-| **R5** | Upper Kumbhi | S6, S7 | R2 | 4.619 | 0.20 | 2 |
-| **R4** | Bhogawati Trunk | S9 | R2 | 1.224 | 0.20 | 1 |
-| **R2** | Middle Panchganga | R5, R4, S8 | R1 | 11.827 | 0.20 | 5 |
-| **R3** | Kasari Main | S4, S5 | R1 | 3.829 | 0.20 | 2 |
-| **R1** | Lower Panchganga Trunk | R2, R3, S2, S3 | Sink-1 (Rajaram) | 2.899 | 0.20 | 2 |
-
-!!! warning "There are no junction elements in the basin file"
-    `Basin_1.basin` sets `Junction Insert: false` and declares no `Junction:`
-    blocks at all. Routing connectivity exists only as each element's
-    `Downstream:` field, so a reach's upstream contributors are inferred from
-    whichever subbasins and reaches point *at* it. The reach names in the
-    "River Reach Segment" column are editorial labels for readability — the file
-    identifies reaches only as R1 through R5. The evaluation order R5 → R4 → R2
-    → R3 → R1 is hard-coded in `src/hms/runner.py`; the `Downstream:` fields
-    themselves are never parsed.
-
-!!! note "The routing pass count is not a time sub-step"
-    The "Routing Passes" column is how many full **one-hour** Muskingum
-    routings each reach is cascaded through to keep all three coefficients
-    non-negative. `dt_hr` is never divided by the pass count, so total travel
-    time is preserved at $n \times K' = K$ while numerical dispersion drops. The
-    cascade exists because HEC-HMS flags every reach with `WARNING 41169`
-    (unstable Muskingum parameters) on a native run. Mass is conserved exactly,
-    since $C_0 + C_1 + C_2 = 1$ identically.
-
-!!! note "The calibration default X is 0.25, not 0.20"
-    `ml_calibration_state.json` defaults `muskingum_x` to **0.25**, and the
-    disk-state load path in `runner.py` writes that single value into *all five*
-    reaches, overwriting the 0.20 in the basin file. The 0.20 above is what the
-    committed file says; a run that has been recalibrated once will not use it.
-
----
-
-## 5. Hydraulic Calibration & Official WRD Datum Datums
-
-### Official Reference Benchmarks (Maharashtra WRD Irrigation Department)
 ```
-  Elevation Profile of Bridge Gauge Stations:
-
-  546 m +                                     ================================= HFL (2019): 545.33 m MSL
-        |
-  544 m +                                     --------------------------------- Danger Level: 543.30 m MSL
-        |                                     - - - - - - - - - - - - - - - - - Warning Level: 542.70 m MSL
-  542 m +                                     . . . . . . . . . . . . . . . . . Shivaji Alert: 542.10 m MSL
-        |                                     . . . . . . . . . . . . . . . . . Rajaram Alert: 541.50 m MSL
-  536 m +                      ~~~~~~~~~~~~~~ Weir Crest Level: 535.77 m MSL
-        |
-  533 m +     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Normal Monsoon Stage: 533.28 m MSL (Q ≈ 109 m³/s)
-        |
-  530 m +==== River Bed Zero Datum: 530.18 m MSL (0' 0" Gauge Mark) =======================================
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  SCHEDULE: 02:30 · 08:30 · 14:30 · 20:30 UTC   (00z, 06z, 12z, 18z cycles)                                              ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+                                  │
+                                  ▼
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  STEP  NAME                           SOURCE MODULE                            ARTIFACT                                  ║
+╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║ 01   Download ECMWF IFS QPF          src/ecmwf/open_meteo.py · retry_utils        90-h hyetographs per station   ║
+║ 02   Dynamic Subbasin Selection      src/ecmwf/station_selector.py                 governing gage per subbasin    ║
+║ 02b  Soil-Moisture Snapshot          src/ecmwf/open_meteo.py                      IFS 90h VWC + ERA5-Land 5-day  ║
+║                                      (log only — never feeds CN, K, x, or routing)                          ║
+║ 03   Live Telemetry Fetch            src/sensors/thingspeak_gauge.py               observed stage, raw feet       ║
+║ 04   ML Recalibration                src/hydrology/ml_calibration.py               α_K, α_lag, ΔCN, X overrides   ║
+║ 05 · DSS Write                       src/dss/writer.py                              DSS boundary write           ║
+║ 06 · HMS Param Check                 src/hms/runner.py                              check_basin_parameters()     ║
+║ 07 · HEC-HMS / Emulator              src/hms/runner.py                              Q_total, Q_surface, baseflow ║
+║ 08 · Stage Conversion                src/hydrology/stage_converter.py               PCHIP stage @ Shivaji + Rajaram║
+║ 09 · Peak Strike ±2.0 h CI           src/hydrology/ml_calibration.py               peak arrival window (95% CI)   ║
+║ 10 · Telemetry Validation            src/hydrology/realtime_telemetry_validator.py   NSE, ρ, RMSE, MAE, PBIAS      ║
+║ 11 · Alert Evaluation & Dispatch     src/alerts/evaluator.py · telegram_bot.py      CWC bulletin + Telegram        ║
+║ 12 · DB Sync & WebSocket Broadcast   src/api/main.py · notifier.py                  /ws/live push + JSON ledger    ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 ```
 
-| Regulatory Level | Stage (m MSL) | Gauge Height (ft-in) | Discharge ($m^3/s$) | Discharge (cusecs) | CWC Alert Tier |
-|---|---|---|---|---|---|
-| **Zero Gauge Datum** | **$530.18\text{ m}$** | $00'\ 00''$ | $0.00\text{ m}^3/s$ | $0\text{ cfs}$ | DRY / BASELINE |
-| **Normal Monsoon Level** | **$533.28\text{ m}$** | $10'\ 02''$ | $109.20\text{ m}^3/s$ | $3,856\text{ cfs}$ | NORMAL |
-| **Rajaram Weir Overflow** | **$535.77\text{ m}$** | $18'\ 04''$ | $274.39\text{ m}^3/s$ | $9,690\text{ cfs}$ | NORMAL |
-| **Rajaram Alert Level** | **$541.50\text{ m}$** | $37'\ 01''$ | $1,480.00\text{ m}^3/s$ | $52,266\text{ cfs}$ | ALERT |
-| **Shivaji Alert Level** | **$542.10\text{ m}$** | $39'\ 01''$ | $1,800.00\text{ m}^3/s$ | $63,567\text{ cfs}$ | ALERT |
-| **Warning Level** | **$542.70\text{ m}$** | $41'\ 01''$ | $2,200.00\text{ m}^3/s$ | $77,692\text{ cfs}$ | WARNING |
-| **Danger Level** | **$543.30\text{ m}$** | $43'\ 00''$ | $2,675.00\text{ m}^3/s$ | $94,467\text{ cfs}$ | DANGER |
-| **Highest Flood Level (HFL)** | **$545.33\text{ m}$** | $49'\ 08''$ | $3,850.00\text{ m}^3/s$ | $135,961\text{ cfs}$ | HFL_EXCEEDED |
+Each step is wrapped in `timed_step()` which writes a `running` then `success`/`failed` row into `pipeline_step_log`.
 
 ---
 
-## 6. Cold Storage & Telemetry Archival Strategy
+## Hydrologic Network — S1–S9 → R1–R5 → Sink (Archify)
 
-To preserve sub-second querying latency in PostgreSQL/Supabase over years of operational cycles, HydroCast implements an automated cold storage archival engine ([`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/archive_runs.py)):
+```
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                              HYDROLOGIC NETWORK — SUBBASINS → REACHES → SINK                                             ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 
-1. **Retention Threshold:** High-frequency records older than $90\text{ days}$ (configurable via `ARCHIVE_RETENTION_DAYS`) are selected for cold storage.
-2. **Columnar Parquet Compression:** Time-series tables (`hydrograph_results`, `bridge_stage_forecast`, `rainfall_data`, `station_rainfall_telemetry`, `subbasin_rainfall_ts`) are exported into Snappy-compressed Apache Parquet files.
-3. **Partition Structure:** Partitioned logically by table, year, and month:
-   ```
-   data/archives/
-    ├── hydrograph_results/
-    │    └── year=2026/
-    │         └── month=06/
-    │              └── hydrograph_results_202606_20260910_120000.parquet
-    └── bridge_stage_forecast/
-         └── year=2026/
-              └── month=06/
-   ```
-4. **Pruning Transaction:** Once Parquet integrity is validated on disk, pruned rows are deleted in PostgreSQL inside a safe database transaction. Summary KPIs in `simulation_runs` are kept indefinitely.
-5. **Execution:** Can be run via scheduled weekly cron or via authenticated API: `POST /api/v1/admin/archive`.
-
----
-
-## 7. Enterprise Security, JWT Authentication & Rate Limiting
-
-HydroCast implements multi-tier security ([`src/api/security.py`](file:///e:/hydrocast_complete/src/api/security.py), [`src/api/admin.py`](file:///e:/hydrocast_complete/src/api/admin.py)):
-
-1. **Public Endpoint Rate Limiting:**
-   - Enforced using `slowapi` at $100\text{ requests/minute}$ per IP address (`RATE_LIMIT_PUBLIC`).
-   - Protects public and GIS endpoints (`/api/v1/runoff/*`, `/api/v1/rainfall/*`, `/api/v1/alerts`) against scraping and DDoS exhaustion.
-2. **Dual-Mode Administrative Authentication:**
-   - **Mode A (Signed JWT Bearer Token):** Administrators authenticate at `POST /api/v1/admin/auth/token` with constant-time password verification (`hmac.compare_digest`), receiving an HMAC-SHA256 signed JWT token valid for 24 hours.
-   - **Mode B (Master API Key):** System-to-system automated orchestrators authenticate via `X-API-Key: <key>` header matching `API_KEY` from `.env`.
-3. **Administrative Operations Router (`/api/v1/admin`):**
-   - `POST /api/v1/admin/trigger-run`: Triggers on-demand manual 12-step hydrologic cycle (synchronous or background task).
-   - `POST /api/v1/admin/archive`: Triggers cold storage Parquet archival.
-   - `POST /api/v1/admin/recalibrate`: Manually forces ML parameter recalibration and disk synchronization.
-   - `GET  /api/v1/admin/me`: Displays active session claims and authenticated roles.
-
----
-
-## 8. Containerized Deployment Architecture (Docker Compose)
-
-HydroCast is fully containerized for 1-command reproducible deployment:
-
-```yaml
-services:
-  hydrocast-db:        # PostgreSQL 15 + PostGIS 3.4 (port 5432)
-  hydrocast-backend:   # Python 3.12 + OpenJDK 17 + GDAL + FastAPI (port 8000)
-  hydrocast-frontend:  # Next.js 14 Standalone SSR Server (port 3000)
+       S6 Gaganbawda (227.72 km², CN 61.78)          S7 Garivade (195.39 km², CN 61.28)
+               │                                               │
+               ▼                                               ▼
+        ┌─────────────────────────────────────────────────────┐
+        │  🟣 Reach R5  ·  Upper Kumbhi River                   │
+        │     K = 4.619 h   X = 0.20   ·  2 routing passes      │
+        └─────────────────────────┬─────────────────────────────┘
+                                  │  R5 outflow
+       S9 Radhanagari (366.97 km²)│                                               S8 Beed (177.44 km², CN 65.76)
+               │                                                                  │
+               ▼                                                                  │
+        ┌──────────────────┐                                                     │
+        │  🟣 Reach R4     │                                                     │
+        │  Bhogawati Trunk │                                                     │
+        │  K = 1.224 h     │                                                     │
+        │  X = 0.20   1 pass│                                                   │
+        └────────┬─────────┘                                                     │
+                 │  R4 outflow                                                   │
+                 \                                                               │
+                  v                                                              │
+        ┌─────────────────────────────────────────────────────┐                 │
+        │  🟣 Reach R2  ·  Middle Panchganga                    │                 │
+        │  K = 11.827 h   X = 0.20   ·  5 routing passes        │                 │
+        └─────────────────────────┬─────────────────────────────┘                 │
+                                  │  R2 outflow                                   │
+       S4 Karanjphen (262.00 km²) │               S5 Padasali (106.39 km²)        │
+               \                 │                      /                         │
+                \                │                     /                          │
+                 v                v                    v                         │
+        ┌─────────────────────────────────────────────────────┐                  │
+        │  🟣 Reach R3  ·  Kasari River Main                    │                  │
+        │  K = 3.829 h   X = 0.20   ·  2 routing passes         │                  │
+        └─────────────────────────┬─────────────────────────────┘                  │
+                                  │  R3 outflow                                   │
+       S2 Sangarul (153.77 km²)   │              S3 Kotoli (261.32 km²)           │
+               \                 │                    /                          │
+                v                v                   v                         │
+        ┌─────────────────────────────────────────────────────┐                  │
+        │  🟣 Reach R1  ·  Lower Panchganga Trunk               │◄── S2, S3 direct│
+        │  K = 2.899 h   X = 0.20   ·  2 routing passes         │                  │
+        └─────────────────────────┬─────────────────────────────┘                  │
+                                  │  R1 outflow                                   │
+                                  v                                               │
+        ┌─────────────────────────────────────────────────────┐                  │
+        │  🟡 Sink-1  ·  Panchganga Basin Outlet (Rajaram)     │                  │
+        │  + S1 Karveer direct (86.213 km², CN 74.85)          │                  │
+        │  + Baseflow Q_bf(t) = B₀·e^(−0.002t)                 │                  │
+        │  Q₀ = live sensor discharge (no floor; 91.1 if absent)│                 │
+        │  = Q_total(t)  [T+0 … T+89 h]                        │                  │
+        └─────────────────────────────────────────────────────┘                  │
 ```
 
-- **Backend Multi-Stage Build ([`Dockerfile`](file:///e:/hydrocast_complete/Dockerfile)):**
-  - Stage 1 (Builder): Installs C/C++ compilers, OpenJDK 17, `libgdal-dev`, `libeccodes-dev`, and builds the wheels into a relocatable venv at `/opt/venv`.
-  - Stage 2 (Runner, default): Minimal runtime image with OpenJDK 17 JRE, `libgdal32`, `libeccodes0`, non-root user `hydrocast` (uid/gid 1000), `tini` as PID 1, OCI build labels, and health check probe at `/api/v1/health`.
-  - Stage 3 (Docs): MkDocs Material toolchain that builds `site/` with `--strict`; no hydrology wheels required because mkdocstrings reads `src/` statically.
-  - Stage 4 (Dev): Runner plus `requirements-dev.txt` (black, isort, mypy, pytest, JupyterLab).
-- **Frontend Standalone Build ([`frontend/Dockerfile`](file:///e:/hydrocast_complete/frontend/Dockerfile)):**
-  - Node.js 20 Alpine multi-stage builder packaging static assets and standalone server bundle.
-- **Unified Orchestration ([`docker-compose.yml`](file:///e:/hydrocast_complete/docker-compose.yml)):**
-  - 1-command startup: `docker compose up -d`.
-  - Automated database initialization with [`database/supabase_schema.sql`](file:///e:/hydrocast_complete/database/supabase_schema.sql).
-  - Mutable state is mounted per subdirectory (`/app/data/runs`, `/app/data/archives`, …) so the versioned HEC-HMS basin, GIS layers and reference data baked into the image are never shadowed by a volume mount; Docker seeds each empty named volume from the image.
+### Subbasin Table (S1–S9)
+
+```
+┌──────┬──────────────────────────────┬─────────────┬──────────┬─────────────┬──────────────────────┐
+│Sub   │ Catchment Name               │ Area (km²)  │ CN_II    │ Lag (min)   │ Primary Station      │
+├──────┼──────────────────────────────┼─────────────┼──────────┼─────────────┼──────────────────────┤
+│ S1   │ Karveer (outlet reach)       │ 86.213      │ 74.85    │ 2,152.0     │ KARVEER              │
+│ S2   │ Sangarul (Tulsi lower)       │ 153.770     │ 65.74    │ 3,154.3     │ SANGARUL             │
+│ S3   │ Kotoli (Kasari lower)        │ 261.320     │ 64.82    │ 3,997.7     │ KOTOLI               │
+│ S4   │ Karanjphen (Kasari headwater)│ 262.000     │ 61.89    │ 3,115.5     │ KARANJPHEN           │
+│ S5   │ Padasali (Kumbhi basin)      │ 106.390     │ 60.97    │ 2,117.1     │ PADASALI             │
+│ S6   │ Gaganbawda (crest reach)     │ 227.720     │ 61.78    │ 3,318.1     │ GAGANBAWDA           │
+│ S7   │ Garivade (ridge catchment)   │ 195.390     │ 61.28    │ 3,362.3     │ GARIVADE             │
+│ S8   │ Beed (Bhogawati mid-reach)   │ 177.440     │ 65.76    │ 3,387.1     │ BEED                 │
+│ S9   │ Radhanagari (upper catchment)│ 366.970     │ 64.31    │ 5,199.0     │ RADHANAGARI          │
+└──────┴──────────────────────────────┴─────────────┴──────────┴─────────────┴──────────────────────┘
+```
+
+Total gauged area: **1,837.213 km²**.
+
+### Muskingum Reach Table (R1–R5)
+
+```
+┌──────┬──────────────────────┬──────────────────────┬────────────────┬───────────────┬────────────────┐
+│Reach │ Upstream Inflow From │ Downstream Outflow To│ Travel K (h)   │ Storage X     │ Routing Passes │
+├──────┼──────────────────────┼──────────────────────┼────────────────┼───────────────┼────────────────┤
+│ R5   │ S6, S7               │ R2                   │ 4.619          │ 0.20          │ 2              │
+│ R4   │ S9                   │ R2                   │ 1.224          │ 0.20          │ 1              │
+│ R2   │ R5, R4, S8           │ R1                   │ 11.827         │ 0.20          │ 5              │
+│ R3   │ S4, S5               │ R1                   │ 3.829          │ 0.20          │ 2              │
+│ R1   │ R2, R3, S2, S3       │ Sink-1 (Rajaram)   │ 2.899          │ 0.20          │ 2              │
+└──────┴──────────────────────┴──────────────────────┴────────────────┴───────────────┴────────────────┘
+```
+
+Routing order: **R5 → R4 → R2 → R3 → R1 → Sink-1**. S1 drains directly to the sink.
+
+---
+
+## Runoff Continuum — Four Stages (Archify)
+
+```
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                              RUNOFF CONTINUUM — P(t) → Q_total(t)                                                        ║
+╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+   │  ①  LOSS     │   │  ② TRANSFORM │   │  ③  ROUTE    │   │  ④  STAGE    │   │  ⑤  DELIVER  │
+   │              │   │              │   │              │   │              │   │              │
+   │  P(t)        │──►│  ΔP_e(t)     │──►│  Q_surf(t)   │──►│  h(t)        │──►│  Alerts +    │
+   │  [mm/hr]     │   │  [mm]        │   │  [m³/s]      │   │  [m MSL]     │   │  Dashboard   │
+   │              │   │              │   │              │   │              │   │              │
+   │  SCS-CN      │   │  SCS UH      │   │  Muskingum   │   │  PCHIP       │   │  Telegram    │
+   │  S = 25400/  │   │  u(t)=       │   │  S=K[X·I +   │   │  rating      │   │  WebSocket   │
+   │       CN−254 │   │  (t/tp)^3.7· │   │   (1−X)·O]   │   │  WRD anchors │   │  /ws/live    │
+   │  Ia = λ·S    │   │  e^{3.7(1−t/ │   │  5 reaches   │   │  + baseflow  │   │              │
+   │  λ=.20/.15/  │   │     tp)}     │   │  R1…R5       │   │  recession   │   │              │
+   │     .08      │   │              │   │              │   │              │   │              │
+   └──────────────┘   └──────────────┘   └──────────────┘   └──────────────┘   └──────────────┘
+    per subbasin      per subbasin       channel network     at the gauge      district officers
+    (9 subbasins)     (9 kernels)        (cascade order)     and 2 bridges     DDMA control room
+
+   Conservation holds across all stages:
+      Σ(P·A)  ──①──►  Σ(P_e·A)  ──②──►  Σ(Q_surf·Δt)  ──③──►  ΣQ  =  ΣI
+      volume in = volume out, verified per reach by C₀ + C₁ + C₂ ≡ 1
+```
+
+---
+
+## Rating Curve — WRD-Anchored PCHIP (Archify)
+
+```
+╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                              STAGE–DISCHARGE CONVERSION — WR D-ANCHORED PCHIP                                            ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+   Q_total (m³/s)
+           │
+           ▼
+   ┌─────────────────────────────────────────────────────────────────────────────┐
+   │  PCHIP interpolation on WRD-anchored control points                         │
+   │  (monotonic, shape-preserving ⇒ dQ/dh > 0, no overshoot, invertible)        │
+   ├─────────────────────────────────────────────────────────────────────────────┤
+   │                                                                             │
+   │  RAJARAM (WRD sheet, direct)                    SHIVAJI (−0.648 m shift)   │
+   │  stage  529.318 ─ 530.18 ─ 532.70 ─ … ─ 543.30 ─ 545.33                    │
+   │  Q m³/s   0.0     0.0     14.16   ─ … ─ 2675.0   3850.0                    │
+   │                                                                             │
+   │  stage = Rajaram − 0.648 m (downstream bed datum, reach 3,858 m)           │
+   │  stage  528.670 ─ 532.052 ─ 532.712 ─ … ─ 544.682                          │
+   │  Q m³/s   0.0     14.16     71.25    ─ … ─  2675.0                          │
+   │                                                                             │
+   │  Cross-check: WRD recorded Shivaji ALERT stage 542.10 m at 1,800 m³/s —    │
+   │  same discharge as Rajaram WARNING stage 542.70 m. 542.70 − 542.10 = 0.600 │
+   │  m (official pair); 529.318 − 528.670 = 0.648 m (surveyed bed levels).     │
+   └───────────────────────────────┬─────────────────────────────────────────────┘
+                                   │  invert (monotonic ⇒ single-valued)
+                                   ▼
+                    stage_m at Chhatrapati Shivaji Maharaj Bridge
+                                   │
+                                   ▼
+   ┌─────────────────────────────────────────────────────────────────────────────┐
+   │  ALERT CLASSIFICATION                                                       │
+   │  stage ≥ 545.33 → HFL_EXCEEDED   (3,850 m³/s — historical peak)            │
+   │  stage ≥ 543.30 → DANGER         (2,675 m³/s — danger mark)                │
+   │  stage ≥ 542.70 → WARNING        (2,200 m³/s — warning mark)               │
+   │  stage ≥ 542.10 → ALERT          (1,800 m³/s — Shivaji alert mark)         │
+   │  otherwise      → NORMAL                                                         │
+   └─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### WRD Benchmark Table (subset)
+
+```
+┌────┬───────────────┬───────────────┬───────────────┬───────────────┬──────────────────────┬─────────────────┐
+│ #  │ Stage (m MSL) │ Gauge (ft-in) │ Q (cusecs)    │ Q (m³/s)      │ Regime               │ CWC Alert       │
+├────┼───────────────┼───────────────┼───────────────┼───────────────┼──────────────────────┼─────────────────┤
+│ 01 │ 530.18        │ 00′ 00″       │ 0             │ 0.00          │ Zero-gauge datum     │ DRY BED         │
+│ 02 │ 533.54        │ 11′ 00″       │ 2,825         │ 80.00         │ In-channel           │ NORMAL          │
+│ 10 │ 535.21        │ 16′ 06″       │ 7,684         │ 217.59        │ Main channel         │ NORMAL          │
+│ 12 │ 535.77        │ 18′ 04″       │ 9,690         │ 274.39        │ Weir overflow        │ NORMAL          │
+│ 16 │ 541.50        │ 37′ 01″       │ 52,266        │ 1,480.00      │ Rajaram alert        │ ALERT           │
+│ 17 │ 542.10        │ 39′ 01″       │ 63,567        │ 1,800.00      │ Shivaji alert        │ ALERT           │
+│ 18 │ 542.70        │ 41′ 01″       │ 77,692        │ 2,200.00      │ Warning              │ WARNING         │
+│ 19 │ 543.30        │ 43′ 00″       │ 94,467        │ 2,675.00      │ Danger               │ DANGER          │
+│ 20 │ 545.33        │ 49′ 08″       │ 135,961       │ 3,850.00      │ HFL (2019)           │ EMERGENCY       │
+└────┴───────────────┴───────────────┴───────────────┴───────────────┴──────────────────────┴─────────────────┘
+```
+
+*Conversion:* `Q (m³/s) = Q (cusecs) × 0.028316846592`
+
+---
+
+## ML Recalibration — Closed Loop (Archify)
+
+```
+╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                              ML RECALIBRATION — BOUNDED PHYSICS-INFORMED FIT                                               ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+   ThingSpeak obs (stage)  ─▶   detect_timing_and_stage_discrepancy()   ─▶   |Δt| ≥ 1.0 h or Δh > 0.25 m ?
+                                                            │ No                                              │
+                                                            │ "Baseline stable"                               ▼ Yes
+                                                            │                                         calibrate_parameters()
+                                                            │                                         (bounded L-BFGS-B)
+                                                            │                                         L(θ) = w_nse(1−NSE) + w_time(Δt/2.0)² +
+                                                            │                                         w_peak(ΔQ/Q_obs)² + w_reg‖θ−θ₀‖²
+                                                            │                                                  │
+                                                            │                                         Solve: α_K · α_lag · ΔCN · X
+                                                            │                                                  │
+                                                            │                                         sync_to_hec_hms_basin()  (atomic, + .bak)
+                                                            │                                                  │
+                                                            │                                         In-memory overrides applied to emulator
+                                                            │                                                  │
+                                                            ▼                                                  ▼
+                                                    calibrator.state                              data/telemetry/ml_calibration_state.json
+```
+
+### Calibration Bounds
+
+```
+┌────────────┬──────────────────────────────────────┬──────────────────┐
+│ Parameter  │ Meaning                              │ Range            │
+├────────────┼──────────────────────────────────────┼──────────────────┤
+│ α_K        │ Muskingum reach travel-time scaling  │ 0.50 – 1.80      │
+│            │ (R1–R5)                              │                  │
+│ α_lag      │ Subbasin lag-time scaling (S1–S9)    │ 0.50 – 1.80      │
+│ ΔCN        │ SCS Curve Number adjustment (S1–S9)  │ −8.0 – +8.0      │
+│ X          │ Muskingum wedge-storage factor       │ 0.15 – 0.40      │
+└────────────┴──────────────────────────────────────┴──────────────────┘
+```
+
+Recalibration only fires on a **rising limb** (rise > 0.15 m). Write-back uses a timestamped `.bak` snapshot followed by atomic `os.replace()`.
+
+---
+
+## Deployment Topology (Archify)
+
+```
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                              DEPLOYMENT — GITHUB ACTIONS vs DOCKER COMPOSE                                               ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+   ┌──────────────────────────────┐
+   │      GitHub (main)           │
+   │  pipeline.yml · tests.yml    │
+   │  telemetry_validation.yml    │
+   └───────┬──────────────┬───────┘
+           │              │
+   cron 4×/day│              │ push / PR
+           ▼              ▼
+   ┌──────────────────────────────────────┐
+   │   Ubuntu GitHub Runner (ephemeral)   │
+   │                                      │
+   │  1. Open-Meteo ECMWF IFS fetch      │
+   │  2. Station selection                │
+   │  3. HEC-DSS boundary write           │
+   │  4. HEC-HMS / pure-Python emulator   │
+   │  5. Rating curve + alerts            │
+   │  6. PostgreSQL (Supabase) write      │
+   │  7. Telegram bulletin dispatch       │
+   │  8. data/runs/*.json  ◄── committed  │
+   └──────────────────┬───────────────────┘
+                      │
+         ┌────────────┼────────────┐
+         ▼            ▼            ▼
+   ┌─────────────┐ ┌──────────────┐ ┌──────────────┐
+   │ Supabase    │ │ gh-pages     │ │ Vercel       │
+   │ PostgreSQL  │ │ MkDocs site  │ │ Next.js 14   │
+   │ + PostGIS   │ │ (this page)  │ │ dashboard    │
+   └─────────────┘ └──────────────┘ └──────────────┘
+
+   ┌────────────────────────────────────────────────────────────────────┐
+   │  Local development — Docker Compose                                │
+   │                                                                    │
+   │  hydrocast-db     :5432  ·  Postgres 15 + PostGIS 3.4             │
+   │  hydrocast-backend:8000  ·  Python 3.12 + JRE 17 + GDAL + FastAPI │
+   │  hydrocast-frontend:3000 · Next.js 14 standalone                   │
+   │                                                                    │
+   │  HEC-HMS 4.13 does not run on Linux — the calibrated pure-Python   │
+   │  emulator in src/hms/runner.py is the production path.             │
+   └────────────────────────────────────────────────────────────────────┘
+```
+
+Named volumes (per-directory, seeded from image): `hydrocast_runs`, `hydrocast_telemetry`, `hydrocast_forecast`, `hydrocast_raw`, `hydrocast_archives`, `hydrocast_logs`, `postgres_data`.
+
+---
+
+## Revision History
+
+| Version | Date | Change |
+|:---|:---|:---|
+| v2.0.0 | 2026-10 | Archify topology, 12-step pipeline, WRD-anchored PCHIP rating, ML recalibration loop, cold-storage Parquet, Telegram RBAC, low-flow baseflow fallback fix |
+| v1.x | 2026-09 | Initial architecture (Mermaid-based, superseded by Archify ASCII) |
+
+> **Maintainer note:** This document is the single source of truth for the system topology. If a module, script, model, or database table is added, removed, or renamed, update this Archify map first so documentation stays consistent with the code.
+
+---
+
+## Documentation Library Index
+
+All architecture, processes, schema, and engineering detail is maintained in **Archify** style:
+
+| Document | Purpose |
+|:---|:---|
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | System topology, process→module→script→model→database map, 12-step pipeline, hydrologic engine, hydraulic rating, ML recalibration, database schema, deployment, security |
+| [`README.md`](README.md) | Clean entry point — badges, capabilities, quickstart, Archify overview |

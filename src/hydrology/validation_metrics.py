@@ -82,6 +82,30 @@ def compute_pbias(predicted: np.ndarray, observed: np.ndarray) -> float:
     return round(float(pbias), 2)
 
 
+def compute_kge(predicted: np.ndarray, observed: np.ndarray) -> float:
+    """
+    Computes Kling-Gupta Efficiency (KGE):
+
+        KGE = 1 - sqrt( (r - 1)^2 + (alpha - 1)^2 + (beta - 1)^2 )
+
+    where r is the Pearson correlation, alpha = sigma_sim / sigma_obs
+    (variability bias) and beta = mean_sim / mean_obs (volume bias).
+
+    Returns 1.0 for a perfect match, 0.0 when the series are degenerate or
+    when the prediction carries no skill relative to the observed mean.
+    """
+    if len(predicted) < 3 or len(observed) < 3:
+        return 0.0
+    if np.std(predicted) < 1e-9 or np.std(observed) < 1e-9:
+        return 1.0 if np.allclose(predicted, observed, atol=1e-3) else 0.0
+    r, _, _ = compute_pearson_correlation(predicted, observed)
+    mean_obs = float(np.mean(observed))
+    alpha = float(np.std(predicted) / np.std(observed))
+    beta = float(np.mean(predicted) / mean_obs) if abs(mean_obs) > 1e-9 else 0.0
+    kge = 1.0 - float(np.sqrt((r - 1.0) ** 2 + (alpha - 1.0) ** 2 + (beta - 1.0) ** 2))
+    return round(kge, 4)
+
+
 def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
     """
     Comprehensive forecast validation comparing predicted stage/flow against

@@ -10,30 +10,6 @@ The cycle driver.
 
 ## The 10-step cycle
 
-```text
-  create_cycle(cycle_id, run_dt)
-  INSERT INTO simulation_runs (run_id, cycle_date, cycle_time, start_time, status)
-            │
-            ▼
-  ┌───────────────────────────────────────────────────────────────────┐
-  │  1  download weather   src.ecmwf.downloader.run(date, time)       │
-  │  2  ...                                                            │
-  │  3  validate            src.processing.validator                  │
-  │  4  select stations     src.ecmwf.station_selector                │
-  │  5  write DSS           src.dss.writer                             │
-  │  6  check parameters    basin file sanity                         │
-  │  7  run HMS             src.hms.runner.run_hms(dt, subs, hyetos)  │
-  │  8  extract results     read_outlet_hydrograph(dt, hyetos)        │
-  │  9  stage conversion    src.hydrology.stage_converter             │
-  │ 10  store to DB / 11 alert / 12 broadcast                          │
-  └───────────────────────────────────────────────────────────────────┘
-            │
-            ▼
-  every step wrapped in timed_step(conn, cycle_id, n, name)
-    INSERT INTO pipeline_step_log (step_number, step_name, status,
-                                   start_time, end_time, duration_seconds,
-                                   error_message)
-```
 
 `timed_step()` is a context manager: it records `running` on entry, and on exit
 records `success` or `failed` together with the elapsed time and any exception
@@ -47,6 +23,32 @@ text. That table is exactly what `GET /api/v1/pipeline` renders and what the
     same input rather than two independent lookups that could disagree.
 
 ---
+
+## The twelve-step cycle
+
+`create_cycle(cycle_id, run_dt)` inserts the run row, then executes the pipeline.
+Every step is wrapped in `timed_step(conn, cycle_id, n, name)`, which writes a
+`pipeline_step_log` row with the start time, end time, duration and status.
+
+| # | Step | Call |
+|:---:|:---|:---|
+| 1 | Download weather | `src.ecmwf.downloader.run(date, time)` |
+| 2 | Ingest gauges | WRD + IMD ground stations |
+| 3 | Validate | `src.processing.validator` |
+| 4 | Select stations | `src.ecmwf.station_selector` |
+| 5 | Build hyetographs | per-subbasin 90-hour series |
+| 6 | Check parameters | `Basin_1.basin` sanity |
+| 7 | Run HMS | `src.hms.runner.run_hms(dt, subs, hyetos)` |
+| 8 | Extract results | `read_outlet_hydrograph(dt, hyetos)` |
+| 9 | Stage conversion | `src.hydrology.stage_converter` |
+| 10 | Store | forecast and stage rows |
+| 11 | Alert | threshold evaluation |
+| 12 | Broadcast | dashboard refresh and Telegram |
+
+A failure in a step marks the run `FAILED` and stops the pipeline; the step log
+identifies which one. The archive is written even for a failed run, so the
+duration of the failure is visible in the waterfall.
+
 
 ## `src/orchestrator.py`
 

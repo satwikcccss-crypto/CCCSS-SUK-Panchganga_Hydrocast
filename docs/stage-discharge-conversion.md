@@ -1,37 +1,29 @@
 # Hydraulic Stage-to-Discharge & Inverse Rating Curve Conversion
 
-```text
-========================================================================================
-       PANCHGANGA WATER LEVEL (STAGE) <---> RIVER DISCHARGE RATING CONVERTER
-========================================================================================
-
-                 Direct Conversion: Stage (m MSL) ──> Discharge Q (m³/s)
-                    h (Elevation) ───────────────> Q = f(h)
-                                          ▲
-                                          │  Bi-directional Monotonic PCHIP
-                                          ▼
-                 Inverse Conversion: Discharge Q (m³/s) ──> Stage (m MSL)
-                    Q (Runoff Flow) ─────────────> h = f⁻¹(Q)
-
-  Discharge Q (m³/s)
-  4000 +                                                            . - *  (HFL: 545.33m, 3,850 m³/s)
-  3500 +                                                        . '
-  3000 +                                                  . - '
-  2500 +                                            . - *  (Danger: 543.30m, 2,675 m³/s)
-  2000 +                                      . - *  (Alert: 542.10m, 1,800 m³/s)
-  1500 +                                . - '
-  1000 +                          . - '
-   500 +                   . - *  (Bankfull: 536.41m, 370.6 m³/s)
-   100 +           . - - *  (Low flow: 533.54m, 80.0 m³/s)
-     0 +--*-------+---------+---------+---------+---------+---------+---------+
-        528.67  531       533       535       537       539       541       545   Stage h (m MSL)
-       (Shivaji Bed / Q=0)
-```
 
 **IMPORTANT (Sep 2026 correction):** The two gauged sites now use rating curves that are
 **PCHIP-interpolated DIRECTLY through the official Maharashtra WRD stage-discharge sheet** —
 not a pure Manning / slope-calibrated curve. This is what makes the discharge calculation
 correct for a ~2,140 km² Panchganga catchment (see §8 "How We Solved It").
+
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 08</span>
+      <strong>Rating Curves & Divided Channel Hydraulics</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/08-rating-curve-hydraulics.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Curves & Divided Channel Hydraulics Console"></iframe>
+</div>
 
 ---
 
@@ -59,7 +51,7 @@ Previous iterations used standard natural cubic splines (`scipy.interpolate.Cubi
 
 While cubic splines provide continuous second derivatives ($C^2$), they suffer from severe **Runge-type polynomial overshoot** in regions where hydraulic slope transitions rapidly (such as the bankfull spill point at $535.5\text{ m MSL}$):
 
-```text
+```
  Standard Cubic Spline vs PCHIP at Bankfull Transition:
  Discharge Q
     ^
@@ -138,32 +130,29 @@ verbatim**; **SHIVAJI_BRIDGE uses the sheet stages minus the −0.648 m downstre
 offset** (see §8.1). Extra low-flow anchors below the first gauged point (533.54 m) come
 from the WRD 2021–2023 hourly register.
 
-```text
-+----+-------------------+--------------+-----------------+-----------------+------------------------+
-| No | Rajaram Stage (m) | Discharge    | Discharge (m³/s)| In Code As     | Hydraulic Regime       |
-+----+-------------------+--------------+-----------------+-----------------+------------------------+
-| 01 | 529.318            | 0 cusecs     | 0.00 (Q=0)      | RAJARAM_ANCHORS | Surveyed bed thalweg   |
-| 02 | 532.70            | 500 cusecs   | 14.16           | observed 2021-23| In-bank low flow        |
-| 03 | 532.83            | 800 cusecs   | 22.65           | observed 2021-23| In-bank low flow        |
-| 04 | 532.98            | 1,150 cusecs | 32.56           | observed 2021-23| In-bank low flow        |
-| 05 | 533.00            | 1,200 cusecs | 34.00           | observed 2021-23| In-bank low flow        |
-| 06 | 533.36            | 2,516 cusecs | 71.25           | observed 2021-23| In-bank low flow        |
-| 07 | 533.54            | 2,825 cusecs | 80.00           | WRD sheet       | In-bank baseflow        |
-| 08 | 533.71            | 3,134 cusecs | 88.74           | WRD sheet       | In-bank baseflow        |
-| 09 | 533.99            | 3,902 cusecs | 110.49          | WRD sheet       | In-bank baseflow        |
-| 10 | 535.21            | 7,684 cusecs | 217.59          | WRD sheet       | Main channel flow       |
-| 11 | 535.59            | 8,958 cusecs | 253.66          | WRD sheet       | Bankfull level          |
-| 12 | 535.77            | 9,690 cusecs | 274.39          | WRD sheet       | K.T. Weir overflow      |
-| 13 | 536.41            | 13,087 cusecs| 370.58          | WRD sheet       | Over-weir flow          |
-| 14 | 538.16            | 21,650 cusecs| 613.06          | WRD sheet       | Drowned weir flow       |
-| 15 | 539.02            | 28,270 cusecs| 800.52          | WRD sheet       | Channel spreading       |
-| 16 | 541.50            | 52,266 cusecs| 1,480.00        | WRD sheet       | Rajaram ALERT stage     |
-| 17 | 542.10            | 63,567 cusecs| 1,800.00        | WRD sheet       | Shivaji ALERT stage     |
-| 18 | 542.70            | 77,692 cusecs| 2,200.00        | WRD sheet       | WARNING stage           |
-| 19 | 543.30            | 94,467 cusecs| 2,675.00        | WRD sheet       | DANGER stage            |
-| 20 | 545.33            | 135,961 cusecs| 3,850.00       | WRD sheet       | HFL (2019/2021)         |
-+----+-------------------+--------------+-----------------+-----------------+------------------------+
-```
+| No | Rajaram Stage (m) | Discharge | Discharge (m³/s) | In Code As | Hydraulic Regime |
+|:---|:---|:---|:---|:---|:---|
+| 01 | 529.318 | 0 cusecs | 0.00 (Q=0) | RAJARAM_ANCHORS | Surveyed bed thalweg |
+| 02 | 532.70 | 500 cusecs | 14.16 | observed 2021-23 | In-bank low flow |
+| 03 | 532.83 | 800 cusecs | 22.65 | observed 2021-23 | In-bank low flow |
+| 04 | 532.98 | 1,150 cusecs | 32.56 | observed 2021-23 | In-bank low flow |
+| 05 | 533.00 | 1,200 cusecs | 34.00 | observed 2021-23 | In-bank low flow |
+| 06 | 533.36 | 2,516 cusecs | 71.25 | observed 2021-23 | In-bank low flow |
+| 07 | 533.54 | 2,825 cusecs | 80.00 | WRD sheet | In-bank baseflow |
+| 08 | 533.71 | 3,134 cusecs | 88.74 | WRD sheet | In-bank baseflow |
+| 09 | 533.99 | 3,902 cusecs | 110.49 | WRD sheet | In-bank baseflow |
+| 10 | 535.21 | 7,684 cusecs | 217.59 | WRD sheet | Main channel flow |
+| 11 | 535.59 | 8,958 cusecs | 253.66 | WRD sheet | Bankfull level |
+| 12 | 535.77 | 9,690 cusecs | 274.39 | WRD sheet | K.T. Weir overflow |
+| 13 | 536.41 | 13,087 cusecs | 370.58 | WRD sheet | Over-weir flow |
+| 14 | 538.16 | 21,650 cusecs | 613.06 | WRD sheet | Drowned weir flow |
+| 15 | 539.02 | 28,270 cusecs | 800.52 | WRD sheet | Channel spreading |
+| 16 | 541.50 | 52,266 cusecs | 1,480.00 | WRD sheet | Rajaram ALERT stage |
+| 17 | 542.10 | 63,567 cusecs | 1,800.00 | WRD sheet | Shivaji ALERT stage |
+| 18 | 542.70 | 77,692 cusecs | 2,200.00 | WRD sheet | WARNING stage |
+| 19 | 543.30 | 94,467 cusecs | 2,675.00 | WRD sheet | DANGER stage |
+| 20 | 545.33 | 135,961 cusecs | 3,850.00 | WRD sheet | HFL (2019/2021) |
+
 
 The complete official sheet with every intermediate foot-step (533.56 → 81.24,
 533.59 → 82.49, 533.64 → 85.01, 533.66 → 86.25, 533.69 → 87.50) is embedded in
@@ -243,6 +232,14 @@ now the area is exact geometry while the discharge is the WRD-anchored conveyanc
 
 ## 8. HOW WE SOLVED IT — The Sep 2026 Correction
 
+The September 2026 correction replaced the empirical stage subtraction with an
+explicit geometric transform and rebuilt the rating curve on monotone PCHIP
+interpolation over the surveyed sections. Three changes did the work: the
+−0.648 m datum relationship between the bridge and the weir was applied in the
+correct direction, the overbank roughness was separated from the channel value,
+and the curve was constrained to be monotone so that no discharge can map to two
+stages.
+
 ### 8.1 The Three Corrections
 
 | # | Problem (observed in real runs) | Root Cause | Fix |
@@ -276,7 +273,7 @@ Resulting interpolated checks:
 
 `runner.py` now initialises baseflow from the sensor reading **once, at the gauged site**:
 
-```python
+```
 if live_stage_m is not None:
     # Stage -> discharge at the site the sensor actually measures.
     baseflow = convert_stage_to_discharge_manning(live_stage_m, "SHIVAJI_BRIDGE")

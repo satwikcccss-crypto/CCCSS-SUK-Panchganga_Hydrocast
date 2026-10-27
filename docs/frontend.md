@@ -1,32 +1,24 @@
 # HydroCast Frontend Architecture & Design System
 
-```text
-========================================================================================
-             HYDROCAST NEXT.JS 14 BASIN INTELLIGENCE DASHBOARD
-========================================================================================
 
-                  Next.js 14 App Router (React 18 Server/Client Model)
-                                       |
-      +--------------------------------+-------------------------------+
-      |                                |                               |
-      v                                v                               v
-[ SWR State Engine ]          [ WebSocket Live Push ]          [ Tailwind CSS Token System ]
-Cached REST revalidation      Event-driven /ws/live listener   Curated HSL Slate/Indigo/Emerald
-Fallback: Standalone JSON     Auto-reconnect with backoff      Dark & Light Glassmorphic Panels
-      |                                |                               |
-      +--------------------------------+-------------------------------+
-                                       |
-                                       v
-                       Dashboard Shell (app/dashboard/page.tsx)
-                                       |
-     +---------------+---------------+--+------------+---------------+---------------+
-     |               |               |               |               |               |
-     v               v               v               v               v               v
-[ Overview ]  [ Rainfall ]   [ Runoff/HMS ] [ Accuracy ]   [ System ]    [ FloodBanner ]
-Basin GIS map  18-Station     90h Discharge  Spearman rho   12-Step flow  CWC threshold
-Live gauges    Hyetographs    Cross-section  ML Calibrator  Latency/Logs  Emergency push
-Odometer Count Isohyetals     Rating curves  WRD benchmarks Archival/Bot  Flashing Alert
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 12</span>
+      <strong>Frontend Build & Dashboard</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/12-frontend-dashboard.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/12-frontend-dashboard.html?embed=1" title="Frontend Build & Dashboard Console"></iframe>
+</div>
 
 ---
 
@@ -46,31 +38,17 @@ Odometer Count Isohyetals     Rating curves  WRD benchmarks Archival/Bot  Flashi
 
 The user interface is organized into five segregated operational workspaces accessible via the responsive sidebar:
 
-```text
-app/
- ├── layout.tsx                     # Global HTML envelope, Inter font, metadata
- ├── page.tsx                       # Landing redirect to /dashboard
- ├── dashboard/
- │    └── page.tsx                  # Primary workspace shell & tab router
- └── api/
-      └── v1/
-           └── dashboard/
-                └── route.ts        # Next.js API proxy serving pipeline JSON & runs
-```
 
 ### 2.1 Workspace Panel Breakdown
 
-```text
-+-------------------+-------------------------------------------------------------------+
-| Panel ID          | Primary Functional Responsibility                                 |
-+-------------------+-------------------------------------------------------------------+
-| dashboard         | Basin executive overview, gauge cards, key flood KPIs, leaf map   |
-| rainfall          | 18-station rainfall hyetographs, cumulative 90h bars, 90d history |
-| runoff            | HEC-HMS 90-hour runoff hydrograph, peak discharge, SVG river xsec |
-| accuracy          | Spearman correlation scatter, 90h prediction log, WRD records     |
-| system            | 12-step pipeline orchestrator status, latency metrics, audit logs |
-+-------------------+-------------------------------------------------------------------+
-```
+| Panel ID | Primary Functional Responsibility |
+|:---|:---|
+| dashboard | Basin executive overview, gauge cards, key flood KPIs, leaf map |
+| rainfall | 18-station rainfall hyetographs, cumulative 90h bars, 90d history |
+| runoff | HEC-HMS 90-hour runoff hydrograph, peak discharge, SVG river xsec |
+| accuracy | Spearman correlation scatter, 90h prediction log, WRD records |
+| system | 12-step pipeline orchestrator status, latency metrics, audit logs |
+
 
 ---
 
@@ -109,20 +87,12 @@ All charts are engineered with strict hydrologic conventions, high-DPI canvas re
   - 1-click CSV Export including raw feet observations.
 - **Continuous 90h Lifecycle Progress Card:** Visual progress bar and badge tracking verified hours (e.g., `17/90h (18.9%) · IN_PROGRESS`).
 
-```text
-     Predicted Stage (m MSL)
-  545 +                                     /  <-- 1:1 Ideal Line (Y = X)
-      |                                  * /
-  543 +                              *  * /    * = Validated Forecast Points
-      |                            *  *  /     Points cluster tightly along
-  540 +                       *  *  *  /       the line demonstrating
-      |                     *  *  *   /        high predictive fidelity
-  535 +                *  *  *       /
-      |              *  *           /
-  532 +---------*--*---------------/
-      +---------+---------+---------+---------+
-     532       535       540       543       545  Observed Stage (m MSL)
-```
+| * / |
+|:---|
+| *  *  /     Points cluster tightly along |
+| *  *  *   /        high predictive fidelity |
+| *  *           / |
+
 
 ---
 
@@ -130,7 +100,7 @@ All charts are engineered with strict hydrologic conventions, high-DPI canvas re
 
 The cross-section viewer renders a direct 2D geometric elevation slice of the Panchganga river channel using native scalable vector graphics:
 
-```text
+```
   Top of Left Bank (LOB)                                      Top of Right Bank (ROB)
        \                                                               /
         \     Water Surface Elevation (WSE = 533.28m MSL)             /
@@ -157,7 +127,7 @@ The cross-section viewer renders a direct 2D geometric elevation slice of the Pa
 
 Data fetching is wrapped through the client abstraction [`lib/api.ts`](file:///e:/hydrocast_complete/frontend/lib/api.ts):
 
-```typescript
+```bash
 export async function fetchDashboardData(runId?: string) {
   const query = runId ? `?run_id=${encodeURIComponent(runId)}` : "";
   const url = typeof window !== "undefined" 
@@ -180,7 +150,7 @@ On Vercel, serverless function workers execute isolated from external project fo
 
 All metric formatters in [`AccuracyPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/AccuracyPanel.tsx) and [`SystemPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/SystemPanel.tsx) are safely guarded:
 
-```tsx
+```
 ρ = {spearmanRho != null ? spearmanRho.toFixed(3) : "—"} · R² = {pearsonR2 != null ? pearsonR2.toFixed(3) : "—"}
 ```
 
@@ -192,7 +162,7 @@ This prevents `TypeError: Cannot read properties of null (reading 'toFixed')` du
 
 To provide municipal emergency coordinators with actionable disaster timelines rather than ambiguous single-point predictions, [`DischargeDetailsCard.tsx`](file:///e:/hydrocast_complete/frontend/components/DischargeDetailsCard.tsx) and [`OverviewPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/OverviewPanel.tsx) render a dedicated early warning card:
 
-```tsx
+```
 <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg">
   <Clock className="w-5 h-5 text-amber-600" />
   <div>
@@ -218,7 +188,7 @@ To provide municipal emergency coordinators with actionable disaster timelines r
 
 The frontend is containerized using a multi-stage Docker build leveraging Next.js standalone output:
 
-```dockerfile
+```
 # Stage 1: Dependency Installation
 FROM node:20-alpine AS deps
 WORKDIR /app

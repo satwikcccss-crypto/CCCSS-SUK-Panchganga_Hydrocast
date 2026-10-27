@@ -1,6 +1,32 @@
 # Maharashtra WRD Historical Rating Curve Cross-Verification & Anchor Calibration
 
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 08</span>
+      <strong>Rating Curves & Divided Channel Hydraulics</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/08-rating-curve-hydraulics.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Curves & Divided Channel Hydraulics Console"></iframe>
+</div>
+
+---
+
 ## WRD-Anchored Rating Curves & Independent Curves per Gauging Site
+
+Two independent curves exist for every gauged site: the WRD sheet curve, which is
+the regulatory authority, and the curve the model derives from surveyed geometry
+and Manning's equation. Neither is allowed to replace the other. The WRD curve
+sets the alert thresholds; the derived curve is used for interpolation between the
+tabulated WRD points, and disagreement between them is reported rather than
+silently averaged.
 
 ### 1. Root Cause Analysis of Pre-Calibration Discrepancies
 
@@ -45,6 +71,12 @@ to ~1.2 m — see `stage-discharge-conversion.md` §8.5.
 
 ### 3. Calibrated Rating Curves Comparison
 
+The comparison below is the acceptance test for the hydraulic model. For each
+site, discharge from the WRD curve and from the derived curve is compared at the
+same stage, across the operational band from low flow to the highest surveyed
+section. A curve that departs by more than the stated tolerance at any anchor is
+rejected rather than tuned.
+
 #### Verified Equal-Discharge Stage Profiles (corrected PCHIP curves)
 
 | Discharge Q (m³/s) | Stage at Shivaji (m MSL) | Stage at Rajaram (m MSL) | Water Level Delta |
@@ -69,7 +101,7 @@ separated only by the datum offset.
 
 ## Benchmark Cross-Verification Script & Ground Truth Table
 
-```text
+```
 ====================================================================================================
            HYDROCAST WRD-ANCHORED RATING CURVE vs MAHARASHTRA WRD HISTORICAL BENCHMARKS
 ====================================================================================================
@@ -163,7 +195,7 @@ Shivaji curves:
 
 ## 5. Spatial Reach & Telemetry Validation Architecture
 
-```text
+```
                                  Panchganga River Reach Topology
                                  
   [J_Outlet (Basin Outflow)] 

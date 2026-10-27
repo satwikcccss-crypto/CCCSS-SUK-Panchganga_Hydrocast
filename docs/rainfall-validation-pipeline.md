@@ -1,31 +1,24 @@
 ﻿# Panchganga Catchment Observed Rainfall Acquisition & Verification Pipeline
 
-```text
-========================================================================================================================
-             HYDROCAST OBSERVED RAINFALL INGESTION, CALIBRATION & VALIDATION PIPELINE
-========================================================================================================================
 
-                         [ INPUT FORECAST: 90-Hour ECMWF / Open-Meteo ]
-                                                │
-                                                ▼
-     ┌─────────────────────────────────────────────────────────────────────────────────────┐
-     │                      3-TIER OBSERVED RAINFALL VERIFICATION ENGINE                   │
-     └───────────────────────────────────┬─────────────────────────────────────────────────┘
-                                         │
-     ┌───────────────────────────────────┼─────────────────────────────────────────────────┐
-     │ TIER 1: Ground Gauge Ingest       │ TIER 2: Automated Reanalysis   │ TIER 3: Hydrologic Inversion    │
-     │ Maharashtra WRD Kolhapur Circle   │ Open-Meteo Radar-Gauge Merged  │ Streamflow Mass-Balance Check   │
-     │ & IMD AWS 08:30 Daily Bulletin    │ Past-Days Observation Endpoint │ ThingSpeak Radar Integrated Q   │
-     │ (`data/observed_rainfall/*.csv`)  │ (Hourly GPS Coordinate Fetch)  │ V_runoff = ∫ Q dt ==> P_eff     │
-     └───────────────────────────────────┼─────────────────────────────────────────────────┘
-                                         │
-                                         ▼
-     ┌─────────────────────────────────────────────────────────────────────────────────────┐
-     │                             QUALITY CONTROL & ACCURACY MATRIX                       │
-     │   • Station Absolute Error (mm)      • Relative Error (%)      • Spatial Consistency│
-     │   • Basin-Wide Volume Accuracy (%)   • Moriasi (2007) Grade    • Ingest Source Tag  │
-     └─────────────────────────────────────────────────────────────────────────────────────┘
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 09</span>
+      <strong>Rain Gauge Selection</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/09-raingauge-selection-flowchart.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/09-raingauge-selection-flowchart.html?embed=1" title="Rain Gauge Selection Console"></iframe>
+</div>
 
 ---
 
@@ -43,6 +36,12 @@ HydroCast deploys a **3-Tier Concrete Verification Architecture** implemented in
 
 ## 2. Tier 1: Official Maharashtra WRD & IMD Ground Ingest
 
+Tier 1 is the ground truth the model is scored against. Twenty WRD and IMD gauges
+are loaded from `wrd_daily_rainfall_template.csv`, matched to subbasins by station
+code, and compared with the forecast that covered the same 24-hour window. A
+station that reports nothing is not silently treated as zero — it is excluded from
+the basin total and flagged, so a dead gauge cannot masquerade as a dry day.
+
 ### Ingestion Directory & Format
 
 Field engineers and automated telemetry scripts deposit ground gauge records into:
@@ -50,7 +49,7 @@ Field engineers and automated telemetry scripts deposit ground gauge records int
 
 Accepted formats include CSV and JSON. A production template is maintained at [`data/observed_rainfall/wrd_daily_rainfall_template.csv`](file:///e:/hydrocast_complete/data/observed_rainfall/wrd_daily_rainfall_template.csv):
 
-```csv
+```
 station_id,rainfall_mm
 KARVEER,6.8
 SANGARUL,6.0
@@ -150,7 +149,7 @@ $$\text{Station Accuracy } (\%) = \max\left(0, 100 - |\%\, e_i|\right)$$
 
 Running the pipeline live yields verified ground truth metrics:
 
-```text
+```json
 [17:00:27] INFO Loaded 20 WRD ground gauge records from wrd_daily_rainfall_template.csv
 [17:00:27] INFO Station Gaganbawda (S6): Pred=50.1 mm, Obs=52.1 mm, Source=WRD_GROUND_GAUGE, Accuracy=96.2%
 [17:00:27] INFO Station Padasali   (S5): Pred=48.7 mm, Obs=47.7 mm, Source=WRD_GROUND_GAUGE, Accuracy=97.9%

@@ -10,32 +10,26 @@ The physics: turning rainfall and channel geometry into stage.
 
 ## Pipeline position
 
-```text
-   hyetographs (mm/hr)                     cross-section (m)
-           │                                       │
-           ▼                                       ▼
-  ┌──────────────────────┐            ┌──────────────────────────┐
-  │ src/hms/runner.py    │            │ src/hydrology/           │
-  │  compute_emulator_   │  Q_total   │  stage_converter.py      │
-  │  hydrograph()        │───────────►│  convert_discharge_to_   │
-  │                      │            │  stage_manning()         │
-  │  SCS-CN loss         │            │                          │
-  │  SCS-UH transform    │            │  WRD-anchored PCHIP      │
-  │  Muskingum routing   │            │  (SHIVAJI / RAJARAM)     │
-  │  baseflow recession  │            │  falls back to Manning   │
-  └──────────────────────┘            │  divided-channel method  │
-                                      └───────────┬──────────────┘
-                                                  │
-                                          stage_m (m MSL)
-                                                  │
-                                    ┌─────────────▼──────────────┐
-                                    │ classify_alert()            │
-                                    │  normal < 542.10 < 542.70   │
-                                    │  < 543.30 danger < 545.33   │
-                                    └────────────────────────────┘
-```
+`stage_converter` sits between the routing engine and everything that consumes a
+water level. It receives discharge per reach from `runner.py`, applies the rating
+curve, and returns stage in metres above mean sea level together with the WRD
+alert class. `runs_tracker` then persists the result and updates the run index
+that backs `GET /api/v1/runs`.
+
 
 ---
+
+## Pipeline position
+
+`stage_converter` receives discharge per reach from `runner.py` and returns stage
+in metres above mean sea level with the WRD alert class attached. `runs_tracker`
+persists the result and updates the index behind `GET /api/v1/runs`.
+
+The hydrology package does not route or transform rainfall itself — that happens
+in `src/hms/runner.py`. What lives here is the conversion and the bookkeeping:
+WRD-anchored PCHIP rating curves for the two gauged sections, Manning's equation
+as the fallback when a section has no fitted curve, and the run archive.
+
 
 ## `src/hydrology/stage_converter.py`
 

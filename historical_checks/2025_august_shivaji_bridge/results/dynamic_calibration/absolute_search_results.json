@@ -1,0 +1,646 @@
+{
+  "all_results": [
+    {
+      "nse": 0.6657,
+      "kge": 0.719,
+      "rmse": 2.005,
+      "mae": 1.65,
+      "pbias": 0.15,
+      "peak_err_m": 0.13,
+      "peak_timing_err_h": -30.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.69,
+      "sim_peak_ts": "2025-08-20 08:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 900,
+        "k_hr": 4.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.662,
+      "kge": 0.7124,
+      "rmse": 2.016,
+      "mae": 1.685,
+      "pbias": 0.15,
+      "peak_err_m": 0.01,
+      "peak_timing_err_h": -34.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.57,
+      "sim_peak_ts": "2025-08-20 04:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 1200,
+        "k_hr": 1.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.7615,
+      "kge": 0.7532,
+      "rmse": 1.693,
+      "mae": 1.389,
+      "pbias": 0.14,
+      "peak_err_m": -0.08,
+      "peak_timing_err_h": -26.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.48,
+      "sim_peak_ts": "2025-08-20 12:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 1200,
+        "k_hr": 4.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.6457,
+      "kge": 0.7033,
+      "rmse": 2.064,
+      "mae": 1.717,
+      "pbias": 0.16,
+      "peak_err_m": 0.13,
+      "peak_timing_err_h": -31.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.69,
+      "sim_peak_ts": "2025-08-20 07:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 900,
+        "k_hr": 4.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.7426,
+      "kge": 0.7375,
+      "rmse": 1.759,
+      "mae": 1.455,
+      "pbias": 0.15,
+      "peak_err_m": -0.08,
+      "peak_timing_err_h": -26.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.48,
+      "sim_peak_ts": "2025-08-20 12:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 1200,
+        "k_hr": 4.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.6426,
+      "kge": 0.6964,
+      "rmse": 2.073,
+      "mae": 1.753,
+      "pbias": 0.17,
+      "peak_err_m": 0.02,
+      "peak_timing_err_h": -33.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.58,
+      "sim_peak_ts": "2025-08-20 05:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 1200,
+        "k_hr": 1.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.7331,
+      "kge": 0.7414,
+      "rmse": 1.791,
+      "mae": 1.485,
+      "pbias": 0.15,
+      "peak_err_m": -0.07,
+      "peak_timing_err_h": -29.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.49,
+      "sim_peak_ts": "2025-08-20 09:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 1200,
+        "k_hr": 3.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.6267,
+      "kge": 0.7015,
+      "rmse": 2.119,
+      "mae": 1.752,
+      "pbias": 0.15,
+      "peak_err_m": 0.15,
+      "peak_timing_err_h": -33.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.71,
+      "sim_peak_ts": "2025-08-20 05:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 900,
+        "k_hr": 3.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.7141,
+      "kge": 0.7255,
+      "rmse": 1.854,
+      "mae": 1.551,
+      "pbias": 0.16,
+      "peak_err_m": -0.06,
+      "peak_timing_err_h": -28.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.5,
+      "sim_peak_ts": "2025-08-20 10:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 1200,
+        "k_hr": 3.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.6066,
+      "kge": 0.6857,
+      "rmse": 2.175,
+      "mae": 1.82,
+      "pbias": 0.16,
+      "peak_err_m": 0.16,
+      "peak_timing_err_h": -33.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.72,
+      "sim_peak_ts": "2025-08-20 05:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 900,
+        "k_hr": 3.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.699,
+      "kge": 0.728,
+      "rmse": 1.902,
+      "mae": 1.584,
+      "pbias": 0.15,
+      "peak_err_m": -0.02,
+      "peak_timing_err_h": -31.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.54,
+      "sim_peak_ts": "2025-08-20 07:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 1200,
+        "k_hr": 2.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.5812,
+      "kge": 0.6813,
+      "rmse": 2.244,
+      "mae": 1.858,
+      "pbias": 0.15,
+      "peak_err_m": 0.24,
+      "peak_timing_err_h": -35.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.8,
+      "sim_peak_ts": "2025-08-20 03:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 900,
+        "k_hr": 2.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.6799,
+      "kge": 0.7121,
+      "rmse": 1.962,
+      "mae": 1.651,
+      "pbias": 0.16,
+      "peak_err_m": -0.02,
+      "peak_timing_err_h": -31.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.54,
+      "sim_peak_ts": "2025-08-20 07:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 1200,
+        "k_hr": 2.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.5609,
+      "kge": 0.6655,
+      "rmse": 2.298,
+      "mae": 1.927,
+      "pbias": 0.17,
+      "peak_err_m": 0.24,
+      "peak_timing_err_h": -35.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.8,
+      "sim_peak_ts": "2025-08-20 03:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 900,
+        "k_hr": 2.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.5395,
+      "kge": 0.6652,
+      "rmse": 2.353,
+      "mae": 1.931,
+      "pbias": 0.15,
+      "peak_err_m": 0.4,
+      "peak_timing_err_h": -35.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.96,
+      "sim_peak_ts": "2025-08-20 03:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 600,
+        "k_hr": 4.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.5345,
+      "kge": 0.6589,
+      "rmse": 2.366,
+      "mae": 1.963,
+      "pbias": 0.16,
+      "peak_err_m": 0.29,
+      "peak_timing_err_h": -38.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.85,
+      "sim_peak_ts": "2025-08-20 00:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 900,
+        "k_hr": 1.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.5187,
+      "kge": 0.6499,
+      "rmse": 2.406,
+      "mae": 1.998,
+      "pbias": 0.17,
+      "peak_err_m": 0.4,
+      "peak_timing_err_h": -35.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.96,
+      "sim_peak_ts": "2025-08-20 03:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 600,
+        "k_hr": 4.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.514,
+      "kge": 0.6432,
+      "rmse": 2.417,
+      "mae": 2.031,
+      "pbias": 0.17,
+      "peak_err_m": 0.3,
+      "peak_timing_err_h": -38.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.86,
+      "sim_peak_ts": "2025-08-20 00:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 900,
+        "k_hr": 1.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.4924,
+      "kge": 0.6415,
+      "rmse": 2.47,
+      "mae": 2.034,
+      "pbias": 0.15,
+      "peak_err_m": 0.44,
+      "peak_timing_err_h": -37.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.0,
+      "sim_peak_ts": "2025-08-20 01:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 600,
+        "k_hr": 3.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.4714,
+      "kge": 0.626,
+      "rmse": 2.521,
+      "mae": 2.102,
+      "pbias": 0.17,
+      "peak_err_m": 0.44,
+      "peak_timing_err_h": -38.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.0,
+      "sim_peak_ts": "2025-08-20 00:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 600,
+        "k_hr": 3.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.4365,
+      "kge": 0.6141,
+      "rmse": 2.603,
+      "mae": 2.141,
+      "pbias": 0.15,
+      "peak_err_m": 0.56,
+      "peak_timing_err_h": -40.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.12,
+      "sim_peak_ts": "2025-08-19 22:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 600,
+        "k_hr": 2.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.4153,
+      "kge": 0.5988,
+      "rmse": 2.651,
+      "mae": 2.209,
+      "pbias": 0.17,
+      "peak_err_m": 0.57,
+      "peak_timing_err_h": -39.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.13,
+      "sim_peak_ts": "2025-08-19 23:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 600,
+        "k_hr": 2.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.3926,
+      "kge": 0.5936,
+      "rmse": 2.702,
+      "mae": 2.209,
+      "pbias": 0.15,
+      "peak_err_m": 0.7,
+      "peak_timing_err_h": -39.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.26,
+      "sim_peak_ts": "2025-08-19 23:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 300,
+        "k_hr": 4.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.3798,
+      "kge": 0.5848,
+      "rmse": 2.731,
+      "mae": 2.246,
+      "pbias": 0.16,
+      "peak_err_m": 0.65,
+      "peak_timing_err_h": -42.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.21,
+      "sim_peak_ts": "2025-08-19 20:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 600,
+        "k_hr": 1.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.3709,
+      "kge": 0.5782,
+      "rmse": 2.75,
+      "mae": 2.276,
+      "pbias": 0.17,
+      "peak_err_m": 0.7,
+      "peak_timing_err_h": -40.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.26,
+      "sim_peak_ts": "2025-08-19 22:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 300,
+        "k_hr": 4.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.3584,
+      "kge": 0.5694,
+      "rmse": 2.777,
+      "mae": 2.314,
+      "pbias": 0.17,
+      "peak_err_m": 0.66,
+      "peak_timing_err_h": -42.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.22,
+      "sim_peak_ts": "2025-08-19 20:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 600,
+        "k_hr": 1.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.3364,
+      "kge": 0.5636,
+      "rmse": 2.825,
+      "mae": 2.311,
+      "pbias": 0.15,
+      "peak_err_m": 0.74,
+      "peak_timing_err_h": -42.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.3,
+      "sim_peak_ts": "2025-08-19 20:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 300,
+        "k_hr": 3.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.3145,
+      "kge": 0.548,
+      "rmse": 2.871,
+      "mae": 2.378,
+      "pbias": 0.17,
+      "peak_err_m": 0.75,
+      "peak_timing_err_h": -42.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.31,
+      "sim_peak_ts": "2025-08-19 20:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 300,
+        "k_hr": 3.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.2671,
+      "kge": 0.5296,
+      "rmse": 2.968,
+      "mae": 2.414,
+      "pbias": 0.15,
+      "peak_err_m": 0.9,
+      "peak_timing_err_h": -44.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.46,
+      "sim_peak_ts": "2025-08-19 18:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 300,
+        "k_hr": 2.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.2444,
+      "kge": 0.5139,
+      "rmse": 3.014,
+      "mae": 2.482,
+      "pbias": 0.17,
+      "peak_err_m": 0.91,
+      "peak_timing_err_h": -44.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.47,
+      "sim_peak_ts": "2025-08-19 18:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 300,
+        "k_hr": 2.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.2007,
+      "kge": 0.4967,
+      "rmse": 3.1,
+      "mae": 2.512,
+      "pbias": 0.15,
+      "peak_err_m": 1.02,
+      "peak_timing_err_h": -47.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.58,
+      "sim_peak_ts": "2025-08-19 15:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 300,
+        "k_hr": 1.0,
+        "cn": 90,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    },
+    {
+      "nse": 0.1767,
+      "kge": 0.4806,
+      "rmse": 3.146,
+      "mae": 2.58,
+      "pbias": 0.16,
+      "peak_err_m": 1.02,
+      "peak_timing_err_h": -47.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 543.58,
+      "sim_peak_ts": "2025-08-19 15:00:00",
+      "matched": 338,
+      "params": {
+        "lag_min": 300,
+        "k_hr": 1.0,
+        "cn": 95,
+        "muskingum_x": 0.15,
+        "ia_frac": 0.05
+      }
+    }
+  ],
+  "passing": [],
+  "best": null
+}

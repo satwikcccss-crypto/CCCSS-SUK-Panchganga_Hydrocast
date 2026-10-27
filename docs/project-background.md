@@ -1,5 +1,24 @@
 # Project Background
 
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 01</span>
+      <strong>End-to-End System Architecture</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
+</div>
+
+---
+
 ## The problem
 
 The Panchganga drains a 1 837 km² catchment out of the Sahyadri foothills and

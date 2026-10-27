@@ -1,30 +1,24 @@
 # GIS Geospatial Data, Shapefiles & Subbasin Vector Layers
 
-```text
-========================================================================================
-             PANCHGANGA BASIN GIS SHAPEFILES & VECTOR GEOJSON LAYERS
-========================================================================================
 
-                 [ 30m SRTM DEM Elevation Grid ]
-                               │
-               D8 Flow Direction & Flow Accumulation
-                               │
-            ┌──────────────────┴──────────────────┐
-            ▼                                     ▼
- [ Panchganga_RJKT_RB.geojson ]        [ Panchganga_RJKT_Flowpath.geojson ]
- Basin Outer Boundary & Subbasins     Vector Stream Network & Flowpaths
- - Catchment Area: 2,140 km²           - Strahler Stream Orders (1 to 5)
- - S1 to S9 Subbasin Polygons          - Kasari, Kumbhi, Tulsi, Bhogawati,
- - Attributes: Area, Slope, CN         - Main Stem Panchganga Channel
-            │                                     │
-            └──────────────────┬──────────────────┘
-                               ▼
-               Web-Ready Projection Transform
-                     (UTM 43N ──> EPSG:4326)
-                               │
-                               ▼
-            [ Leaflet Web GIS Interactive Dashboard Map ]
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 16</span>
+      <strong>Repository Tree</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/16-repository-tree.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/16-repository-tree.html?embed=1" title="Repository Tree Console"></iframe>
+</div>
 
 ---
 
@@ -32,20 +26,6 @@
 
 The geospatial repository contains both raw QGIS spatial layers and web-optimized GeoJSON files:
 
-```text
-system/
- ├── data/
- │    └── Shapefiles_Panchganga basin/
- │         ├── Panchganga_RJKT_RB.geojson        # Watershed boundary & subbasins (1.07 MB)
- │         ├── Panchganga_RJKT_RB.qmd            # QGIS metadata descriptor
- │         ├── Panchganga_RJKT_Flowpath.geojson  # High-resolution river centerlines (749 KB)
- │         └── Panchganga_RJKT_Flowpath.qmd      # QGIS stream layer metadata
- └── frontend/
-      └── public/
-           └── data/
-                ├── panchganga_subbasins.geojson # Leaflet-optimized polygon layer
-                └── panchganga_rivers.geojson    # Leaflet-optimized stream network
-```
 
 ---
 
@@ -64,6 +44,12 @@ Hydrologic vector processing uses dual spatial reference frames:
 ---
 
 ## 3. GeoJSON Feature Property Schemas
+
+Each layer carries only the properties the pipeline reads. Subbasin polygons carry
+`subbasin_id` (S1–S9), `area_km2`, `curve_number`, `lag_hours` and the Thiessen
+gauge list; reach centrelines carry `reach_id` (R1–R5), `length_km`, `slope`,
+`muskingum_k_hours` and `muskingum_x`. Anything else — labels, styling, survey
+notes — lives in the QGIS project and is not shipped to the runtime.
 
 ### 3.1 Subbasin Boundary Polygons (`Panchganga_RJKT_RB.geojson`)
 

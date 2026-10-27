@@ -1,54 +1,49 @@
 # Real-Time Adaptive Machine Learning Hydrologic Calibrator
 
-```text
-====================================================================================================
-               PHYSICS-INFORMED REAL-TIME ML CALIBRATION CONTROL LOOP
-====================================================================================================
+| Recalibration Trigger Logic |  |  |
+|:---|:---|:---|
+|   | Delta_t | >= 1.0 hr |
+| OR |   |   |
+| Delta_h > 0.25m AND Rising |   |   |
+| (Trigger Condition Met) | (Tolerances Satisfied) |   |
+| Scipy Levenberg-Marquardt Bounded Loss Optimization |   | Retain Baseline Parameters |
+| - alpha_K   in [0.50, 1.80] (Reach Travel) |   | alpha_K = 1.0, alpha_lag = 1.0 |
+| - alpha_lag in [0.50, 1.80] (Subbasin Lag) |   | Delta_CN = 0.0, X = 0.250 |
+| - Delta_CN  in [-8.0, +8.0] (Soil Retention) | +-------------------------------+ |   |
+| - X         in [0.15, 0.40] (Wedge Storage) |   |   |
 
-      ThingSpeak Ultrasonic IoT Sensor Telemetry (Shivaji Bridge)
-                               |
-                               v
-               [ Telemetry Ingestion & Quality Control ]
-               - 1-hour rolling median filter
-               - Spike removal & missing value interpolation
-               - Water Surface Elevation (m MSL)
-                               |
-                               +-----------------------------------+
-                               |                                   |
-                               v                                   v
-             [ Observed Rising Limb Detector ]   [ Previous Forecast Cycle Evaluator ]
-             - Rate of rise > 0.15 m/hr          - Aligns predicted stage vs observed
-             - Identifies hydrograph slope       - Computes timing offset: Delta_t (hr)
-                                                 - Computes stage discrepancy: Delta_h (m)
-                               |                                   |
-                               +-----------------+-----------------+
-                                                 |
-                                                 v
-                                 +-------------------------------+
-                                 |  Recalibration Trigger Logic  |
-                                 +-------------------------------+
-                                 |  |Delta_t| >= 1.0 hr          |
-                                 |  OR                           |
-                                 |  Delta_h > 0.25m AND Rising   |
-                                 +-------------------------------+
-                                                 |
-                     +---------------------------+---------------------------+
-                     | (Trigger Condition Met)                               | (Tolerances Satisfied)
-                     v                                                       v
-     +-----------------------------------------------+       +-------------------------------+
-     | Scipy Levenberg-Marquardt Bounded Loss Optimization      |       | Retain Baseline Parameters    |
-     | - alpha_K   in [0.50, 1.80] (Reach Travel)    |       | alpha_K = 1.0, alpha_lag = 1.0|
-     | - alpha_lag in [0.50, 1.80] (Subbasin Lag)    |       | Delta_CN = 0.0, X = 0.250     |
-     | - Delta_CN  in [-8.0, +8.0] (Soil Retention)  |       +-------------------------------+
-     | - X         in [0.15, 0.40] (Wedge Storage)   |
-     +-----------------------------------------------+
-                     |
-                     v
-     [ Dual System State Synchronization ]
-     - Updates src/hms/runner.py runtime parameters
-     - Atomically updates Basin_1.basin with timestamped .bak backups
-     - Persists data/telemetry/ml_calibration_state.json
-```
+
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 15</span>
+      <strong>ML Calibration Loop</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/15-ml-calibration.html?embed=1" title="ML Calibration Loop Console"></iframe>
+</div>
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 05</span>
+      <strong>Simulation Run Lifecycle</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/05-lifecycle-runs.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/05-lifecycle-runs.html?embed=1" title="Simulation Run Lifecycle Console"></iframe>
+</div>
 
 ---
 

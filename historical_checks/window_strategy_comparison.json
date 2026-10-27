@@ -1,0 +1,43 @@
+{
+  "results": [
+    {
+      "strategy": "A_single_360h",
+      "matched": 338,
+      "nse": -1.2885,
+      "kge": -1.0281,
+      "rmse": 5.245,
+      "mae": 3.807,
+      "pbias": -0.71,
+      "peak_err_m": -9.5,
+      "peak_timing_err_h": -314.0,
+      "obs_peak": 542.56,
+      "sim_peak": 533.06
+    },
+    {
+      "strategy": "B_4x90h_fresh",
+      "matched": 848,
+      "nse": -2.1236,
+      "kge": -0.7227,
+      "rmse": 6.252,
+      "mae": 5.096,
+      "pbias": -0.95,
+      "peak_err_m": -9.46,
+      "peak_timing_err_h": -236.0,
+      "obs_peak": 542.56,
+      "sim_peak": 533.1
+    },
+    {
+      "strategy": "C_4x90h_rolling",
+      "matched": 848,
+      "nse": -2.5401,
+      "kge": -0.897,
+      "rmse": 6.656,
+      "mae": 5.486,
+      "pbias": -1.02,
+      "peak_err_m": -9.5,
+      "peak_timing_err_h": -314.0,
+      "obs_peak": 542.56,
+      "sim_peak": 533.06
+    }
+  ]
+}

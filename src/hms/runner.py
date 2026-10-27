@@ -231,6 +231,10 @@ def compute_emulator_hydrograph(
     baseflow_m3s: Optional[float] = None,
     run_dt: Optional[datetime] = None,
     amc: Optional[str] = None,
+    sim_hours: int = 90,
+    ia_frac: Optional[float] = None,
+    uh_max_hr: Optional[int] = None,
+    uh_m_exp: float = 3.7,
 ) -> Dict[str, Any]:
     """
     Pure-Python twin of the Basin_1.basin model — used by both the production
@@ -245,17 +249,45 @@ def compute_emulator_hydrograph(
     runoff GENERATION (AMC-I/II/III sharpens or damps the SCS Curve Numbers and
     initial abstraction), while reach Muskingum K/x stay as fixed channel-storage
     constants from Basin_1.basin. Every link conserves mass exactly.
+
+    ``sim_hours`` sets the rainfall/runoff generation window (default 90 h to
+    match the legacy flash-flood configuration). Longer historical events
+    (e.g. a 14-day monsoon flood) pass a larger window so the simulated
+    hydrograph spans the full observed period.
+
+    ``ia_frac`` overrides the SCS initial-abstraction fraction (Ia = ia_frac * S).
+    When None, the AMC-based default is used (AMC-I 0.20 / AMC-II 0.15 / AMC-III 0.08).
+    For saturated monsoon orographic crests, pass ia_frac=0.05 so the basin
+    absorbs far less water before runoff begins.
+
+    ``uh_max_hr`` caps the SCS unit-hydrograph duration in hours.  For flashy
+    mountain basins with long lag times, the default UH (3*tp hours) can be
+    absurdly long (100-150 h), severely attenuating the peak.  Capping it
+    concentrates the same runoff volume into fewer hours, raising the peak
+    without changing the time-to-peak.  When None, the uncapped legacy
+    behaviour is preserved.
+
+    ``uh_m_exp`` sets the SCS unit-hydrograph shape exponent (default 3.7).
+    Higher values (5-8) produce a sharper, more peaked hydrograph at the same
+    time-to-peak, which is appropriate for steep, flashy mountain catchments
+    where the flood wave concentrates rapidly.
     """
     subbasin_hyetographs = subbasin_hyetographs or {}
     if run_dt is None:
         run_dt = datetime.now(timezone.utc)
+    sim_hours = int(sim_hours)
+    if sim_hours < 1:
+        sim_hours = 90
 
     # 1. SCS CN loss with dynamic AMC (3-class, TR-55 transforms).
     mean_catchment_rain_90h = float(
         np.mean([np.sum(p_series) for p_series in subbasin_hyetographs.values() if len(p_series) > 0])
     ) if subbasin_hyetographs else 0.0
     amc = amc or classify_amc(mean_catchment_rain_90h)
-    ia_frac = AMC_INITIAL_ABSTRACTION[amc]
+    if ia_frac is not None:
+        ia_frac_eff = float(ia_frac)
+    else:
+        ia_frac_eff = AMC_INITIAL_ABSTRACTION[amc]
 
     sub_excess = {}
     sub_q_direct = {}
@@ -272,14 +304,14 @@ def compute_emulator_hydrograph(
             cn = cn_ii
         cn = float(np.clip(cn, 40.0, 98.0))
         s_ret = (25400.0 / cn) - 254.0
-        ia = ia_frac * s_ret
+        ia = ia_frac_eff * s_ret
 
-        p_series = subbasin_hyetographs.get(sid, np.zeros(90, dtype=np.float32))[:90] \
-            if subbasin_hyetographs else np.full(90, 0.5, dtype=np.float32)
+        p_series = subbasin_hyetographs.get(sid, np.zeros(sim_hours, dtype=np.float32))[:sim_hours] \
+            if subbasin_hyetographs else np.full(sim_hours, 0.5, dtype=np.float32)
         cum_p = np.cumsum(p_series)
-        cum_q = np.zeros(90, dtype=np.float32)
+        cum_q = np.zeros(sim_hours, dtype=np.float32)
 
-        for h in range(90):
+        for h in range(sim_hours):
             impervious_q = cum_p[h] * 0.02
             cn_q = 0.0
             if cum_p[h] > ia:
@@ -288,10 +320,10 @@ def compute_emulator_hydrograph(
 
         excess_p = np.diff(cum_q, prepend=0.0)
         excess_p = np.maximum(0.0, excess_p)
-        if len(excess_p) < 90:
-            excess_p = np.pad(excess_p, (0, 90 - len(excess_p)))
-        elif len(excess_p) > 90:
-            excess_p = excess_p[:90]
+        if len(excess_p) < sim_hours:
+            excess_p = np.pad(excess_p, (0, sim_hours - len(excess_p)))
+        elif len(excess_p) > sim_hours:
+            excess_p = excess_p[:sim_hours]
 
         sub_excess[sid] = excess_p
 
@@ -300,9 +332,12 @@ def compute_emulator_hydrograph(
         #    reach network (no truncated-mass loss down to the sink).
         lag_hr = props["lag_min"] / 60.0
         tp = 0.5 + lag_hr
-        n_uh = max(90, int(np.ceil(3.0 * tp)) + 1)
+        n_uh = int(np.ceil(3.0 * tp)) + 1
+        if uh_max_hr is not None:
+            n_uh = min(n_uh, uh_max_hr)
+        n_uh = max(n_uh, 30)  # floor so very short lags still get a usable UH
         t = np.arange(n_uh, dtype=np.float32)
-        m_exp = 3.7
+        m_exp = uh_m_exp
         with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
             uh = np.where(t > 0, (t / tp) ** m_exp * np.exp(m_exp * (1.0 - t / tp)), 0.0)
         uh = np.nan_to_num(uh, 0.0)
@@ -438,13 +473,23 @@ def _execute_hec_hms_core(
     live_stage_m: Optional[float] = None,
     parameter_overrides: Optional[Dict[str, Any]] = None,
     amc: Optional[str] = None,
+    sim_hours: int = 90,
+    ia_frac: Optional[float] = None,
+    uh_max_hr: Optional[int] = None,
+    uh_m_exp: float = 3.7,
 ) -> Dict[str, any]:
     """
     Main entry point for HEC-HMS execution.
     Runs HEC-HMS 4.13 if binary is present, or runs calibrated Panchganga RJKT physical model.
     Supports real-time ML adaptive parameter overrides (Muskingum K & X, Subbasin lag, Curve Numbers).
+
+    ``sim_hours`` sets the simulation window (default 90 h, matching the legacy
+    flash-flood configuration). Longer historical events pass a larger window.
+    ``ia_frac`` overrides the SCS initial-abstraction fraction (Ia = ia_frac * S).
+    ``uh_max_hr`` caps the SCS unit-hydrograph duration (hours).
+    ``uh_m_exp`` sets the SCS unit-hydrograph shape exponent (default 3.7).
     """
-    patch_control_spec(run_dt)
+    patch_control_spec(run_dt, hours=int(sim_hours))
     jy_script = write_jython_script()
     hms_bin, ver = find_hec_hms()
     if os.getenv("HMS_FORCE_EMULATOR", "0") == "1" or os.environ.get("PYTEST_CURRENT_TEST"):
@@ -496,12 +541,24 @@ def _execute_hec_hms_core(
         if "sub_models" in parameter_overrides:
             for sid, p in parameter_overrides["sub_models"].items():
                 if sid in sub_models:
-                    sub_models[sid]["cn"] = p.get("cn", sub_models[sid]["cn"])
-                    sub_models[sid]["lag_min"] = p.get("lag_min", sub_models[sid]["lag_min"])
+                    # Support both absolute (cn, lag_min) and relative (cn_delta, lag_scale, k_scale)
+                    cn_delta = p.get("cn_delta", 0.0)
+                    sub_models[sid]["cn"] = float(np.clip(
+                        sub_models[sid]["cn"] + cn_delta, 45.0, 95.0))
+                    if "cn" in p:
+                        sub_models[sid]["cn"] = float(np.clip(p["cn"], 45.0, 95.0))
+                    lag_scale = p.get("lag_scale", 1.0)
+                    sub_models[sid]["lag_min"] = float(
+                        sub_models[sid]["lag_min"] * lag_scale)
+                    if "lag_min" in p:
+                        sub_models[sid]["lag_min"] = float(p["lag_min"])
         if "reaches" in parameter_overrides:
             for rid, rp in parameter_overrides["reaches"].items():
                 if rid in reaches:
-                    reaches[rid]["k_hr"] = rp.get("k_hr", reaches[rid]["k_hr"])
+                    k_scale = rp.get("k_scale", 1.0)
+                    reaches[rid]["k_hr"] = float(reaches[rid]["k_hr"] * k_scale)
+                    if "k_hr" in rp:
+                        reaches[rid]["k_hr"] = float(rp["k_hr"])
                     reaches[rid]["x"] = rp.get("x", reaches[rid]["x"])
         cal_metadata = {
             "is_recalibrated": True,
@@ -529,6 +586,17 @@ def _execute_hec_hms_core(
                     for rid in reaches:
                         reaches[rid]["k_hr"] = float(reaches[rid]["k_hr"] * ak)
                         reaches[rid]["x"] = mx
+                    # Digital-twin loss/UH settings persisted in the calibration state.
+                    # Applied ONLY when the caller did not pass an explicit override, so an
+                    # explicit argument always wins. This lets the production forecast path
+                    # (orchestrator -> run_hms/read_outlet_hydrograph, which pass no UH args)
+                    # reproduce the validated per-subbasin digital-twin config.
+                    if ia_frac is None and cstate.get("ia_frac") is not None:
+                        ia_frac = float(cstate["ia_frac"])
+                    if uh_max_hr is None and cstate.get("uh_max_hr") is not None:
+                        uh_max_hr = int(cstate["uh_max_hr"])
+                    if uh_m_exp == 3.7 and cstate.get("uh_m_exp") is not None:
+                        uh_m_exp = float(cstate["uh_m_exp"])
                     cal_metadata = {
                         "is_recalibrated": True,
                         "alpha_k": ak,
@@ -553,7 +621,8 @@ def _execute_hec_hms_core(
     # parameters HEC-HMS uses from Basin_1.basin.
     hg = compute_emulator_hydrograph(
         sub_models, reaches, subbasin_hyetographs,
-        baseflow_m3s=baseflow, run_dt=run_dt, amc=amc,
+        baseflow_m3s=baseflow, run_dt=run_dt, amc=amc, sim_hours=int(sim_hours),
+        ia_frac=ia_frac, uh_max_hr=uh_max_hr, uh_m_exp=uh_m_exp,
     )
     q_surface = hg["q_surface"]
     q_total = hg["q_total"]
@@ -617,12 +686,21 @@ def execute_hec_hms(
     live_stage_m: Optional[float] = None,
     parameter_overrides: Optional[Dict[str, Any]] = None,
     amc: Optional[str] = None,
+    sim_hours: int = 90,
+    ia_frac: Optional[float] = None,
+    uh_max_hr: Optional[int] = None,
+    uh_m_exp: float = 3.7,
 ) -> Dict[str, any]:
     """Public HEC-HMS execution entry point.
 
     Patches Control_1.control for the forecast window, runs HEC-HMS (binary) or
     the calibrated physical emulator, then ALWAYS restores the original control
     spec so the checked-in project file stays pristine.
+
+    ``sim_hours`` sets the simulation window (default 90 h).
+    ``ia_frac`` overrides the SCS initial-abstraction fraction (Ia = ia_frac * S).
+    ``uh_max_hr`` caps the SCS unit-hydrograph duration (hours).
+    ``uh_m_exp`` sets the SCS unit-hydrograph shape exponent (default 3.7).
     """
     snapshot_control_spec()
     try:
@@ -632,6 +710,10 @@ def execute_hec_hms(
             live_stage_m=live_stage_m,
             parameter_overrides=parameter_overrides,
             amc=amc,
+            sim_hours=int(sim_hours),
+            ia_frac=ia_frac,
+            uh_max_hr=uh_max_hr,
+            uh_m_exp=uh_m_exp,
         )
     finally:
         restore_control_spec()

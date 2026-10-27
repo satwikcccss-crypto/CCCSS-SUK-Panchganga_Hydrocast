@@ -1,27 +1,24 @@
 # Production Deployment, Operations & Automation Manual
 
-```text
-========================================================================================
-             HYDROCAST PRODUCTION INFRASTRUCTURE & ORCHESTRATION
-========================================================================================
 
-                [ Automated 6-Hourly Cron / GHA Scheduler (00z, 06z, 12z, 18z) ]
-                                           │
-                                           ▼
-                 Python Pipeline Orchestrator (src/ecmwf/open_meteo.py)
-                 - Open-Meteo ECMWF QPF with Exponential Retries & Jitter
-                 - Dynamic Conservative Maximum-Rainfall Station Selection
-                 - Live Discrepancy Detection & Real-Time ML Recalibration
-                 - WRD-Anchored PCHIP Hydraulic Conversion & Peak Horizon (±2.0h CI)
-                 - Multi-Channel DDMA Telegram Broadcast & Agency Webhooks
-                                           │
-                ┌──────────────────────────┴──────────────────────────┐
-                ▼                                                     ▼
-    [ Docker Compose / systemd ]                            [ Next.js 14 Web App ]
-    hydrocast-backend (FastAPI :8000)                       hydrocast-frontend (:3000)
-    hydrocast-db (PostGIS :5432)                            Standalone SSR Container
-    Rate Limiting & JWT Auth                                Vercel Edge Serverless
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 06</span>
+      <strong>Hybrid OS Deployment Topology</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/06-deployment-docker-os.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/06-deployment-docker-os.html?embed=1" title="Hybrid OS Deployment Topology Console"></iframe>
+</div>
 
 ---
 
@@ -42,7 +39,7 @@ JRE, the shared libraries and a dedicated `hydrocast` user (uid/gid 1000), with
 | `docs` | MkDocs Material site, built with `--strict` to `/app/site` | `python:3.12-slim-bookworm` + `requirements-docs.txt` |
 | `dev` | `runner` + black, isort, mypy, pytest, JupyterLab | production runtime |
 
-```bash
+```
 # Production image (embeds OCI labels: version, git SHA, build date)
 docker build -t hydrocast-backend:2.0.0 \
   --build-arg APP_VERSION=2.0.0 \
@@ -78,7 +75,7 @@ the image so the container starts with no configuration:
 
 ### 1.2 Architecture & Services (`docker-compose.yml`)
 
-```yaml
+```
 # Obsolete top-level `version:` key intentionally omitted — Compose v2 selects
 # the current schema itself and warns when the key is present.
 x-hydrocast-env: &hydrocast-env
@@ -212,7 +209,7 @@ mutable:
 
 ### 1.4 Startup & Management Commands
 
-```bash
+```
 # Build images and start all services in detached mode
 docker compose up -d --build
 
@@ -239,20 +236,17 @@ docker compose --profile dev run --rm dev pytest -q
 
 The European Centre for Medium-Range Weather Forecasts releases operational IFS runs four times daily. HydroCast triggers automated forecast cycles 45 minutes after official model availability to allow for global numerical assimilation:
 
-```text
-+---------------+---------------------+---------------------+-------------------------+
-| ECMWF Cycle   | Global Model Time   | Indian Std Time(IST)| Automated Pipeline Run  |
-+---------------+---------------------+---------------------+-------------------------+
-| 00z Forecast  | 00:00 UTC           | 05:30 AM IST        | 06:45 AM IST (01:15 UTC)|
-| 06z Forecast  | 06:00 UTC           | 11:30 AM IST        | 12:45 PM IST (07:15 UTC)|
-| 12z Forecast  | 12:00 UTC           | 05:30 PM IST        | 06:45 PM IST (13:15 UTC)|
-| 18z Forecast  | 18:00 UTC           | 11:30 PM IST        | 12:45 AM IST (19:15 UTC)|
-+---------------+---------------------+---------------------+-------------------------+
-```
+| ECMWF Cycle | Global Model Time | Indian Std Time(IST) | Automated Pipeline Run |
+|:---|:---|:---|:---|
+| 00z Forecast | 00:00 UTC | 05:30 AM IST | 06:45 AM IST (01:15 UTC) |
+| 06z Forecast | 06:00 UTC | 11:30 AM IST | 12:45 PM IST (07:15 UTC) |
+| 12z Forecast | 12:00 UTC | 05:30 PM IST | 06:45 PM IST (13:15 UTC) |
+| 18z Forecast | 18:00 UTC | 11:30 PM IST | 12:45 AM IST (19:15 UTC) |
+
 
 ### Linux Crontab Configuration
 
-```cron
+```
 # Edit with: crontab -e
 # 6-Hourly Forecast Pipeline Execution
 15 1,7,13,19 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python -m src.ecmwf.open_meteo >> data/logs/cron_forecast.log 2>&1
@@ -273,17 +267,17 @@ HydroCast integrates an automated Telegram alert bot and webhook dispatcher ([`s
 2. Add the bot to your District Disaster Management Authority (DDMA) channel, District Collectorate channel, and Emergency Operations Center (EOC) groups.
 3. Configure target chat IDs in `.env`:
 
-   ```ini
+```
    TELEGRAM_BOT_TOKEN=123456789:ABCdefGHIjklMNOpqrSTUvwxYZ
    TELEGRAM_CHAT_ID=-1001234567890
    DDMA_TELEGRAM_CHATS=-1001234567890,-1009876543210
-   ```
+```
 
 ### 3.2 Agency Webhook Endpoints
 
 To automatically push flood alerts to state disaster management agency dispatch APIs:
 
-```ini
+```
 DISASTER_MANAGEMENT_WEBHOOKS=https://alert-dispatch.district.gov.in/api/v1/cwc-hook,https://sdrf.maharashtra.gov.in/api/v1/flood
 ```
 
@@ -299,13 +293,13 @@ Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/a
 - **Mechanism:** Records older than `ARCHIVE_RETENTION_DAYS` (default 90 days) are written to Snappy-compressed Apache Parquet partitions (`data/archives/{table}/year=YYYY/month=MM/`), followed by atomic database pruning.
 - **Manual Execution:**
 
-  ```bash
+```
   # Dry run (inspect row counts without deleting)
   python -m src.db.archive_runs --dry-run
 
   # Execute archival with 90-day retention
   python -m src.db.archive_runs --retention-days 90
-  ```
+```
 
 - **API Invocation:** Authenticated administrators can trigger archival via `POST /api/v1/admin/archive`.
 
@@ -313,9 +307,15 @@ Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/a
 
 ## 5. API Security, JWT Authentication & Rate Limiting
 
+The public surface is deliberately small and every route is authenticated except
+`/health` and `/api/v1/status`. Admin routes carry an HS256 JWT with a 60-minute
+expiry; machine callers use a static API key in `X-API-Key`. Requests are rate
+limited per client at 60 per minute, and failed authentication is logged with the
+source address before the 401 is returned.
+
 ### 5.1 Environment Security Variables (`.env`)
 
-```ini
+```
 # Enterprise Security & Authentication
 API_KEY=Hydrocast_PCH
 INTERNAL_KEY=your_internal_broadcast_key_min_32_chars
@@ -355,7 +355,7 @@ For hosts where Docker is not available:
 
 ### 6.1 Backend Systemd Unit (`/etc/systemd/system/hydrocast-api.service`)
 
-```ini
+```json
 [Unit]
 Description=HydroCast FastAPI Backend & WebSocket Service
 After=network.target postgresql.service

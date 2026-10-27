@@ -1,0 +1,53 @@
+{
+  "config": {
+    "alpha_k": 0.8,
+    "alpha_lag": 0.82,
+    "cn_uplift": 0.0,
+    "muskingum_x": 0.15,
+    "ia_frac": 0.05,
+    "uh_max_hr": 90,
+    "uh_m_exp": 20,
+    "cn_style": "per_subbasin_baseline"
+  },
+  "results": [
+    {
+      "event": "2019_august",
+      "start": "2019-08-01",
+      "end": "2019-08-15",
+      "sim_hours": 360,
+      "sim_peak_q_m3s": 3359.8,
+      "sim_peak_ts": "2019-08-07 06:00:00",
+      "sim_peak_stage_shivaji_m": 543.71,
+      "reported_peak_q_m3s": 2111.0,
+      "peak_q_err_pct": 59.2
+    },
+    {
+      "event": "2021_july",
+      "start": "2021-07-18",
+      "end": "2021-07-31",
+      "sim_hours": 336,
+      "sim_peak_q_m3s": 1634.8,
+      "sim_peak_ts": "2021-07-23 10:00:00",
+      "sim_peak_stage_shivaji_m": 541.17
+    },
+    {
+      "event": "2025_august",
+      "start": "2025-08-08",
+      "end": "2025-08-22",
+      "sim_hours": 360,
+      "sim_peak_q_m3s": 2168.1,
+      "sim_peak_ts": "2025-08-21 14:00:00",
+      "sim_peak_stage_shivaji_m": 542.01,
+      "nse": 0.9294,
+      "kge": 0.8401,
+      "rmse": 0.921,
+      "mae": 0.837,
+      "pbias": -0.03,
+      "peak_err_m": -0.55,
+      "timing_err_h": -1.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 542.01,
+      "matched": 338
+    }
+  ]
+}

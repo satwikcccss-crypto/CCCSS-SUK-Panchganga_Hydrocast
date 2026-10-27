@@ -32,41 +32,6 @@ computed the number in that answer".
 
 ## 1. The two surfaces at a glance
 
-```text
-                     ┌──────────────────────────────────────────────┐
-                     │            src/  (Python source of truth)    │
-                     │                                              │
-                     │   docstrings ──────────┐                      │
-                     │                        ▼                      │
-                     │              ┌─────────────────────┐          │
-                     │              │   mkdocstrings      │          │
-                     │              │   (build time)      │          │
-                     │              └──────────┬──────────┘          │
-                     └─────────────────────────┼─────────────────────┘
-                                               │
-                                               ▼
-                     ┌──────────────────────────────────────────────┐
-                     │        THIS SECTION (API Reference)          │
-                     │  • signature   • parameters   • return type   │
-                     │  • docstring   • source link  • call graph    │
-                     └──────────────────────────────────────────────┘
-
-                     ┌──────────────────────────────────────────────┐
-                     │            src/api/main.py  (FastAPI)        │
-                     │                                              │
-                     │   route() metadata + type hints ──┐          │
-                     │                                    ▼          │
-                     │                    ┌───────────────────────┐  │
-                     │                    │  /docs  (Swagger UI)  │  │
-                     │                    │  /redoc (ReDoc)       │  │
-                     │                    │  /openapi.json        │  │
-                     │                    └───────────┬───────────┘  │
-                     └────────────────────────────────┼──────────────┘
-                                                      ▼
-        ┌───────────────────────────────────────────────────────────────────┐
-        │  Next.js dashboard  ·  Telegram bulletin bot  ·  District officers │
-        └───────────────────────────────────────────────────────────────────┘
-```
 
 | | REST API | Python Reference |
 | :--- | :--- | :--- |
@@ -89,11 +54,11 @@ The Swagger UI is served by the FastAPI application itself — no extra tooling.
 
 === "Local (development)"
 
-    ```bash
+```
     # From the repository root, with dependencies installed
     pip install -r requirements.txt
     python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
-    ```
+```
 
     Then open:
 
@@ -105,19 +70,19 @@ The Swagger UI is served by the FastAPI application itself — no extra tooling.
 
 === "Docker Compose"
 
-    ```bash
+```bash
     docker compose up -d backend
     docker compose exec backend uvicorn src.api.main:app --host 0.0.0.0 --port 8000
-    ```
+```
 
 === "In CI (generate a static spec)"
 
-    ```bash
+```python
     # Emits openapi.json without ever binding a port — used to diff the
     # public contract in pull requests.
     python -c "import json; from src.api.main import app; \
                print(json.dumps(app.openapi(), indent=2))" > openapi.json
-    ```
+```
 
 ---
 
@@ -126,40 +91,6 @@ The Swagger UI is served by the FastAPI application itself — no extra tooling.
 Two independent mechanisms protect the API. Set them once under
 **Authorize** in the Swagger UI, then every route works.
 
-```text
-                    ┌────────────────────────────────────────┐
-                    │            request arrives              │
-                    └───────────────────┬────────────────────┘
-                                        │
-                    ┌───────────────────▼────────────────────┐
-                    │  /api/v1/**  and  /api/v1/admin/**      │
-                    └───────────────────┬────────────────────┘
-                                        │
-              ┌─────────────────────────┼─────────────────────────┐
-              │                         │                         │
-              ▼                         ▼                         ▼
-     ┌──────────────────┐      ┌───────────────────┐     ┌──────────────────┐
-     │  REQUIRE_API_KEY │      │  /api/v1/admin/** │     │  /api/v1/health  │
-     │     == "true"    │      │   (except /token)│     │  (always public) │
-     └────────┬─────────┘      └─────────┬─────────┘     └──────────────────┘
-              │                         │
-              ▼                         ▼
-     ┌──────────────────┐      ┌───────────────────┐
-     │  X-API-Key hdr   │      │  Authorization:   │
-     │  == API_KEY      │      │  Bearer <JWT>     │
-     └────────┬─────────┘      └─────────┬─────────┘
-              │                         │
-              ▼                         ▼
-        ┌───────────┐             ┌───────────┐
-        │   401     │             │   401     │
-        │  Unauthorized           │  Unauthorized
-        └─────────────────────────┴───────────┘
-
-     ALWAYS applied to every route, on top of the above:
-       • slowapi per-IP rate limit  (default 100/minute)
-       • CORS allow-list            (CORS_ORIGINS, default "*")
-       • JWT expiry                 (JWT_EXPIRATION_MINUTES, default 1440)
-```
 
 Obtaining a JWT:
 

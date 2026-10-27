@@ -1,6 +1,6 @@
 # Open-Channel Hydraulics & River Stage Mechanics
 
-```text
+```
 ========================================================================================
              HYDROCAST PANCHGANGA HYDRAULICS ENGINE & RATING SYSTEM
 ========================================================================================
@@ -16,9 +16,27 @@
   534 +             . - ~ ~                   ~ ~ - .           |   Bankfull Level (~535.0m)
   532 +---------+  /    Observed Stage (533.28m)       \  +-------+
   530 +   LOB   |_/     Bed Level: 530.18m MSL        \_|  ROB      In-Bank Main Channel Flow
-      +---------+---------------------------------------+-------+
       0        40       80      120     160     200     240    280  Station (meters)
 ```
+
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 08</span>
+      <strong>Rating Curves & Divided Channel Hydraulics</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/08-rating-curve-hydraulics.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Curves & Divided Channel Hydraulics Console"></iframe>
+</div>
 
 ---
 
@@ -47,7 +65,7 @@ Where:
 
 The Panchganga river system in Kolhapur features two primary regulatory hydraulic control points separated by $3.8\text{ km}$ of river channel:
 
-```text
+```json
 [ Shivaji Bridge Gauge ]  ====== 3.8 km Reach ======>  [ Rajaram K.T. Weir ]
 Elevation: 528.67 - 549.35m MSL                       Elevation: 529.318 - 545.33m MSL
 Datum separation: +0.648 m (Rajaram higher)            Rating: PCHIP on WRD sheet (verbatim)
@@ -56,6 +74,12 @@ Rating: PCHIP on WRD sheet − 0.648 m (sheet points)    Sheet anchors: 530.18 g
 ```
 
 ### 2.1 Surveyed Cross-Section Topometry
+
+Both control sections were surveyed rather than assumed. The Shivaji Bridge
+section has a bed at 528.670 m MSL inside a 96 m wide compound channel; the
+Rajaram weir section has its thalweg at 529.318 m MSL, 0.648 m higher, 3,858 m
+downstream. Each section is described as a low-flow channel plus left and right
+overbank panels, with its own width, side slope and roughness per panel.
 
 #### Site 1: Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)
 
@@ -81,37 +105,39 @@ Rating: PCHIP on WRD sheet − 0.648 m (sheet points)    Sheet anchors: 530.18 g
 
 ## 3. The 30% PBIAS Root Cause & Hydraulic Resolution
 
+The 30% volume bias reported in the first calibration campaign was not a
+calibration failure. It was a geometry failure: one averaged bed slope across the
+whole reach, one roughness across channel and floodplain, and a fixed stage
+subtraction compensating for both. Segmenting the reach, applying the Divided
+Channel Method and removing the subtraction brought PBIAS to −0.08%.
+
 ### 3.1 The Diagnostic Investigation
 
 In early iterations of the system, water stage predictions were reasonably accurate ($532.6 - 533.5\text{m}$), but discharge collapsed dramatically to only **$16.6\text{ m}^3/s$** (Shivaji) and **$10.4\text{ m}^3/s$** (Rajaram), resulting in an unacceptable volumetric percent bias (**PBIAS $\approx 30-40\%$**).
 
 Three severe hydraulic flaws caused this:
 
-```text
-+---------------------------------------------------------------------------------------+
-| FLAW 1: Unsegmented Bed Slope Calibration (The 24x Distortion)                         |
-| An unsegmented regression was fitted against 31 historical high-flood records         |
-| (stages 542m - 545.62m). Because flood stages encounter extreme backwater resistance  |
-| and weir submergence, the regression forced an artificial bed slope of:               |
-|         S₀ = 0.0001938 m/m (Shivaji)  and  S₀ = 0.0000767 m/m (Rajaram)               |
-| The true field-surveyed bed slopes are:                                               |
-|         S₀ = 0.005858 m/m (Shivaji, 30.2x higher!)                                    |
-|         S₀ = 0.002318 m/m (Rajaram, 30.2x higher!)                                    |
-| Since velocity v ∝ √S₀, v collapsed from 1.6 m/s down to 0.28 m/s!                    |
-+---------------------------------------------------------------------------------------+
-| FLAW 2: The Wetted Perimeter Discontinuity (Compound Channel Collapse)               |
-| At stage h ≈ 535.5m, flow spills out of the trapezoidal main channel into the wide     |
-| lateral floodplains. The single cross-section formulation caused wetted perimeter P   |
-| to jump instantly from 68m to 310m while Area A grew slowly. Hydraulic radius         |
-| R = A/P collapsed from 2.60m down to 1.05m! Because Q ∝ R^(2/3), the calculated     |
-| discharge actually DECREASED as stage increased—violating fundamental physics!        |
-+---------------------------------------------------------------------------------------+
-| FLAW 3: Artificial Offset Hack (Stage - 0.12m)                                         |
-| The system previously computed Shivaji rating and subtracted 0.12m for Rajaram.       |
-| In reality, Rajaram has a gentler bed slope (0.002318 vs 0.005858), which hydraulically|
-| requires a HIGHER depth to convey the same discharge (backwater pooling).             |
-+---------------------------------------------------------------------------------------+
-```
+| FLAW 1: Unsegmented Bed Slope Calibration (The 24x Distortion) |
+|:---|
+| An unsegmented regression was fitted against 31 historical high-flood records |
+| (stages 542m - 545.62m). Because flood stages encounter extreme backwater resistance |
+| and weir submergence, the regression forced an artificial bed slope of: |
+| S₀ = 0.0001938 m/m (Shivaji)  and  S₀ = 0.0000767 m/m (Rajaram) |
+| The true field-surveyed bed slopes are: |
+| S₀ = 0.005858 m/m (Shivaji, 30.2x higher!) |
+| S₀ = 0.002318 m/m (Rajaram, 30.2x higher!) |
+| Since velocity v ∝ √S₀, v collapsed from 1.6 m/s down to 0.28 m/s! |
+| FLAW 2: The Wetted Perimeter Discontinuity (Compound Channel Collapse) |
+| At stage h ≈ 535.5m, flow spills out of the trapezoidal main channel into the wide |
+| lateral floodplains. The single cross-section formulation caused wetted perimeter P |
+| to jump instantly from 68m to 310m while Area A grew slowly. Hydraulic radius |
+| R = A/P collapsed from 2.60m down to 1.05m! Because Q ∝ R^(2/3), the calculated |
+| discharge actually DECREASED as stage increased—violating fundamental physics! |
+| FLAW 3: Artificial Offset Hack (Stage - 0.12m) |
+| The system previously computed Shivaji rating and subtracted 0.12m for Rajaram. |
+| In reality, Rajaram has a gentler bed slope (0.002318 vs 0.005858), which hydraulically |
+| requires a HIGHER depth to convey the same discharge (backwater pooling). |
+
 
 ### 3.2 The WRD-Anchored PCHIP Hydraulic Calibration (Sep 2026 Correction)
 
@@ -178,7 +204,7 @@ At current observed radar telemetry (Sep 2026 toolset):
 
 ## 6. Fluvial Geomorphology & Longitudinal Bed Slopes (L-Section)
 
-```text
+```
 ====================================================================================================
            LONGITUDINAL BED PROFILE (L-SECTION) & SLOPE TRANSITIONS
 ====================================================================================================
@@ -212,26 +238,15 @@ Per the authoritative **Krishna Basin Flood 2019 Volume 1 Study Report**:
 
 ## 7. Divided Channel Method (DCM) for Sugarcane Overbank Floodplains
 
-```text
-   Elevation
-    (m MSL)
-     546.0 +                                                    2019 HFL (545.33 m)
-           |                                                   ~~~~~~~~~~~~~~~~~~~~
-     544.0 |   Left Floodplain              Main River Channel          Right Floodplain
-           |   (Sugarcane / Paddy)          (Gravel / Silt Bed)         (Sugarcane / Crops)
-     542.0 |   n_flood = 0.070              n_main = 0.031              n_flood = 0.070
-           |  +--------------------+                                   +--------------------+
-     540.0 |  |                    |       +-------------------+       |                    |
-           |  |                    |      /                     \      |                    |
-     536.0 |  |                    |     /                       \     |                    |
-           |  |                    |    /                         \    |                    |
-     532.0 |  |                    |   /                           \   |                    |
-           |  |                    |  /                             \  |                    |
-     528.0 |  +--------------------+ /                               \ +--------------------+
-           |                        /                                      528.67+-----------------------+-------- Thalweg: 528.67m MSL -----+--------------------
-           +-----------------------+-----------------------------------+--------------------+
-              Left Overbank                      Main Channel               Right Overbank
-```
+| ~~~~~~~~~~~~~~~~~~~~ |  |  |  |
+|:---|:---|:---|:---|
+| (Sugarcane / Paddy)          (Gravel / Silt Bed)         (Sugarcane / Crops) |   |   |   |
+| +--------------------+                                   +--------------------+ |   |   |   |
+|   |   | /                     \ |   |
+|   |   | /                         \ |   |
+|   |   | /                             \ |   |
+| /                                      528.67+-----------------------+-------- Thalweg: 528.67m MSL -----+-------------------- |   |   |   |
+
 
 To eliminate overbank discharge distortion during high stages ($>541.6\text{ m}$ MSL), the flow cross-section is hydraulically subdivided:
 
@@ -244,7 +259,7 @@ $$Q(H) = \frac{1}{n_{\text{main}}} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/
 
 ## 8. Sensor-to-Sink Upstream Stage Transfer
 
-```text
+```
    UPSTREAM                                                    DOWNSTREAM
    Chainage 10+115                                           Chainage 6+257
    Rajaram K.T. Weir                                         Shivaji Bridge

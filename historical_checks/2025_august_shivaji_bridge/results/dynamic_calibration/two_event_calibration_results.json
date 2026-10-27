@@ -1,0 +1,1299 @@
+{
+  "all": [
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.08,
+      "total_obj": 98.07,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3358.8,
+          "sim_peak_stage_m": 544.36,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.61,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.1,
+          "obj": 82.98
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2167.3,
+          "sim_peak_stage_m": 542.01,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9316,
+          "kge": 0.8448,
+          "rmse": 0.907,
+          "peak_err_m": -0.55,
+          "timing_err_h": 0.0,
+          "obj": 15.09
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.05,
+      "total_obj": 98.31,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3362.3,
+          "sim_peak_stage_m": 544.37,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.6,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.3,
+          "obj": 82.78
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2167.1,
+          "sim_peak_stage_m": 542.01,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9272,
+          "kge": 0.8358,
+          "rmse": 0.936,
+          "peak_err_m": -0.55,
+          "timing_err_h": 0.0,
+          "obj": 15.53
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.15,
+      "total_obj": 98.33,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3346.8,
+          "sim_peak_stage_m": 544.34,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.63,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.5,
+          "obj": 83.31
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2155.7,
+          "sim_peak_stage_m": 541.99,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9353,
+          "kge": 0.8545,
+          "rmse": 0.882,
+          "peak_err_m": -0.57,
+          "timing_err_h": 0.0,
+          "obj": 15.02
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.15,
+      "total_obj": 99.17,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3369.0,
+          "sim_peak_stage_m": 544.38,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.59,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.6,
+          "obj": 82.63
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2174.7,
+          "sim_peak_stage_m": 542.02,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.9356,
+          "kge": 0.8525,
+          "rmse": 0.88,
+          "peak_err_m": -0.54,
+          "timing_err_h": -1.0,
+          "obj": 16.54
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.05,
+      "total_obj": 99.21,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3344.4,
+          "sim_peak_stage_m": 544.34,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.63,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.4,
+          "obj": 83.28
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2155.2,
+          "sim_peak_stage_m": 541.99,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9262,
+          "kge": 0.8342,
+          "rmse": 0.942,
+          "peak_err_m": -0.57,
+          "timing_err_h": 0.0,
+          "obj": 15.93
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.08,
+      "total_obj": 99.22,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3343.5,
+          "sim_peak_stage_m": 544.33,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.64,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.4,
+          "obj": 83.52
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2154.6,
+          "sim_peak_stage_m": 541.99,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9285,
+          "kge": 0.8388,
+          "rmse": 0.927,
+          "peak_err_m": -0.57,
+          "timing_err_h": 0.0,
+          "obj": 15.7
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.15,
+      "total_obj": 99.25,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3328.6,
+          "sim_peak_stage_m": 544.31,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.66,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.7,
+          "obj": 83.8
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2143.7,
+          "sim_peak_stage_m": 541.97,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.934,
+          "kge": 0.8527,
+          "rmse": 0.891,
+          "peak_err_m": -0.59,
+          "timing_err_h": 0.0,
+          "obj": 15.45
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.08,
+      "total_obj": 99.26,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3335.8,
+          "sim_peak_stage_m": 544.32,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.65,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.0,
+          "obj": 83.66
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2147.7,
+          "sim_peak_stage_m": 541.98,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.931,
+          "kge": 0.846,
+          "rmse": 0.911,
+          "peak_err_m": -0.58,
+          "timing_err_h": 0.0,
+          "obj": 15.6
+        }
+      }
+    },
+    {
+      "cn_uplift": -4.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.08,
+      "total_obj": 99.3,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3330.1,
+          "sim_peak_stage_m": 544.31,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.66,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.7,
+          "obj": 83.82
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2146.3,
+          "sim_peak_stage_m": 541.98,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9322,
+          "kge": 0.8498,
+          "rmse": 0.903,
+          "peak_err_m": -0.58,
+          "timing_err_h": 0.0,
+          "obj": 15.48
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.05,
+      "total_obj": 99.48,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3337.1,
+          "sim_peak_stage_m": 544.32,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.65,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.1,
+          "obj": 83.67
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2148.7,
+          "sim_peak_stage_m": 541.98,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9289,
+          "kge": 0.8409,
+          "rmse": 0.924,
+          "peak_err_m": -0.58,
+          "timing_err_h": 0.0,
+          "obj": 15.81
+        }
+      }
+    },
+    {
+      "cn_uplift": -4.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.15,
+      "total_obj": 99.7,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3317.1,
+          "sim_peak_stage_m": 544.29,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.68,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.1,
+          "obj": 84.14
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2134.0,
+          "sim_peak_stage_m": 541.96,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9344,
+          "kge": 0.8603,
+          "rmse": 0.888,
+          "peak_err_m": -0.6,
+          "timing_err_h": 0.0,
+          "obj": 15.56
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.08,
+      "total_obj": 99.71,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3371.0,
+          "sim_peak_stage_m": 544.38,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.59,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.7,
+          "obj": 82.66
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2176.3,
+          "sim_peak_stage_m": 542.02,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.9305,
+          "kge": 0.8419,
+          "rmse": 0.914,
+          "peak_err_m": -0.54,
+          "timing_err_h": -1.0,
+          "obj": 17.05
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.15,
+      "total_obj": 99.73,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3314.7,
+          "sim_peak_stage_m": 544.29,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.68,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.0,
+          "obj": 84.11
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2133.4,
+          "sim_peak_stage_m": 541.96,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9338,
+          "kge": 0.8559,
+          "rmse": 0.892,
+          "peak_err_m": -0.6,
+          "timing_err_h": 0.0,
+          "obj": 15.62
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.15,
+      "total_obj": 99.93,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3359.4,
+          "sim_peak_stage_m": 544.36,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.61,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.1,
+          "obj": 82.99
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2165.0,
+          "sim_peak_stage_m": 542.0,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.9346,
+          "kge": 0.851,
+          "rmse": 0.887,
+          "peak_err_m": -0.56,
+          "timing_err_h": -1.0,
+          "obj": 16.94
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.05,
+      "total_obj": 99.97,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3371.9,
+          "sim_peak_stage_m": 544.38,
+          "sim_peak_ts": "2019-08-07 04:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.59,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.7,
+          "obj": 82.67
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2176.9,
+          "sim_peak_stage_m": 542.02,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.928,
+          "kge": 0.8372,
+          "rmse": 0.93,
+          "peak_err_m": -0.54,
+          "timing_err_h": -1.0,
+          "obj": 17.3
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.08,
+      "total_obj": 100.07,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3361.4,
+          "sim_peak_stage_m": 544.37,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.6,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.2,
+          "obj": 82.77
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2166.5,
+          "sim_peak_stage_m": 542.01,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9295,
+          "kge": 0.8404,
+          "rmse": 0.921,
+          "peak_err_m": -0.55,
+          "timing_err_h": 1.0,
+          "obj": 17.3
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.08,
+      "total_obj": 100.18,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3317.8,
+          "sim_peak_stage_m": 544.29,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.68,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.2,
+          "obj": 84.15
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2135.7,
+          "sim_peak_stage_m": 541.96,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9297,
+          "kge": 0.8443,
+          "rmse": 0.919,
+          "peak_err_m": -0.6,
+          "timing_err_h": 0.0,
+          "obj": 16.03
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.05,
+      "total_obj": 100.31,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3359.8,
+          "sim_peak_stage_m": 544.36,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.61,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.2,
+          "obj": 83.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2168.1,
+          "sim_peak_stage_m": 542.01,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.9294,
+          "kge": 0.8401,
+          "rmse": 0.921,
+          "peak_err_m": -0.55,
+          "timing_err_h": -1.0,
+          "obj": 17.31
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.15,
+      "total_obj": 100.39,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3342.0,
+          "sim_peak_stage_m": 544.33,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.64,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.3,
+          "obj": 83.49
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2155.0,
+          "sim_peak_stage_m": 541.99,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.9365,
+          "kge": 0.8592,
+          "rmse": 0.873,
+          "peak_err_m": -0.57,
+          "timing_err_h": -1.0,
+          "obj": 16.9
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.05,
+      "total_obj": 100.41,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3319.0,
+          "sim_peak_stage_m": 544.29,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.68,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.2,
+          "obj": 84.17
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2136.7,
+          "sim_peak_stage_m": 541.96,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9276,
+          "kge": 0.8392,
+          "rmse": 0.933,
+          "peak_err_m": -0.6,
+          "timing_err_h": 0.0,
+          "obj": 16.24
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.08,
+      "total_obj": 100.61,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3345.1,
+          "sim_peak_stage_m": 544.34,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.63,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.5,
+          "obj": 83.29
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2157.3,
+          "sim_peak_stage_m": 541.99,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.9323,
+          "kge": 0.8475,
+          "rmse": 0.902,
+          "peak_err_m": -0.57,
+          "timing_err_h": -1.0,
+          "obj": 17.32
+        }
+      }
+    },
+    {
+      "cn_uplift": -4.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.15,
+      "total_obj": 100.67,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3299.3,
+          "sim_peak_stage_m": 544.26,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.71,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 56.3,
+          "obj": 84.64
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2121.9,
+          "sim_peak_stage_m": 541.94,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9327,
+          "kge": 0.8586,
+          "rmse": 0.899,
+          "peak_err_m": -0.62,
+          "timing_err_h": 0.0,
+          "obj": 16.03
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.15,
+      "total_obj": 100.7,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3341.4,
+          "sim_peak_stage_m": 544.33,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.64,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.3,
+          "obj": 83.49
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2153.0,
+          "sim_peak_stage_m": 541.99,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9334,
+          "kge": 0.8494,
+          "rmse": 0.895,
+          "peak_err_m": -0.57,
+          "timing_err_h": 1.0,
+          "obj": 17.21
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.15,
+      "total_obj": 100.79,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3332.7,
+          "sim_peak_stage_m": 544.32,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.65,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.9,
+          "obj": 83.61
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2145.4,
+          "sim_peak_stage_m": 541.98,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9352,
+          "kge": 0.8576,
+          "rmse": 0.883,
+          "peak_err_m": -0.58,
+          "timing_err_h": 1.0,
+          "obj": 17.18
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.05,
+      "total_obj": 100.83,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3350.3,
+          "sim_peak_stage_m": 544.35,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.62,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.7,
+          "obj": 83.11
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2158.4,
+          "sim_peak_stage_m": 541.99,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.9283,
+          "kge": 0.8385,
+          "rmse": 0.928,
+          "peak_err_m": -0.57,
+          "timing_err_h": -1.0,
+          "obj": 17.72
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.08,
+      "total_obj": 100.84,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3349.3,
+          "sim_peak_stage_m": 544.34,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.63,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.7,
+          "obj": 83.35
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2157.6,
+          "sim_peak_stage_m": 541.99,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.9306,
+          "kge": 0.8433,
+          "rmse": 0.913,
+          "peak_err_m": -0.57,
+          "timing_err_h": -1.0,
+          "obj": 17.49
+        }
+      }
+    },
+    {
+      "cn_uplift": -4.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.05,
+      "total_obj": 100.86,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3304.5,
+          "sim_peak_stage_m": 544.27,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.7,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 56.5,
+          "obj": 84.46
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2126.0,
+          "sim_peak_stage_m": 541.95,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9275,
+          "kge": 0.8412,
+          "rmse": 0.934,
+          "peak_err_m": -0.61,
+          "timing_err_h": 0.0,
+          "obj": 16.4
+        }
+      }
+    },
+    {
+      "cn_uplift": -4.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.15,
+      "total_obj": 101.04,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3326.2,
+          "sim_peak_stage_m": 544.31,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.66,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.6,
+          "obj": 83.77
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2143.5,
+          "sim_peak_stage_m": 541.97,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.9358,
+          "kge": 0.8619,
+          "rmse": 0.878,
+          "peak_err_m": -0.59,
+          "timing_err_h": -1.0,
+          "obj": 17.27
+        }
+      }
+    },
+    {
+      "cn_uplift": -4.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.05,
+      "total_obj": 101.53,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3331.6,
+          "sim_peak_stage_m": 544.31,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.66,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.8,
+          "obj": 83.85
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2147.5,
+          "sim_peak_stage_m": 541.98,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.9302,
+          "kge": 0.8446,
+          "rmse": 0.916,
+          "peak_err_m": -0.58,
+          "timing_err_h": -1.0,
+          "obj": 17.68
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.05,
+      "total_obj": 101.6,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3332.3,
+          "sim_peak_stage_m": 544.32,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.65,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.9,
+          "obj": 83.61
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2146.4,
+          "sim_peak_stage_m": 541.98,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9271,
+          "kge": 0.8369,
+          "rmse": 0.936,
+          "peak_err_m": -0.58,
+          "timing_err_h": 1.0,
+          "obj": 17.99
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.08,
+      "total_obj": 101.6,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3331.2,
+          "sim_peak_stage_m": 544.31,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.66,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.8,
+          "obj": 83.84
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2145.6,
+          "sim_peak_stage_m": 541.98,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9294,
+          "kge": 0.8417,
+          "rmse": 0.921,
+          "peak_err_m": -0.58,
+          "timing_err_h": 1.0,
+          "obj": 17.76
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.15,
+      "total_obj": 101.7,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3356.2,
+          "sim_peak_stage_m": 544.36,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.61,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.0,
+          "obj": 82.95
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2165.4,
+          "sim_peak_stage_m": 542.0,
+          "sim_peak_ts": "2025-08-21 12:00:00",
+          "nse": 0.9365,
+          "kge": 0.856,
+          "rmse": 0.874,
+          "peak_err_m": -0.56,
+          "timing_err_h": -2.0,
+          "obj": 18.75
+        }
+      }
+    },
+    {
+      "cn_uplift": -4.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.08,
+      "total_obj": 101.85,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3320.9,
+          "sim_peak_stage_m": 544.3,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.67,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.3,
+          "obj": 83.94
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2136.8,
+          "sim_peak_stage_m": 541.96,
+          "sim_peak_ts": "2025-08-21 13:00:00",
+          "nse": 0.9309,
+          "kge": 0.8483,
+          "rmse": 0.912,
+          "peak_err_m": -0.6,
+          "timing_err_h": -1.0,
+          "obj": 17.91
+        }
+      }
+    },
+    {
+      "cn_uplift": -4.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.05,
+      "total_obj": 101.93,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3322.4,
+          "sim_peak_stage_m": 544.3,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.67,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.4,
+          "obj": 83.97
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2138.0,
+          "sim_peak_stage_m": 541.97,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9289,
+          "kge": 0.843,
+          "rmse": 0.924,
+          "peak_err_m": -0.59,
+          "timing_err_h": 1.0,
+          "obj": 17.96
+        }
+      }
+    },
+    {
+      "cn_uplift": -4.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.08,
+      "total_obj": 102.66,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3303.0,
+          "sim_peak_stage_m": 544.27,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.7,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 56.5,
+          "obj": 84.44
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2124.8,
+          "sim_peak_stage_m": 541.95,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9293,
+          "kge": 0.8465,
+          "rmse": 0.922,
+          "peak_err_m": -0.61,
+          "timing_err_h": 1.0,
+          "obj": 18.22
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.05,
+      "total_obj": 102.85,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "site": "RAJARAM_WEIR",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 3346.4,
+          "sim_peak_stage_m": 544.34,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "obs_stage_m": 546.97,
+          "peak_stage_err_m": -2.63,
+          "obs_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.5,
+          "obj": 83.31
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "site": "SHIVAJI_BRIDGE",
+          "amc": "AMC-III",
+          "sim_peak_q_m3s": 2158.3,
+          "sim_peak_stage_m": 541.99,
+          "sim_peak_ts": "2025-08-21 12:00:00",
+          "nse": 0.9301,
+          "kge": 0.8423,
+          "rmse": 0.917,
+          "peak_err_m": -0.57,
+          "timing_err_h": -2.0,
+          "obj": 19.54
+        }
+      }
+    }
+  ],
+  "best": {
+    "cn_uplift": 0.0,
+    "alpha_k": 0.8,
+    "ia_frac": 0.08,
+    "total_obj": 98.07,
+    "events": {
+      "2019_august": {
+        "event": "2019_august",
+        "site": "RAJARAM_WEIR",
+        "amc": "AMC-III",
+        "sim_peak_q_m3s": 3358.8,
+        "sim_peak_stage_m": 544.36,
+        "sim_peak_ts": "2019-08-07 05:00:00",
+        "obs_stage_m": 546.97,
+        "peak_stage_err_m": -2.61,
+        "obs_q_m3s": 2111.0,
+        "peak_q_err_pct": 59.1,
+        "obj": 82.98
+      },
+      "2025_august": {
+        "event": "2025_august",
+        "site": "SHIVAJI_BRIDGE",
+        "amc": "AMC-III",
+        "sim_peak_q_m3s": 2167.3,
+        "sim_peak_stage_m": 542.01,
+        "sim_peak_ts": "2025-08-21 14:00:00",
+        "nse": 0.9316,
+        "kge": 0.8448,
+        "rmse": 0.907,
+        "peak_err_m": -0.55,
+        "timing_err_h": 0.0,
+        "obj": 15.09
+      }
+    }
+  }
+}

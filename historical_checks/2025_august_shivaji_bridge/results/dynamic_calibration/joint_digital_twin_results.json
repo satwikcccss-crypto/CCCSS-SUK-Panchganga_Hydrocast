@@ -1,0 +1,979 @@
+{
+  "best": {
+    "cn_uplift": -2.0,
+    "alpha_k": 0.9,
+    "ia_frac": 0.08,
+    "total_obj": 76.2,
+    "events": {
+      "2019_august": {
+        "event": "2019_august",
+        "amc": "AMC-III",
+        "mean_antecedent_mm": 207.7,
+        "sim_peak_q_m3s": 3317.8,
+        "sim_peak_ts": "2019-08-07 08:00:00",
+        "rep_peak_q_m3s": 2111.0,
+        "peak_q_err_pct": 57.2,
+        "obj": 57.17
+      },
+      "2021_july": {
+        "event": "2021_july",
+        "amc": "AMC-III",
+        "mean_antecedent_mm": 253.4,
+        "sim_peak_q_m3s": 1612.5,
+        "sim_peak_ts": "2021-07-23 11:00:00",
+        "obj": 0.0
+      },
+      "2025_august": {
+        "event": "2025_august",
+        "amc": "AMC-III",
+        "mean_antecedent_mm": 33.6,
+        "sim_peak_q_m3s": 2135.7,
+        "sim_peak_ts": "2025-08-21 15:00:00",
+        "nse": 0.9297,
+        "kge": 0.8443,
+        "rmse": 0.919,
+        "peak_err_m": -0.6,
+        "timing_err_h": 0.0,
+        "obj": 19.03
+      }
+    }
+  },
+  "all": [
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.08,
+      "total_obj": 76.2,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3317.8,
+          "sim_peak_ts": "2019-08-07 08:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.2,
+          "obj": 57.17
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1612.5,
+          "sim_peak_ts": "2021-07-23 11:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2135.7,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9297,
+          "kge": 0.8443,
+          "rmse": 0.919,
+          "peak_err_m": -0.6,
+          "timing_err_h": 0.0,
+          "obj": 19.03
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.05,
+      "total_obj": 76.46,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3319.0,
+          "sim_peak_ts": "2019-08-07 08:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.2,
+          "obj": 57.22
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1614.7,
+          "sim_peak_ts": "2021-07-23 11:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2136.7,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9276,
+          "kge": 0.8392,
+          "rmse": 0.933,
+          "peak_err_m": -0.6,
+          "timing_err_h": 0.0,
+          "obj": 19.24
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.08,
+      "total_obj": 76.52,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3335.8,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.0,
+          "obj": 58.02
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1616.2,
+          "sim_peak_ts": "2021-07-23 11:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2147.7,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.931,
+          "kge": 0.846,
+          "rmse": 0.911,
+          "peak_err_m": -0.58,
+          "timing_err_h": 0.0,
+          "obj": 18.5
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.05,
+      "total_obj": 76.79,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3337.1,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.1,
+          "obj": 58.08
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1618.3,
+          "sim_peak_ts": "2021-07-23 11:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2148.7,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9289,
+          "kge": 0.8409,
+          "rmse": 0.924,
+          "peak_err_m": -0.58,
+          "timing_err_h": 0.0,
+          "obj": 18.71
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.08,
+      "total_obj": 76.93,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3343.5,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.4,
+          "obj": 58.38
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1639.5,
+          "sim_peak_ts": "2021-07-23 11:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2154.6,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9285,
+          "kge": 0.8388,
+          "rmse": 0.927,
+          "peak_err_m": -0.57,
+          "timing_err_h": 0.0,
+          "obj": 18.55
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.08,
+      "total_obj": 76.95,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3358.8,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.1,
+          "obj": 59.11
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1633.0,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2167.3,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9316,
+          "kge": 0.8448,
+          "rmse": 0.907,
+          "peak_err_m": -0.55,
+          "timing_err_h": 0.0,
+          "obj": 17.84
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.05,
+      "total_obj": 77.21,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3344.4,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.4,
+          "obj": 58.43
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1641.0,
+          "sim_peak_ts": "2021-07-23 11:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2155.2,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9262,
+          "kge": 0.8342,
+          "rmse": 0.942,
+          "peak_err_m": -0.57,
+          "timing_err_h": 0.0,
+          "obj": 18.78
+        }
+      }
+    },
+    {
+      "cn_uplift": 4.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.08,
+      "total_obj": 77.41,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3354.6,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.9,
+          "obj": 58.91
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1651.4,
+          "sim_peak_ts": "2021-07-23 11:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2162.7,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.927,
+          "kge": 0.8356,
+          "rmse": 0.937,
+          "peak_err_m": -0.56,
+          "timing_err_h": 0.0,
+          "obj": 18.5
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.05,
+      "total_obj": 77.56,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3362.3,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.3,
+          "obj": 59.28
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1644.7,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2167.1,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9272,
+          "kge": 0.8358,
+          "rmse": 0.936,
+          "peak_err_m": -0.55,
+          "timing_err_h": 0.0,
+          "obj": 18.28
+        }
+      }
+    },
+    {
+      "cn_uplift": 4.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.05,
+      "total_obj": 77.69,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3355.3,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.9,
+          "obj": 58.94
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1652.7,
+          "sim_peak_ts": "2021-07-23 11:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2163.2,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9245,
+          "kge": 0.8312,
+          "rmse": 0.953,
+          "peak_err_m": -0.56,
+          "timing_err_h": 0.0,
+          "obj": 18.75
+        }
+      }
+    },
+    {
+      "cn_uplift": 4.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.08,
+      "total_obj": 77.77,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3372.6,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.8,
+          "obj": 59.76
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1655.1,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2174.5,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9279,
+          "kge": 0.8372,
+          "rmse": 0.931,
+          "peak_err_m": -0.54,
+          "timing_err_h": 0.0,
+          "obj": 18.01
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.08,
+      "total_obj": 77.96,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3331.2,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.8,
+          "obj": 57.8
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1626.5,
+          "sim_peak_ts": "2021-07-23 11:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2145.6,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9294,
+          "kge": 0.8417,
+          "rmse": 0.921,
+          "peak_err_m": -0.58,
+          "timing_err_h": 1.0,
+          "obj": 20.16
+        }
+      }
+    },
+    {
+      "cn_uplift": 4.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.05,
+      "total_obj": 78.05,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3373.3,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.8,
+          "obj": 59.8
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1656.4,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2175.0,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9255,
+          "kge": 0.8328,
+          "rmse": 0.947,
+          "peak_err_m": -0.54,
+          "timing_err_h": 0.0,
+          "obj": 18.25
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.08,
+      "total_obj": 78.13,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3345.1,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.5,
+          "obj": 58.46
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1619.0,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2157.3,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9323,
+          "kge": 0.8475,
+          "rmse": 0.902,
+          "peak_err_m": -0.57,
+          "timing_err_h": -1.0,
+          "obj": 19.67
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.9,
+      "ia_frac": 0.05,
+      "total_obj": 78.24,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3332.3,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 57.9,
+          "obj": 57.85
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1628.4,
+          "sim_peak_ts": "2021-07-23 11:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2146.4,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9271,
+          "kge": 0.8369,
+          "rmse": 0.936,
+          "peak_err_m": -0.58,
+          "timing_err_h": 1.0,
+          "obj": 20.39
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.08,
+      "total_obj": 78.5,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3349.3,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.7,
+          "obj": 58.66
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1630.0,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2157.6,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9306,
+          "kge": 0.8433,
+          "rmse": 0.913,
+          "peak_err_m": -0.57,
+          "timing_err_h": -1.0,
+          "obj": 19.84
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.05,
+      "total_obj": 78.72,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3359.8,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.2,
+          "obj": 59.16
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1634.8,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2168.1,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9294,
+          "kge": 0.8401,
+          "rmse": 0.921,
+          "peak_err_m": -0.55,
+          "timing_err_h": -1.0,
+          "obj": 19.56
+        }
+      }
+    },
+    {
+      "cn_uplift": 0.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.05,
+      "total_obj": 78.78,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3350.3,
+          "sim_peak_ts": "2019-08-07 07:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.7,
+          "obj": 58.71
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1631.9,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2158.4,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9283,
+          "kge": 0.8385,
+          "rmse": 0.928,
+          "peak_err_m": -0.57,
+          "timing_err_h": -1.0,
+          "obj": 20.07
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.85,
+      "ia_frac": 0.08,
+      "total_obj": 78.78,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3361.4,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.2,
+          "obj": 59.23
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1643.1,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2166.5,
+          "sim_peak_ts": "2025-08-21 15:00:00",
+          "nse": 0.9295,
+          "kge": 0.8404,
+          "rmse": 0.921,
+          "peak_err_m": -0.55,
+          "timing_err_h": 1.0,
+          "obj": 19.55
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.08,
+      "total_obj": 78.94,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3371.0,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.7,
+          "obj": 59.69
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1645.9,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2176.3,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9305,
+          "kge": 0.8419,
+          "rmse": 0.914,
+          "peak_err_m": -0.54,
+          "timing_err_h": -1.0,
+          "obj": 19.25
+        }
+      }
+    },
+    {
+      "cn_uplift": 2.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.05,
+      "total_obj": 79.23,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3371.9,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 59.7,
+          "obj": 59.73
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1647.4,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2176.9,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.928,
+          "kge": 0.8372,
+          "rmse": 0.93,
+          "peak_err_m": -0.54,
+          "timing_err_h": -1.0,
+          "obj": 19.5
+        }
+      }
+    },
+    {
+      "cn_uplift": 4.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.08,
+      "total_obj": 79.45,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3382.3,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 60.2,
+          "obj": 60.22
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1657.7,
+          "sim_peak_ts": "2021-07-23 09:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2184.4,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9287,
+          "kge": 0.8385,
+          "rmse": 0.926,
+          "peak_err_m": -0.53,
+          "timing_err_h": -1.0,
+          "obj": 19.23
+        }
+      }
+    },
+    {
+      "cn_uplift": 4.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.05,
+      "total_obj": 79.74,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3383.0,
+          "sim_peak_ts": "2019-08-07 05:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 60.3,
+          "obj": 60.26
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1659.0,
+          "sim_peak_ts": "2021-07-23 09:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2184.9,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9262,
+          "kge": 0.8341,
+          "rmse": 0.942,
+          "peak_err_m": -0.53,
+          "timing_err_h": -1.0,
+          "obj": 19.48
+        }
+      }
+    },
+    {
+      "cn_uplift": -2.0,
+      "alpha_k": 0.8,
+      "ia_frac": 0.05,
+      "total_obj": 79.91,
+      "events": {
+        "2019_august": {
+          "event": "2019_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 207.7,
+          "sim_peak_q_m3s": 3346.4,
+          "sim_peak_ts": "2019-08-07 06:00:00",
+          "rep_peak_q_m3s": 2111.0,
+          "peak_q_err_pct": 58.5,
+          "obj": 58.52
+        },
+        "2021_july": {
+          "event": "2021_july",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 253.4,
+          "sim_peak_q_m3s": 1621.2,
+          "sim_peak_ts": "2021-07-23 10:00:00",
+          "obj": 0.0
+        },
+        "2025_august": {
+          "event": "2025_august",
+          "amc": "AMC-III",
+          "mean_antecedent_mm": 33.6,
+          "sim_peak_q_m3s": 2158.3,
+          "sim_peak_ts": "2025-08-21 14:00:00",
+          "nse": 0.9301,
+          "kge": 0.8423,
+          "rmse": 0.917,
+          "peak_err_m": -0.57,
+          "timing_err_h": -2.0,
+          "obj": 21.39
+        }
+      }
+    }
+  ]
+}

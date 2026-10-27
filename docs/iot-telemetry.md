@@ -1,74 +1,55 @@
 # IoT Ultrasonic Water Level Telemetry & Sensor Integration
 
-```text
-========================================================================================
-       THINGSPEAK IOT ULTRASONIC RADAR WATER LEVEL SENSOR (SHIVAJI BRIDGE)
-========================================================================================
-
-           Chhatrapati Shivaji Maharaj Bridge Deck (Panchganga Ghat)
-  ══════════════════════════════════════════════════════════════════════════════
-                      │                                        ▲
-                      ▼ Ultrasonic Transducer                  │ Sensor Mounting Datum:
-                   [ Radar ]                                   │ 549.35 m MSL
-                      │                                        │
-                      │ Air Gap Echo Distance:                 │
-                      │ d_air = 52.72 feet (16.07 m)           │
-                      │                                        │
-                      ▼                                        ▼
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                     Water Surface Elevation (Stage h):
-                h = 549.35 - (d_air * 0.3048) = 533.28 m MSL
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                      │                                        ▲
-                      │ Water Depth:                           │
-                      │ y = 533.28 - 530.18 = 3.10 m (10' 2")  │ Gauge Zero Datum:
-                      │                                        │ 530.18 m MSL (0' 0")
-                      ▼                                        ▼
-  ─────────────────────────────────────────────────────────────────────────────
-                             River Bed Invert Level
-```
 
 ---
 
-```text
-====================================================================================================
-                PANCHGANGA RIVER LEVEL IOT TELEMETRY PROCESSING PIPELINE
-====================================================================================================
+| (5-Minute Cellular Uplink) |  |  |
+|:---|:---|:---|
+| REST Telemetry Polling Engine |   |   |
+| - Field1: Distance to Water |   |   |
+| - Field2: Temperature / Status |   |   |
+| Physical Elevation Conversion |   |   |
+| H_water (m MSL) = Sensor_Datum (549.35m) - Distance_m |   |   |
+| Quality Control & Outlier Rejection |   |   |
+| - Range Check: 528.0m <= H_water <= 548.0m MSL |   |   |
+| - 1-Hour Rolling Median Window |   |   |
+| - Rate of Change Guard: | dh/dt | <= 2.0 m/hr |
+| Active Cycle Verification |   | Real-Time Adaptive Calibrator |
+| Compares live H_obs to |   | Detects wave timing offset |
+| forecast H_pred(t) |   | Triggers Levenberg-Marquardt optimization |
 
-      Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat, Kolhapur)
-      Ultrasonic Distance Telemetry Transducer (ThingSpeak Channel 3424513)
-                               |
-                               | (5-Minute Cellular Uplink)
-                               v
-               +-------------------------------+
-               | REST Telemetry Polling Engine |
-               | - Field1: Distance to Water   |
-               | - Field2: Temperature / Status|
-               +-------------------------------+
-                               |
-                               v
-               +-------------------------------------------------------+
-               | Physical Elevation Conversion                         |
-               | H_water (m MSL) = Sensor_Datum (549.35m) - Distance_m |
-               +-------------------------------------------------------+
-                               |
-                               v
-               +-------------------------------------------------------+
-               | Quality Control & Outlier Rejection                   |
-               | - Range Check: 528.0m <= H_water <= 548.0m MSL        |
-               | - 1-Hour Rolling Median Window                        |
-               | - Rate of Change Guard: |dh/dt| <= 2.0 m/hr           |
-               +-------------------------------------------------------+
-                               |
-                               +-----------------------------------+
-                               |                                   |
-                               v                                   v
-             +-------------------------------+   +-------------------------------+
-             | Active Cycle Verification     |   | Real-Time Adaptive Calibrator |
-             | Compares live H_obs to        |   | Detects wave timing offset    |
-             | forecast H_pred(t)            |   | Triggers Levenberg-Marquardt optimization|
-             +-------------------------------+   +-------------------------------+
-```
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 05</span>
+      <strong>Simulation Run Lifecycle</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/05-lifecycle-runs.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/05-lifecycle-runs.html?embed=1" title="Simulation Run Lifecycle Console"></iframe>
+</div>
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 02</span>
+      <strong>Rainfall-to-Alert Dataflow</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/02-dataflow.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/02-dataflow.html?embed=1" title="Rainfall-to-Alert Dataflow Console"></iframe>
+</div>
+
+---
 
 ## 1. Hardware Architecture & Mounting Geometry
 
@@ -153,16 +134,12 @@ def fetch_shivaji_live_telemetry() -> dict:
 
 To prevent spurious acoustic echoes from surface waves, heavy spray, or river debris from corrupting model baseflow initialization:
 
-```text
- Valid Observation Envelope:
- +--------------------+-----------------------+---------------------------------------+
- | Metric             | Valid Range           | Physical Meaning                      |
- +--------------------+-----------------------+---------------------------------------+
- | Raw Air Distance   | 10.0 ft to 64.0 ft    | Cannot be above bridge or below bed   |
- | Stage Elevation    | 529.5 m to 546.5 m    | Bounded between bed and over-bridge   |
- | Max Rate of Change | ≤ 1.2 m / hour        | Physical limit of Panchganga flood rise|
- +--------------------+-----------------------+---------------------------------------+
-```
+| Metric | Valid Range | Physical Meaning |
+|:---|:---|:---|
+| Raw Air Distance | 10.0 ft to 64.0 ft | Cannot be above bridge or below bed |
+| Stage Elevation | 529.5 m to 546.5 m | Bounded between bed and over-bridge |
+| Max Rate of Change | ≤ 1.2 m / hour | Physical limit of Panchganga flood rise |
+
 
 1. **Median Filter:** A 3-sample moving median window filters out isolated ultrasonic sensor spike glitches.
 2. **Persistent Fallback:** If ThingSpeak drops offline or the cellular link fails during a storm, the system uses the last verified reading or defaults to the calibrated seasonal baseflow ($91.1\text{ m}^3/s$).

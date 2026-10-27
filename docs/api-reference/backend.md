@@ -7,30 +7,46 @@ title: FastAPI Service Reference
 Rendered from the docstrings in `src/api/`. Every route below is also visible in the
 live [Swagger UI](../backend.md#3-interactive-api-explorer).
 
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 11</span>
+      <strong>Backend API Map</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../../diagrams/11-backend-api.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../../diagrams/11-backend-api.html?embed=1" title="Backend API Map Console"></iframe>
+</div>
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 04</span>
+      <strong>API Gateway & Auth Sequence</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../../diagrams/04-sequence-auth-api.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../../diagrams/04-sequence-auth-api.html?embed=1" title="API Gateway & Auth Sequence Console"></iframe>
+</div>
+
+---
+
 ## Request lifecycle
 
-```text
-  Client (Next.js / curl / Telegram bot)
-        │
-        ▼
-  ┌───────────────────────────────────────────────────────────────────┐
-  │  1. CORSMiddleware            allows CORS_ORIGINS, methods GET/    │
-  │                               POST/OPTIONS                        │
-  ├───────────────────────────────────────────────────────────────────┤
-  │  2. slowapi rate limiter      per-IP; 100/minute default          │
-  │                               → 429 + Retry-After on breach       │
-  ├───────────────────────────────────────────────────────────────────┤
-  │  3. verify_public_or_key     X-API-Key header when REQUIRED      │
-  │                               → 401 when missing/wrong            │
-  ├───────────────────────────────────────────────────────────────────┤
-  │  4. Route handler             asyncpg Pool (min 2 / max 10 conns)  │
-  ├───────────────────────────────────────────────────────────────────┤
-  │  5. Response                  dict → JSONResponse                 │
-  └───────────────────────────────────────────────────────────────────┘
-        │
-        ▼
-  Next.js dashboard  /  Supabase  /  PostgreSQL
-```
+A request passes through four stages before it reaches a route handler: CORS
+negotiation, API-key or bearer-token authentication, per-client rate limiting, and
+response-model validation. Failures short-circuit at the stage that rejected them,
+so an unauthenticated request never consumes the rate-limit budget and a
+rate-limited request never touches the database.
+
 
 ---
 
@@ -47,14 +63,6 @@ The application object, public data endpoints and the live WebSocket.
 Administrative router mounted at `/api/v1/admin`. Every route except
 `/auth/token` requires a valid admin JWT bearer token.
 
-```text
-  POST /api/v1/admin/auth/token   ──►  {username, password} ──►  JWT
-  POST /api/v1/admin/trigger-run  ──►  {date, hour, cycle_id, async_mode}
-  POST /api/v1/admin/archive      ──►  {retention_days, dry_run}
-  POST /api/v1/admin/recalibrate  ──►  {timing_offset_hours, stage_error_m,
-                                         sync_basin_file}
-  GET  /api/v1/admin/me           ──►  current session claims
-```
 
 ::: src.api.admin
 

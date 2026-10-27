@@ -10,32 +10,6 @@ Threshold evaluation, de-duplication, and the Telegram flood bulletin.
 
 ## Alert evaluation and de-duplication
 
-```text
-  peak stage at each bridge site
-            │
-            ▼
-  classify_alert(stage_m, site_id)
-      ├── stage ≥ 545.33 m  → HFL_EXCEEDED   (1 969 m³/s historical peak)
-      ├── stage ≥ 543.30 m  → DANGER         (2 675 m³/s danger mark)
-      ├── stage ≥ 542.70 m  → WARNING        (1 800 m³/s warning mark)
-      └── otherwise         → ALERT / normal
-            │
-            ▼
-  _cwc_to_alert_type(level)  ──►  watch | warning | emergency
-            │
-            ▼
-  ┌────────────────────────────────────────────────────────────┐
-  │  SELECT existing active alert for this site,               │
-  │         ordered by  emergency(3) > warning(2) > watch(1)  │
-  │         then issued_at DESC                                │
-  └───────────────────────────┬────────────────────────────────┘
-                              │
-        existing.priority ≥ new.priority ──► SKIP (duplicate suppressed)
-                              │
-                             no
-                              ▼
-                     INSERT new alert_events row
-```
 
 !!! tip "Priority ordering, not lexicographic"
     An earlier query compared `alert_type >= %s` **as text**. Because
@@ -49,28 +23,6 @@ Threshold evaluation, de-duplication, and the Telegram flood bulletin.
 
 ## Telegram bulletin
 
-```text
-   forecast cycle completes
-            │
-            ▼
-  ┌─────────────────────────────────────────────────────────┐
-  │  format_telegram_alert()                                │
-  │                                                         │
-  │   🌊 HYDROCAST FLOOD BULLETIN 🌊                        │
-  │   Authority: Centre for Climate Change & Sustainability  │
-  │              Studies, Shivaji University Kolhapur        │
-  │   Classification: 🟠 [WARNING / ADVISORY]               │
-  │   ─────────────────────────────                         │
-  │   Site / stage / trend / margin above warning mark      │
-  │   WRD reference datums: Warning · Danger · HFL          │
-  │   Recommended action line                                │
-  └───────────────────────────┬─────────────────────────────┘
-                              │
-                              ▼
-  build_telegram_application()
-     ├── get_webhook_urls()  non-empty ──► run webhook mode
-     └── otherwise           empty     ──► start_polling()
-```
 
 `get_severity_badge()` accepts either the CWC threshold vocabulary
 (`ALERT` / `WARNING` / `DANGER` / `HFL_EXCEEDED`) or the database `alert_type`
@@ -78,6 +30,34 @@ vocabulary (`watch` / `warning` / `emergency`) and maps both onto the same badge
 so a bulletin rendered from either source is visually identical.
 
 ---
+
+## Alert classification and de-duplication
+
+`classify_alert(stage_m, site_id)` maps the converted stage onto the WRD ladder for
+the site. At the Shivaji Bridge reference section the thresholds are:
+
+| Stage at Shivaji (m MSL) | Level | WRD reference |
+|:---|:---|:---|
+| ≥ 545.33 | `HFL_EXCEEDED` | 1,969 m³/s historical peak |
+| ≥ 543.30 | `DANGER` | 2,675 m³/s danger mark |
+| ≥ 542.70 | `WARNING` | 1,800 m³/s warning mark |
+| below 542.70 | `ALERT` / normal | below the warning band |
+
+The CWC level is then translated to the alert vocabulary the notifier understands
+(`watch`, `warning`, `emergency`) by `_cwc_to_alert_type()`.
+
+Before an alert is written, the router selects the existing active alert for the
+site ordered by severity — `emergency (3) > warning (2) > watch (1)` — then by
+`issued_at` descending. If the existing alert's priority is greater than or equal
+to the incoming one, the insert is skipped and the duplicate is suppressed. This
+is what prevents a rising river from generating one bulletin per hourly cycle.
+
+The Telegram bulletin itself is formatted by `format_telegram_alert()` and carries
+the site, stage, trend, margin above the warning mark, the three WRD reference
+datums, and the recommended action line. Delivery uses webhook mode when
+`get_webhook_urls()` returns any URL, and falls back to `start_polling()`
+otherwise.
+
 
 ## `src/alerts/evaluator.py`
 

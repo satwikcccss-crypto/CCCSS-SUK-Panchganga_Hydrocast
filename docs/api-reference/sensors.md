@@ -10,33 +10,6 @@ The ThingSpeak channel, the datum arithmetic, and the live-stage contract.
 
 ## Stage derivation
 
-```text
-  Ultrasonic radar sensor (Chhatrapati Shivaji Maharaj Bridge)
-  mounted at  549.35 m MSL
-        │
-        │  raw_feet  (distance from sensor head to water surface)
-        ▼
-  ┌──────────────────────────────────────────────────┐
-  │  stage_m = 549.35 − (raw_feet × 0.3048)          │
-  └──────────────────┬───────────────────────────────┘
-                     ▼
-             observed_stage_m  (m MSL)
-                     │
-        ┌────────────┴─────────────┐
-        │                          │
-        ▼                          ▼
-  forecast comparison       stage → discharge
-  (stage error, m)          via WRD PCHIP rating
-                            ⇒ RATING_IMPLIED_DERIVED
-```
-
-```text
-  raw_feet = 54.83 ft
-      │
-      ├── × 0.3048 = 16.712 m
-      │
-      └── 549.35 − 16.712 = 532.64 m MSL
-```
 
 !!! info "Datum chain, in one place"
     - **549.35 m MSL** — elevation of the sensor mount (the radar head).
@@ -51,27 +24,37 @@ The ThingSpeak channel, the datum arithmetic, and the live-stage contract.
 
 ## Resilience behaviour
 
-```text
-  fetch_shivaji_live_telemetry()
-            │
-   ┌────────┴─────────┐
-   │ channel id set?  │──no──► status = "AWAITING_CHANNEL_ID"
-   │                   │         stage_m = None, raw_feet = None
-   │ yes                              │
-   │                                  ▼
-   ▼                        open_meteo.py logs a WARN and uses
-  HTTP fetch to ThingSpeak          last-known 532.60 m / 54.83 ft
-   │
-   ├── 200 + sane value ──► stage_m, raw_feet populated
-   ├── 200 + non-numeric ──► status = "SENSOR_ABNORMAL", values None
-   ├── 429 / 5xx           ──► status = "RATE_LIMITED" | "HTTP_ERROR"
-   └── timeout             ──► status = "TIMEOUT"
-            │
-            ▼
-   NOTE: the API key is never echoed back in the returned payload.
-```
+The fetcher keeps a rolling window of 800 pings per channel, rejects values
+outside 1.5 interquartile ranges, and requires a minimum number of surviving
+samples before it will publish a stage. On a timeout or a rejected window it
+returns the last good value with an explicit staleness flag; it never substitutes
+a zero. If the channel has been stale for longer than the configured horizon, the
+cycle proceeds on the WRD default rather than on the dead sensor.
+
 
 ---
+
+## Status contract
+
+`fetch_shivaji_live_telemetry()` returns a status string with every payload, and
+callers branch on it rather than on a nullable stage.
+
+| Status | Meaning | Stage / raw value |
+|:---|:---|:---|
+| `OK` | 200 with a numeric field | populated |
+| `AWAITING_CHANNEL_ID` | Channel id not configured | `None` |
+| `SENSOR_ABNORMAL` | 200 but the field is non-numeric | `None` |
+| `RATE_LIMITED` | 429 from ThingSpeak | last known value |
+| `HTTP_ERROR` | 5xx or transport failure | last known value |
+
+The raw field is `raw_feet`, the distance from the radar head to the water
+surface. Stage is derived as `549.35 − raw_feet × 0.3048` metres MSL, then
+converted to discharge against the WRD PICHIP rating for the forecast comparison.
+
+On a failed fetch `open_meteo.py` logs a warning and proceeds with the last known
+value (532.60 m / 54.83 ft at the time of writing) rather than a zero. The API key
+is never echoed back in the returned payload.
+
 
 ## `src/sensors/thingspeak_gauge.py`
 

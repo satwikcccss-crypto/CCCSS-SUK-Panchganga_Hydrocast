@@ -1,40 +1,43 @@
 # HydroCast Backend API & Orchestration Architecture
 
-```text
-========================================================================================
-             HYDROCAST FASTAPI REST SERVICE & AUTOMATION BACKEND
-========================================================================================
 
-                             HTTP Clients (Next.js / Dashboard / GIS)
-                                                │
-                                                ▼
-                                    FastAPI Application Server
-                                  (src/api/main.py :8000)
-                                                │
-      ┌─────────────────────────────────────────┼─────────────────────────────────────────┐
-      ▼                                         ▼                                         ▼
-[ REST Endpoints Router ]             [ WebSocket Manager ]                  [ Automation & Admin ]
-/api/v1/dashboard                      /ws/live broadcast                     12-Step Execution Runner
-/api/v1/runs & /runs/{id}              Push to connected clients              Admin Router (/admin/*)
-/api/v1/runoff/* & /rainfall/*         Keep-alive ping/pong                   JWT Auth & Rate Limiter
-      │                                         │                                         │
-      └─────────────────────────────────────────┼─────────────────────────────────────────┘
-                                                ▼
-                             Dual-Mode Data Storage & Persistence
-                                                │
-                 ┌──────────────────────────────┴──────────────────────────────┐
-                 ▼                                                             ▼
-    [ PostgreSQL / Supabase DB ]                                  [ Standalone JSON Ledger ]
-    asyncpg async connection pool                                  data/runs/{cycle_id}.json
-    Tables: simulation_runs, hydrographs,                          data/runs/runs_index.json
-    station_telemetry, pipeline_steps                              frontend/public/data/latest_pipeline_state.json
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 11</span>
+      <strong>Backend API Map</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/11-backend-api.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/11-backend-api.html?embed=1" title="Backend API Map Console"></iframe>
+</div>
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 04</span>
+      <strong>API Gateway & Auth Sequence</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/04-sequence-auth-api.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/04-sequence-auth-api.html?embed=1" title="API Gateway & Auth Sequence Console"></iframe>
+</div>
 
 ---
 
 ## 1. Technology Stack & Framework
 
-```text
+```
 ====================================================================================================
                   HYDROCAST 12-STAGE ORCHESTRATION PIPELINE (src/orchestrator.py)
 ====================================================================================================
@@ -116,7 +119,7 @@ The backend is engineered for zero-dependency resilience:
 FastAPI generates its own browsable documentation from the application's own
 metadata. Nothing extra needs to be installed or configured.
 
-```bash
+```
 # From the repository root
 python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
@@ -136,23 +139,6 @@ to the schema; there is no separate OpenAPI file to keep in sync.
 Click **Authorize** once at the top right to attach either credential, then
 every protected route becomes callable from the browser:
 
-```text
-   ┌────────────────────────────────────────────────────────────────────┐
-   │  Swagger UI  /docs                                                 │
-   │                                                                    │
-   │   Authorize ──► ┌──────────────────────┐                          │
-   │                 │  apiKeyInput  (X-API-Key)                        │
-   │                 │  HTTPBearer  (admin JWT)                        │
-   │                 └──────────────────────┘                          │
-   │                                                                    │
-   │   GET /api/v1/runoff/summary   [Try it out] [Execute]             │
-   │   ┌──────────────────────────────────────────────┐                 │
-   │   │ 200  application/json                         │                │
-   │   │ { "outlet": {...}, "bridges": [...],           │               │
-   │   │   "peak_arrival": {...}, "recalibration": {} }│                │
-   │   └──────────────────────────────────────────────┘                 │
-   └────────────────────────────────────────────────────────────────────┘
-```
 
 To produce a static spec in CI without binding a port:
 
@@ -169,36 +155,33 @@ credential model.
 
 ## 4. Complete REST API Endpoint Specification
 
-```text
-+--------+-------------------------------+-------------------------------------------------------+
-| Method | Route Path                    | Description & Payload Summary                         |
-+--------+-------------------------------+-------------------------------------------------------+
-| GET    | /api/v1/health                | Docker container & system liveness health probe       |
-| GET    | /api/v1/status                | System status, server time & latest cycle ID          |
-| POST   | /api/v1/visits/record         | Record a unique visit; returns daily & total counts  |
-| GET    | /api/v1/rainfall/ecmwf        | 90-hr ECMWF precipitation hyetographs per subbasin    |
-| GET    | /api/v1/rainfall/stations     | Station selection decisions for latest cycle          |
-| GET    | /api/v1/rainfall/gauges       | All 18 raw gauge 90-hr hyetographs (last cycle)       |
-| GET    | /api/v1/runoff/hydrograph     | 90-hr discharge + stage at outlet sink (J_Outlet)     |
-| GET    | /api/v1/runoff/summary        | Peak Q, lead time, alert, and peak arrival ±2.0h CI   |
-| GET    | /api/v1/runoff/calibration    | Real-time hydrologic parameters (α_K, lag, CN, X)     |
-| GET    | /api/v1/runoff/stage/{site_id}| 90-hr stage + alert classification at bridge site     |
-| GET    | /api/v1/alerts                | Active flood warnings and CWC notifications           |
-| GET    | /api/v1/alerts/bulletin       | Formatted CWC/DDMA flood bulletin JSON                |
-| GET    | /api/v1/pipeline              | Pipeline step status for current cycle                |
-| GET    | /api/v1/pipeline/history      | Last N cycle durations and execution statuses         |
-| GET    | /api/v1/runs                  | Paginated historical computation runs ledger          |
-| GET    | /api/v1/runs/{run_id}         | Full archived payload for a specific simulation cycle |
-| GET    | /api/v1/accuracy              | Model validation metrics (Spearman ρ, NSE, RMSE, MAE) |
-| POST   | /api/v1/admin/auth/token      | Administrator JWT Bearer login (HS256)                |
-| GET    | /api/v1/admin/me              | Authenticated administrator identity & claims         |
-| POST   | /api/v1/admin/trigger-run     | Manual forecast cycle trigger (JWT / X-API-Key)       |
-| POST   | /api/v1/admin/archive         | Cold storage Parquet archival trigger (JWT / API Key) |
-| POST   | /api/v1/admin/recalibrate     | Force ML hydrologic recalibration & sync Basin_1.basin|
-| WS     | /ws/live                      | Real-Time WebSocket event stream for dashboard push   |
-| POST   | /internal/broadcast           | Internal-only cycle-completion push (hidden from docs)|
-+--------+-------------------------------+-------------------------------------------------------+
-```
+| Method | Route Path | Description & Payload Summary |
+|:---|:---|:---|
+| GET | /api/v1/health | Docker container & system liveness health probe |
+| GET | /api/v1/status | System status, server time & latest cycle ID |
+| POST | /api/v1/visits/record | Record a unique visit; returns daily & total counts |
+| GET | /api/v1/rainfall/ecmwf | 90-hr ECMWF precipitation hyetographs per subbasin |
+| GET | /api/v1/rainfall/stations | Station selection decisions for latest cycle |
+| GET | /api/v1/rainfall/gauges | All 18 raw gauge 90-hr hyetographs (last cycle) |
+| GET | /api/v1/runoff/hydrograph | 90-hr discharge + stage at outlet sink (J_Outlet) |
+| GET | /api/v1/runoff/summary | Peak Q, lead time, alert, and peak arrival ±2.0h CI |
+| GET | /api/v1/runoff/calibration | Real-time hydrologic parameters (α_K, lag, CN, X) |
+| GET | /api/v1/runoff/stage/{site_id} | 90-hr stage + alert classification at bridge site |
+| GET | /api/v1/alerts | Active flood warnings and CWC notifications |
+| GET | /api/v1/alerts/bulletin | Formatted CWC/DDMA flood bulletin JSON |
+| GET | /api/v1/pipeline | Pipeline step status for current cycle |
+| GET | /api/v1/pipeline/history | Last N cycle durations and execution statuses |
+| GET | /api/v1/runs | Paginated historical computation runs ledger |
+| GET | /api/v1/runs/{run_id} | Full archived payload for a specific simulation cycle |
+| GET | /api/v1/accuracy | Model validation metrics (Spearman ρ, NSE, RMSE, MAE) |
+| POST | /api/v1/admin/auth/token | Administrator JWT Bearer login (HS256) |
+| GET | /api/v1/admin/me | Authenticated administrator identity & claims |
+| POST | /api/v1/admin/trigger-run | Manual forecast cycle trigger (JWT / X-API-Key) |
+| POST | /api/v1/admin/archive | Cold storage Parquet archival trigger (JWT / API Key) |
+| POST | /api/v1/admin/recalibrate | Force ML hydrologic recalibration & sync Basin_1.basin |
+| WS | /ws/live | Real-Time WebSocket event stream for dashboard push |
+| POST | /internal/broadcast | Internal-only cycle-completion push (hidden from docs) |
+
 
 ---
 
@@ -248,13 +231,13 @@ Allows emergency operations directors to manually trigger an immediate forecast 
 
 - **Request Body:**
 
-  ```json
+```json
   {
     "date": "20260911",
     "hour": 6,
     "async_mode": true
   }
-  ```
+```
 
 - If `async_mode` is `true`, the run is dispatched to FastAPI `BackgroundTasks` so the HTTP request returns immediately with a `queued` status.
 
@@ -264,12 +247,12 @@ Triggers cold storage data pruning:
 
 - **Request Body:**
 
-  ```json
+```json
   {
     "retention_days": 90,
     "dry_run": false
   }
-  ```
+```
 
 - Exports rows older than cutoff from `hydrograph_results`, `bridge_stage_forecast`, `rainfall_data`, `station_rainfall_telemetry` to Snappy-compressed Parquet files, then prunes PostgreSQL.
 
@@ -279,13 +262,13 @@ Forces dynamic hydrologic recalibration:
 
 - **Request Body:**
 
-  ```json
+```json
   {
     "timing_offset_hours": -1.5,
     "stage_error_m": 0.30,
     "sync_basin_file": true
   }
-  ```
+```
 
 - Optimizes parameters ($\alpha_K, \alpha_{\text{lag}}, \Delta\text{CN}, X$) and updates `Basin_1.basin` atomically on disk.
 
@@ -350,25 +333,6 @@ The WebSocket hub (`/ws/live`) pushes immediate updates to connected emergency o
 
 HydroCast integrates an automated Telegram flood bulletin dispatcher formatting official Central Water Commission (CWC) and District Disaster Management Authority (DDMA) emergency alert cards whenever river levels exceed Alert, Warning, Danger, or HFL marks:
 
-```text
-🌊 HYDROCAST FLOOD BULLETIN 🌊
-Authority: District Disaster Management Authority (DDMA)
-Classification: 🔴 [DANGER / FLOOD EMERGENCY]
-━━━━━━━━━━━━━━━━━━━━━━
-📍 Site: Chhatrapati Shivaji Maharaj Bridge (SHIVAJI_BRIDGE)
-📊 Projected Peak Stage: 543.82 m MSL
-⏱ Peak Arrival Time: 2026-09-12T06:00:00Z (T+36h)
-📏 Current Water Level: 538.16 m MSL
-Exceeds Danger by: +0.52 m
-━━━━━━━━━━━━━━━━━━━━━━
-🏛 Official WRD Reference Datums:
-  • Warning Mark: 542.70 m
-  • Danger Mark: 543.30 m
-  • Historical Peak (HFL): 545.33 m
-━━━━━━━━━━━━━━━━━━━━━━
-🚨 RECOMMENDED ACTION:
-Evacuate low-lying ghat settlements. Deploy NDRF / SDRF units to Panchganga Ghat.
-```
 
 ---
 

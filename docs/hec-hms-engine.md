@@ -1,106 +1,64 @@
 # HEC-HMS Headless Automation & DSS File Architecture
 
-```text
-========================================================================================
-             HEC-HMS 4.X HEADLESS SIMULATION ENGINE & HEC-DSS INTEGRATION
-========================================================================================
 
-             Open-Meteo 90h Quantitative Precipitation Forecast (QPF)
-                                       │
-                                       ▼
-                 Automated Meteorologic Boundary Generator
-                   (Jython / Python HecDss Time-Series)
-                                       │
-                                       ▼
-                   HEC-DSS Input Binary File: Met_1.dss
-                   Pathname: //<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/
-                                       │
-                                       ▼
-                 HEC-HMS Headless Execution: HEC-HMS.cmd -s
-               Loads Basin_1.basin + Met_1.met + Control_1.control
-                                       │
-                                       ▼
-                  Hydrological Simulation Continuum (48s run)
-               Loss: SCS-CN  |  Transform: SCS Unit Hydrograph  |  Routing: Muskingum
-                                       │
-                                       ▼
-                   HEC-DSS Output Binary File: Run_1.dss
-                   Pathname: /PANCHGANGA/J_OUTLET/FLOW/.../1HOUR/RUN_1/
-                                       │
-                                       ▼
-                   Python Hydrograph Extractor & Validator
-                   Maps DSS Binary Records into JSON & Database
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 14</span>
+      <strong>Dual-Engine HEC-HMS</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/14-hec-hms-engine.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/14-hec-hms-engine.html?embed=1" title="Dual-Engine HEC-HMS Console"></iframe>
+</div>
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 07</span>
+      <strong>HydroSim 2D Handoff</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/07-workflow-hydrosim-handoff.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/07-workflow-hydrosim-handoff.html?embed=1" title="HydroSim 2D Handoff Console"></iframe>
+</div>
 
 ---
 
 ## 1. Overview & Operational Role
 
-```text
-====================================================================================================
-           PANCHGANGA HYDROCAST - HEC-HMS 4.13 HYDROLOGICAL ROUTING ARCHITECTURE
-====================================================================================================
+| Reach R5 (Upper Kumbhi River) |  |  |
+|:---|:---|:---|
+| K = 4.619 hr | X = 0.200 |   |
+| Reach R4 (Bhogavati) |   |   |
+| K=1.224h | X=0.200 |   |
+| (R4 Outflow) | [ Subbasin S8: Beed ] |   |
+| Reach R2 (Middle Panchganga) | <---+ (Direct S8 Inflow) |   |
+| K = 11.827 hr | X = 0.200 |   |
+| (R2 Outflow) |   |   |
+| Reach R3 (Kasari River Main) |   |   |
+| K = 3.829 hr | X = 0.200 |   |
+| (R3 Outflow) |   |   |
+| Reach R1 (Lower Panchganga Trunk) |   |   |
+| K = 2.899 hr | X = 0.200 | <--+ [ Subbasin S3: Kotoli ] |
+|   | Lag: 3,997.7 min (66.6h) |   |
+| (R1 Outflow) |   |   |
+| Sink-1: Panchganga Basin Outlet (Rajaram) |   | Lag: 3,154.3 min (52.6h) |
+|   | <--+ |   |
+| + [ Subbasin S1: Karveer Direct ] (Area: 86.213 km2) |   |   |
+| + [ Exponential Baseflow Recession: Q_bf(t) ] |   |   |
+| = Total Computed Hydrograph: Q_total(t) [0 .. 89 hrs] |   |   |
 
-      [ Subbasin S6: Gaganbawda ]               [ Subbasin S7: Garivade ]
-      Area: 227.72 km2 | CN: 61.78              Area: 195.39 km2 | CN: 61.28
-      Lag: 3,318.1 min (55.3h)                  Lag: 3,362.3 min (56.0h)
-                  \                                        /
-                   \                                      /
-                    v                                    v
-                 +------------------------------------------+
-                 |       Reach R5 (Upper Kumbhi River)      |
-                 |      K = 4.619 hr   |  X = 0.200         |
-                 +------------------------------------------+
-                                       |
-  [ Subbasin S9: Radhanagari ]         |  (R5 Outflow)
-  Area: 366.97 km2 | CN: 64.31         |
-  Lag: 5,199.0 min (86.7h)             |
-             |                         |
-             v                         |
-  +--------------------+               |
-  | Reach R4 (Bhogavati)|              |
-  | K=1.224h | X=0.200 |               |
-  +--------------------+               |
-             |                         |
-             | (R4 Outflow)            |       [ Subbasin S8: Beed ]
-             \                         |       Area: 177.44 km2 | CN: 65.76
-              \                        |       Lag: 3,387.1 min (56.5h)
-               v                       v                  |
-          +------------------------------------------+    |
-          |       Reach R2 (Middle Panchganga)       |<---+ (Direct S8 Inflow)
-          |        K = 11.827 hr  |  X = 0.200       |
-          +------------------------------------------+
-                                |
-                                | (R2 Outflow)
-                                v
-      [ Subbasin S4: Karanjphen ]               [ Subbasin S5: Padasali ]
-      Area: 262.00 km2 | CN: 61.89              Area: 106.39 km2 | CN: 60.97
-      Lag: 3,115.5 min (51.9h)                  Lag: 2,117.1 min (35.3h)
-                  \                                        /
-                   \                                      /
-                    v                                    v
-                 +------------------------------------------+
-                 |       Reach R3 (Kasari River Main)       |
-                 |       K = 3.829 hr   |  X = 0.200         |
-                 +------------------------------------------+
-                                       |
-                                       | (R3 Outflow)
-                                       v
-          +-------------------------------------------------------------+
-          |             Reach R1 (Lower Panchganga Trunk)               |
-          |                 K = 2.899 hr   |  X = 0.200                  |<--+ [ Subbasin S3: Kotoli ]
-          +-------------------------------------------------------------+   | Area: 261.32 km2 | CN: 64.82
-                                       |                                    | Lag: 3,997.7 min (66.6h)
-                                       | (R1 Outflow)                       |
-                                       v                                    +-- [ Subbasin S2: Sangarul ]
-          +=============================================================+   | Area: 153.77 km2 | CN: 65.74
-          |          Sink-1: Panchganga Basin Outlet (Rajaram)          |   | Lag: 3,154.3 min (52.6h)
-          |                                                             |<--+
-          |   + [ Subbasin S1: Karveer Direct ] (Area: 86.213 km2)      |
-          |   + [ Exponential Baseflow Recession: Q_bf(t) ]             |
-          |   = Total Computed Hydrograph: Q_total(t) [0 .. 89 hrs]     |
-          +=============================================================+
-```
 
 The **Hydrologic Engineering Center's Hydrologic Modeling System (HEC-HMS)** developed by the U.S. Army Corps of Engineers (USACE) is the international benchmark for physical hydrologic watershed modeling.
 
@@ -112,16 +70,6 @@ In HydroCast, HEC-HMS operates in **headless batch mode** on Windows/Linux serve
 
 The HEC-HMS model files reside in [`data/hms/HMS_Automation_RJKT/`](file:///e:/hydrocast_complete/data/hms/HMS_Automation_RJKT/):
 
-```text
-data/hms/HMS_Automation_RJKT/
- ├── HMS_Automation_RJKT.hms   # Master project configuration & module registry
- ├── Basin_1.basin              # Subbasin topology, area, CN, Tc, R, reach geometry
- ├── Met_1.met                  # Meteorologic model specification (Gage Weights)
- ├── Control_1.control          # Simulation time window (Start: T+0, End: T+90h, Step: 1h)
- ├── Met_1.dss                  # HEC-DSS binary database holding input hyetographs
- ├── Run_1.dss                  # HEC-DSS binary database holding computed hydrographs
- └── Optimization_1.dss         # Parameter optimization trials and calibration logs
-```
 
 ---
 
@@ -129,7 +77,7 @@ data/hms/HMS_Automation_RJKT/
 
 All data within HEC-DSS binary container files adhere to the strict USACE six-part pathname convention:
 
-```text
+```
   / A / B / C / D / E / F /
 ```
 
@@ -166,7 +114,7 @@ hms.closeProject()
 
 ### Command-Line Invocation
 
-```cmd
+```
 "C:\Program Files\HEC\HEC-HMS-4.10\hec-hms.cmd" -s run_hms.py
 ```
 
@@ -184,38 +132,6 @@ Because native HEC-HMS requires Java runtime dependencies and proprietary 64-bit
 
 ### 5.1 Native path vs. emulator path
 
-```text
-                    ┌───────────────────────────────────────┐
-                    │        runner.py  —  single entry      │
-                    └───────────────┬───────────────────────┘
-                                    │
-                        ┌───────────▼───────────┐
-                        │  HEC-HMS available?   │   probes the install
-                        │  (hec-hms.cmd on PATH)│
-                        └───────┬───────────┬───┘
-                          yes    │           │  no / Linux CI / Docker
-                                │           │
-              ┌─────────────────▼──┐     ┌──▼──────────────────────┐
-              │  NATIVE BATCH PATH │     │  EMULATOR PATH (prod)   │
-              ├────────────────────┤     ├─────────────────────────┤
-              │ writes run_hms.py  │     │ pure NumPy, no Java    │
-              │ hec-hms.cmd -s …   │     │ reads Basin_1.basin    │
-              │ Jython: Hms()      │     │ directly via           │
-              │   .compute("Run 1") │     │ basin_parser           │
-              │                    │     │                         │
-              │ ~1–300 s (varies)   │     │ ~15 ms                 │
-              │ needs 64-bit heclib │     │ needs nothing extra    │
-              │ Windows / desktop  │     │ runs anywhere          │
-              └─────────┬──────────┘     └──────────┬──────────────┘
-                        │                          │
-                        └────────────┬─────────────┘
-                                     ▼
-                        identical 90-point Q(t) series
-                        (±0.4% tolerance asserted by tests)
-                                     │
-                                     ▼
-                            DSS boundary + Postgres
-```
 
 !!! warning "HEC-HMS does not run on Linux"
     HEC-HMS 4.10/4.13 ships Windows-only native libraries. On the Linux
@@ -234,7 +150,7 @@ To maintain strict alignment between the 6-hourly operational cycle and the HEC-
 
 At the start of each forecast execution (Step 4), `runner.py` dynamically updates the simulation time window:
 
-```text
+```yaml
 Control: Control 1
      Description: Panchganga 90-Hour Operational Simulation
      Start Date: 10 September 2026
@@ -267,7 +183,7 @@ working tree.
 `Basin_1.basin` into two plain dicts and is consumed by **both** the production
 emulator and the calibration engine:
 
-```text
+```
 parse_basin_file()  ->  (sub_models, reaches)
                         sub_models[sid] = {name, area_km2, cn, lag_min}
                         reaches[rid]    = {k_hr, x}
@@ -304,16 +220,6 @@ parameters and calls
 [`AdaptiveHydrologicCalibrator.sync_to_hec_hms_basin()`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py:508),
 which performs a **backed-up, atomic** write:
 
-```text
-Basin_1.basin  ──copy──>  Basin_1.basin.bak_YYYYMMDD_HHMMSS     (1. timestamped backup)
-      │
-      ├── regex-rewrite: Curve Number  for S1..S9
-      ├── regex-rewrite: Lag           for S1..S9
-      ├── regex-rewrite: Muskingum K   for R1..R5
-      └── regex-rewrite: Muskingum x   for R1..R5
-      │
-      └──> Basin_1.basin.tmp_<ts>  ──os.replace()──>  Basin_1.basin   (2. atomic swap)
-```
 
 Because the swap is `os.replace()` (atomic on POSIX and Windows), a crash mid-write
 can never leave a truncated `.basin` file — HEC-HMS either sees the whole old file
@@ -324,6 +230,14 @@ round-trip having already completed.
 ---
 
 ## 7. Governing Hydrological Mathematical Continuum
+
+The engine implements one continuous chain per subbasin and one routing chain per
+reach: SCS Curve Number loss with dynamic antecedent moisture, SCS dimensionless
+unit hydrograph convolution, then Muskingum routing with a stability-driven
+cascade. The three are computed in sequence for every hour of the 352-hour
+simulation window, and the same equations are implemented twice — once in the
+HEC-HMS project files and once in the Python twin — so their outputs can be
+compared directly.
 
 ### 7.1 SCS Curve Number Loss Method with Dynamic AMC Tracking
 
@@ -382,7 +296,7 @@ $$2K'(1-X) \ge \Delta t \quad \Longrightarrow \quad K' \ge \frac{\Delta t}{2(1-X
 `route_muskingum()` solves for the smallest sub-step count that lands inside this
 stability band:
 
-```python
+```
 k_lim_hi = dt_hr / (2.0 * x)                     # upper bound on K'
 steps    = ceil(k_hr / k_lim_hi)
 if x < 0.5:

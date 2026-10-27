@@ -1,5 +1,24 @@
 # Production Hardening Roadmap
 
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 17</span>
+      <strong>Forecast Cycle Waterfall</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/17-cycle-waterfall.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console"></iframe>
+</div>
+
+---
+
 ## Where the system actually stands
 
 HydroCast runs end to end. Each 6-hourly cycle fetches ECMWF IFS HRES

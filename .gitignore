@@ -42,9 +42,18 @@ venv.bak/
 
 # Data and Cache
 data/raw/
+data/openmeteo_dss/csv/
+data/openmeteo_dss/dss/
+data/openmeteo_dss_centroids/
+*.zip
+*.xlsx
 .om_cache*
 *.nc
+*.sqlite
 *.sqlite3
+*.bak
+*.bak_*
+archive/
 
 # Windows
 Thumbs.db
@@ -70,3 +79,4 @@ docs_site/
 /site/
 /docs/assets/javascripts/
 .cache/
+OPENCODE_HANDOVER_CONTEXT.md

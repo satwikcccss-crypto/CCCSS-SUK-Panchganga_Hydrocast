@@ -11,22 +11,6 @@ password verification, and the dual-mode admin guard.
 
 ## Environment-driven defaults
 
-```text
-  ┌────────────────────────────────────────────────────────────────────┐
-  │  APP_ENV (default: "production")                                   │
-  │       │                                                            │
-  │       ├── "pytest" imported in sys.modules?  ──yes──► force "test" │
-  │       │                                                            │
-  │       ├── test | dev  ──►  insecure fallbacks PERMITTED            │
-  │       │        JWT_SECRET = "default_insecure_secret_for_tests"    │
-  │       │        API_KEY    = "default_api_key_for_tests"            │
-  │       │                                                            │
-  │       └── anything else (incl. production)                          │
-  │                JWT_SECRET = os.getenv("JWT_SECRET", "")  ── empty  │
-  │                API_KEY    = os.getenv("API_KEY", "")     ── empty    │
-  │                ⇒ no silent acceptance; every signed token fails    │
-  └────────────────────────────────────────────────────────────────────┘
-```
 
 !!! danger "This is the important guarantee"
     There is **no code path** where a missing `JWT_SECRET` in production yields a
@@ -51,40 +35,6 @@ password verification, and the dual-mode admin guard.
 
 ## Authentication flow
 
-```text
-       ┌────────────────────────┐
-       │  POST /admin/auth/token│
-       │  {username, password}  │
-       └───────────┬────────────┘
-                   │
-                   ▼
-       ┌────────────────────────┐      ┌──────────────────────────┐
-       │ verify_admin_          │─────►│ bcrypt.hashpw(...)      │
-       │  credentials()         │      │ compare_digest(...)      │
-       └───────────┬────────────┘      └──────────────────────────┘
-                   │ valid
-                   ▼
-       ┌────────────────────────┐
-       │ create_access_token(   │   payload = {sub, role, iat, exp}
-       │   subject, role="admin"│   header   = {alg: HS256, typ: JWT}
-       │ )                      │   HMAC-SHA256 over header.payload
-       └───────────┬────────────┘
-                   │  JWT
-                   ▼
-       ┌────────────────────────┐      ┌──────────────────────────┐
-       │ verify_admin_auth()    │─────►│ decode + verify signature│
-       │ Depends(HTTPBearer)    │      │ exp in the future?       │
-       └───────────┬────────────┘      │ role == "admin"?         │
-                   │ pass               └──────────────────────────┘
-                   ▼
-              route handler
-
-  Failure paths
-    ├─ bad password          → 401 "Invalid administrative username or password"
-    ├─ missing/!Bearer token → 401 "Not authenticated"
-    ├─ signature mismatch    → 401 "Invalid or expired token"
-    └─ token expired         → 401 "Invalid or expired token"
-```
 
 All secret comparisons use `hmac.compare_digest` to avoid timing oracles.
 
@@ -93,3 +43,23 @@ All secret comparisons use `hmac.compare_digest` to avoid timing oracles.
 ## Reference
 
 ::: src.api.security
+
+## Environment contract
+
+`APP_ENV` decides which contract applies.
+
+| `APP_ENV` | `JWT_SECRET` / `API_KEY` | Behaviour |
+|:---|:---|:---|
+| `test`, or `pytest` in `sys.modules` | may be absent | Fixed test fallbacks are permitted |
+| `dev` | may be absent | Insecure development fallbacks are permitted |
+| anything else, including `production` | absent | Empty secret — every signed token fails |
+
+There is no silent acceptance path. In production an unset `JWT_SECRET` yields an
+empty signing key, so verification fails closed rather than accepting a default.
+
+Tokens are HS256. The payload is `{sub, role, iat, exp}` with `role = "admin"` for
+the admin surface, and the header is `{alg: HS256, typ: JWT}`. The signature is
+HMAC-SHA256 over `header.payload`. `verify_admin_auth()` decodes the token,
+verifies the signature and expiry, and then compares the presented credential
+against the stored bcrypt hash with `bcrypt.hashpw()`/`checkpw()`.
+

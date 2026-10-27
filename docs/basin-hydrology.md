@@ -1,95 +1,42 @@
 # Panchganga Catchment Hydrology & Watershed Delineation
 
-```text
-========================================================================================
-             PANCHGANGA BASIN HYDROLOGICAL SYSTEM (1,837.213 KM² CATCHMENT)
-========================================================================================
 
-                 Western Ghats Sahyadri Ridge (High Elevation 600 - 1,000m)
-               [ Kasari ]    [ Kumbhi ]    [ Tulsi ]    [ Bhogawati ]    [ Saraswati ]
-                  (S6)          (S5)          (S4)          (S7)              (S2)
-                    │             │             │             │                 │
-                    ▼             ▼             ▼             ▼                 ▼
-             ┌─────────────┬─────────────┬─────────────┬─────────────┬─────────────┐
-             │ Subbasin S6 │ Subbasin S5 │ Subbasin S4 │ Subbasin S7 │ Subbasin S2 │
-             │ Karanjphen  │   Salwan    │    Beed     │ Radhanagari │  Sangarul   │
-             │ Area: 412km²│ Area: 285km²│ Area: 198km²│ Area: 510km²│ Area: 224km²│
-             └──────┬──────┴──────┬──────┴──────┬──────┴──────┬──────┴──────┬──────┘
-                    │             │             │             │             │
-                    └─────────────┴─────────────┼─────────────┴─────────────┘
-                                                ▼
-                                    Prayag Chikhali Confluence
-                                 (Official Formation of Panchganga)
-                                                │
-                                                ▼
-                                        Subbasin S1 (Karvir)
-                                     Kolhapur Urban Floodplain
-                                                │
-                                ┌───────────────┴───────────────┐
-                                ▼                               ▼
-                    [ Shivaji Maharaj Bridge ]         [ Rajaram K.T. Weir ]
-                     (Historical Ghat Gauge)            (Hydraulic Control)
-                                                │
-                                                ▼
-                                          Subbasin S9
-                                  Confluence with Krishna River
-                                          (Shirol / Narsobawadi)
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 10</span>
+      <strong>Catchment Hydrology Solver</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console"></iframe>
+</div>
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 01</span>
+      <strong>End-to-End System Architecture</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
+</div>
 
 ---
 
 ## 1. Physical Physiography of the Panchganga Basin
 
-```text
-====================================================================================================
-                        PANCHGANGA RIVER BASIN PHYSIOGRAPHIC DELINEATION
-====================================================================================================
-
-      Western Ghats Crestline (Elevation: 900m - 1100m MSL)
-     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      [S6: Gaganbawda]       [S7: Garivade]       [S5: Padasali]       [S9: Radhanagari]
-      (227.72 km2)           (195.39 km2)         (106.39 km2)         (366.97 km2)
-           |                      |                    |                    |
-       Kumbhi River          Dhamani River        Tulashi River       Bhogavati River
-           \                      /                    |                    |
-            \                    /                     v                    |
-             v                  v                 [S8: Beed]                 |
-           Confluence @ Bahireshwar              (177.44 km2)               |
-                      |                                |                    |
-                      v                                v                    v
-               Kumbhi-Dhamani                   Tulashi-Bhogavati Confluence @ Bid
-                      \                                /
-                       \                              /
-                        v                            v
-                      Prayag Chikhali Confluence (Sacred Sangam)
-                      Elevation: ~536.0m MSL | Kasari River meets Bhogavati
-                                       |
-                                       v
-                             [PANCHGANGA TRUNK RIVER]
-                                       |
-                       +---------------+---------------+
-                       |                               |
-                       v                               v
-             [S3: Kotoli Subbasin]           [S2: Sangarul Subbasin]
-                 (261.32 km2)                    (153.77 km2)
-                       \                               /
-                        \                             /
-                         v                           v
-                      [S1: Karveer Local Watershed (86.21 km2)]
-                                       |
-                   ==========================================
-                   [ CHHATRAPATI SHIVAJI MAHARAJ BRIDGE ]
-                   Chainage: 6+257 | IoT Ultrasonic Sensor
-                   ==========================================
-                                       |
-                               3,858 m River Reach
-                               Bed Slope: 1:4641
-                                       v
-                   ==========================================
-                   [ RAJARAM K.T. WEIR (KASBA BAWADA) ]
-                   Chainage: 10+115 | Basin Model Sink Node
-                   ==========================================
-```
 
 The Panchganga river is a major tributary of the Krishna river basin, draining an area of approximately **$1,837.213\text{ km}^2$** across Kolhapur district, Maharashtra.
 
@@ -109,23 +56,19 @@ The river is formed at Prayag Chikhali by the confluence of five streams:
 
 The catchment is divided into nine hydrologically distinct subbasins based on 30-meter SRTM Digital Elevation Models (DEM):
 
-```text
-+----+-------------------+------------+-----------+-----------+------------+------------+
-| ID | Subbasin Name     | Area (km²) | CN (AMC-II| CN (AMC-III| Tc (Hours) | R (Hours)  |
-+----+-------------------+------------+-----------+-----------+------------+------------+
-| S1 | Karvir (Outlet)   | 145.2      | 78.0      | 89.2      | 6.5        | 8.2        |
-| S2 | Sangarul (Tulsi)  | 224.8      | 74.5      | 87.1      | 7.2        | 9.4        |
-| S3 | Kotoli (Kasari L.)| 168.4      | 76.0      | 88.0      | 8.0        | 10.5       |
-| S4 | Beed (Tulsi Lower)| 198.6      | 75.0      | 87.4      | 9.1        | 11.8       |
-| S5 | Salwan (Kumbhi)   | 285.4      | 72.0      | 85.3      | 11.4       | 14.2       |
-| S6 | Karanjphen(Kasari)| 412.0      | 70.5      | 84.1      | 14.2       | 18.5       |
-| S7 | Radhanagari(Bhog.)| 510.5      | 68.0      | 82.2      | 16.5       | 21.0       |
-| S8 | Shiroli/K. Tarale | 115.0      | 77.0      | 88.6      | 5.8        | 7.1        |
-| S9 | Kasaba Walawe     | 80.1       | 79.0      | 90.0      | 4.2        | 5.6        |
-+----+-------------------+------------+-----------+-----------+------------+------------+
-|    | TOTAL PANCHGANGA  | 1,837.213.0 km²|           |           |            |            |
-+----+-------------------+------------+-----------+-----------+------------+------------+
-```
+| ID | Subbasin Name | Area (km²) | CN (AMC-II | CN (AMC-III | Tc (Hours) | R (Hours) |
+|:---|:---|:---|:---|:---|:---|:---|
+| S1 | Karvir (Outlet) | 145.2 | 78.0 | 89.2 | 6.5 | 8.2 |
+| S2 | Sangarul (Tulsi) | 224.8 | 74.5 | 87.1 | 7.2 | 9.4 |
+| S3 | Kotoli (Kasari L.) | 168.4 | 76.0 | 88.0 | 8.0 | 10.5 |
+| S4 | Beed (Tulsi Lower) | 198.6 | 75.0 | 87.4 | 9.1 | 11.8 |
+| S5 | Salwan (Kumbhi) | 285.4 | 72.0 | 85.3 | 11.4 | 14.2 |
+| S6 | Karanjphen(Kasari) | 412.0 | 70.5 | 84.1 | 14.2 | 18.5 |
+| S7 | Radhanagari(Bhog.) | 510.5 | 68.0 | 82.2 | 16.5 | 21.0 |
+| S8 | Shiroli/K. Tarale | 115.0 | 77.0 | 88.6 | 5.8 | 7.1 |
+| S9 | Kasaba Walawe | 80.1 | 79.0 | 90.0 | 4.2 | 5.6 |
+|   | TOTAL PANCHGANGA | 1,837.213.0 km² |   |   |   |   |
+
 
 ---
 
@@ -167,7 +110,7 @@ $$\Delta Q_{excess}[h] = Q_{cum}[h] - Q_{cum}[h-1]$$
 
 To convert the rainfall-excess hyetograph into a river discharge hydrograph at the subbasin outlet, HydroCast utilizes the **SCS Unit Hydrograph method**:
 
-```text
+```
         Excess Rain Hyetograph                     SCS Unit Hydrograph Translation & Attenuation
              [ mm/hr ]                                     [ m³/s ]
                 |                                             /\  Peak Runoff
@@ -225,30 +168,6 @@ This ensures that even during dry weather breaks between monsoon storms, river d
 
 To adapt to temporal variations in catchment characteristics (e.g. soil pore saturation, crop cover progression, siltation behind weir crests), HydroCast incorporates an automated closed-loop machine learning calibration engine (`src/hydrology/ml_calibration.py`):
 
-```text
-       ┌─────────────────────────────────────────────────────────┐
-       │     Real-Time Observed Telemetry (ThingSpeak Gauge)     │
-       └────────────────────────────┬────────────────────────────┘
-                                    │ Q_obs(t)
-                                    ▼
-       ┌─────────────────────────────────────────────────────────┐
-       │          Residual & Discrepancy Evaluation             │
-       │           NSE < 0.85  OR  Volumetric Error > 10%        │
-       └────────────────────────────┬────────────────────────────┘
-                                    │ Discrepancy Triggered
-                                    ▼
-       ┌─────────────────────────────────────────────────────────┐
-       │   Bounded SciPy Optimization (Levenberg-Marquardt / Nelder-Mead)   │
-       │    min_{α, β} ∑ [ Q_sim(t; α·CN, β·Tlag) - Q_obs(t) ]² │
-       │         α ∈ [0.85, 1.15]   |   β ∈ [0.80, 1.20]         │
-       └────────────────────────────┬────────────────────────────┘
-                                    │ Optimal Multipliers
-                                    ▼
-       ┌─────────────────────────────────────────────────────────┐
-       │       Atomic Parameter Persistence & Model Sync         │
-       │   data/telemetry/ml_calibration_state.json -> HEC-HMS   │
-       └─────────────────────────────────────────────────────────┘
-```
 
 1. **Residual Evaluation:** Compares the simulated hydrograph $Q_{\text{sim}}(t)$ against observed gauge discharge $Q_{\text{obs}}(t)$ derived from Shivaji Bridge ultrasonic water levels.
 2. **Physically Bound Optimization:** Scales subbasin Curve Numbers by multiplier $\alpha \in [0.85, 1.15]$ and lag times by $\beta \in [0.80, 1.20]$. These hard mathematical bounds guarantee that calibration can never induce unphysical hydrological runaway or negative runoffs.

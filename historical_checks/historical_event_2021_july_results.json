@@ -1,0 +1,3545 @@
+{
+  "event": "July 2021 Flood - Rajaram Weir",
+  "model_window": "2021-07-18 to 2021-07-31",
+  "calculated": {
+    "peak_discharge_m3s": 1149.1,
+    "peak_lead_hours": 129,
+    "peak_time_iso": "2021-07-23T09:00:00",
+    "peak_stage_m_shivaji": 539.82,
+    "peak_stage_m_rajaram": 540.47,
+    "mean_catchment_rain_90h_mm": 278.2,
+    "amc": "AMC-III"
+  },
+  "hydrograph": [
+    {
+      "hour": 0,
+      "timestamp": "2021-07-18T00:00:00",
+      "discharge_m3s": 91.1,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 91.1,
+      "stage_m_shivaji": 533.1,
+      "stage_m_rajaram": 533.74,
+      "is_peak": false
+    },
+    {
+      "hour": 1,
+      "timestamp": "2021-07-18T01:00:00",
+      "discharge_m3s": 90.9,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 90.9,
+      "stage_m_shivaji": 533.09,
+      "stage_m_rajaram": 533.74,
+      "is_peak": false
+    },
+    {
+      "hour": 2,
+      "timestamp": "2021-07-18T02:00:00",
+      "discharge_m3s": 90.7,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 90.7,
+      "stage_m_shivaji": 533.09,
+      "stage_m_rajaram": 533.74,
+      "is_peak": false
+    },
+    {
+      "hour": 3,
+      "timestamp": "2021-07-18T03:00:00",
+      "discharge_m3s": 90.6,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 90.6,
+      "stage_m_shivaji": 533.09,
+      "stage_m_rajaram": 533.74,
+      "is_peak": false
+    },
+    {
+      "hour": 4,
+      "timestamp": "2021-07-18T04:00:00",
+      "discharge_m3s": 90.4,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 90.4,
+      "stage_m_shivaji": 533.09,
+      "stage_m_rajaram": 533.73,
+      "is_peak": false
+    },
+    {
+      "hour": 5,
+      "timestamp": "2021-07-18T05:00:00",
+      "discharge_m3s": 90.2,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 90.2,
+      "stage_m_shivaji": 533.08,
+      "stage_m_rajaram": 533.73,
+      "is_peak": false
+    },
+    {
+      "hour": 6,
+      "timestamp": "2021-07-18T06:00:00",
+      "discharge_m3s": 90.0,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 90.0,
+      "stage_m_shivaji": 533.08,
+      "stage_m_rajaram": 533.73,
+      "is_peak": false
+    },
+    {
+      "hour": 7,
+      "timestamp": "2021-07-18T07:00:00",
+      "discharge_m3s": 89.8,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 89.8,
+      "stage_m_shivaji": 533.08,
+      "stage_m_rajaram": 533.72,
+      "is_peak": false
+    },
+    {
+      "hour": 8,
+      "timestamp": "2021-07-18T08:00:00",
+      "discharge_m3s": 89.7,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 89.7,
+      "stage_m_shivaji": 533.08,
+      "stage_m_rajaram": 533.72,
+      "is_peak": false
+    },
+    {
+      "hour": 9,
+      "timestamp": "2021-07-18T09:00:00",
+      "discharge_m3s": 89.5,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 89.5,
+      "stage_m_shivaji": 533.07,
+      "stage_m_rajaram": 533.72,
+      "is_peak": false
+    },
+    {
+      "hour": 10,
+      "timestamp": "2021-07-18T10:00:00",
+      "discharge_m3s": 89.3,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 89.3,
+      "stage_m_shivaji": 533.07,
+      "stage_m_rajaram": 533.72,
+      "is_peak": false
+    },
+    {
+      "hour": 11,
+      "timestamp": "2021-07-18T11:00:00",
+      "discharge_m3s": 89.1,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 89.1,
+      "stage_m_shivaji": 533.06,
+      "stage_m_rajaram": 533.71,
+      "is_peak": false
+    },
+    {
+      "hour": 12,
+      "timestamp": "2021-07-18T12:00:00",
+      "discharge_m3s": 88.9,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 88.9,
+      "stage_m_shivaji": 533.06,
+      "stage_m_rajaram": 533.71,
+      "is_peak": false
+    },
+    {
+      "hour": 13,
+      "timestamp": "2021-07-18T13:00:00",
+      "discharge_m3s": 88.8,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 88.8,
+      "stage_m_shivaji": 533.06,
+      "stage_m_rajaram": 533.71,
+      "is_peak": false
+    },
+    {
+      "hour": 14,
+      "timestamp": "2021-07-18T14:00:00",
+      "discharge_m3s": 88.6,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 88.6,
+      "stage_m_shivaji": 533.06,
+      "stage_m_rajaram": 533.71,
+      "is_peak": false
+    },
+    {
+      "hour": 15,
+      "timestamp": "2021-07-18T15:00:00",
+      "discharge_m3s": 88.4,
+      "surface_runoff_m3s": 0.0,
+      "baseflow_m3s": 88.4,
+      "stage_m_shivaji": 533.05,
+      "stage_m_rajaram": 533.7,
+      "is_peak": false
+    },
+    {
+      "hour": 16,
+      "timestamp": "2021-07-18T16:00:00",
+      "discharge_m3s": 88.3,
+      "surface_runoff_m3s": 0.1,
+      "baseflow_m3s": 88.2,
+      "stage_m_shivaji": 533.05,
+      "stage_m_rajaram": 533.7,
+      "is_peak": false
+    },
+    {
+      "hour": 17,
+      "timestamp": "2021-07-18T17:00:00",
+      "discharge_m3s": 88.1,
+      "surface_runoff_m3s": 0.1,
+      "baseflow_m3s": 88.1,
+      "stage_m_shivaji": 533.05,
+      "stage_m_rajaram": 533.7,
+      "is_peak": false
+    },
+    {
+      "hour": 18,
+      "timestamp": "2021-07-18T18:00:00",
+      "discharge_m3s": 88.0,
+      "surface_runoff_m3s": 0.1,
+      "baseflow_m3s": 87.9,
+      "stage_m_shivaji": 533.04,
+      "stage_m_rajaram": 533.7,
+      "is_peak": false
+    },
+    {
+      "hour": 19,
+      "timestamp": "2021-07-18T19:00:00",
+      "discharge_m3s": 87.9,
+      "surface_runoff_m3s": 0.2,
+      "baseflow_m3s": 87.7,
+      "stage_m_shivaji": 533.04,
+      "stage_m_rajaram": 533.69,
+      "is_peak": false
+    },
+    {
+      "hour": 20,
+      "timestamp": "2021-07-18T20:00:00",
+      "discharge_m3s": 87.9,
+      "surface_runoff_m3s": 0.4,
+      "baseflow_m3s": 87.5,
+      "stage_m_shivaji": 533.04,
+      "stage_m_rajaram": 533.69,
+      "is_peak": false
+    },
+    {
+      "hour": 21,
+      "timestamp": "2021-07-18T21:00:00",
+      "discharge_m3s": 88.0,
+      "surface_runoff_m3s": 0.6,
+      "baseflow_m3s": 87.4,
+      "stage_m_shivaji": 533.04,
+      "stage_m_rajaram": 533.7,
+      "is_peak": false
+    },
+    {
+      "hour": 22,
+      "timestamp": "2021-07-18T22:00:00",
+      "discharge_m3s": 88.1,
+      "surface_runoff_m3s": 0.9,
+      "baseflow_m3s": 87.2,
+      "stage_m_shivaji": 533.05,
+      "stage_m_rajaram": 533.7,
+      "is_peak": false
+    },
+    {
+      "hour": 23,
+      "timestamp": "2021-07-18T23:00:00",
+      "discharge_m3s": 88.3,
+      "surface_runoff_m3s": 1.3,
+      "baseflow_m3s": 87.0,
+      "stage_m_shivaji": 533.05,
+      "stage_m_rajaram": 533.7,
+      "is_peak": false
+    },
+    {
+      "hour": 24,
+      "timestamp": "2021-07-19T00:00:00",
+      "discharge_m3s": 88.7,
+      "surface_runoff_m3s": 1.9,
+      "baseflow_m3s": 86.8,
+      "stage_m_shivaji": 533.06,
+      "stage_m_rajaram": 533.71,
+      "is_peak": false
+    },
+    {
+      "hour": 25,
+      "timestamp": "2021-07-19T01:00:00",
+      "discharge_m3s": 89.2,
+      "surface_runoff_m3s": 2.6,
+      "baseflow_m3s": 86.7,
+      "stage_m_shivaji": 533.07,
+      "stage_m_rajaram": 533.72,
+      "is_peak": false
+    },
+    {
+      "hour": 26,
+      "timestamp": "2021-07-19T02:00:00",
+      "discharge_m3s": 90.0,
+      "surface_runoff_m3s": 3.5,
+      "baseflow_m3s": 86.5,
+      "stage_m_shivaji": 533.08,
+      "stage_m_rajaram": 533.73,
+      "is_peak": false
+    },
+    {
+      "hour": 27,
+      "timestamp": "2021-07-19T03:00:00",
+      "discharge_m3s": 91.0,
+      "surface_runoff_m3s": 4.7,
+      "baseflow_m3s": 86.3,
+      "stage_m_shivaji": 533.09,
+      "stage_m_rajaram": 533.74,
+      "is_peak": false
+    },
+    {
+      "hour": 28,
+      "timestamp": "2021-07-19T04:00:00",
+      "discharge_m3s": 92.2,
+      "surface_runoff_m3s": 6.0,
+      "baseflow_m3s": 86.1,
+      "stage_m_shivaji": 533.11,
+      "stage_m_rajaram": 533.76,
+      "is_peak": false
+    },
+    {
+      "hour": 29,
+      "timestamp": "2021-07-19T05:00:00",
+      "discharge_m3s": 93.7,
+      "surface_runoff_m3s": 7.7,
+      "baseflow_m3s": 86.0,
+      "stage_m_shivaji": 533.13,
+      "stage_m_rajaram": 533.78,
+      "is_peak": false
+    },
+    {
+      "hour": 30,
+      "timestamp": "2021-07-19T06:00:00",
+      "discharge_m3s": 95.5,
+      "surface_runoff_m3s": 9.7,
+      "baseflow_m3s": 85.8,
+      "stage_m_shivaji": 533.16,
+      "stage_m_rajaram": 533.8,
+      "is_peak": false
+    },
+    {
+      "hour": 31,
+      "timestamp": "2021-07-19T07:00:00",
+      "discharge_m3s": 97.6,
+      "surface_runoff_m3s": 12.0,
+      "baseflow_m3s": 85.6,
+      "stage_m_shivaji": 533.18,
+      "stage_m_rajaram": 533.83,
+      "is_peak": false
+    },
+    {
+      "hour": 32,
+      "timestamp": "2021-07-19T08:00:00",
+      "discharge_m3s": 100.1,
+      "surface_runoff_m3s": 14.6,
+      "baseflow_m3s": 85.5,
+      "stage_m_shivaji": 533.21,
+      "stage_m_rajaram": 533.86,
+      "is_peak": false
+    },
+    {
+      "hour": 33,
+      "timestamp": "2021-07-19T09:00:00",
+      "discharge_m3s": 102.9,
+      "surface_runoff_m3s": 17.6,
+      "baseflow_m3s": 85.3,
+      "stage_m_shivaji": 533.25,
+      "stage_m_rajaram": 533.9,
+      "is_peak": false
+    },
+    {
+      "hour": 34,
+      "timestamp": "2021-07-19T10:00:00",
+      "discharge_m3s": 106.2,
+      "surface_runoff_m3s": 21.0,
+      "baseflow_m3s": 85.1,
+      "stage_m_shivaji": 533.29,
+      "stage_m_rajaram": 533.94,
+      "is_peak": false
+    },
+    {
+      "hour": 35,
+      "timestamp": "2021-07-19T11:00:00",
+      "discharge_m3s": 109.8,
+      "surface_runoff_m3s": 24.8,
+      "baseflow_m3s": 84.9,
+      "stage_m_shivaji": 533.33,
+      "stage_m_rajaram": 533.98,
+      "is_peak": false
+    },
+    {
+      "hour": 36,
+      "timestamp": "2021-07-19T12:00:00",
+      "discharge_m3s": 113.8,
+      "surface_runoff_m3s": 29.1,
+      "baseflow_m3s": 84.8,
+      "stage_m_shivaji": 533.38,
+      "stage_m_rajaram": 534.03,
+      "is_peak": false
+    },
+    {
+      "hour": 37,
+      "timestamp": "2021-07-19T13:00:00",
+      "discharge_m3s": 118.3,
+      "surface_runoff_m3s": 33.7,
+      "baseflow_m3s": 84.6,
+      "stage_m_shivaji": 533.44,
+      "stage_m_rajaram": 534.09,
+      "is_peak": false
+    },
+    {
+      "hour": 38,
+      "timestamp": "2021-07-19T14:00:00",
+      "discharge_m3s": 123.2,
+      "surface_runoff_m3s": 38.8,
+      "baseflow_m3s": 84.4,
+      "stage_m_shivaji": 533.5,
+      "stage_m_rajaram": 534.14,
+      "is_peak": false
+    },
+    {
+      "hour": 39,
+      "timestamp": "2021-07-19T15:00:00",
+      "discharge_m3s": 128.5,
+      "surface_runoff_m3s": 44.3,
+      "baseflow_m3s": 84.3,
+      "stage_m_shivaji": 533.56,
+      "stage_m_rajaram": 534.21,
+      "is_peak": false
+    },
+    {
+      "hour": 40,
+      "timestamp": "2021-07-19T16:00:00",
+      "discharge_m3s": 134.3,
+      "surface_runoff_m3s": 50.2,
+      "baseflow_m3s": 84.1,
+      "stage_m_shivaji": 533.63,
+      "stage_m_rajaram": 534.28,
+      "is_peak": false
+    },
+    {
+      "hour": 41,
+      "timestamp": "2021-07-19T17:00:00",
+      "discharge_m3s": 140.6,
+      "surface_runoff_m3s": 56.7,
+      "baseflow_m3s": 83.9,
+      "stage_m_shivaji": 533.7,
+      "stage_m_rajaram": 534.35,
+      "is_peak": false
+    },
+    {
+      "hour": 42,
+      "timestamp": "2021-07-19T18:00:00",
+      "discharge_m3s": 147.3,
+      "surface_runoff_m3s": 63.5,
+      "baseflow_m3s": 83.8,
+      "stage_m_shivaji": 533.78,
+      "stage_m_rajaram": 534.43,
+      "is_peak": false
+    },
+    {
+      "hour": 43,
+      "timestamp": "2021-07-19T19:00:00",
+      "discharge_m3s": 154.4,
+      "surface_runoff_m3s": 70.8,
+      "baseflow_m3s": 83.6,
+      "stage_m_shivaji": 533.86,
+      "stage_m_rajaram": 534.51,
+      "is_peak": false
+    },
+    {
+      "hour": 44,
+      "timestamp": "2021-07-19T20:00:00",
+      "discharge_m3s": 162.0,
+      "surface_runoff_m3s": 78.6,
+      "baseflow_m3s": 83.4,
+      "stage_m_shivaji": 533.95,
+      "stage_m_rajaram": 534.6,
+      "is_peak": false
+    },
+    {
+      "hour": 45,
+      "timestamp": "2021-07-19T21:00:00",
+      "discharge_m3s": 170.1,
+      "surface_runoff_m3s": 86.8,
+      "baseflow_m3s": 83.3,
+      "stage_m_shivaji": 534.04,
+      "stage_m_rajaram": 534.69,
+      "is_peak": false
+    },
+    {
+      "hour": 46,
+      "timestamp": "2021-07-19T22:00:00",
+      "discharge_m3s": 178.5,
+      "surface_runoff_m3s": 95.4,
+      "baseflow_m3s": 83.1,
+      "stage_m_shivaji": 534.13,
+      "stage_m_rajaram": 534.78,
+      "is_peak": false
+    },
+    {
+      "hour": 47,
+      "timestamp": "2021-07-19T23:00:00",
+      "discharge_m3s": 187.4,
+      "surface_runoff_m3s": 104.5,
+      "baseflow_m3s": 82.9,
+      "stage_m_shivaji": 534.23,
+      "stage_m_rajaram": 534.88,
+      "is_peak": false
+    },
+    {
+      "hour": 48,
+      "timestamp": "2021-07-20T00:00:00",
+      "discharge_m3s": 196.7,
+      "surface_runoff_m3s": 114.0,
+      "baseflow_m3s": 82.8,
+      "stage_m_shivaji": 534.33,
+      "stage_m_rajaram": 534.98,
+      "is_peak": false
+    },
+    {
+      "hour": 49,
+      "timestamp": "2021-07-20T01:00:00",
+      "discharge_m3s": 206.4,
+      "surface_runoff_m3s": 123.8,
+      "baseflow_m3s": 82.6,
+      "stage_m_shivaji": 534.44,
+      "stage_m_rajaram": 535.09,
+      "is_peak": false
+    },
+    {
+      "hour": 50,
+      "timestamp": "2021-07-20T02:00:00",
+      "discharge_m3s": 216.5,
+      "surface_runoff_m3s": 134.1,
+      "baseflow_m3s": 82.4,
+      "stage_m_shivaji": 534.55,
+      "stage_m_rajaram": 535.2,
+      "is_peak": false
+    },
+    {
+      "hour": 51,
+      "timestamp": "2021-07-20T03:00:00",
+      "discharge_m3s": 227.0,
+      "surface_runoff_m3s": 144.7,
+      "baseflow_m3s": 82.3,
+      "stage_m_shivaji": 534.66,
+      "stage_m_rajaram": 535.31,
+      "is_peak": false
+    },
+    {
+      "hour": 52,
+      "timestamp": "2021-07-20T04:00:00",
+      "discharge_m3s": 237.9,
+      "surface_runoff_m3s": 155.7,
+      "baseflow_m3s": 82.1,
+      "stage_m_shivaji": 534.78,
+      "stage_m_rajaram": 535.43,
+      "is_peak": false
+    },
+    {
+      "hour": 53,
+      "timestamp": "2021-07-20T05:00:00",
+      "discharge_m3s": 249.0,
+      "surface_runoff_m3s": 167.1,
+      "baseflow_m3s": 81.9,
+      "stage_m_shivaji": 534.9,
+      "stage_m_rajaram": 535.54,
+      "is_peak": false
+    },
+    {
+      "hour": 54,
+      "timestamp": "2021-07-20T06:00:00",
+      "discharge_m3s": 260.5,
+      "surface_runoff_m3s": 178.7,
+      "baseflow_m3s": 81.8,
+      "stage_m_shivaji": 535.0,
+      "stage_m_rajaram": 535.65,
+      "is_peak": false
+    },
+    {
+      "hour": 55,
+      "timestamp": "2021-07-20T07:00:00",
+      "discharge_m3s": 272.3,
+      "surface_runoff_m3s": 190.7,
+      "baseflow_m3s": 81.6,
+      "stage_m_shivaji": 535.11,
+      "stage_m_rajaram": 535.75,
+      "is_peak": false
+    },
+    {
+      "hour": 56,
+      "timestamp": "2021-07-20T08:00:00",
+      "discharge_m3s": 284.3,
+      "surface_runoff_m3s": 202.9,
+      "baseflow_m3s": 81.4,
+      "stage_m_shivaji": 535.2,
+      "stage_m_rajaram": 535.84,
+      "is_peak": false
+    },
+    {
+      "hour": 57,
+      "timestamp": "2021-07-20T09:00:00",
+      "discharge_m3s": 296.6,
+      "surface_runoff_m3s": 215.3,
+      "baseflow_m3s": 81.3,
+      "stage_m_shivaji": 535.28,
+      "stage_m_rajaram": 535.93,
+      "is_peak": false
+    },
+    {
+      "hour": 58,
+      "timestamp": "2021-07-20T10:00:00",
+      "discharge_m3s": 309.1,
+      "surface_runoff_m3s": 228.0,
+      "baseflow_m3s": 81.1,
+      "stage_m_shivaji": 535.37,
+      "stage_m_rajaram": 536.01,
+      "is_peak": false
+    },
+    {
+      "hour": 59,
+      "timestamp": "2021-07-20T11:00:00",
+      "discharge_m3s": 321.8,
+      "surface_runoff_m3s": 240.8,
+      "baseflow_m3s": 81.0,
+      "stage_m_shivaji": 535.45,
+      "stage_m_rajaram": 536.09,
+      "is_peak": false
+    },
+    {
+      "hour": 60,
+      "timestamp": "2021-07-20T12:00:00",
+      "discharge_m3s": 334.6,
+      "surface_runoff_m3s": 253.8,
+      "baseflow_m3s": 80.8,
+      "stage_m_shivaji": 535.53,
+      "stage_m_rajaram": 536.18,
+      "is_peak": false
+    },
+    {
+      "hour": 61,
+      "timestamp": "2021-07-20T13:00:00",
+      "discharge_m3s": 347.6,
+      "surface_runoff_m3s": 267.0,
+      "baseflow_m3s": 80.6,
+      "stage_m_shivaji": 535.61,
+      "stage_m_rajaram": 536.26,
+      "is_peak": false
+    },
+    {
+      "hour": 62,
+      "timestamp": "2021-07-20T14:00:00",
+      "discharge_m3s": 360.7,
+      "surface_runoff_m3s": 280.3,
+      "baseflow_m3s": 80.5,
+      "stage_m_shivaji": 535.7,
+      "stage_m_rajaram": 536.34,
+      "is_peak": false
+    },
+    {
+      "hour": 63,
+      "timestamp": "2021-07-20T15:00:00",
+      "discharge_m3s": 374.0,
+      "surface_runoff_m3s": 293.7,
+      "baseflow_m3s": 80.3,
+      "stage_m_shivaji": 535.79,
+      "stage_m_rajaram": 536.43,
+      "is_peak": false
+    },
+    {
+      "hour": 64,
+      "timestamp": "2021-07-20T16:00:00",
+      "discharge_m3s": 387.3,
+      "surface_runoff_m3s": 307.2,
+      "baseflow_m3s": 80.2,
+      "stage_m_shivaji": 535.88,
+      "stage_m_rajaram": 536.53,
+      "is_peak": false
+    },
+    {
+      "hour": 65,
+      "timestamp": "2021-07-20T17:00:00",
+      "discharge_m3s": 400.8,
+      "surface_runoff_m3s": 320.8,
+      "baseflow_m3s": 80.0,
+      "stage_m_shivaji": 535.98,
+      "stage_m_rajaram": 536.63,
+      "is_peak": false
+    },
+    {
+      "hour": 66,
+      "timestamp": "2021-07-20T18:00:00",
+      "discharge_m3s": 414.3,
+      "surface_runoff_m3s": 334.5,
+      "baseflow_m3s": 79.8,
+      "stage_m_shivaji": 536.08,
+      "stage_m_rajaram": 536.73,
+      "is_peak": false
+    },
+    {
+      "hour": 67,
+      "timestamp": "2021-07-20T19:00:00",
+      "discharge_m3s": 427.9,
+      "surface_runoff_m3s": 348.2,
+      "baseflow_m3s": 79.7,
+      "stage_m_shivaji": 536.18,
+      "stage_m_rajaram": 536.83,
+      "is_peak": false
+    },
+    {
+      "hour": 68,
+      "timestamp": "2021-07-20T20:00:00",
+      "discharge_m3s": 441.6,
+      "surface_runoff_m3s": 362.1,
+      "baseflow_m3s": 79.5,
+      "stage_m_shivaji": 536.29,
+      "stage_m_rajaram": 536.94,
+      "is_peak": false
+    },
+    {
+      "hour": 69,
+      "timestamp": "2021-07-20T21:00:00",
+      "discharge_m3s": 455.4,
+      "surface_runoff_m3s": 376.0,
+      "baseflow_m3s": 79.4,
+      "stage_m_shivaji": 536.4,
+      "stage_m_rajaram": 537.05,
+      "is_peak": false
+    },
+    {
+      "hour": 70,
+      "timestamp": "2021-07-20T22:00:00",
+      "discharge_m3s": 469.2,
+      "surface_runoff_m3s": 390.0,
+      "baseflow_m3s": 79.2,
+      "stage_m_shivaji": 536.51,
+      "stage_m_rajaram": 537.16,
+      "is_peak": false
+    },
+    {
+      "hour": 71,
+      "timestamp": "2021-07-20T23:00:00",
+      "discharge_m3s": 483.1,
+      "surface_runoff_m3s": 404.1,
+      "baseflow_m3s": 79.0,
+      "stage_m_shivaji": 536.62,
+      "stage_m_rajaram": 537.27,
+      "is_peak": false
+    },
+    {
+      "hour": 72,
+      "timestamp": "2021-07-21T00:00:00",
+      "discharge_m3s": 497.1,
+      "surface_runoff_m3s": 418.2,
+      "baseflow_m3s": 78.9,
+      "stage_m_shivaji": 536.73,
+      "stage_m_rajaram": 537.37,
+      "is_peak": false
+    },
+    {
+      "hour": 73,
+      "timestamp": "2021-07-21T01:00:00",
+      "discharge_m3s": 511.2,
+      "surface_runoff_m3s": 432.5,
+      "baseflow_m3s": 78.7,
+      "stage_m_shivaji": 536.83,
+      "stage_m_rajaram": 537.48,
+      "is_peak": false
+    },
+    {
+      "hour": 74,
+      "timestamp": "2021-07-21T02:00:00",
+      "discharge_m3s": 525.4,
+      "surface_runoff_m3s": 446.8,
+      "baseflow_m3s": 78.6,
+      "stage_m_shivaji": 536.94,
+      "stage_m_rajaram": 537.59,
+      "is_peak": false
+    },
+    {
+      "hour": 75,
+      "timestamp": "2021-07-21T03:00:00",
+      "discharge_m3s": 539.6,
+      "surface_runoff_m3s": 461.2,
+      "baseflow_m3s": 78.4,
+      "stage_m_shivaji": 537.04,
+      "stage_m_rajaram": 537.69,
+      "is_peak": false
+    },
+    {
+      "hour": 76,
+      "timestamp": "2021-07-21T04:00:00",
+      "discharge_m3s": 554.0,
+      "surface_runoff_m3s": 475.7,
+      "baseflow_m3s": 78.3,
+      "stage_m_shivaji": 537.14,
+      "stage_m_rajaram": 537.79,
+      "is_peak": false
+    },
+    {
+      "hour": 77,
+      "timestamp": "2021-07-21T05:00:00",
+      "discharge_m3s": 568.4,
+      "surface_runoff_m3s": 490.3,
+      "baseflow_m3s": 78.1,
+      "stage_m_shivaji": 537.24,
+      "stage_m_rajaram": 537.89,
+      "is_peak": false
+    },
+    {
+      "hour": 78,
+      "timestamp": "2021-07-21T06:00:00",
+      "discharge_m3s": 582.9,
+      "surface_runoff_m3s": 504.9,
+      "baseflow_m3s": 77.9,
+      "stage_m_shivaji": 537.33,
+      "stage_m_rajaram": 537.98,
+      "is_peak": false
+    },
+    {
+      "hour": 79,
+      "timestamp": "2021-07-21T07:00:00",
+      "discharge_m3s": 597.4,
+      "surface_runoff_m3s": 519.6,
+      "baseflow_m3s": 77.8,
+      "stage_m_shivaji": 537.42,
+      "stage_m_rajaram": 538.07,
+      "is_peak": false
+    },
+    {
+      "hour": 80,
+      "timestamp": "2021-07-21T08:00:00",
+      "discharge_m3s": 612.0,
+      "surface_runoff_m3s": 534.4,
+      "baseflow_m3s": 77.6,
+      "stage_m_shivaji": 537.51,
+      "stage_m_rajaram": 538.15,
+      "is_peak": false
+    },
+    {
+      "hour": 81,
+      "timestamp": "2021-07-21T09:00:00",
+      "discharge_m3s": 626.7,
+      "surface_runoff_m3s": 549.2,
+      "baseflow_m3s": 77.5,
+      "stage_m_shivaji": 537.59,
+      "stage_m_rajaram": 538.24,
+      "is_peak": false
+    },
+    {
+      "hour": 82,
+      "timestamp": "2021-07-21T10:00:00",
+      "discharge_m3s": 641.4,
+      "surface_runoff_m3s": 564.1,
+      "baseflow_m3s": 77.3,
+      "stage_m_shivaji": 537.66,
+      "stage_m_rajaram": 538.31,
+      "is_peak": false
+    },
+    {
+      "hour": 83,
+      "timestamp": "2021-07-21T11:00:00",
+      "discharge_m3s": 656.1,
+      "surface_runoff_m3s": 578.9,
+      "baseflow_m3s": 77.2,
+      "stage_m_shivaji": 537.74,
+      "stage_m_rajaram": 538.39,
+      "is_peak": false
+    },
+    {
+      "hour": 84,
+      "timestamp": "2021-07-21T12:00:00",
+      "discharge_m3s": 670.9,
+      "surface_runoff_m3s": 593.8,
+      "baseflow_m3s": 77.0,
+      "stage_m_shivaji": 537.81,
+      "stage_m_rajaram": 538.46,
+      "is_peak": false
+    },
+    {
+      "hour": 85,
+      "timestamp": "2021-07-21T13:00:00",
+      "discharge_m3s": 685.6,
+      "surface_runoff_m3s": 608.7,
+      "baseflow_m3s": 76.9,
+      "stage_m_shivaji": 537.88,
+      "stage_m_rajaram": 538.53,
+      "is_peak": false
+    },
+    {
+      "hour": 86,
+      "timestamp": "2021-07-21T14:00:00",
+      "discharge_m3s": 700.4,
+      "surface_runoff_m3s": 623.7,
+      "baseflow_m3s": 76.7,
+      "stage_m_shivaji": 537.94,
+      "stage_m_rajaram": 538.59,
+      "is_peak": false
+    },
+    {
+      "hour": 87,
+      "timestamp": "2021-07-21T15:00:00",
+      "discharge_m3s": 715.1,
+      "surface_runoff_m3s": 638.5,
+      "baseflow_m3s": 76.6,
+      "stage_m_shivaji": 538.01,
+      "stage_m_rajaram": 538.66,
+      "is_peak": false
+    },
+    {
+      "hour": 88,
+      "timestamp": "2021-07-21T16:00:00",
+      "discharge_m3s": 729.8,
+      "surface_runoff_m3s": 653.4,
+      "baseflow_m3s": 76.4,
+      "stage_m_shivaji": 538.07,
+      "stage_m_rajaram": 538.72,
+      "is_peak": false
+    },
+    {
+      "hour": 89,
+      "timestamp": "2021-07-21T17:00:00",
+      "discharge_m3s": 744.5,
+      "surface_runoff_m3s": 668.2,
+      "baseflow_m3s": 76.2,
+      "stage_m_shivaji": 538.14,
+      "stage_m_rajaram": 538.78,
+      "is_peak": false
+    },
+    {
+      "hour": 90,
+      "timestamp": "2021-07-21T18:00:00",
+      "discharge_m3s": 759.1,
+      "surface_runoff_m3s": 683.0,
+      "baseflow_m3s": 76.1,
+      "stage_m_shivaji": 538.2,
+      "stage_m_rajaram": 538.85,
+      "is_peak": false
+    },
+    {
+      "hour": 91,
+      "timestamp": "2021-07-21T19:00:00",
+      "discharge_m3s": 773.7,
+      "surface_runoff_m3s": 697.8,
+      "baseflow_m3s": 75.9,
+      "stage_m_shivaji": 538.26,
+      "stage_m_rajaram": 538.91,
+      "is_peak": false
+    },
+    {
+      "hour": 92,
+      "timestamp": "2021-07-21T20:00:00",
+      "discharge_m3s": 788.3,
+      "surface_runoff_m3s": 712.5,
+      "baseflow_m3s": 75.8,
+      "stage_m_shivaji": 538.32,
+      "stage_m_rajaram": 538.97,
+      "is_peak": false
+    },
+    {
+      "hour": 93,
+      "timestamp": "2021-07-21T21:00:00",
+      "discharge_m3s": 802.8,
+      "surface_runoff_m3s": 727.2,
+      "baseflow_m3s": 75.6,
+      "stage_m_shivaji": 538.38,
+      "stage_m_rajaram": 539.03,
+      "is_peak": false
+    },
+    {
+      "hour": 94,
+      "timestamp": "2021-07-21T22:00:00",
+      "discharge_m3s": 817.3,
+      "surface_runoff_m3s": 741.8,
+      "baseflow_m3s": 75.5,
+      "stage_m_shivaji": 538.44,
+      "stage_m_rajaram": 539.09,
+      "is_peak": false
+    },
+    {
+      "hour": 95,
+      "timestamp": "2021-07-21T23:00:00",
+      "discharge_m3s": 831.7,
+      "surface_runoff_m3s": 756.4,
+      "baseflow_m3s": 75.3,
+      "stage_m_shivaji": 538.5,
+      "stage_m_rajaram": 539.15,
+      "is_peak": false
+    },
+    {
+      "hour": 96,
+      "timestamp": "2021-07-22T00:00:00",
+      "discharge_m3s": 846.1,
+      "surface_runoff_m3s": 770.9,
+      "baseflow_m3s": 75.2,
+      "stage_m_shivaji": 538.57,
+      "stage_m_rajaram": 539.21,
+      "is_peak": false
+    },
+    {
+      "hour": 97,
+      "timestamp": "2021-07-22T01:00:00",
+      "discharge_m3s": 860.5,
+      "surface_runoff_m3s": 785.4,
+      "baseflow_m3s": 75.0,
+      "stage_m_shivaji": 538.63,
+      "stage_m_rajaram": 539.28,
+      "is_peak": false
+    },
+    {
+      "hour": 98,
+      "timestamp": "2021-07-22T02:00:00",
+      "discharge_m3s": 874.7,
+      "surface_runoff_m3s": 799.9,
+      "baseflow_m3s": 74.9,
+      "stage_m_shivaji": 538.69,
+      "stage_m_rajaram": 539.34,
+      "is_peak": false
+    },
+    {
+      "hour": 99,
+      "timestamp": "2021-07-22T03:00:00",
+      "discharge_m3s": 888.9,
+      "surface_runoff_m3s": 814.2,
+      "baseflow_m3s": 74.7,
+      "stage_m_shivaji": 538.75,
+      "stage_m_rajaram": 539.4,
+      "is_peak": false
+    },
+    {
+      "hour": 100,
+      "timestamp": "2021-07-22T04:00:00",
+      "discharge_m3s": 903.1,
+      "surface_runoff_m3s": 828.5,
+      "baseflow_m3s": 74.6,
+      "stage_m_shivaji": 538.81,
+      "stage_m_rajaram": 539.46,
+      "is_peak": false
+    },
+    {
+      "hour": 101,
+      "timestamp": "2021-07-22T05:00:00",
+      "discharge_m3s": 917.1,
+      "surface_runoff_m3s": 842.6,
+      "baseflow_m3s": 74.4,
+      "stage_m_shivaji": 538.87,
+      "stage_m_rajaram": 539.52,
+      "is_peak": false
+    },
+    {
+      "hour": 102,
+      "timestamp": "2021-07-22T06:00:00",
+      "discharge_m3s": 930.9,
+      "surface_runoff_m3s": 856.6,
+      "baseflow_m3s": 74.3,
+      "stage_m_shivaji": 538.93,
+      "stage_m_rajaram": 539.58,
+      "is_peak": false
+    },
+    {
+      "hour": 103,
+      "timestamp": "2021-07-22T07:00:00",
+      "discharge_m3s": 944.6,
+      "surface_runoff_m3s": 870.5,
+      "baseflow_m3s": 74.1,
+      "stage_m_shivaji": 538.99,
+      "stage_m_rajaram": 539.64,
+      "is_peak": false
+    },
+    {
+      "hour": 104,
+      "timestamp": "2021-07-22T08:00:00",
+      "discharge_m3s": 958.1,
+      "surface_runoff_m3s": 884.1,
+      "baseflow_m3s": 74.0,
+      "stage_m_shivaji": 539.05,
+      "stage_m_rajaram": 539.7,
+      "is_peak": false
+    },
+    {
+      "hour": 105,
+      "timestamp": "2021-07-22T09:00:00",
+      "discharge_m3s": 971.4,
+      "surface_runoff_m3s": 897.5,
+      "baseflow_m3s": 73.8,
+      "stage_m_shivaji": 539.11,
+      "stage_m_rajaram": 539.75,
+      "is_peak": false
+    },
+    {
+      "hour": 106,
+      "timestamp": "2021-07-22T10:00:00",
+      "discharge_m3s": 984.4,
+      "surface_runoff_m3s": 910.7,
+      "baseflow_m3s": 73.7,
+      "stage_m_shivaji": 539.16,
+      "stage_m_rajaram": 539.81,
+      "is_peak": false
+    },
+    {
+      "hour": 107,
+      "timestamp": "2021-07-22T11:00:00",
+      "discharge_m3s": 997.1,
+      "surface_runoff_m3s": 923.5,
+      "baseflow_m3s": 73.5,
+      "stage_m_shivaji": 539.22,
+      "stage_m_rajaram": 539.86,
+      "is_peak": false
+    },
+    {
+      "hour": 108,
+      "timestamp": "2021-07-22T12:00:00",
+      "discharge_m3s": 1009.5,
+      "surface_runoff_m3s": 936.1,
+      "baseflow_m3s": 73.4,
+      "stage_m_shivaji": 539.27,
+      "stage_m_rajaram": 539.92,
+      "is_peak": false
+    },
+    {
+      "hour": 109,
+      "timestamp": "2021-07-22T13:00:00",
+      "discharge_m3s": 1021.5,
+      "surface_runoff_m3s": 948.2,
+      "baseflow_m3s": 73.3,
+      "stage_m_shivaji": 539.32,
+      "stage_m_rajaram": 539.97,
+      "is_peak": false
+    },
+    {
+      "hour": 110,
+      "timestamp": "2021-07-22T14:00:00",
+      "discharge_m3s": 1033.1,
+      "surface_runoff_m3s": 960.0,
+      "baseflow_m3s": 73.1,
+      "stage_m_shivaji": 539.37,
+      "stage_m_rajaram": 540.01,
+      "is_peak": false
+    },
+    {
+      "hour": 111,
+      "timestamp": "2021-07-22T15:00:00",
+      "discharge_m3s": 1044.3,
+      "surface_runoff_m3s": 971.4,
+      "baseflow_m3s": 73.0,
+      "stage_m_shivaji": 539.41,
+      "stage_m_rajaram": 540.06,
+      "is_peak": false
+    },
+    {
+      "hour": 112,
+      "timestamp": "2021-07-22T16:00:00",
+      "discharge_m3s": 1055.1,
+      "surface_runoff_m3s": 982.3,
+      "baseflow_m3s": 72.8,
+      "stage_m_shivaji": 539.46,
+      "stage_m_rajaram": 540.1,
+      "is_peak": false
+    },
+    {
+      "hour": 113,
+      "timestamp": "2021-07-22T17:00:00",
+      "discharge_m3s": 1065.4,
+      "surface_runoff_m3s": 992.7,
+      "baseflow_m3s": 72.7,
+      "stage_m_shivaji": 539.5,
+      "stage_m_rajaram": 540.15,
+      "is_peak": false
+    },
+    {
+      "hour": 114,
+      "timestamp": "2021-07-22T18:00:00",
+      "discharge_m3s": 1075.2,
+      "surface_runoff_m3s": 1002.6,
+      "baseflow_m3s": 72.5,
+      "stage_m_shivaji": 539.54,
+      "stage_m_rajaram": 540.18,
+      "is_peak": false
+    },
+    {
+      "hour": 115,
+      "timestamp": "2021-07-22T19:00:00",
+      "discharge_m3s": 1084.4,
+      "surface_runoff_m3s": 1012.0,
+      "baseflow_m3s": 72.4,
+      "stage_m_shivaji": 539.57,
+      "stage_m_rajaram": 540.22,
+      "is_peak": false
+    },
+    {
+      "hour": 116,
+      "timestamp": "2021-07-22T20:00:00",
+      "discharge_m3s": 1093.1,
+      "surface_runoff_m3s": 1020.9,
+      "baseflow_m3s": 72.2,
+      "stage_m_shivaji": 539.61,
+      "stage_m_rajaram": 540.26,
+      "is_peak": false
+    },
+    {
+      "hour": 117,
+      "timestamp": "2021-07-22T21:00:00",
+      "discharge_m3s": 1101.3,
+      "surface_runoff_m3s": 1029.2,
+      "baseflow_m3s": 72.1,
+      "stage_m_shivaji": 539.64,
+      "stage_m_rajaram": 540.29,
+      "is_peak": false
+    },
+    {
+      "hour": 118,
+      "timestamp": "2021-07-22T22:00:00",
+      "discharge_m3s": 1108.8,
+      "surface_runoff_m3s": 1036.9,
+      "baseflow_m3s": 71.9,
+      "stage_m_shivaji": 539.67,
+      "stage_m_rajaram": 540.32,
+      "is_peak": false
+    },
+    {
+      "hour": 119,
+      "timestamp": "2021-07-22T23:00:00",
+      "discharge_m3s": 1115.8,
+      "surface_runoff_m3s": 1043.9,
+      "baseflow_m3s": 71.8,
+      "stage_m_shivaji": 539.7,
+      "stage_m_rajaram": 540.34,
+      "is_peak": false
+    },
+    {
+      "hour": 120,
+      "timestamp": "2021-07-23T00:00:00",
+      "discharge_m3s": 1122.1,
+      "surface_runoff_m3s": 1050.4,
+      "baseflow_m3s": 71.7,
+      "stage_m_shivaji": 539.72,
+      "stage_m_rajaram": 540.37,
+      "is_peak": false
+    },
+    {
+      "hour": 121,
+      "timestamp": "2021-07-23T01:00:00",
+      "discharge_m3s": 1127.8,
+      "surface_runoff_m3s": 1056.2,
+      "baseflow_m3s": 71.5,
+      "stage_m_shivaji": 539.74,
+      "stage_m_rajaram": 540.39,
+      "is_peak": false
+    },
+    {
+      "hour": 122,
+      "timestamp": "2021-07-23T02:00:00",
+      "discharge_m3s": 1132.8,
+      "surface_runoff_m3s": 1061.4,
+      "baseflow_m3s": 71.4,
+      "stage_m_shivaji": 539.76,
+      "stage_m_rajaram": 540.41,
+      "is_peak": false
+    },
+    {
+      "hour": 123,
+      "timestamp": "2021-07-23T03:00:00",
+      "discharge_m3s": 1137.1,
+      "surface_runoff_m3s": 1065.9,
+      "baseflow_m3s": 71.2,
+      "stage_m_shivaji": 539.78,
+      "stage_m_rajaram": 540.43,
+      "is_peak": false
+    },
+    {
+      "hour": 124,
+      "timestamp": "2021-07-23T04:00:00",
+      "discharge_m3s": 1140.8,
+      "surface_runoff_m3s": 1069.8,
+      "baseflow_m3s": 71.1,
+      "stage_m_shivaji": 539.79,
+      "stage_m_rajaram": 540.44,
+      "is_peak": false
+    },
+    {
+      "hour": 125,
+      "timestamp": "2021-07-23T05:00:00",
+      "discharge_m3s": 1143.9,
+      "surface_runoff_m3s": 1072.9,
+      "baseflow_m3s": 70.9,
+      "stage_m_shivaji": 539.8,
+      "stage_m_rajaram": 540.45,
+      "is_peak": false
+    },
+    {
+      "hour": 126,
+      "timestamp": "2021-07-23T06:00:00",
+      "discharge_m3s": 1146.2,
+      "surface_runoff_m3s": 1075.4,
+      "baseflow_m3s": 70.8,
+      "stage_m_shivaji": 539.81,
+      "stage_m_rajaram": 540.46,
+      "is_peak": false
+    },
+    {
+      "hour": 127,
+      "timestamp": "2021-07-23T07:00:00",
+      "discharge_m3s": 1147.8,
+      "surface_runoff_m3s": 1077.2,
+      "baseflow_m3s": 70.7,
+      "stage_m_shivaji": 539.82,
+      "stage_m_rajaram": 540.47,
+      "is_peak": false
+    },
+    {
+      "hour": 128,
+      "timestamp": "2021-07-23T08:00:00",
+      "discharge_m3s": 1148.8,
+      "surface_runoff_m3s": 1078.3,
+      "baseflow_m3s": 70.5,
+      "stage_m_shivaji": 539.82,
+      "stage_m_rajaram": 540.47,
+      "is_peak": false
+    },
+    {
+      "hour": 129,
+      "timestamp": "2021-07-23T09:00:00",
+      "discharge_m3s": 1149.1,
+      "surface_runoff_m3s": 1078.7,
+      "baseflow_m3s": 70.4,
+      "stage_m_shivaji": 539.82,
+      "stage_m_rajaram": 540.47,
+      "is_peak": true
+    },
+    {
+      "hour": 130,
+      "timestamp": "2021-07-23T10:00:00",
+      "discharge_m3s": 1148.7,
+      "surface_runoff_m3s": 1078.4,
+      "baseflow_m3s": 70.2,
+      "stage_m_shivaji": 539.82,
+      "stage_m_rajaram": 540.47,
+      "is_peak": false
+    },
+    {
+      "hour": 131,
+      "timestamp": "2021-07-23T11:00:00",
+      "discharge_m3s": 1147.6,
+      "surface_runoff_m3s": 1077.5,
+      "baseflow_m3s": 70.1,
+      "stage_m_shivaji": 539.82,
+      "stage_m_rajaram": 540.46,
+      "is_peak": false
+    },
+    {
+      "hour": 132,
+      "timestamp": "2021-07-23T12:00:00",
+      "discharge_m3s": 1145.9,
+      "surface_runoff_m3s": 1075.9,
+      "baseflow_m3s": 70.0,
+      "stage_m_shivaji": 539.81,
+      "stage_m_rajaram": 540.46,
+      "is_peak": false
+    },
+    {
+      "hour": 133,
+      "timestamp": "2021-07-23T13:00:00",
+      "discharge_m3s": 1143.6,
+      "surface_runoff_m3s": 1073.8,
+      "baseflow_m3s": 69.8,
+      "stage_m_shivaji": 539.8,
+      "stage_m_rajaram": 540.45,
+      "is_peak": false
+    },
+    {
+      "hour": 134,
+      "timestamp": "2021-07-23T14:00:00",
+      "discharge_m3s": 1140.6,
+      "surface_runoff_m3s": 1071.0,
+      "baseflow_m3s": 69.7,
+      "stage_m_shivaji": 539.79,
+      "stage_m_rajaram": 540.44,
+      "is_peak": false
+    },
+    {
+      "hour": 135,
+      "timestamp": "2021-07-23T15:00:00",
+      "discharge_m3s": 1137.1,
+      "surface_runoff_m3s": 1067.5,
+      "baseflow_m3s": 69.5,
+      "stage_m_shivaji": 539.78,
+      "stage_m_rajaram": 540.43,
+      "is_peak": false
+    },
+    {
+      "hour": 136,
+      "timestamp": "2021-07-23T16:00:00",
+      "discharge_m3s": 1132.9,
+      "surface_runoff_m3s": 1063.5,
+      "baseflow_m3s": 69.4,
+      "stage_m_shivaji": 539.76,
+      "stage_m_rajaram": 540.41,
+      "is_peak": false
+    },
+    {
+      "hour": 137,
+      "timestamp": "2021-07-23T17:00:00",
+      "discharge_m3s": 1128.1,
+      "surface_runoff_m3s": 1058.9,
+      "baseflow_m3s": 69.3,
+      "stage_m_shivaji": 539.74,
+      "stage_m_rajaram": 540.39,
+      "is_peak": false
+    },
+    {
+      "hour": 138,
+      "timestamp": "2021-07-23T18:00:00",
+      "discharge_m3s": 1122.8,
+      "surface_runoff_m3s": 1053.6,
+      "baseflow_m3s": 69.1,
+      "stage_m_shivaji": 539.72,
+      "stage_m_rajaram": 540.37,
+      "is_peak": false
+    },
+    {
+      "hour": 139,
+      "timestamp": "2021-07-23T19:00:00",
+      "discharge_m3s": 1116.8,
+      "surface_runoff_m3s": 1047.8,
+      "baseflow_m3s": 69.0,
+      "stage_m_shivaji": 539.7,
+      "stage_m_rajaram": 540.35,
+      "is_peak": false
+    },
+    {
+      "hour": 140,
+      "timestamp": "2021-07-23T20:00:00",
+      "discharge_m3s": 1110.4,
+      "surface_runoff_m3s": 1041.5,
+      "baseflow_m3s": 68.9,
+      "stage_m_shivaji": 539.68,
+      "stage_m_rajaram": 540.32,
+      "is_peak": false
+    },
+    {
+      "hour": 141,
+      "timestamp": "2021-07-23T21:00:00",
+      "discharge_m3s": 1103.4,
+      "surface_runoff_m3s": 1034.7,
+      "baseflow_m3s": 68.7,
+      "stage_m_shivaji": 539.65,
+      "stage_m_rajaram": 540.3,
+      "is_peak": false
+    },
+    {
+      "hour": 142,
+      "timestamp": "2021-07-23T22:00:00",
+      "discharge_m3s": 1095.9,
+      "surface_runoff_m3s": 1027.4,
+      "baseflow_m3s": 68.6,
+      "stage_m_shivaji": 539.62,
+      "stage_m_rajaram": 540.27,
+      "is_peak": false
+    },
+    {
+      "hour": 143,
+      "timestamp": "2021-07-23T23:00:00",
+      "discharge_m3s": 1088.0,
+      "surface_runoff_m3s": 1019.5,
+      "baseflow_m3s": 68.4,
+      "stage_m_shivaji": 539.59,
+      "stage_m_rajaram": 540.24,
+      "is_peak": false
+    },
+    {
+      "hour": 144,
+      "timestamp": "2021-07-24T00:00:00",
+      "discharge_m3s": 1079.6,
+      "surface_runoff_m3s": 1011.3,
+      "baseflow_m3s": 68.3,
+      "stage_m_shivaji": 539.55,
+      "stage_m_rajaram": 540.2,
+      "is_peak": false
+    },
+    {
+      "hour": 145,
+      "timestamp": "2021-07-24T01:00:00",
+      "discharge_m3s": 1070.7,
+      "surface_runoff_m3s": 1002.5,
+      "baseflow_m3s": 68.2,
+      "stage_m_shivaji": 539.52,
+      "stage_m_rajaram": 540.17,
+      "is_peak": false
+    },
+    {
+      "hour": 146,
+      "timestamp": "2021-07-24T02:00:00",
+      "discharge_m3s": 1061.4,
+      "surface_runoff_m3s": 993.4,
+      "baseflow_m3s": 68.0,
+      "stage_m_shivaji": 539.48,
+      "stage_m_rajaram": 540.13,
+      "is_peak": false
+    },
+    {
+      "hour": 147,
+      "timestamp": "2021-07-24T03:00:00",
+      "discharge_m3s": 1051.8,
+      "surface_runoff_m3s": 983.9,
+      "baseflow_m3s": 67.9,
+      "stage_m_shivaji": 539.44,
+      "stage_m_rajaram": 540.09,
+      "is_peak": false
+    },
+    {
+      "hour": 148,
+      "timestamp": "2021-07-24T04:00:00",
+      "discharge_m3s": 1041.7,
+      "surface_runoff_m3s": 974.0,
+      "baseflow_m3s": 67.8,
+      "stage_m_shivaji": 539.4,
+      "stage_m_rajaram": 540.05,
+      "is_peak": false
+    },
+    {
+      "hour": 149,
+      "timestamp": "2021-07-24T05:00:00",
+      "discharge_m3s": 1031.3,
+      "surface_runoff_m3s": 963.7,
+      "baseflow_m3s": 67.6,
+      "stage_m_shivaji": 539.36,
+      "stage_m_rajaram": 540.01,
+      "is_peak": false
+    },
+    {
+      "hour": 150,
+      "timestamp": "2021-07-24T06:00:00",
+      "discharge_m3s": 1020.6,
+      "surface_runoff_m3s": 953.1,
+      "baseflow_m3s": 67.5,
+      "stage_m_shivaji": 539.31,
+      "stage_m_rajaram": 539.96,
+      "is_peak": false
+    },
+    {
+      "hour": 151,
+      "timestamp": "2021-07-24T07:00:00",
+      "discharge_m3s": 1009.5,
+      "surface_runoff_m3s": 942.2,
+      "baseflow_m3s": 67.4,
+      "stage_m_shivaji": 539.27,
+      "stage_m_rajaram": 539.92,
+      "is_peak": false
+    },
+    {
+      "hour": 152,
+      "timestamp": "2021-07-24T08:00:00",
+      "discharge_m3s": 998.2,
+      "surface_runoff_m3s": 930.9,
+      "baseflow_m3s": 67.2,
+      "stage_m_shivaji": 539.22,
+      "stage_m_rajaram": 539.87,
+      "is_peak": false
+    },
+    {
+      "hour": 153,
+      "timestamp": "2021-07-24T09:00:00",
+      "discharge_m3s": 986.5,
+      "surface_runoff_m3s": 919.5,
+      "baseflow_m3s": 67.1,
+      "stage_m_shivaji": 539.17,
+      "stage_m_rajaram": 539.82,
+      "is_peak": false
+    },
+    {
+      "hour": 154,
+      "timestamp": "2021-07-24T10:00:00",
+      "discharge_m3s": 974.7,
+      "surface_runoff_m3s": 907.7,
+      "baseflow_m3s": 67.0,
+      "stage_m_shivaji": 539.12,
+      "stage_m_rajaram": 539.77,
+      "is_peak": false
+    },
+    {
+      "hour": 155,
+      "timestamp": "2021-07-24T11:00:00",
+      "discharge_m3s": 962.6,
+      "surface_runoff_m3s": 895.7,
+      "baseflow_m3s": 66.8,
+      "stage_m_shivaji": 539.07,
+      "stage_m_rajaram": 539.72,
+      "is_peak": false
+    },
+    {
+      "hour": 156,
+      "timestamp": "2021-07-24T12:00:00",
+      "discharge_m3s": 950.2,
+      "surface_runoff_m3s": 883.6,
+      "baseflow_m3s": 66.7,
+      "stage_m_shivaji": 539.02,
+      "stage_m_rajaram": 539.66,
+      "is_peak": false
+    },
+    {
+      "hour": 157,
+      "timestamp": "2021-07-24T13:00:00",
+      "discharge_m3s": 937.8,
+      "surface_runoff_m3s": 871.2,
+      "baseflow_m3s": 66.6,
+      "stage_m_shivaji": 538.96,
+      "stage_m_rajaram": 539.61,
+      "is_peak": false
+    },
+    {
+      "hour": 158,
+      "timestamp": "2021-07-24T14:00:00",
+      "discharge_m3s": 925.1,
+      "surface_runoff_m3s": 858.7,
+      "baseflow_m3s": 66.4,
+      "stage_m_shivaji": 538.91,
+      "stage_m_rajaram": 539.55,
+      "is_peak": false
+    },
+    {
+      "hour": 159,
+      "timestamp": "2021-07-24T15:00:00",
+      "discharge_m3s": 912.4,
+      "surface_runoff_m3s": 846.1,
+      "baseflow_m3s": 66.3,
+      "stage_m_shivaji": 538.85,
+      "stage_m_rajaram": 539.5,
+      "is_peak": false
+    },
+    {
+      "hour": 160,
+      "timestamp": "2021-07-24T16:00:00",
+      "discharge_m3s": 899.5,
+      "surface_runoff_m3s": 833.3,
+      "baseflow_m3s": 66.2,
+      "stage_m_shivaji": 538.8,
+      "stage_m_rajaram": 539.44,
+      "is_peak": false
+    },
+    {
+      "hour": 161,
+      "timestamp": "2021-07-24T17:00:00",
+      "discharge_m3s": 886.4,
+      "surface_runoff_m3s": 820.4,
+      "baseflow_m3s": 66.0,
+      "stage_m_shivaji": 538.74,
+      "stage_m_rajaram": 539.39,
+      "is_peak": false
+    },
+    {
+      "hour": 162,
+      "timestamp": "2021-07-24T18:00:00",
+      "discharge_m3s": 873.3,
+      "surface_runoff_m3s": 807.4,
+      "baseflow_m3s": 65.9,
+      "stage_m_shivaji": 538.68,
+      "stage_m_rajaram": 539.33,
+      "is_peak": false
+    },
+    {
+      "hour": 163,
+      "timestamp": "2021-07-24T19:00:00",
+      "discharge_m3s": 860.1,
+      "surface_runoff_m3s": 794.3,
+      "baseflow_m3s": 65.8,
+      "stage_m_shivaji": 538.63,
+      "stage_m_rajaram": 539.27,
+      "is_peak": false
+    },
+    {
+      "hour": 164,
+      "timestamp": "2021-07-24T20:00:00",
+      "discharge_m3s": 846.8,
+      "surface_runoff_m3s": 781.2,
+      "baseflow_m3s": 65.6,
+      "stage_m_shivaji": 538.57,
+      "stage_m_rajaram": 539.22,
+      "is_peak": false
+    },
+    {
+      "hour": 165,
+      "timestamp": "2021-07-24T21:00:00",
+      "discharge_m3s": 833.5,
+      "surface_runoff_m3s": 768.0,
+      "baseflow_m3s": 65.5,
+      "stage_m_shivaji": 538.51,
+      "stage_m_rajaram": 539.16,
+      "is_peak": false
+    },
+    {
+      "hour": 166,
+      "timestamp": "2021-07-24T22:00:00",
+      "discharge_m3s": 820.1,
+      "surface_runoff_m3s": 754.8,
+      "baseflow_m3s": 65.4,
+      "stage_m_shivaji": 538.45,
+      "stage_m_rajaram": 539.1,
+      "is_peak": false
+    },
+    {
+      "hour": 167,
+      "timestamp": "2021-07-24T23:00:00",
+      "discharge_m3s": 806.7,
+      "surface_runoff_m3s": 741.5,
+      "baseflow_m3s": 65.2,
+      "stage_m_shivaji": 538.4,
+      "stage_m_rajaram": 539.05,
+      "is_peak": false
+    },
+    {
+      "hour": 168,
+      "timestamp": "2021-07-25T00:00:00",
+      "discharge_m3s": 793.4,
+      "surface_runoff_m3s": 728.3,
+      "baseflow_m3s": 65.1,
+      "stage_m_shivaji": 538.34,
+      "stage_m_rajaram": 538.99,
+      "is_peak": false
+    },
+    {
+      "hour": 169,
+      "timestamp": "2021-07-25T01:00:00",
+      "discharge_m3s": 780.0,
+      "surface_runoff_m3s": 715.0,
+      "baseflow_m3s": 65.0,
+      "stage_m_shivaji": 538.29,
+      "stage_m_rajaram": 538.93,
+      "is_peak": false
+    },
+    {
+      "hour": 170,
+      "timestamp": "2021-07-25T02:00:00",
+      "discharge_m3s": 766.7,
+      "surface_runoff_m3s": 701.8,
+      "baseflow_m3s": 64.8,
+      "stage_m_shivaji": 538.23,
+      "stage_m_rajaram": 538.88,
+      "is_peak": false
+    },
+    {
+      "hour": 171,
+      "timestamp": "2021-07-25T03:00:00",
+      "discharge_m3s": 753.3,
+      "surface_runoff_m3s": 688.6,
+      "baseflow_m3s": 64.7,
+      "stage_m_shivaji": 538.17,
+      "stage_m_rajaram": 538.82,
+      "is_peak": false
+    },
+    {
+      "hour": 172,
+      "timestamp": "2021-07-25T04:00:00",
+      "discharge_m3s": 740.0,
+      "surface_runoff_m3s": 675.5,
+      "baseflow_m3s": 64.6,
+      "stage_m_shivaji": 538.12,
+      "stage_m_rajaram": 538.76,
+      "is_peak": false
+    },
+    {
+      "hour": 173,
+      "timestamp": "2021-07-25T05:00:00",
+      "discharge_m3s": 726.8,
+      "surface_runoff_m3s": 662.3,
+      "baseflow_m3s": 64.5,
+      "stage_m_shivaji": 538.06,
+      "stage_m_rajaram": 538.71,
+      "is_peak": false
+    },
+    {
+      "hour": 174,
+      "timestamp": "2021-07-25T06:00:00",
+      "discharge_m3s": 713.6,
+      "surface_runoff_m3s": 649.2,
+      "baseflow_m3s": 64.3,
+      "stage_m_shivaji": 538.0,
+      "stage_m_rajaram": 538.65,
+      "is_peak": false
+    },
+    {
+      "hour": 175,
+      "timestamp": "2021-07-25T07:00:00",
+      "discharge_m3s": 700.4,
+      "surface_runoff_m3s": 636.2,
+      "baseflow_m3s": 64.2,
+      "stage_m_shivaji": 537.94,
+      "stage_m_rajaram": 538.59,
+      "is_peak": false
+    },
+    {
+      "hour": 176,
+      "timestamp": "2021-07-25T08:00:00",
+      "discharge_m3s": 687.3,
+      "surface_runoff_m3s": 623.3,
+      "baseflow_m3s": 64.1,
+      "stage_m_shivaji": 537.88,
+      "stage_m_rajaram": 538.53,
+      "is_peak": false
+    },
+    {
+      "hour": 177,
+      "timestamp": "2021-07-25T09:00:00",
+      "discharge_m3s": 674.4,
+      "surface_runoff_m3s": 610.4,
+      "baseflow_m3s": 63.9,
+      "stage_m_shivaji": 537.83,
+      "stage_m_rajaram": 538.47,
+      "is_peak": false
+    },
+    {
+      "hour": 178,
+      "timestamp": "2021-07-25T10:00:00",
+      "discharge_m3s": 661.5,
+      "surface_runoff_m3s": 597.7,
+      "baseflow_m3s": 63.8,
+      "stage_m_shivaji": 537.76,
+      "stage_m_rajaram": 538.41,
+      "is_peak": false
+    },
+    {
+      "hour": 179,
+      "timestamp": "2021-07-25T11:00:00",
+      "discharge_m3s": 648.7,
+      "surface_runoff_m3s": 585.0,
+      "baseflow_m3s": 63.7,
+      "stage_m_shivaji": 537.7,
+      "stage_m_rajaram": 538.35,
+      "is_peak": false
+    },
+    {
+      "hour": 180,
+      "timestamp": "2021-07-25T12:00:00",
+      "discharge_m3s": 636.0,
+      "surface_runoff_m3s": 572.5,
+      "baseflow_m3s": 63.6,
+      "stage_m_shivaji": 537.64,
+      "stage_m_rajaram": 538.29,
+      "is_peak": false
+    },
+    {
+      "hour": 181,
+      "timestamp": "2021-07-25T13:00:00",
+      "discharge_m3s": 623.5,
+      "surface_runoff_m3s": 560.1,
+      "baseflow_m3s": 63.4,
+      "stage_m_shivaji": 537.57,
+      "stage_m_rajaram": 538.22,
+      "is_peak": false
+    },
+    {
+      "hour": 182,
+      "timestamp": "2021-07-25T14:00:00",
+      "discharge_m3s": 611.2,
+      "surface_runoff_m3s": 547.9,
+      "baseflow_m3s": 63.3,
+      "stage_m_shivaji": 537.5,
+      "stage_m_rajaram": 538.15,
+      "is_peak": false
+    },
+    {
+      "hour": 183,
+      "timestamp": "2021-07-25T15:00:00",
+      "discharge_m3s": 598.9,
+      "surface_runoff_m3s": 535.8,
+      "baseflow_m3s": 63.2,
+      "stage_m_shivaji": 537.43,
+      "stage_m_rajaram": 538.08,
+      "is_peak": false
+    },
+    {
+      "hour": 184,
+      "timestamp": "2021-07-25T16:00:00",
+      "discharge_m3s": 586.9,
+      "surface_runoff_m3s": 523.8,
+      "baseflow_m3s": 63.1,
+      "stage_m_shivaji": 537.36,
+      "stage_m_rajaram": 538.0,
+      "is_peak": false
+    },
+    {
+      "hour": 185,
+      "timestamp": "2021-07-25T17:00:00",
+      "discharge_m3s": 575.0,
+      "surface_runoff_m3s": 512.1,
+      "baseflow_m3s": 62.9,
+      "stage_m_shivaji": 537.28,
+      "stage_m_rajaram": 537.93,
+      "is_peak": false
+    },
+    {
+      "hour": 186,
+      "timestamp": "2021-07-25T18:00:00",
+      "discharge_m3s": 563.3,
+      "surface_runoff_m3s": 500.5,
+      "baseflow_m3s": 62.8,
+      "stage_m_shivaji": 537.2,
+      "stage_m_rajaram": 537.85,
+      "is_peak": false
+    },
+    {
+      "hour": 187,
+      "timestamp": "2021-07-25T19:00:00",
+      "discharge_m3s": 551.8,
+      "surface_runoff_m3s": 489.1,
+      "baseflow_m3s": 62.7,
+      "stage_m_shivaji": 537.13,
+      "stage_m_rajaram": 537.77,
+      "is_peak": false
+    },
+    {
+      "hour": 188,
+      "timestamp": "2021-07-25T20:00:00",
+      "discharge_m3s": 540.4,
+      "surface_runoff_m3s": 477.9,
+      "baseflow_m3s": 62.5,
+      "stage_m_shivaji": 537.05,
+      "stage_m_rajaram": 537.69,
+      "is_peak": false
+    },
+    {
+      "hour": 189,
+      "timestamp": "2021-07-25T21:00:00",
+      "discharge_m3s": 529.2,
+      "surface_runoff_m3s": 466.8,
+      "baseflow_m3s": 62.4,
+      "stage_m_shivaji": 536.97,
+      "stage_m_rajaram": 537.61,
+      "is_peak": false
+    },
+    {
+      "hour": 190,
+      "timestamp": "2021-07-25T22:00:00",
+      "discharge_m3s": 518.2,
+      "surface_runoff_m3s": 455.9,
+      "baseflow_m3s": 62.3,
+      "stage_m_shivaji": 536.89,
+      "stage_m_rajaram": 537.53,
+      "is_peak": false
+    },
+    {
+      "hour": 191,
+      "timestamp": "2021-07-25T23:00:00",
+      "discharge_m3s": 507.3,
+      "surface_runoff_m3s": 445.1,
+      "baseflow_m3s": 62.2,
+      "stage_m_shivaji": 536.8,
+      "stage_m_rajaram": 537.45,
+      "is_peak": false
+    },
+    {
+      "hour": 192,
+      "timestamp": "2021-07-26T00:00:00",
+      "discharge_m3s": 496.6,
+      "surface_runoff_m3s": 434.5,
+      "baseflow_m3s": 62.1,
+      "stage_m_shivaji": 536.72,
+      "stage_m_rajaram": 537.37,
+      "is_peak": false
+    },
+    {
+      "hour": 193,
+      "timestamp": "2021-07-26T01:00:00",
+      "discharge_m3s": 486.0,
+      "surface_runoff_m3s": 424.1,
+      "baseflow_m3s": 61.9,
+      "stage_m_shivaji": 536.64,
+      "stage_m_rajaram": 537.29,
+      "is_peak": false
+    },
+    {
+      "hour": 194,
+      "timestamp": "2021-07-26T02:00:00",
+      "discharge_m3s": 475.7,
+      "surface_runoff_m3s": 413.8,
+      "baseflow_m3s": 61.8,
+      "stage_m_shivaji": 536.56,
+      "stage_m_rajaram": 537.21,
+      "is_peak": false
+    },
+    {
+      "hour": 195,
+      "timestamp": "2021-07-26T03:00:00",
+      "discharge_m3s": 465.4,
+      "surface_runoff_m3s": 403.8,
+      "baseflow_m3s": 61.7,
+      "stage_m_shivaji": 536.48,
+      "stage_m_rajaram": 537.13,
+      "is_peak": false
+    },
+    {
+      "hour": 196,
+      "timestamp": "2021-07-26T04:00:00",
+      "discharge_m3s": 455.4,
+      "surface_runoff_m3s": 393.8,
+      "baseflow_m3s": 61.6,
+      "stage_m_shivaji": 536.4,
+      "stage_m_rajaram": 537.05,
+      "is_peak": false
+    },
+    {
+      "hour": 197,
+      "timestamp": "2021-07-26T05:00:00",
+      "discharge_m3s": 445.5,
+      "surface_runoff_m3s": 384.0,
+      "baseflow_m3s": 61.4,
+      "stage_m_shivaji": 536.32,
+      "stage_m_rajaram": 536.97,
+      "is_peak": false
+    },
+    {
+      "hour": 198,
+      "timestamp": "2021-07-26T06:00:00",
+      "discharge_m3s": 435.7,
+      "surface_runoff_m3s": 374.4,
+      "baseflow_m3s": 61.3,
+      "stage_m_shivaji": 536.24,
+      "stage_m_rajaram": 536.89,
+      "is_peak": false
+    },
+    {
+      "hour": 199,
+      "timestamp": "2021-07-26T07:00:00",
+      "discharge_m3s": 426.2,
+      "surface_runoff_m3s": 365.0,
+      "baseflow_m3s": 61.2,
+      "stage_m_shivaji": 536.17,
+      "stage_m_rajaram": 536.82,
+      "is_peak": false
+    },
+    {
+      "hour": 200,
+      "timestamp": "2021-07-26T08:00:00",
+      "discharge_m3s": 416.8,
+      "surface_runoff_m3s": 355.7,
+      "baseflow_m3s": 61.1,
+      "stage_m_shivaji": 536.1,
+      "stage_m_rajaram": 536.75,
+      "is_peak": false
+    },
+    {
+      "hour": 201,
+      "timestamp": "2021-07-26T09:00:00",
+      "discharge_m3s": 407.5,
+      "surface_runoff_m3s": 346.6,
+      "baseflow_m3s": 60.9,
+      "stage_m_shivaji": 536.03,
+      "stage_m_rajaram": 536.68,
+      "is_peak": false
+    },
+    {
+      "hour": 202,
+      "timestamp": "2021-07-26T10:00:00",
+      "discharge_m3s": 398.5,
+      "surface_runoff_m3s": 337.7,
+      "baseflow_m3s": 60.8,
+      "stage_m_shivaji": 535.96,
+      "stage_m_rajaram": 536.61,
+      "is_peak": false
+    },
+    {
+      "hour": 203,
+      "timestamp": "2021-07-26T11:00:00",
+      "discharge_m3s": 389.6,
+      "surface_runoff_m3s": 328.9,
+      "baseflow_m3s": 60.7,
+      "stage_m_shivaji": 535.9,
+      "stage_m_rajaram": 536.54,
+      "is_peak": false
+    },
+    {
+      "hour": 204,
+      "timestamp": "2021-07-26T12:00:00",
+      "discharge_m3s": 380.9,
+      "surface_runoff_m3s": 320.4,
+      "baseflow_m3s": 60.6,
+      "stage_m_shivaji": 535.83,
+      "stage_m_rajaram": 536.48,
+      "is_peak": false
+    },
+    {
+      "hour": 205,
+      "timestamp": "2021-07-26T13:00:00",
+      "discharge_m3s": 372.5,
+      "surface_runoff_m3s": 312.0,
+      "baseflow_m3s": 60.5,
+      "stage_m_shivaji": 535.78,
+      "stage_m_rajaram": 536.42,
+      "is_peak": false
+    },
+    {
+      "hour": 206,
+      "timestamp": "2021-07-26T14:00:00",
+      "discharge_m3s": 364.2,
+      "surface_runoff_m3s": 303.8,
+      "baseflow_m3s": 60.3,
+      "stage_m_shivaji": 535.72,
+      "stage_m_rajaram": 536.37,
+      "is_peak": false
+    },
+    {
+      "hour": 207,
+      "timestamp": "2021-07-26T15:00:00",
+      "discharge_m3s": 356.1,
+      "surface_runoff_m3s": 295.9,
+      "baseflow_m3s": 60.2,
+      "stage_m_shivaji": 535.67,
+      "stage_m_rajaram": 536.31,
+      "is_peak": false
+    },
+    {
+      "hour": 208,
+      "timestamp": "2021-07-26T16:00:00",
+      "discharge_m3s": 348.2,
+      "surface_runoff_m3s": 288.1,
+      "baseflow_m3s": 60.1,
+      "stage_m_shivaji": 535.61,
+      "stage_m_rajaram": 536.26,
+      "is_peak": false
+    },
+    {
+      "hour": 209,
+      "timestamp": "2021-07-26T17:00:00",
+      "discharge_m3s": 340.6,
+      "surface_runoff_m3s": 280.6,
+      "baseflow_m3s": 60.0,
+      "stage_m_shivaji": 535.57,
+      "stage_m_rajaram": 536.21,
+      "is_peak": false
+    },
+    {
+      "hour": 210,
+      "timestamp": "2021-07-26T18:00:00",
+      "discharge_m3s": 333.1,
+      "surface_runoff_m3s": 273.2,
+      "baseflow_m3s": 59.9,
+      "stage_m_shivaji": 535.52,
+      "stage_m_rajaram": 536.17,
+      "is_peak": false
+    },
+    {
+      "hour": 211,
+      "timestamp": "2021-07-26T19:00:00",
+      "discharge_m3s": 325.7,
+      "surface_runoff_m3s": 266.0,
+      "baseflow_m3s": 59.7,
+      "stage_m_shivaji": 535.47,
+      "stage_m_rajaram": 536.12,
+      "is_peak": false
+    },
+    {
+      "hour": 212,
+      "timestamp": "2021-07-26T20:00:00",
+      "discharge_m3s": 318.6,
+      "surface_runoff_m3s": 259.0,
+      "baseflow_m3s": 59.6,
+      "stage_m_shivaji": 535.43,
+      "stage_m_rajaram": 536.07,
+      "is_peak": false
+    },
+    {
+      "hour": 213,
+      "timestamp": "2021-07-26T21:00:00",
+      "discharge_m3s": 311.6,
+      "surface_runoff_m3s": 252.1,
+      "baseflow_m3s": 59.5,
+      "stage_m_shivaji": 535.38,
+      "stage_m_rajaram": 536.03,
+      "is_peak": false
+    },
+    {
+      "hour": 214,
+      "timestamp": "2021-07-26T22:00:00",
+      "discharge_m3s": 304.7,
+      "surface_runoff_m3s": 245.3,
+      "baseflow_m3s": 59.4,
+      "stage_m_shivaji": 535.34,
+      "stage_m_rajaram": 535.98,
+      "is_peak": false
+    },
+    {
+      "hour": 215,
+      "timestamp": "2021-07-26T23:00:00",
+      "discharge_m3s": 298.0,
+      "surface_runoff_m3s": 238.7,
+      "baseflow_m3s": 59.3,
+      "stage_m_shivaji": 535.29,
+      "stage_m_rajaram": 535.94,
+      "is_peak": false
+    },
+    {
+      "hour": 216,
+      "timestamp": "2021-07-27T00:00:00",
+      "discharge_m3s": 291.4,
+      "surface_runoff_m3s": 232.2,
+      "baseflow_m3s": 59.1,
+      "stage_m_shivaji": 535.25,
+      "stage_m_rajaram": 535.89,
+      "is_peak": false
+    },
+    {
+      "hour": 217,
+      "timestamp": "2021-07-27T01:00:00",
+      "discharge_m3s": 284.9,
+      "surface_runoff_m3s": 225.9,
+      "baseflow_m3s": 59.0,
+      "stage_m_shivaji": 535.2,
+      "stage_m_rajaram": 535.85,
+      "is_peak": false
+    },
+    {
+      "hour": 218,
+      "timestamp": "2021-07-27T02:00:00",
+      "discharge_m3s": 278.5,
+      "surface_runoff_m3s": 219.6,
+      "baseflow_m3s": 58.9,
+      "stage_m_shivaji": 535.15,
+      "stage_m_rajaram": 535.8,
+      "is_peak": false
+    },
+    {
+      "hour": 219,
+      "timestamp": "2021-07-27T03:00:00",
+      "discharge_m3s": 272.3,
+      "surface_runoff_m3s": 213.5,
+      "baseflow_m3s": 58.8,
+      "stage_m_shivaji": 535.11,
+      "stage_m_rajaram": 535.75,
+      "is_peak": false
+    },
+    {
+      "hour": 220,
+      "timestamp": "2021-07-27T04:00:00",
+      "discharge_m3s": 266.2,
+      "surface_runoff_m3s": 207.6,
+      "baseflow_m3s": 58.7,
+      "stage_m_shivaji": 535.05,
+      "stage_m_rajaram": 535.7,
+      "is_peak": false
+    },
+    {
+      "hour": 221,
+      "timestamp": "2021-07-27T05:00:00",
+      "discharge_m3s": 260.3,
+      "surface_runoff_m3s": 201.7,
+      "baseflow_m3s": 58.6,
+      "stage_m_shivaji": 535.0,
+      "stage_m_rajaram": 535.65,
+      "is_peak": false
+    },
+    {
+      "hour": 222,
+      "timestamp": "2021-07-27T06:00:00",
+      "discharge_m3s": 254.4,
+      "surface_runoff_m3s": 196.0,
+      "baseflow_m3s": 58.4,
+      "stage_m_shivaji": 534.95,
+      "stage_m_rajaram": 535.6,
+      "is_peak": false
+    },
+    {
+      "hour": 223,
+      "timestamp": "2021-07-27T07:00:00",
+      "discharge_m3s": 248.7,
+      "surface_runoff_m3s": 190.4,
+      "baseflow_m3s": 58.3,
+      "stage_m_shivaji": 534.89,
+      "stage_m_rajaram": 535.54,
+      "is_peak": false
+    },
+    {
+      "hour": 224,
+      "timestamp": "2021-07-27T08:00:00",
+      "discharge_m3s": 243.1,
+      "surface_runoff_m3s": 184.9,
+      "baseflow_m3s": 58.2,
+      "stage_m_shivaji": 534.84,
+      "stage_m_rajaram": 535.49,
+      "is_peak": false
+    },
+    {
+      "hour": 225,
+      "timestamp": "2021-07-27T09:00:00",
+      "discharge_m3s": 237.6,
+      "surface_runoff_m3s": 179.5,
+      "baseflow_m3s": 58.1,
+      "stage_m_shivaji": 534.78,
+      "stage_m_rajaram": 535.43,
+      "is_peak": false
+    },
+    {
+      "hour": 226,
+      "timestamp": "2021-07-27T10:00:00",
+      "discharge_m3s": 232.3,
+      "surface_runoff_m3s": 174.3,
+      "baseflow_m3s": 58.0,
+      "stage_m_shivaji": 534.72,
+      "stage_m_rajaram": 535.37,
+      "is_peak": false
+    },
+    {
+      "hour": 227,
+      "timestamp": "2021-07-27T11:00:00",
+      "discharge_m3s": 227.1,
+      "surface_runoff_m3s": 169.3,
+      "baseflow_m3s": 57.9,
+      "stage_m_shivaji": 534.67,
+      "stage_m_rajaram": 535.31,
+      "is_peak": false
+    },
+    {
+      "hour": 228,
+      "timestamp": "2021-07-27T12:00:00",
+      "discharge_m3s": 222.2,
+      "surface_runoff_m3s": 164.4,
+      "baseflow_m3s": 57.7,
+      "stage_m_shivaji": 534.61,
+      "stage_m_rajaram": 535.26,
+      "is_peak": false
+    },
+    {
+      "hour": 229,
+      "timestamp": "2021-07-27T13:00:00",
+      "discharge_m3s": 217.3,
+      "surface_runoff_m3s": 159.7,
+      "baseflow_m3s": 57.6,
+      "stage_m_shivaji": 534.56,
+      "stage_m_rajaram": 535.21,
+      "is_peak": false
+    },
+    {
+      "hour": 230,
+      "timestamp": "2021-07-27T14:00:00",
+      "discharge_m3s": 212.7,
+      "surface_runoff_m3s": 155.1,
+      "baseflow_m3s": 57.5,
+      "stage_m_shivaji": 534.51,
+      "stage_m_rajaram": 535.16,
+      "is_peak": false
+    },
+    {
+      "hour": 231,
+      "timestamp": "2021-07-27T15:00:00",
+      "discharge_m3s": 208.1,
+      "surface_runoff_m3s": 150.7,
+      "baseflow_m3s": 57.4,
+      "stage_m_shivaji": 534.46,
+      "stage_m_rajaram": 535.11,
+      "is_peak": false
+    },
+    {
+      "hour": 232,
+      "timestamp": "2021-07-27T16:00:00",
+      "discharge_m3s": 203.6,
+      "surface_runoff_m3s": 146.4,
+      "baseflow_m3s": 57.3,
+      "stage_m_shivaji": 534.41,
+      "stage_m_rajaram": 535.06,
+      "is_peak": false
+    },
+    {
+      "hour": 233,
+      "timestamp": "2021-07-27T17:00:00",
+      "discharge_m3s": 199.3,
+      "surface_runoff_m3s": 142.2,
+      "baseflow_m3s": 57.2,
+      "stage_m_shivaji": 534.36,
+      "stage_m_rajaram": 535.01,
+      "is_peak": false
+    },
+    {
+      "hour": 234,
+      "timestamp": "2021-07-27T18:00:00",
+      "discharge_m3s": 195.1,
+      "surface_runoff_m3s": 138.1,
+      "baseflow_m3s": 57.1,
+      "stage_m_shivaji": 534.32,
+      "stage_m_rajaram": 534.96,
+      "is_peak": false
+    },
+    {
+      "hour": 235,
+      "timestamp": "2021-07-27T19:00:00",
+      "discharge_m3s": 191.0,
+      "surface_runoff_m3s": 134.1,
+      "baseflow_m3s": 56.9,
+      "stage_m_shivaji": 534.27,
+      "stage_m_rajaram": 534.92,
+      "is_peak": false
+    },
+    {
+      "hour": 236,
+      "timestamp": "2021-07-27T20:00:00",
+      "discharge_m3s": 187.1,
+      "surface_runoff_m3s": 130.3,
+      "baseflow_m3s": 56.8,
+      "stage_m_shivaji": 534.23,
+      "stage_m_rajaram": 534.88,
+      "is_peak": false
+    },
+    {
+      "hour": 237,
+      "timestamp": "2021-07-27T21:00:00",
+      "discharge_m3s": 183.3,
+      "surface_runoff_m3s": 126.5,
+      "baseflow_m3s": 56.7,
+      "stage_m_shivaji": 534.19,
+      "stage_m_rajaram": 534.83,
+      "is_peak": false
+    },
+    {
+      "hour": 238,
+      "timestamp": "2021-07-27T22:00:00",
+      "discharge_m3s": 179.5,
+      "surface_runoff_m3s": 122.9,
+      "baseflow_m3s": 56.6,
+      "stage_m_shivaji": 534.14,
+      "stage_m_rajaram": 534.79,
+      "is_peak": false
+    },
+    {
+      "hour": 239,
+      "timestamp": "2021-07-27T23:00:00",
+      "discharge_m3s": 175.8,
+      "surface_runoff_m3s": 119.4,
+      "baseflow_m3s": 56.5,
+      "stage_m_shivaji": 534.1,
+      "stage_m_rajaram": 534.75,
+      "is_peak": false
+    },
+    {
+      "hour": 240,
+      "timestamp": "2021-07-28T00:00:00",
+      "discharge_m3s": 172.3,
+      "surface_runoff_m3s": 115.9,
+      "baseflow_m3s": 56.4,
+      "stage_m_shivaji": 534.06,
+      "stage_m_rajaram": 534.71,
+      "is_peak": false
+    },
+    {
+      "hour": 241,
+      "timestamp": "2021-07-28T01:00:00",
+      "discharge_m3s": 168.7,
+      "surface_runoff_m3s": 112.5,
+      "baseflow_m3s": 56.3,
+      "stage_m_shivaji": 534.02,
+      "stage_m_rajaram": 534.67,
+      "is_peak": false
+    },
+    {
+      "hour": 242,
+      "timestamp": "2021-07-28T02:00:00",
+      "discharge_m3s": 165.3,
+      "surface_runoff_m3s": 109.1,
+      "baseflow_m3s": 56.1,
+      "stage_m_shivaji": 533.98,
+      "stage_m_rajaram": 534.63,
+      "is_peak": false
+    },
+    {
+      "hour": 243,
+      "timestamp": "2021-07-28T03:00:00",
+      "discharge_m3s": 161.9,
+      "surface_runoff_m3s": 105.8,
+      "baseflow_m3s": 56.0,
+      "stage_m_shivaji": 533.95,
+      "stage_m_rajaram": 534.59,
+      "is_peak": false
+    },
+    {
+      "hour": 244,
+      "timestamp": "2021-07-28T04:00:00",
+      "discharge_m3s": 158.5,
+      "surface_runoff_m3s": 102.6,
+      "baseflow_m3s": 55.9,
+      "stage_m_shivaji": 533.91,
+      "stage_m_rajaram": 534.56,
+      "is_peak": false
+    },
+    {
+      "hour": 245,
+      "timestamp": "2021-07-28T05:00:00",
+      "discharge_m3s": 155.2,
+      "surface_runoff_m3s": 99.4,
+      "baseflow_m3s": 55.8,
+      "stage_m_shivaji": 533.87,
+      "stage_m_rajaram": 534.52,
+      "is_peak": false
+    },
+    {
+      "hour": 246,
+      "timestamp": "2021-07-28T06:00:00",
+      "discharge_m3s": 152.0,
+      "surface_runoff_m3s": 96.3,
+      "baseflow_m3s": 55.7,
+      "stage_m_shivaji": 533.83,
+      "stage_m_rajaram": 534.48,
+      "is_peak": false
+    },
+    {
+      "hour": 247,
+      "timestamp": "2021-07-28T07:00:00",
+      "discharge_m3s": 148.8,
+      "surface_runoff_m3s": 93.3,
+      "baseflow_m3s": 55.6,
+      "stage_m_shivaji": 533.8,
+      "stage_m_rajaram": 534.44,
+      "is_peak": false
+    },
+    {
+      "hour": 248,
+      "timestamp": "2021-07-28T08:00:00",
+      "discharge_m3s": 145.7,
+      "surface_runoff_m3s": 90.3,
+      "baseflow_m3s": 55.5,
+      "stage_m_shivaji": 533.76,
+      "stage_m_rajaram": 534.41,
+      "is_peak": false
+    },
+    {
+      "hour": 249,
+      "timestamp": "2021-07-28T09:00:00",
+      "discharge_m3s": 142.7,
+      "surface_runoff_m3s": 87.4,
+      "baseflow_m3s": 55.4,
+      "stage_m_shivaji": 533.73,
+      "stage_m_rajaram": 534.37,
+      "is_peak": false
+    },
+    {
+      "hour": 250,
+      "timestamp": "2021-07-28T10:00:00",
+      "discharge_m3s": 139.8,
+      "surface_runoff_m3s": 84.5,
+      "baseflow_m3s": 55.3,
+      "stage_m_shivaji": 533.69,
+      "stage_m_rajaram": 534.34,
+      "is_peak": false
+    },
+    {
+      "hour": 251,
+      "timestamp": "2021-07-28T11:00:00",
+      "discharge_m3s": 136.9,
+      "surface_runoff_m3s": 81.8,
+      "baseflow_m3s": 55.1,
+      "stage_m_shivaji": 533.66,
+      "stage_m_rajaram": 534.31,
+      "is_peak": false
+    },
+    {
+      "hour": 252,
+      "timestamp": "2021-07-28T12:00:00",
+      "discharge_m3s": 134.2,
+      "surface_runoff_m3s": 79.2,
+      "baseflow_m3s": 55.0,
+      "stage_m_shivaji": 533.63,
+      "stage_m_rajaram": 534.27,
+      "is_peak": false
+    },
+    {
+      "hour": 253,
+      "timestamp": "2021-07-28T13:00:00",
+      "discharge_m3s": 131.6,
+      "surface_runoff_m3s": 76.7,
+      "baseflow_m3s": 54.9,
+      "stage_m_shivaji": 533.6,
+      "stage_m_rajaram": 534.24,
+      "is_peak": false
+    },
+    {
+      "hour": 254,
+      "timestamp": "2021-07-28T14:00:00",
+      "discharge_m3s": 129.1,
+      "surface_runoff_m3s": 74.3,
+      "baseflow_m3s": 54.8,
+      "stage_m_shivaji": 533.57,
+      "stage_m_rajaram": 534.21,
+      "is_peak": false
+    },
+    {
+      "hour": 255,
+      "timestamp": "2021-07-28T15:00:00",
+      "discharge_m3s": 126.6,
+      "surface_runoff_m3s": 71.9,
+      "baseflow_m3s": 54.7,
+      "stage_m_shivaji": 533.54,
+      "stage_m_rajaram": 534.18,
+      "is_peak": false
+    },
+    {
+      "hour": 256,
+      "timestamp": "2021-07-28T16:00:00",
+      "discharge_m3s": 124.3,
+      "surface_runoff_m3s": 69.7,
+      "baseflow_m3s": 54.6,
+      "stage_m_shivaji": 533.51,
+      "stage_m_rajaram": 534.16,
+      "is_peak": false
+    },
+    {
+      "hour": 257,
+      "timestamp": "2021-07-28T17:00:00",
+      "discharge_m3s": 122.1,
+      "surface_runoff_m3s": 67.6,
+      "baseflow_m3s": 54.5,
+      "stage_m_shivaji": 533.48,
+      "stage_m_rajaram": 534.13,
+      "is_peak": false
+    },
+    {
+      "hour": 258,
+      "timestamp": "2021-07-28T18:00:00",
+      "discharge_m3s": 119.9,
+      "surface_runoff_m3s": 65.5,
+      "baseflow_m3s": 54.4,
+      "stage_m_shivaji": 533.46,
+      "stage_m_rajaram": 534.1,
+      "is_peak": false
+    },
+    {
+      "hour": 259,
+      "timestamp": "2021-07-28T19:00:00",
+      "discharge_m3s": 117.8,
+      "surface_runoff_m3s": 63.5,
+      "baseflow_m3s": 54.3,
+      "stage_m_shivaji": 533.43,
+      "stage_m_rajaram": 534.08,
+      "is_peak": false
+    },
+    {
+      "hour": 260,
+      "timestamp": "2021-07-28T20:00:00",
+      "discharge_m3s": 115.7,
+      "surface_runoff_m3s": 61.6,
+      "baseflow_m3s": 54.2,
+      "stage_m_shivaji": 533.41,
+      "stage_m_rajaram": 534.05,
+      "is_peak": false
+    },
+    {
+      "hour": 261,
+      "timestamp": "2021-07-28T21:00:00",
+      "discharge_m3s": 113.7,
+      "surface_runoff_m3s": 59.7,
+      "baseflow_m3s": 54.1,
+      "stage_m_shivaji": 533.38,
+      "stage_m_rajaram": 534.03,
+      "is_peak": false
+    },
+    {
+      "hour": 262,
+      "timestamp": "2021-07-28T22:00:00",
+      "discharge_m3s": 111.8,
+      "surface_runoff_m3s": 57.8,
+      "baseflow_m3s": 53.9,
+      "stage_m_shivaji": 533.36,
+      "stage_m_rajaram": 534.01,
+      "is_peak": false
+    },
+    {
+      "hour": 263,
+      "timestamp": "2021-07-28T23:00:00",
+      "discharge_m3s": 109.8,
+      "surface_runoff_m3s": 56.0,
+      "baseflow_m3s": 53.8,
+      "stage_m_shivaji": 533.33,
+      "stage_m_rajaram": 533.98,
+      "is_peak": false
+    },
+    {
+      "hour": 264,
+      "timestamp": "2021-07-29T00:00:00",
+      "discharge_m3s": 108.0,
+      "surface_runoff_m3s": 54.3,
+      "baseflow_m3s": 53.7,
+      "stage_m_shivaji": 533.31,
+      "stage_m_rajaram": 533.96,
+      "is_peak": false
+    },
+    {
+      "hour": 265,
+      "timestamp": "2021-07-29T01:00:00",
+      "discharge_m3s": 106.2,
+      "surface_runoff_m3s": 52.5,
+      "baseflow_m3s": 53.6,
+      "stage_m_shivaji": 533.29,
+      "stage_m_rajaram": 533.94,
+      "is_peak": false
+    },
+    {
+      "hour": 266,
+      "timestamp": "2021-07-29T02:00:00",
+      "discharge_m3s": 104.4,
+      "surface_runoff_m3s": 50.9,
+      "baseflow_m3s": 53.5,
+      "stage_m_shivaji": 533.27,
+      "stage_m_rajaram": 533.92,
+      "is_peak": false
+    },
+    {
+      "hour": 267,
+      "timestamp": "2021-07-29T03:00:00",
+      "discharge_m3s": 102.6,
+      "surface_runoff_m3s": 49.2,
+      "baseflow_m3s": 53.4,
+      "stage_m_shivaji": 533.25,
+      "stage_m_rajaram": 533.89,
+      "is_peak": false
+    },
+    {
+      "hour": 268,
+      "timestamp": "2021-07-29T04:00:00",
+      "discharge_m3s": 100.9,
+      "surface_runoff_m3s": 47.6,
+      "baseflow_m3s": 53.3,
+      "stage_m_shivaji": 533.22,
+      "stage_m_rajaram": 533.87,
+      "is_peak": false
+    },
+    {
+      "hour": 269,
+      "timestamp": "2021-07-29T05:00:00",
+      "discharge_m3s": 99.3,
+      "surface_runoff_m3s": 46.1,
+      "baseflow_m3s": 53.2,
+      "stage_m_shivaji": 533.2,
+      "stage_m_rajaram": 533.85,
+      "is_peak": false
+    },
+    {
+      "hour": 270,
+      "timestamp": "2021-07-29T06:00:00",
+      "discharge_m3s": 97.7,
+      "surface_runoff_m3s": 44.6,
+      "baseflow_m3s": 53.1,
+      "stage_m_shivaji": 533.18,
+      "stage_m_rajaram": 533.83,
+      "is_peak": false
+    },
+    {
+      "hour": 271,
+      "timestamp": "2021-07-29T07:00:00",
+      "discharge_m3s": 96.1,
+      "surface_runoff_m3s": 43.1,
+      "baseflow_m3s": 53.0,
+      "stage_m_shivaji": 533.16,
+      "stage_m_rajaram": 533.81,
+      "is_peak": false
+    },
+    {
+      "hour": 272,
+      "timestamp": "2021-07-29T08:00:00",
+      "discharge_m3s": 94.6,
+      "surface_runoff_m3s": 41.7,
+      "baseflow_m3s": 52.9,
+      "stage_m_shivaji": 533.14,
+      "stage_m_rajaram": 533.79,
+      "is_peak": false
+    },
+    {
+      "hour": 273,
+      "timestamp": "2021-07-29T09:00:00",
+      "discharge_m3s": 93.1,
+      "surface_runoff_m3s": 40.3,
+      "baseflow_m3s": 52.8,
+      "stage_m_shivaji": 533.12,
+      "stage_m_rajaram": 533.77,
+      "is_peak": false
+    },
+    {
+      "hour": 274,
+      "timestamp": "2021-07-29T10:00:00",
+      "discharge_m3s": 91.7,
+      "surface_runoff_m3s": 39.0,
+      "baseflow_m3s": 52.7,
+      "stage_m_shivaji": 533.1,
+      "stage_m_rajaram": 533.75,
+      "is_peak": false
+    },
+    {
+      "hour": 275,
+      "timestamp": "2021-07-29T11:00:00",
+      "discharge_m3s": 90.3,
+      "surface_runoff_m3s": 37.7,
+      "baseflow_m3s": 52.6,
+      "stage_m_shivaji": 533.08,
+      "stage_m_rajaram": 533.73,
+      "is_peak": false
+    },
+    {
+      "hour": 276,
+      "timestamp": "2021-07-29T12:00:00",
+      "discharge_m3s": 89.0,
+      "surface_runoff_m3s": 36.5,
+      "baseflow_m3s": 52.5,
+      "stage_m_shivaji": 533.06,
+      "stage_m_rajaram": 533.71,
+      "is_peak": false
+    },
+    {
+      "hour": 277,
+      "timestamp": "2021-07-29T13:00:00",
+      "discharge_m3s": 87.7,
+      "surface_runoff_m3s": 35.4,
+      "baseflow_m3s": 52.4,
+      "stage_m_shivaji": 533.04,
+      "stage_m_rajaram": 533.69,
+      "is_peak": false
+    },
+    {
+      "hour": 278,
+      "timestamp": "2021-07-29T14:00:00",
+      "discharge_m3s": 86.5,
+      "surface_runoff_m3s": 34.3,
+      "baseflow_m3s": 52.2,
+      "stage_m_shivaji": 533.02,
+      "stage_m_rajaram": 533.67,
+      "is_peak": false
+    },
+    {
+      "hour": 279,
+      "timestamp": "2021-07-29T15:00:00",
+      "discharge_m3s": 85.4,
+      "surface_runoff_m3s": 33.3,
+      "baseflow_m3s": 52.1,
+      "stage_m_shivaji": 533.0,
+      "stage_m_rajaram": 533.65,
+      "is_peak": false
+    },
+    {
+      "hour": 280,
+      "timestamp": "2021-07-29T16:00:00",
+      "discharge_m3s": 84.4,
+      "surface_runoff_m3s": 32.3,
+      "baseflow_m3s": 52.0,
+      "stage_m_shivaji": 532.98,
+      "stage_m_rajaram": 533.63,
+      "is_peak": false
+    },
+    {
+      "hour": 281,
+      "timestamp": "2021-07-29T17:00:00",
+      "discharge_m3s": 83.4,
+      "surface_runoff_m3s": 31.4,
+      "baseflow_m3s": 51.9,
+      "stage_m_shivaji": 532.96,
+      "stage_m_rajaram": 533.61,
+      "is_peak": false
+    },
+    {
+      "hour": 282,
+      "timestamp": "2021-07-29T18:00:00",
+      "discharge_m3s": 82.4,
+      "surface_runoff_m3s": 30.6,
+      "baseflow_m3s": 51.8,
+      "stage_m_shivaji": 532.94,
+      "stage_m_rajaram": 533.59,
+      "is_peak": false
+    },
+    {
+      "hour": 283,
+      "timestamp": "2021-07-29T19:00:00",
+      "discharge_m3s": 81.5,
+      "surface_runoff_m3s": 29.7,
+      "baseflow_m3s": 51.7,
+      "stage_m_shivaji": 532.92,
+      "stage_m_rajaram": 533.57,
+      "is_peak": false
+    },
+    {
+      "hour": 284,
+      "timestamp": "2021-07-29T20:00:00",
+      "discharge_m3s": 80.5,
+      "surface_runoff_m3s": 28.9,
+      "baseflow_m3s": 51.6,
+      "stage_m_shivaji": 532.9,
+      "stage_m_rajaram": 533.55,
+      "is_peak": false
+    },
+    {
+      "hour": 285,
+      "timestamp": "2021-07-29T21:00:00",
+      "discharge_m3s": 79.7,
+      "surface_runoff_m3s": 28.1,
+      "baseflow_m3s": 51.5,
+      "stage_m_shivaji": 532.89,
+      "stage_m_rajaram": 533.53,
+      "is_peak": false
+    },
+    {
+      "hour": 286,
+      "timestamp": "2021-07-29T22:00:00",
+      "discharge_m3s": 78.8,
+      "surface_runoff_m3s": 27.4,
+      "baseflow_m3s": 51.4,
+      "stage_m_shivaji": 532.87,
+      "stage_m_rajaram": 533.52,
+      "is_peak": false
+    },
+    {
+      "hour": 287,
+      "timestamp": "2021-07-29T23:00:00",
+      "discharge_m3s": 77.9,
+      "surface_runoff_m3s": 26.6,
+      "baseflow_m3s": 51.3,
+      "stage_m_shivaji": 532.85,
+      "stage_m_rajaram": 533.5,
+      "is_peak": false
+    },
+    {
+      "hour": 288,
+      "timestamp": "2021-07-30T00:00:00",
+      "discharge_m3s": 77.1,
+      "surface_runoff_m3s": 25.9,
+      "baseflow_m3s": 51.2,
+      "stage_m_shivaji": 532.83,
+      "stage_m_rajaram": 533.48,
+      "is_peak": false
+    },
+    {
+      "hour": 289,
+      "timestamp": "2021-07-30T01:00:00",
+      "discharge_m3s": 76.2,
+      "surface_runoff_m3s": 25.1,
+      "baseflow_m3s": 51.1,
+      "stage_m_shivaji": 532.81,
+      "stage_m_rajaram": 533.46,
+      "is_peak": false
+    },
+    {
+      "hour": 290,
+      "timestamp": "2021-07-30T02:00:00",
+      "discharge_m3s": 75.4,
+      "surface_runoff_m3s": 24.4,
+      "baseflow_m3s": 51.0,
+      "stage_m_shivaji": 532.79,
+      "stage_m_rajaram": 533.44,
+      "is_peak": false
+    },
+    {
+      "hour": 291,
+      "timestamp": "2021-07-30T03:00:00",
+      "discharge_m3s": 74.6,
+      "surface_runoff_m3s": 23.7,
+      "baseflow_m3s": 50.9,
+      "stage_m_shivaji": 532.78,
+      "stage_m_rajaram": 533.42,
+      "is_peak": false
+    },
+    {
+      "hour": 292,
+      "timestamp": "2021-07-30T04:00:00",
+      "discharge_m3s": 73.7,
+      "surface_runoff_m3s": 22.9,
+      "baseflow_m3s": 50.8,
+      "stage_m_shivaji": 532.76,
+      "stage_m_rajaram": 533.41,
+      "is_peak": false
+    },
+    {
+      "hour": 293,
+      "timestamp": "2021-07-30T05:00:00",
+      "discharge_m3s": 72.9,
+      "surface_runoff_m3s": 22.2,
+      "baseflow_m3s": 50.7,
+      "stage_m_shivaji": 532.74,
+      "stage_m_rajaram": 533.39,
+      "is_peak": false
+    },
+    {
+      "hour": 294,
+      "timestamp": "2021-07-30T06:00:00",
+      "discharge_m3s": 72.2,
+      "surface_runoff_m3s": 21.6,
+      "baseflow_m3s": 50.6,
+      "stage_m_shivaji": 532.73,
+      "stage_m_rajaram": 533.38,
+      "is_peak": false
+    },
+    {
+      "hour": 295,
+      "timestamp": "2021-07-30T07:00:00",
+      "discharge_m3s": 71.4,
+      "surface_runoff_m3s": 20.9,
+      "baseflow_m3s": 50.5,
+      "stage_m_shivaji": 532.72,
+      "stage_m_rajaram": 533.37,
+      "is_peak": false
+    },
+    {
+      "hour": 296,
+      "timestamp": "2021-07-30T08:00:00",
+      "discharge_m3s": 70.7,
+      "surface_runoff_m3s": 20.3,
+      "baseflow_m3s": 50.4,
+      "stage_m_shivaji": 532.71,
+      "stage_m_rajaram": 533.36,
+      "is_peak": false
+    },
+    {
+      "hour": 297,
+      "timestamp": "2021-07-30T09:00:00",
+      "discharge_m3s": 70.1,
+      "surface_runoff_m3s": 19.8,
+      "baseflow_m3s": 50.3,
+      "stage_m_shivaji": 532.7,
+      "stage_m_rajaram": 533.35,
+      "is_peak": false
+    },
+    {
+      "hour": 298,
+      "timestamp": "2021-07-30T10:00:00",
+      "discharge_m3s": 69.4,
+      "surface_runoff_m3s": 19.2,
+      "baseflow_m3s": 50.2,
+      "stage_m_shivaji": 532.69,
+      "stage_m_rajaram": 533.34,
+      "is_peak": false
+    },
+    {
+      "hour": 299,
+      "timestamp": "2021-07-30T11:00:00",
+      "discharge_m3s": 68.8,
+      "surface_runoff_m3s": 18.7,
+      "baseflow_m3s": 50.1,
+      "stage_m_shivaji": 532.68,
+      "stage_m_rajaram": 533.33,
+      "is_peak": false
+    },
+    {
+      "hour": 300,
+      "timestamp": "2021-07-30T12:00:00",
+      "discharge_m3s": 68.1,
+      "surface_runoff_m3s": 18.2,
+      "baseflow_m3s": 50.0,
+      "stage_m_shivaji": 532.67,
+      "stage_m_rajaram": 533.32,
+      "is_peak": false
+    },
+    {
+      "hour": 301,
+      "timestamp": "2021-07-30T13:00:00",
+      "discharge_m3s": 67.5,
+      "surface_runoff_m3s": 17.6,
+      "baseflow_m3s": 49.9,
+      "stage_m_shivaji": 532.66,
+      "stage_m_rajaram": 533.31,
+      "is_peak": false
+    },
+    {
+      "hour": 302,
+      "timestamp": "2021-07-30T14:00:00",
+      "discharge_m3s": 66.9,
+      "surface_runoff_m3s": 17.1,
+      "baseflow_m3s": 49.8,
+      "stage_m_shivaji": 532.66,
+      "stage_m_rajaram": 533.31,
+      "is_peak": false
+    },
+    {
+      "hour": 303,
+      "timestamp": "2021-07-30T15:00:00",
+      "discharge_m3s": 66.3,
+      "surface_runoff_m3s": 16.6,
+      "baseflow_m3s": 49.7,
+      "stage_m_shivaji": 532.65,
+      "stage_m_rajaram": 533.3,
+      "is_peak": false
+    },
+    {
+      "hour": 304,
+      "timestamp": "2021-07-30T16:00:00",
+      "discharge_m3s": 65.7,
+      "surface_runoff_m3s": 16.1,
+      "baseflow_m3s": 49.6,
+      "stage_m_shivaji": 532.65,
+      "stage_m_rajaram": 533.29,
+      "is_peak": false
+    },
+    {
+      "hour": 305,
+      "timestamp": "2021-07-30T17:00:00",
+      "discharge_m3s": 65.2,
+      "surface_runoff_m3s": 15.7,
+      "baseflow_m3s": 49.5,
+      "stage_m_shivaji": 532.64,
+      "stage_m_rajaram": 533.29,
+      "is_peak": false
+    },
+    {
+      "hour": 306,
+      "timestamp": "2021-07-30T18:00:00",
+      "discharge_m3s": 64.6,
+      "surface_runoff_m3s": 15.2,
+      "baseflow_m3s": 49.4,
+      "stage_m_shivaji": 532.63,
+      "stage_m_rajaram": 533.28,
+      "is_peak": false
+    },
+    {
+      "hour": 307,
+      "timestamp": "2021-07-30T19:00:00",
+      "discharge_m3s": 64.0,
+      "surface_runoff_m3s": 14.7,
+      "baseflow_m3s": 49.3,
+      "stage_m_shivaji": 532.63,
+      "stage_m_rajaram": 533.28,
+      "is_peak": false
+    },
+    {
+      "hour": 308,
+      "timestamp": "2021-07-30T20:00:00",
+      "discharge_m3s": 63.5,
+      "surface_runoff_m3s": 14.3,
+      "baseflow_m3s": 49.2,
+      "stage_m_shivaji": 532.62,
+      "stage_m_rajaram": 533.27,
+      "is_peak": false
+    },
+    {
+      "hour": 309,
+      "timestamp": "2021-07-30T21:00:00",
+      "discharge_m3s": 62.9,
+      "surface_runoff_m3s": 13.8,
+      "baseflow_m3s": 49.1,
+      "stage_m_shivaji": 532.62,
+      "stage_m_rajaram": 533.26,
+      "is_peak": false
+    },
+    {
+      "hour": 310,
+      "timestamp": "2021-07-30T22:00:00",
+      "discharge_m3s": 62.4,
+      "surface_runoff_m3s": 13.4,
+      "baseflow_m3s": 49.0,
+      "stage_m_shivaji": 532.61,
+      "stage_m_rajaram": 533.26,
+      "is_peak": false
+    },
+    {
+      "hour": 311,
+      "timestamp": "2021-07-30T23:00:00",
+      "discharge_m3s": 61.9,
+      "surface_runoff_m3s": 13.0,
+      "baseflow_m3s": 48.9,
+      "stage_m_shivaji": 532.61,
+      "stage_m_rajaram": 533.25,
+      "is_peak": false
+    },
+    {
+      "hour": 312,
+      "timestamp": "2021-07-31T00:00:00",
+      "discharge_m3s": 61.4,
+      "surface_runoff_m3s": 12.5,
+      "baseflow_m3s": 48.8,
+      "stage_m_shivaji": 532.6,
+      "stage_m_rajaram": 533.25,
+      "is_peak": false
+    },
+    {
+      "hour": 313,
+      "timestamp": "2021-07-31T01:00:00",
+      "discharge_m3s": 60.8,
+      "surface_runoff_m3s": 12.1,
+      "baseflow_m3s": 48.7,
+      "stage_m_shivaji": 532.6,
+      "stage_m_rajaram": 533.24,
+      "is_peak": false
+    },
+    {
+      "hour": 314,
+      "timestamp": "2021-07-31T02:00:00",
+      "discharge_m3s": 60.3,
+      "surface_runoff_m3s": 11.7,
+      "baseflow_m3s": 48.6,
+      "stage_m_shivaji": 532.59,
+      "stage_m_rajaram": 533.24,
+      "is_peak": false
+    },
+    {
+      "hour": 315,
+      "timestamp": "2021-07-31T03:00:00",
+      "discharge_m3s": 59.9,
+      "surface_runoff_m3s": 11.3,
+      "baseflow_m3s": 48.5,
+      "stage_m_shivaji": 532.59,
+      "stage_m_rajaram": 533.24,
+      "is_peak": false
+    },
+    {
+      "hour": 316,
+      "timestamp": "2021-07-31T04:00:00",
+      "discharge_m3s": 59.4,
+      "surface_runoff_m3s": 11.0,
+      "baseflow_m3s": 48.4,
+      "stage_m_shivaji": 532.58,
+      "stage_m_rajaram": 533.23,
+      "is_peak": false
+    },
+    {
+      "hour": 317,
+      "timestamp": "2021-07-31T05:00:00",
+      "discharge_m3s": 58.9,
+      "surface_runoff_m3s": 10.6,
+      "baseflow_m3s": 48.3,
+      "stage_m_shivaji": 532.58,
+      "stage_m_rajaram": 533.23,
+      "is_peak": false
+    },
+    {
+      "hour": 318,
+      "timestamp": "2021-07-31T06:00:00",
+      "discharge_m3s": 58.5,
+      "surface_runoff_m3s": 10.2,
+      "baseflow_m3s": 48.2,
+      "stage_m_shivaji": 532.58,
+      "stage_m_rajaram": 533.22,
+      "is_peak": false
+    },
+    {
+      "hour": 319,
+      "timestamp": "2021-07-31T07:00:00",
+      "discharge_m3s": 58.0,
+      "surface_runoff_m3s": 9.9,
+      "baseflow_m3s": 48.1,
+      "stage_m_shivaji": 532.57,
+      "stage_m_rajaram": 533.22,
+      "is_peak": false
+    },
+    {
+      "hour": 320,
+      "timestamp": "2021-07-31T08:00:00",
+      "discharge_m3s": 57.6,
+      "surface_runoff_m3s": 9.6,
+      "baseflow_m3s": 48.0,
+      "stage_m_shivaji": 532.57,
+      "stage_m_rajaram": 533.22,
+      "is_peak": false
+    },
+    {
+      "hour": 321,
+      "timestamp": "2021-07-31T09:00:00",
+      "discharge_m3s": 57.2,
+      "surface_runoff_m3s": 9.2,
+      "baseflow_m3s": 47.9,
+      "stage_m_shivaji": 532.56,
+      "stage_m_rajaram": 533.21,
+      "is_peak": false
+    },
+    {
+      "hour": 322,
+      "timestamp": "2021-07-31T10:00:00",
+      "discharge_m3s": 56.8,
+      "surface_runoff_m3s": 8.9,
+      "baseflow_m3s": 47.8,
+      "stage_m_shivaji": 532.56,
+      "stage_m_rajaram": 533.21,
+      "is_peak": false
+    },
+    {
+      "hour": 323,
+      "timestamp": "2021-07-31T11:00:00",
+      "discharge_m3s": 56.4,
+      "surface_runoff_m3s": 8.6,
+      "baseflow_m3s": 47.7,
+      "stage_m_shivaji": 532.56,
+      "stage_m_rajaram": 533.21,
+      "is_peak": false
+    },
+    {
+      "hour": 324,
+      "timestamp": "2021-07-31T12:00:00",
+      "discharge_m3s": 56.0,
+      "surface_runoff_m3s": 8.4,
+      "baseflow_m3s": 47.7,
+      "stage_m_shivaji": 532.55,
+      "stage_m_rajaram": 533.2,
+      "is_peak": false
+    },
+    {
+      "hour": 325,
+      "timestamp": "2021-07-31T13:00:00",
+      "discharge_m3s": 55.6,
+      "surface_runoff_m3s": 8.1,
+      "baseflow_m3s": 47.6,
+      "stage_m_shivaji": 532.55,
+      "stage_m_rajaram": 533.2,
+      "is_peak": false
+    },
+    {
+      "hour": 326,
+      "timestamp": "2021-07-31T14:00:00",
+      "discharge_m3s": 55.3,
+      "surface_runoff_m3s": 7.8,
+      "baseflow_m3s": 47.5,
+      "stage_m_shivaji": 532.55,
+      "stage_m_rajaram": 533.2,
+      "is_peak": false
+    },
+    {
+      "hour": 327,
+      "timestamp": "2021-07-31T15:00:00",
+      "discharge_m3s": 54.9,
+      "surface_runoff_m3s": 7.5,
+      "baseflow_m3s": 47.4,
+      "stage_m_shivaji": 532.54,
+      "stage_m_rajaram": 533.19,
+      "is_peak": false
+    },
+    {
+      "hour": 328,
+      "timestamp": "2021-07-31T16:00:00",
+      "discharge_m3s": 54.5,
+      "surface_runoff_m3s": 7.2,
+      "baseflow_m3s": 47.3,
+      "stage_m_shivaji": 532.54,
+      "stage_m_rajaram": 533.19,
+      "is_peak": false
+    },
+    {
+      "hour": 329,
+      "timestamp": "2021-07-31T17:00:00",
+      "discharge_m3s": 54.1,
+      "surface_runoff_m3s": 7.0,
+      "baseflow_m3s": 47.2,
+      "stage_m_shivaji": 532.54,
+      "stage_m_rajaram": 533.19,
+      "is_peak": false
+    },
+    {
+      "hour": 330,
+      "timestamp": "2021-07-31T18:00:00",
+      "discharge_m3s": 53.8,
+      "surface_runoff_m3s": 6.7,
+      "baseflow_m3s": 47.1,
+      "stage_m_shivaji": 532.54,
+      "stage_m_rajaram": 533.18,
+      "is_peak": false
+    },
+    {
+      "hour": 331,
+      "timestamp": "2021-07-31T19:00:00",
+      "discharge_m3s": 53.4,
+      "surface_runoff_m3s": 6.4,
+      "baseflow_m3s": 47.0,
+      "stage_m_shivaji": 532.53,
+      "stage_m_rajaram": 533.18,
+      "is_peak": false
+    },
+    {
+      "hour": 332,
+      "timestamp": "2021-07-31T20:00:00",
+      "discharge_m3s": 53.0,
+      "surface_runoff_m3s": 6.1,
+      "baseflow_m3s": 46.9,
+      "stage_m_shivaji": 532.53,
+      "stage_m_rajaram": 533.18,
+      "is_peak": false
+    },
+    {
+      "hour": 333,
+      "timestamp": "2021-07-31T21:00:00",
+      "discharge_m3s": 52.7,
+      "surface_runoff_m3s": 5.8,
+      "baseflow_m3s": 46.8,
+      "stage_m_shivaji": 532.53,
+      "stage_m_rajaram": 533.17,
+      "is_peak": false
+    },
+    {
+      "hour": 334,
+      "timestamp": "2021-07-31T22:00:00",
+      "discharge_m3s": 52.3,
+      "surface_runoff_m3s": 5.6,
+      "baseflow_m3s": 46.7,
+      "stage_m_shivaji": 532.52,
+      "stage_m_rajaram": 533.17,
+      "is_peak": false
+    },
+    {
+      "hour": 335,
+      "timestamp": "2021-07-31T23:00:00",
+      "discharge_m3s": 51.9,
+      "surface_runoff_m3s": 5.3,
+      "baseflow_m3s": 46.6,
+      "stage_m_shivaji": 532.52,
+      "stage_m_rajaram": 533.17,
+      "is_peak": false
+    },
+    {
+      "hour": 336,
+      "timestamp": "2021-08-01T00:00:00",
+      "discharge_m3s": 51.6,
+      "surface_runoff_m3s": 5.0,
+      "baseflow_m3s": 46.5,
+      "stage_m_shivaji": 532.52,
+      "stage_m_rajaram": 533.17,
+      "is_peak": false
+    },
+    {
+      "hour": 337,
+      "timestamp": "2021-08-01T01:00:00",
+      "discharge_m3s": 51.2,
+      "surface_runoff_m3s": 4.8,
+      "baseflow_m3s": 46.4,
+      "stage_m_shivaji": 532.51,
+      "stage_m_rajaram": 533.16,
+      "is_peak": false
+    },
+    {
+      "hour": 338,
+      "timestamp": "2021-08-01T02:00:00",
+      "discharge_m3s": 50.9,
+      "surface_runoff_m3s": 4.5,
+      "baseflow_m3s": 46.3,
+      "stage_m_shivaji": 532.51,
+      "stage_m_rajaram": 533.16,
+      "is_peak": false
+    },
+    {
+      "hour": 339,
+      "timestamp": "2021-08-01T03:00:00",
+      "discharge_m3s": 50.6,
+      "surface_runoff_m3s": 4.3,
+      "baseflow_m3s": 46.2,
+      "stage_m_shivaji": 532.51,
+      "stage_m_rajaram": 533.16,
+      "is_peak": false
+    },
+    {
+      "hour": 340,
+      "timestamp": "2021-08-01T04:00:00",
+      "discharge_m3s": 50.2,
+      "surface_runoff_m3s": 4.1,
+      "baseflow_m3s": 46.2,
+      "stage_m_shivaji": 532.51,
+      "stage_m_rajaram": 533.15,
+      "is_peak": false
+    },
+    {
+      "hour": 341,
+      "timestamp": "2021-08-01T05:00:00",
+      "discharge_m3s": 49.9,
+      "surface_runoff_m3s": 3.9,
+      "baseflow_m3s": 46.1,
+      "stage_m_shivaji": 532.5,
+      "stage_m_rajaram": 533.15,
+      "is_peak": false
+    },
+    {
+      "hour": 342,
+      "timestamp": "2021-08-01T06:00:00",
+      "discharge_m3s": 49.7,
+      "surface_runoff_m3s": 3.7,
+      "baseflow_m3s": 46.0,
+      "stage_m_shivaji": 532.5,
+      "stage_m_rajaram": 533.15,
+      "is_peak": false
+    },
+    {
+      "hour": 343,
+      "timestamp": "2021-08-01T07:00:00",
+      "discharge_m3s": 49.4,
+      "surface_runoff_m3s": 3.5,
+      "baseflow_m3s": 45.9,
+      "stage_m_shivaji": 532.5,
+      "stage_m_rajaram": 533.15,
+      "is_peak": false
+    },
+    {
+      "hour": 344,
+      "timestamp": "2021-08-01T08:00:00",
+      "discharge_m3s": 49.1,
+      "surface_runoff_m3s": 3.3,
+      "baseflow_m3s": 45.8,
+      "stage_m_shivaji": 532.5,
+      "stage_m_rajaram": 533.14,
+      "is_peak": false
+    },
+    {
+      "hour": 345,
+      "timestamp": "2021-08-01T09:00:00",
+      "discharge_m3s": 48.8,
+      "surface_runoff_m3s": 3.2,
+      "baseflow_m3s": 45.7,
+      "stage_m_shivaji": 532.49,
+      "stage_m_rajaram": 533.14,
+      "is_peak": false
+    },
+    {
+      "hour": 346,
+      "timestamp": "2021-08-01T10:00:00",
+      "discharge_m3s": 48.6,
+      "surface_runoff_m3s": 3.0,
+      "baseflow_m3s": 45.6,
+      "stage_m_shivaji": 532.49,
+      "stage_m_rajaram": 533.14,
+      "is_peak": false
+    },
+    {
+      "hour": 347,
+      "timestamp": "2021-08-01T11:00:00",
+      "discharge_m3s": 48.3,
+      "surface_runoff_m3s": 2.8,
+      "baseflow_m3s": 45.5,
+      "stage_m_shivaji": 532.49,
+      "stage_m_rajaram": 533.14,
+      "is_peak": false
+    },
+    {
+      "hour": 348,
+      "timestamp": "2021-08-01T12:00:00",
+      "discharge_m3s": 48.1,
+      "surface_runoff_m3s": 2.7,
+      "baseflow_m3s": 45.4,
+      "stage_m_shivaji": 532.49,
+      "stage_m_rajaram": 533.14,
+      "is_peak": false
+    },
+    {
+      "hour": 349,
+      "timestamp": "2021-08-01T13:00:00",
+      "discharge_m3s": 47.8,
+      "surface_runoff_m3s": 2.5,
+      "baseflow_m3s": 45.3,
+      "stage_m_shivaji": 532.49,
+      "stage_m_rajaram": 533.13,
+      "is_peak": false
+    },
+    {
+      "hour": 350,
+      "timestamp": "2021-08-01T14:00:00",
+      "discharge_m3s": 47.6,
+      "surface_runoff_m3s": 2.4,
+      "baseflow_m3s": 45.2,
+      "stage_m_shivaji": 532.48,
+      "stage_m_rajaram": 533.13,
+      "is_peak": false
+    },
+    {
+      "hour": 351,
+      "timestamp": "2021-08-01T15:00:00",
+      "discharge_m3s": 47.4,
+      "surface_runoff_m3s": 2.2,
+      "baseflow_m3s": 45.1,
+      "stage_m_shivaji": 532.48,
+      "stage_m_rajaram": 533.13,
+      "is_peak": false
+    }
+  ],
+  "observed": {
+    "peak_stage_m": 547.83,
+    "peak_discharge_m3s": null,
+    "peak_date": null,
+    "peak_time": null
+  },
+  "errors": {
+    "stage_error_m": -8.01,
+    "discharge_error_pct": null
+  }
+}

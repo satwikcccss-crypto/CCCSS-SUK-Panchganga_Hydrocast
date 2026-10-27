@@ -14,22 +14,10 @@ Every binary `PRECIP-INC` record in the project — from the operational pipelin
 and from the offline CLI alike — is produced by `write_gage_to_dss()`,
 guaranteeing one pathname convention:
 
-```text
-  //<GAGE>/PRECIP-INC/<DDMMMYYYY>/1HOUR/GAGE/
-         │      │            │          │   │
-         │      │            │          │   └── C-part: the Gage Manager
-         │      │            │          │        record type
-         │      │            │          └────── E-part: 1HOUR interval
-         │      │            └───────────────── D-part: block start date
-         │      └────────────────────────────── B-part: the gauge alias
-         └───────────────────────────────────── A-part: empty (no basin
-                                                  grouping; HEC-HMS Gage
-                                                  Manager expects this)
-```
 
 Worked example — subbasin S3 (Kotoli) forecast issued 29 Sep 2026 00z:
 
-```text
+```
   SUBBASIN_TO_GAGE["S3"] → "KOTOLI"
   d_part = "29SEP2026"
   ⇒  //KOTOLI/PRECIP-INC/29SEP2026/1HOUR/GAGE/
@@ -46,25 +34,25 @@ HEC-HMS actually expects.
 
 ### One writer, three callers
 
-```text
-              ┌────────────────────────────────────────────┐
-              │        src/dss/writer.py                  │
-              │        write_gauge_to_dss()                │
-              │        (single implementation)            │
-              └───────┬──────────────────┬────────────────┘
-                      │                  │
-       ┌──────────────▼──────┐  ┌────────▼─────────────────┐
-       │ operational cycle   │  │ offline CLI              │
-       │ src/ecmwf/          │  │ src/processing/           │
-       │   open_meteo.py     │  │   station_rainfall_to_    │
-       │ writes into         │  │   dss.py                  │
-       │ HMS_Automation_     │  │ falls back to CSV table + │
-       │ RJKT.dss            │  │ Jython script using the   │
-       └─────────────────────┘  │ SAME pathname scheme      │
-                                └──────────────────────────┘
-```
+Three callers write precipitation to DSS — the operational pipeline, the offline
+CLI, and the calibration rerun — and all three go through `write_gage_to_dss()`.
+That is the guarantee behind the single pathname convention: there is no second
+code path that could drift from it.
+
 
 ---
+
+## Conventions
+
+Pathname: `//<GAGE>/PRECIP-INC/<DDMMMYYYY>/1HOUR/GAGE/`. The A-part (watershed) is
+empty because HEC-HMS's Gage Manager resolves gage records by the B-part; the
+earlier `PANCHGANGA/<GAGE>` form was never found by the Manager.
+
+Callers: the operational pipeline (`open_meteo.py` via
+`station_rainfall_to_dss`), the offline CLI, and the calibration rerun under
+`HMS_Automation_RJKT`. If the DSS library is unavailable the writer falls back to
+the CSV table, and the run log records which path was taken.
+
 
 ## `src/dss/writer.py`
 

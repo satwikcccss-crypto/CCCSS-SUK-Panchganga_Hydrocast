@@ -1,0 +1,220 @@
+{
+  "iterations": [
+    {
+      "label": "static",
+      "matched": 338,
+      "nse": 0.8957,
+      "kge": 0.7707,
+      "rmse": 1.12,
+      "mae": 1.036,
+      "pbias": -0.07,
+      "peak_err_m": -1.38,
+      "peak_timing_err_h": 1.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 541.18,
+      "obs_peak_ts": "2025-08-21 14:00:00",
+      "sim_peak_ts": "2025-08-21 15:00:00",
+      "peak_q_err_m3s": -975.0
+    },
+    {
+      "label": "dynamic_calibrated",
+      "matched": 338,
+      "nse": 0.789,
+      "kge": 0.695,
+      "rmse": 1.593,
+      "mae": 1.331,
+      "pbias": -0.18,
+      "peak_err_m": -1.81,
+      "peak_timing_err_h": 20.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 540.75,
+      "obs_peak_ts": "2025-08-21 14:00:00",
+      "sim_peak_ts": "2025-08-22 10:00:00",
+      "peak_q_err_m3s": -1298.2
+    },
+    {
+      "label": "dynamic_calibrated_round2",
+      "matched": 338,
+      "nse": 0.4521,
+      "kge": 0.511,
+      "rmse": 2.567,
+      "mae": 1.932,
+      "pbias": -0.34,
+      "peak_err_m": -3.4,
+      "peak_timing_err_h": 23.0,
+      "obs_peak_m": 542.56,
+      "sim_peak_m": 539.16,
+      "obs_peak_ts": "2025-08-21 14:00:00",
+      "sim_peak_ts": "2025-08-22 13:00:00",
+      "peak_q_err_m3s": -1835.2
+    }
+  ],
+  "calibration_round1": {
+    "alpha_k": 1.22,
+    "alpha_lag": 1.184,
+    "delta_cn": 5.36,
+    "muskingum_x": 0.15,
+    "sub_models": {
+      "S6": {
+        "name": "Gaganbawda",
+        "area_km2": 227.72,
+        "cn": 67.14,
+        "lag_min": 3928.6
+      },
+      "S7": {
+        "name": "Garivade",
+        "area_km2": 195.39,
+        "cn": 66.64,
+        "lag_min": 3980.9
+      },
+      "S9": {
+        "name": "Radhanagari",
+        "area_km2": 366.97,
+        "cn": 69.67,
+        "lag_min": 6155.7
+      },
+      "S8": {
+        "name": "Beed",
+        "area_km2": 177.44,
+        "cn": 71.12,
+        "lag_min": 4010.4
+      },
+      "S4": {
+        "name": "Karanjphen",
+        "area_km2": 262.0,
+        "cn": 67.25,
+        "lag_min": 3688.8
+      },
+      "S5": {
+        "name": "Padasali",
+        "area_km2": 106.39,
+        "cn": 66.33,
+        "lag_min": 2506.6
+      },
+      "S3": {
+        "name": "Kotoli",
+        "area_km2": 261.32,
+        "cn": 70.18,
+        "lag_min": 4733.3
+      },
+      "S2": {
+        "name": "Sangarul",
+        "area_km2": 153.77,
+        "cn": 71.1,
+        "lag_min": 3734.6
+      },
+      "S1": {
+        "name": "Karveer",
+        "area_km2": 86.213,
+        "cn": 80.21,
+        "lag_min": 2547.9
+      }
+    },
+    "reaches": {
+      "R5": {
+        "k_hr": 5.635,
+        "x": 0.15
+      },
+      "R4": {
+        "k_hr": 1.493,
+        "x": 0.15
+      },
+      "R2": {
+        "k_hr": 14.429,
+        "x": 0.15
+      },
+      "R3": {
+        "k_hr": 4.671,
+        "x": 0.15
+      },
+      "R1": {
+        "k_hr": 3.537,
+        "x": 0.15
+      }
+    }
+  },
+  "calibration_round2": {
+    "alpha_k": 1.8,
+    "alpha_lag": 1.8,
+    "delta_cn": 8.0,
+    "muskingum_x": 0.15,
+    "sub_models": {
+      "S6": {
+        "name": "Gaganbawda",
+        "area_km2": 227.72,
+        "cn": 69.78,
+        "lag_min": 5972.5
+      },
+      "S7": {
+        "name": "Garivade",
+        "area_km2": 195.39,
+        "cn": 69.28,
+        "lag_min": 6052.1
+      },
+      "S9": {
+        "name": "Radhanagari",
+        "area_km2": 366.97,
+        "cn": 72.31,
+        "lag_min": 9358.3
+      },
+      "S8": {
+        "name": "Beed",
+        "area_km2": 177.44,
+        "cn": 73.76,
+        "lag_min": 6096.9
+      },
+      "S4": {
+        "name": "Karanjphen",
+        "area_km2": 262.0,
+        "cn": 69.89,
+        "lag_min": 5607.9
+      },
+      "S5": {
+        "name": "Padasali",
+        "area_km2": 106.39,
+        "cn": 68.97,
+        "lag_min": 3810.8
+      },
+      "S3": {
+        "name": "Kotoli",
+        "area_km2": 261.32,
+        "cn": 72.82,
+        "lag_min": 7195.9
+      },
+      "S2": {
+        "name": "Sangarul",
+        "area_km2": 153.77,
+        "cn": 73.74,
+        "lag_min": 5677.7
+      },
+      "S1": {
+        "name": "Karveer",
+        "area_km2": 86.213,
+        "cn": 82.85,
+        "lag_min": 3873.5
+      }
+    },
+    "reaches": {
+      "R5": {
+        "k_hr": 8.314,
+        "x": 0.15
+      },
+      "R4": {
+        "k_hr": 2.203,
+        "x": 0.15
+      },
+      "R2": {
+        "k_hr": 21.289,
+        "x": 0.15
+      },
+      "R3": {
+        "k_hr": 6.892,
+        "x": 0.15
+      },
+      "R1": {
+        "k_hr": 5.218,
+        "x": 0.15
+      }
+    }
+  }
+}

@@ -538,6 +538,10 @@ class AdaptiveHydrologicCalibrator:
             n = min(len(qs), T)
             pts = wind[wind < n]
             resid = (qs[pts] - q_target[pts]) / resid_scale
+            # Life-safety asymmetric loss: under-prediction (sim < target,
+            # resid < 0) is penalized 3x more than over-prediction so the
+            # optimizer avoids dangerous low-biased flood peaks.
+            resid = np.where(resid < 0.0, resid * 3.0, resid)
 
             modeled_dt = 0.55 * ((a_k - 1.0) / 0.075) + 0.45 * ((a_lag - 1.0) / 0.060)
             dwell = (modeled_dt - timing_offset_hours) / 2.0

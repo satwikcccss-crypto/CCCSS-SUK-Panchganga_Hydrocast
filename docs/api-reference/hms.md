@@ -12,86 +12,48 @@ that reproduces the same loss / transform / routing continuum.
 
 ## Execution decision tree
 
-```text
-  execute_hec_hms(run_dt, subbasin_hyetographs, live_stage_m, parameter_overrides)
-        │
-        ├─► snapshot_control_spec()          cache pristine Control_1.control
-        ├─► patch_control_spec(run_dt)       rewrite the 90 h simulation window
-        ├─► write_jython_script()            emit compute.jy
-        │
-        ▼
-  ┌──────────────────────────────────┐
-  │ find_hec_hms()                   │
-  │ HMS_HOME + hec-hms.cmd present?  │
-  └──────────────┬───────────────────┘
-                 │
-     HMS_FORCE_EMULATOR=1 ─────────────┐  overrides everything
-                 │                      │
-                 no                     yes
-                 │                      │
-                 ▼                      ▼
-  ┌────────────────────────┐   ┌────────────────────────────────┐
-  │ native HEC-HMS 4.13    │   │  PURE-PYTHON PHYSICAL ENGINE    │
-  │ subprocess (300 s cap)  │   │  compute_emulator_hydrograph()  │
-  │ returns 0 ──> real DSS │   │  ~15 ms, no Java dependency     │
-  └──────────┬─────────────┘   └────────────────┬───────────────┘
-             │ non-zero / missing               │
-             └──────────────┬───────────────────┘
-                            ▼
-              restore_control_spec()   put Control_1.control back
-                            │
-                            ▼
-              hydrograph JSON  ──►  stage_converter  ──►  alerts
-```
+The module prefers the native HEC-HMS binary when it is present and runnable, and
+falls back to the Python emulator otherwise. The binary is used to produce the
+DSS artefacts and the run log; the numbers written into the forecast always come
+from the emulator, because the binary's results are never parsed back. This is a
+deliberate choice recorded in the errors register, not an oversight.
+
 
 ---
 
 ## Emulator internals
 
-```text
-  subbasin_hyetographs: {S1..S9 → 90 × mm/hr}
-            │
-            │  ┌─────────────────────────────────────────────────┐
-            │  │ STEP 1  classify_amc(mean 90 h catchment rain)  │
-            │  │   < 25 mm        → AMC-I   (TR-55 dry)          │
-            │  │   25 .. 65 mm    → AMC-II  (as-designed)        │
-            │  │   ≥ 65 mm        → AMC-III (TR-55 saturated)    │
-            │  └───────────────────────┬─────────────────────────┘
-            │                          │  Ia/S = 0.20 / 0.15 / 0.08
-            ▼                          ▼
-  ┌──────────────────────────────────────────────────────────────┐
-  │ STEP 2  SCS Curve Number loss   (per subbasin)               │
-  │   S  = 25400/CN − 254                                          │
-  │   Qc = (Pc − Ia)² / (Pc − Ia + S) + 0.02·Pc                    │
-  │   ΔPexcess = max(0, Qc(h) − Qc(h−1))                          │
-  ├──────────────────────────────────────────────────────────────┤
-  │ STEP 3  SCS dimensionless UH    (per subbasin)               │
-  │   tp = 0.5 + lag_min/60                                        │
-  │   u(t) = (t/tp)^3.7 · exp[3.7(1 − t/tp)]                     │
-  │   normalised so Σ u·3600 = area_km² × 1000  (1 mm mass)       │
-  │   Qdir = ΔPexcess (*) UH                                      │
-  ├──────────────────────────────────────────────────────────────┤
-  │ STEP 4  Muskingum routing, network order = Basin_1.basin      │
-  │                                                              │
-  │   S6 ─┐                                                      │
-  │   S7 ─┴─► R5 ─┐                                              │
-  │              ├─► R2 ─┐                                       │
-  │   S9 ────► R4 ─┘    │                                       │
-  │   S8 ────────────────┤                                       │
-  │                     ├─► R1 ─┬─► q_surface ──┐                │
-  │   S4 ─┐             │       │               ├─► q_total     │
-  │   S5 ─┴─► R3 ───────┘       │               │                │
-  │   S2 ────────────────────────┤   + baseflow ┘                │
-  │   S3 ────────────────────────┘   exp(−0.002·t)               │
-  │                                                              │
-  │   S1 (Karveer) bypasses the network, adds at Sink-1          │
-  ├──────────────────────────────────────────────────────────────┤
-  │ STEP 5  peak = argmax(q_total)     ← never overridden         │
-  │         is_significant_event = (Q_peak − Q_bf) > max(1, 10%Q₀) │
-  └──────────────────────────────────────────────────────────────┘
-```
+The emulator walks the same three-stage chain as the HEC-HMS project: SCS Curve
+Number loss per subbasin, SCS unit hydrograph convolution to a subbasin
+hydrograph, and Muskingum routing along each reach. It reads its parameters from
+`Basin_1.basin` through the same parser the calibration engine uses, so the two
+can never disagree about the model definition.
+
 
 ---
+
+## Execution decision tree
+
+`execute_hec_hms(run_dt, subbasin_hyetographs, live_stage_m, parameter_overrides)`
+resolves to one of two engines before any work starts:
+
+| Condition | Engine | Consequence |
+|:---|:---|:---|
+| `HMS_HOME` set and `hec-hms.cmd` present | Native HEC-HMS 4.13 | DSS artefacts and the run log are produced |
+| `HMS_FORCE_EMULATOR=1` | Pure-Python engine | No Java dependency, ~15 ms per run |
+| `HMS_HOME` missing | Pure-Python engine | Same as forced |
+
+The native path snapshots `Control_1.control` with `snapshot_control_spec()`,
+rewrites the 90-hour simulation window with `patch_control_spec(run_dt)`, emits
+`compute.jy` with `write_jython_script()`, and runs it under a 300-second cap.
+The original control spec is restored in a `finally` block regardless of outcome.
+A non-zero exit code does not abort the cycle — the emulator is used instead.
+
+`subbasin_hyetographs` is the full $\{S_1 \ldots S_9\} \to 90 \times
+\text{mm/hr}$ matrix. The emulator's first step is `classify_amc()` on the mean
+90-hour catchment rainfall: below 25 mm is AMC-I, 25–65 mm is AMC-II as designed,
+and above 65 mm is AMC-III.
+
 
 ## `src/hms/basin_parser.py`
 

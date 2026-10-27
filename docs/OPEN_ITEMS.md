@@ -33,6 +33,10 @@ In accordance with system documentation rules:
 
 ### Detailed Audit Notes
 
+The notes below record outstanding verification work: items that are implemented
+but not yet independently checked, and inputs that exist only as templates in the
+repository.
+
 #### 1. HydroSim Integration (OI-001)
 * **Code References in Repository:**
   * `src/api/main.py:347-410`: Declares endpoints `GET /api/v1/runoff/hydrograph` and `GET /api/v1/runoff/stage/{site_id}` protected by `X-API-Key`.

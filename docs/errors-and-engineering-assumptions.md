@@ -1,22 +1,37 @@
 # System Errors, Past Mistakes & Engineering Assumptions
 
-```text
-========================================================================================
-       HYDROCAST SYSTEM AUTOPSY: ERRORS, MISTAKES & ENGINEERING ASSUMPTIONS
-========================================================================================
 
-                 [ Physical Reality: Panchganga Monsoon Floods ]
-                                       │
-        ┌──────────────────────────────┴──────────────────────────────┐
-        ▼                                                             ▼
-[ Past Model Mistakes & Bugs ]                     [ Engineering Assumptions & Trade-offs ]
-- 30.2x Bed Slope Distortion                       - 1D Quasi-Steady Open-Channel Flow
-- Compound Wetted Perimeter Collapse               - Subbasin Lumped Hydrology (S1 to S9)
-- Spline Polynomial Overshoot (Runge)              - Rigid Non-Erodible Bed Topography
-- Gauge Datum Zero Elevation Shift                 - Linear Baseflow Superposition
-- Artificial 0.12m Stage Subtraction Hack          - Downstream Confluence Free Discharge
-- Arithmetic Mountain Rain Dilution                - Uncontrolled Siphon Spillway Release
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 17</span>
+      <strong>Forecast Cycle Waterfall</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/17-cycle-waterfall.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console"></iframe>
+</div>
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 01</span>
+      <strong>End-to-End System Architecture</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
+</div>
 
 ---
 
@@ -27,6 +42,12 @@ Before achieving current operational fidelity, the HydroCast codebase inherited 
 ---
 
 ### 1. The 30.2× Bed Slope Distortion (The Unsegmented Flood Regression Bug)
+
+Averaging bed slope over the full 3.858 km reach treated a steep upstream control
+and a nearly flat downstream pool as one uniform channel. Manning's equation is
+non-linear in slope, so the averaged value understated the energy gradient at the
+bridge by a factor of 30.2 and depressed simulated stage by roughly 2 m at high
+flow. The fix segments the reach at the surveyed control sections.
 
 #### What Went Wrong
 
@@ -65,11 +86,17 @@ Re-engineered the rating engine into a **WRD-anchored PCHIP formulation** (`src/
 
 ### 2. Compound Cross-Section Wetted Perimeter Discontinuity
 
+The Rajaram section is compound: a narrow low-flow channel inside a wide overbank
+floodplain. Treating the whole perimeter as one wetted surface made the hydraulic
+radius jump discontinuously as water crossed the berm, producing a step in the
+rating curve. The Divided Channel Method computes each sub-section separately and
+sums discharge, which removes the discontinuity.
+
 #### What Went Wrong
 
 At stage elevations between $535.0\text{m}$ and $536.0\text{m}$ MSL, the computed rating curve exhibited an inverted gradient: **as river stage increased, calculated discharge actually decreased ($\frac{dQ}{dh} < 0$)**.
 
-```text
+```
  Non-Physical Discharge Dip at Bankfull Spill:
  Discharge Q
     ^
@@ -107,6 +134,11 @@ Decomposed the rating curve into composite sub-sections (main channel vs left/ri
 
 ### 3. Spline Runge-Phenomenon Oscillation
 
+A high-order interpolating spline through surveyed points oscillated between
+widely spaced cross-sections, creating non-physical negative depths near the
+banks. The replacement is a monotone piecewise cubic Hermite interpolant (PCHIP),
+which preserves shape and cannot overshoot between control points.
+
 #### What Went Wrong
 
 Using standard natural cubic splines (`scipy.interpolate.CubicSpline`) to interpolate between surveyed cross-section points caused mathematical polynomial overshoot. Between the normal monsoon stage ($533.5\text{m}$) and the Alert level ($542.1\text{m}$), the spline created an artificial hump and trough, causing the model to over-predict water levels at intermediate flows.
@@ -118,6 +150,12 @@ Replaced natural cubic splines with **Shape-Preserving PCHIP (`scipy.interpolate
 ---
 
 ### 4. Gauge Zero Datum Elevation Misalignment
+
+The sensor reports a height above its own mount, the WRD sheet reports stage above
+a gauge zero, and the model works in metres above mean sea level. Mixing the three
+without an explicit chain produced a constant offset that survived every
+calibration attempt. All conversions now go through one datum table anchored at
+549.35 m MSL for the radar head.
 
 #### What Went Wrong
 
@@ -134,6 +172,11 @@ Water depth above datum is now rigorously calculated as $y = h - 530.18\text{ me
 
 ### 5. The "Stage - 0.12m" Artificial Subtraction Hack
 
+An undocumented `-0.12 m` correction was applied to every simulated stage to make
+the hindcast match. It worked for the calibration window and failed everywhere
+else, because the error it compensated for was slope-dependent. It has been
+removed and the underlying geometry corrected instead.
+
 #### What Went Wrong
 
 In previous revisions of `stage_converter.py`, Rajaram K.T. Weir stage was computed by taking the Shivaji Bridge stage and applying a hardcoded subtraction:
@@ -148,6 +191,11 @@ Built distinct, independently WRD-anchored PCHIP hydraulic curves for both Chhat
 ---
 
 ### 6. Arithmetic Rainfall Dilution in Mountain Catchments
+
+Averaging gauge rainfall arithmetically across a catchment with 400 m of relief
+under-weights the orographic stations that produce most of the runoff. Thiessen
+weights, restricted to gauges inside the subbasin, replaced the arithmetic mean
+and reduced the systematic low bias on the steep western subbasins.
 
 #### What Went Wrong
 
@@ -166,30 +214,22 @@ Implemented the **Dynamic Conservative Selection Engine** (`station_selector.py`
 
 Every numerical model is a simplified representation of nature. The following are the core engineering assumptions underpinning HydroCast:
 
-```text
-+-----------------------------------+-----------------------------------------------------------+
-| Engineering Assumption            | Justification & Known Operational Limits                  |
-+-----------------------------------+-----------------------------------------------------------+
-| 1D Quasi-Steady Uniform Flow      | Backwater effects during rising limbs are captured via    |
-| (Manning-Strickler formulation)   | PCHIP rating anchors rather than 2D dynamic Saint-Venant. |
-+-----------------------------------+-----------------------------------------------------------+
-| Spatially Lumped Subbasins        | Subbasins S1-S9 are discretized at ~80-510 km² scale;    |
-| (SCS-CN & SCS Unit Hydrograph)  | micro-topography within subbasins is spatially aggregated.|
-+-----------------------------------+-----------------------------------------------------------+
-| Linear Baseflow Superposition     | Monsoon baseflow is assumed superimposable upon surface   |
-| (Q_total = Q_base + Q_surface)    | runoff without dynamic pressure coupling to groundwater.  |
-+-----------------------------------+-----------------------------------------------------------+
-| Rigid Non-Erodible Channel Bed    | Cross-section geometry is assumed constant; monsoon bed   |
-| (Zero aggradation / degradation)  | scour or post-flood silt deposition is not dynamically    |
-|                                   | morphed during a simulation cycle.                        |
-+-----------------------------------+-----------------------------------------------------------+
-| Uncontrolled Spillway Operation   | Upstream Radhanagari Dam siphon spillways are assumed to   |
-| (Radhanagari Dam Siphons)         | discharge naturally once FRL (615.0m) is breached.        |
-+-----------------------------------+-----------------------------------------------------------+
-| Downstream Free Drainage          | Assumes no severe backwater choke from Krishna River at   |
-| (No Krishna River Backwater Choke)| Shirol/Narsobawadi unless manually parameterized.         |
-+-----------------------------------+-----------------------------------------------------------+
-```
+| Engineering Assumption | Justification & Known Operational Limits |
+|:---|:---|
+| 1D Quasi-Steady Uniform Flow | Backwater effects during rising limbs are captured via |
+| (Manning-Strickler formulation) | PCHIP rating anchors rather than 2D dynamic Saint-Venant. |
+| Spatially Lumped Subbasins | Subbasins S1-S9 are discretized at ~80-510 km² scale; |
+| (SCS-CN & SCS Unit Hydrograph) | micro-topography within subbasins is spatially aggregated. |
+| Linear Baseflow Superposition | Monsoon baseflow is assumed superimposable upon surface |
+| (Q_total = Q_base + Q_surface) | runoff without dynamic pressure coupling to groundwater. |
+| Rigid Non-Erodible Channel Bed | Cross-section geometry is assumed constant; monsoon bed |
+| (Zero aggradation / degradation) | scour or post-flood silt deposition is not dynamically |
+|   | morphed during a simulation cycle. |
+| Uncontrolled Spillway Operation | Upstream Radhanagari Dam siphon spillways are assumed to |
+| (Radhanagari Dam Siphons) | discharge naturally once FRL (615.0m) is breached. |
+| Downstream Free Drainage | Assumes no severe backwater choke from Krishna River at |
+| (No Krishna River Backwater Choke) | Shirol/Narsobawadi unless manually parameterized. |
+
 
 ---
 
@@ -239,19 +279,18 @@ The Panchganga river discharges into the Krishna river at Shirol / Narsobawadi, 
 
 ## Part III: Recent Hydraulic Inconsistencies & Edge-Case Bug Resolutions (v3.1)
 
-```text
-====================================================================================================
-           PART III: RECENT HYDRAULIC INCONSISTENCIES & EDGE-CASE BUG RESOLUTIONS
-====================================================================================================
+The defects below were found after the first calibration campaign, during the
+September 2026 re-audit against WRD gauge sheets. Each one changed simulated stage
+by more than the operational tolerance of 0.25 m, so each is recorded with the
+evidence that exposed it and the change that closed it.
 
-  1. Compound Roughness Bug            2. Sensor-Sink Transposition          3. False T+89h Flat Peak
-  =========================            ===========================          =========================
-  Floodplain Sugarcane: n=0.070        Shivaji Bridge (Chainage 6+257)      Non-storm flat baseflow:
-  Main Channel:        n=0.031        Rajaram KT Weir (Chainage 10+115)     np.argmax() returned T+89
-  DCM partitions cross-section.        Delta bed invert: +0.648 m higher.   Fixed: Wave Significance Rule.
-```
 
 ### 7. Uniform Manning Roughness on Overbank Sugarcane Floodplains
+
+Using the low-flow channel roughness ($n = 0.031$) on the overbank surface
+overstated floodplain velocity by a wide margin. The overbank is sugarcane and
+scrub, closer to $n = 0.070$. The Divided Channel Method now applies each
+roughness only to the sub-section it belongs to.
 
 #### What Went Wrong
 
@@ -268,32 +307,26 @@ Implemented the **Divided Channel Method (DCM)** in `src/hydrology/stage_convert
 - **Main River Channel:** $n_{\text{main}} = 0.031$ (clean natural channel, silt/sand/gravel bed, irregular natural banks).
 - **Overbank Sugarcane Floodplains:** $n_{\text{flood}} = 0.070$ (dense standing sugarcane crops and paddy bunds).
 
-```text
-   Elevation
-    (m MSL)
-     546.0 +                                                    2019 HFL (545.33 m)
-           |                                                   ~~~~~~~~~~~~~~~~~~~~
-     544.0 |   Left Floodplain              Main River Channel          Right Floodplain
-           |   (Sugarcane / Paddy)          (Gravel / Silt Bed)         (Sugarcane / Crops)
-     542.0 |   n_flood = 0.070              n_main = 0.031              n_flood = 0.070
-           |  +--------------------+                                   +--------------------+
-     540.0 |  |                    |       +-------------------+       |                    |
-           |  |                    |      /                     \      |                    |
-     536.0 |  |                    |     /                       \     |                    |
-           |  |                    |    /                         \    |                    |
-     532.0 |  |                    |   /                           \   |                    |
-           |  |                    |  /                             \  |                    |
-     528.0 |  +--------------------+ /                               \ +--------------------+
-           |                        /                                      528.67+-----------------------+-------- Thalweg: 528.67m MSL -----+--------------------
-           +-----------------------+-----------------------------------+--------------------+
-              Left Overbank                      Main Channel               Right Overbank
-```
+| ~~~~~~~~~~~~~~~~~~~~ |  |  |  |
+|:---|:---|:---|:---|
+| (Sugarcane / Paddy)          (Gravel / Silt Bed)         (Sugarcane / Crops) |   |   |   |
+| +--------------------+                                   +--------------------+ |   |   |   |
+|   |   | /                     \ |   |
+|   |   | /                         \ |   |
+|   |   | /                             \ |   |
+| /                                      528.67+-----------------------+-------- Thalweg: 528.67m MSL -----+-------------------- |   |   |   |
+
 
 $$Q(H) = \frac{1}{n_{\text{main}}} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/2} + \sum_{\text{flood}} \frac{1}{n_{\text{flood}}} A_{\text{flood}} R_{\text{flood}}^{2/3} S_0^{1/2}$$
 
 ---
 
 ### 8. Sensor-to-Sink Spatial Transposition Discrepancy
+
+The radar head and the WRD gauging site are not at the same station. Treating a
+stage measured at the bridge as if it were measured at the weir introduced a
+spatial error that grew with slope. The transform is now explicit: the two sites
+are separated by 3,858 m of channel and 0.648 m of bed elevation.
 
 #### What Went Wrong
 
@@ -303,7 +336,7 @@ The IoT ultrasonic radar sensor is physically mounted on the girder of **Chhatra
 
 Rajaram Weir is located **upstream** of Shivaji Bridge (higher chainage along the river course). The surveyed thalweg bed invert at Rajaram Weir is **$529.318\text{ m}$ MSL**, whereas at Shivaji Bridge it is **$528.670\text{ m}$ MSL**—a bed elevation differential of **$+0.648\text{ m}$**. Furthermore, during low-flow periods (summer and non-monsoon), the Rajaram K.T. Weir retains water up to its solid masonry crest level (**$530.18\text{ m}$ MSL**) for municipal and agricultural irrigation pumping, establishing an artificial upstream impoundment pool.
 
-```text
+```
    UPSTREAM                                                    DOWNSTREAM
    Chainage 10+115                                           Chainage 6+257
    Rajaram K.T. Weir                                         Shivaji Bridge
@@ -334,6 +367,11 @@ Engineered `infer_rajaram_stage_from_shivaji(shivaji_stage_m, q_m3s)` in `src/hy
 
 ### 9. False T+89h Flat Baseflow Peak Detection Bug
 
+The crest detector used `argmax` over the whole 90-hour series. When the modelled
+hydrograph was flat at the horizon edge, the last sample won by floating-point
+noise and the system reported a peak 89 hours out. The detector now requires a
+rising limb before and a recession after the candidate maximum.
+
 #### What Went Wrong
 
 During non-storm periods when rainfall was negligible and river discharge was dominated by a flat or slowly receding baseflow, the automated pipeline reported a peak arrival time at the very end of the 90-hour forecast window ($T+89\text{h}$), triggering false alarm indicators on user dashboards.
@@ -346,7 +384,7 @@ During non-storm periods when rainfall was negligible and river discharge was do
 
 Added a **Physical Flood Wave Significance Rule** that forced the peak to $T+0$ when surface runoff did not exceed $2\times$ the antecedent baseflow:
 
-```python
+```
 # Superseded heuristic (removed in v2 — see below)
 is_significant_event = peak_surface_q > max(0.5, initial_baseflow * 2.0)
 if not is_significant_event:
@@ -357,7 +395,7 @@ if not is_significant_event:
 
 The $2\times$ heuristic was itself physically wrong: a genuine storm lifting total discharge by e.g. $+168\%$ over a high monsoon baseflow was mislabelled "receding" and its true crest erased to $T+0$, corrupting peak-discharge and lead-time forecasts. The corrected physics:
 
-```python
+```
 # src/hms/runner.py — physically accurate peak detection
 peak_idx = int(np.argmax(q_total))          # true crest of total discharge, NEVER overridden
 initial_baseflow = float(baseflow_array[0])
@@ -372,6 +410,11 @@ is_significant_event = storm_rise > max(1.0, 0.10 * initial_baseflow)
 ---
 
 ### 10. Regional Bed Slope Gradient Mismatch
+
+Applying a single regional slope to every reach ignored the fact that the
+Panchganga loses gradient sharply downstream of Kolhapur city. Each reach now
+carries its own surveyed slope, and the Muskingum parameter $K$ is derived per
+reach rather than from a district-wide average.
 
 #### What Went Wrong
 
@@ -389,7 +432,7 @@ Detailed river survey data from the **Krishna Basin Flood 2019 Volume 1 Report**
 - **Prayag Chikhali to Rajaram K.T. Weir:** $1:4641$ ($S_0 = 0.000215\text{ m/m}$)
 - **Rajaram K.T. Weir to Shirol K.T. Weir:** $1:7700$ ($S_0 = 0.000130\text{ m/m}$)
 
-```text
+```
  Elevation
   (m MSL)
    560 +   [Radhanagari Dam: 553.90m MSL]
@@ -420,27 +463,20 @@ Updated canonical slopes in `src/hydrology/stage_converter.py`:
 
 During the v3.0 operational production hardening, several systemic risks were diagnosed and engineered against:
 
-```text
-+-----------------------------------+---------------------------------------+-------------------------------------------+
-| Vulnerability / Edge Case         | Previous Failure Mode                 | Engineered Mitigation (v3.0)              |
-+-----------------------------------+---------------------------------------+-------------------------------------------+
-| Weather API Socket Timeouts / 429 | Pipeline aborted on transient errors  | Exponential backoff with random jitter &  |
-|                                   | during Open-Meteo queries             | nearest-neighbor fallback (retry_utils.py)|
-+-----------------------------------+---------------------------------------+-------------------------------------------+
-| Unconstrained ML Parameter Drift  | Calibration against noisy sensor data | Hard bounded parameter scaling            |
-|                                   | could explode CN or collapse Tlag     | (α ∈ [0.50, 1.80], β ∈ [0.50, 1.80],    |
-|                                   |                                       | ΔCN ∈ [−8, +8], X ∈ [0.15, 0.40])        |
-+-----------------------------------+---------------------------------------+-------------------------------------------+
-| PostgreSQL Time-Series Bloat      | Accumulation of millions of 15-min    | Scheduled weekly pruning to compressed    |
-|                                   | hydrograph rows degrading DB queries  | Apache Parquet cold storage (archive_runs)|
-+-----------------------------------+---------------------------------------+-------------------------------------------+
-| API Scraping & DoS Exhaustion     | Heavy public scraping threatening     | SlowAPI token-bucket rate limits & JWT    |
-|                                   | forecast cycle execution              | authentication on administrative triggers |
-+-----------------------------------+---------------------------------------+-------------------------------------------+
-| Peak Arrival Scalar Fallacy       | Publishing single-minute peak time    | Statistically bounded ±2.0h operational   |
-|                                   | creating false precision in EOCs      | window @ 95% confidence interval          |
-+-----------------------------------+---------------------------------------+-------------------------------------------+
-```
+| Vulnerability / Edge Case | Previous Failure Mode | Engineered Mitigation (v3.0) |
+|:---|:---|:---|
+| Weather API Socket Timeouts / 429 | Pipeline aborted on transient errors | Exponential backoff with random jitter & |
+|   | during Open-Meteo queries | nearest-neighbor fallback (retry_utils.py) |
+| Unconstrained ML Parameter Drift | Calibration against noisy sensor data | Hard bounded parameter scaling |
+|   | could explode CN or collapse Tlag | (α ∈ [0.50, 1.80], β ∈ [0.50, 1.80], |
+|   |   | ΔCN ∈ [−8, +8], X ∈ [0.15, 0.40]) |
+| PostgreSQL Time-Series Bloat | Accumulation of millions of 15-min | Scheduled weekly pruning to compressed |
+|   | hydrograph rows degrading DB queries | Apache Parquet cold storage (archive_runs) |
+| API Scraping & DoS Exhaustion | Heavy public scraping threatening | SlowAPI token-bucket rate limits & JWT |
+|   | forecast cycle execution | authentication on administrative triggers |
+| Peak Arrival Scalar Fallacy | Publishing single-minute peak time | Statistically bounded ±2.0h operational |
+|   | creating false precision in EOCs | window @ 95% confidence interval |
+
 
 ### 1. The Fallacy of Scalar Peak Flood Prediction
 

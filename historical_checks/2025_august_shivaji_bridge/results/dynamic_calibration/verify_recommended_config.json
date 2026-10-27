@@ -1,0 +1,154 @@
+[
+  {
+    "cand": {
+      "alpha_k": 0.45,
+      "alpha_lag": 0.6,
+      "muskingum_x": 0.3
+    },
+    "events": {
+      "2019_august": {
+        "event": "2019_august",
+        "sim_peak_wse_m": 545.05,
+        "peak_err_m": -1.92,
+        "peak_stage_acc_pct": 89.1,
+        "sim_peak_q_m3s": 3725.0,
+        "sim_peak_ts": "2019-08-06 11:00:00"
+      },
+      "2021_july": {
+        "event": "2021_july",
+        "sim_peak_wse_m": 541.94,
+        "peak_err_m": -5.89,
+        "peak_stage_acc_pct": 68.2,
+        "sim_peak_q_m3s": 1705.0,
+        "sim_peak_ts": "2021-07-22 18:00:00"
+      },
+      "2025_august": {
+        "event": "2025_august",
+        "sim_peak_wse_m": 542.34,
+        "peak_err_m": -0.23,
+        "peak_stage_acc_pct": 98.3,
+        "sim_peak_q_m3s": 2432.0,
+        "sim_peak_ts": "2025-08-20 21:00:00",
+        "nse": 0.9083,
+        "kge": 0.8448,
+        "peak_timing_h": -17.0,
+        "obs_peak_ts": "2025-08-21 14:00:00",
+        "sim_peak_ts_obs": "2025-08-20 21:00:00"
+      }
+    }
+  },
+  {
+    "cand": {
+      "alpha_k": 0.6,
+      "alpha_lag": 0.6,
+      "muskingum_x": 0.3
+    },
+    "events": {
+      "2019_august": {
+        "event": "2019_august",
+        "sim_peak_wse_m": 544.93,
+        "peak_err_m": -2.04,
+        "peak_stage_acc_pct": 88.4,
+        "sim_peak_q_m3s": 3670.0,
+        "sim_peak_ts": "2019-08-06 13:00:00"
+      },
+      "2021_july": {
+        "event": "2021_july",
+        "sim_peak_wse_m": 541.94,
+        "peak_err_m": -5.89,
+        "peak_stage_acc_pct": 68.2,
+        "sim_peak_q_m3s": 1703.0,
+        "sim_peak_ts": "2021-07-22 21:00:00"
+      },
+      "2025_august": {
+        "event": "2025_august",
+        "sim_peak_wse_m": 542.29,
+        "peak_err_m": -0.28,
+        "peak_stage_acc_pct": 98.0,
+        "sim_peak_q_m3s": 2391.0,
+        "sim_peak_ts": "2025-08-20 23:00:00",
+        "nse": 0.9178,
+        "kge": 0.8478,
+        "peak_timing_h": -15.0,
+        "obs_peak_ts": "2025-08-21 14:00:00",
+        "sim_peak_ts_obs": "2025-08-20 23:00:00"
+      }
+    }
+  },
+  {
+    "cand": {
+      "alpha_k": 0.8,
+      "alpha_lag": 0.6,
+      "muskingum_x": 0.3
+    },
+    "events": {
+      "2019_august": {
+        "event": "2019_august",
+        "sim_peak_wse_m": 544.79,
+        "peak_err_m": -2.18,
+        "peak_stage_acc_pct": 87.7,
+        "sim_peak_q_m3s": 3599.0,
+        "sim_peak_ts": "2019-08-06 18:00:00"
+      },
+      "2021_july": {
+        "event": "2021_july",
+        "sim_peak_wse_m": 541.93,
+        "peak_err_m": -5.9,
+        "peak_stage_acc_pct": 68.1,
+        "sim_peak_q_m3s": 1698.0,
+        "sim_peak_ts": "2021-07-22 22:00:00"
+      },
+      "2025_august": {
+        "event": "2025_august",
+        "sim_peak_wse_m": 542.22,
+        "peak_err_m": -0.35,
+        "peak_stage_acc_pct": 97.5,
+        "sim_peak_q_m3s": 2328.0,
+        "sim_peak_ts": "2025-08-21 02:00:00",
+        "nse": 0.9276,
+        "kge": 0.8502,
+        "peak_timing_h": -12.0,
+        "obs_peak_ts": "2025-08-21 14:00:00",
+        "sim_peak_ts_obs": "2025-08-21 02:00:00"
+      }
+    }
+  },
+  {
+    "cand": {
+      "alpha_k": 0.6,
+      "alpha_lag": 0.82,
+      "muskingum_x": 0.3
+    },
+    "events": {
+      "2019_august": {
+        "event": "2019_august",
+        "sim_peak_wse_m": 544.53,
+        "peak_err_m": -2.44,
+        "peak_stage_acc_pct": 86.2,
+        "sim_peak_q_m3s": 3454.0,
+        "sim_peak_ts": "2019-08-07 02:00:00"
+      },
+      "2021_july": {
+        "event": "2021_july",
+        "sim_peak_wse_m": 541.85,
+        "peak_err_m": -5.98,
+        "peak_stage_acc_pct": 67.7,
+        "sim_peak_q_m3s": 1654.0,
+        "sim_peak_ts": "2021-07-23 06:00:00"
+      },
+      "2025_august": {
+        "event": "2025_august",
+        "sim_peak_wse_m": 542.09,
+        "peak_err_m": -0.48,
+        "peak_stage_acc_pct": 96.5,
+        "sim_peak_q_m3s": 2231.0,
+        "sim_peak_ts": "2025-08-21 10:00:00",
+        "nse": 0.9321,
+        "kge": 0.8459,
+        "peak_timing_h": -4.0,
+        "obs_peak_ts": "2025-08-21 14:00:00",
+        "sim_peak_ts_obs": "2025-08-21 10:00:00"
+      }
+    }
+  }
+]

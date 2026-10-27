@@ -1,72 +1,48 @@
 # Model Calibration, Validation Metrics & Accuracy Engine
 
-```text
-========================================================================================
-             HYDROCAST ACCURACY BENCHMARKING & VALIDATION ENGINE
-========================================================================================
 
-    [ Simulated Forecast Time Series ]             [ Physical Ground Truth Observations ]
-     - Predicted Stage (m MSL)                     - ThingSpeak IoT Radar Telemetry
-     - Predicted Discharge Q (m³/s)                - Maharashtra WRD Gauge Records (cusecs)
-     - 90h Basin Rainfall (mm)                     - 18 Rain Gauge Network Station Hits
-                   │                                                  │
-                   └─────────────────────────┬────────────────────────┘
-                                             ▼
-                             Validation Metrics Engine
-                     (src/hydrology/validation_metrics.py)
-                                             │
-      ┌──────────────────────┬───────────────┴───────────────┬──────────────────────┐
-      ▼                      ▼                               ▼                      ▼
-[ Spearman Rank ρ ]    [ Nash-Sutcliffe ]              [ Error Metrics ]      [ 18-Station Rain ]
-Non-linear monotonic   Flow wave alignment             RMSE (m) & MAE (m)     Predicted vs Obs
-rank correlation       NSE Target > 0.85               PBIAS Target < 5%      Volume Accuracy %
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 15</span>
+      <strong>ML Calibration Loop</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/15-ml-calibration.html?embed=1" title="ML Calibration Loop Console"></iframe>
+</div>
 
 ---
 
 ## 1. Overview & Validation Philosophy
 
-```text
-====================================================================================================
-                HYDROCAST MULTI-TIER REAL-TIME VALIDATION ARCHITECTURE
-====================================================================================================
+| Real-Time IoT Telemetry Stream (ThingSpeak #3424513) |  |  |
+|:---|:---|:---|
+| - Ultrasonic Distance Sensor at Shivaji Maharaj Bridge |   |   |
+| - Sensor Mounting Datum: 549.35 m MSL |   |   |
+| Physical Quality Control & Noise Filtering Pipeline |   |   |
+| - Physical Stage Guard: 528.0m <= Stage <= 548.0m MSL |   |   |
+| - 1-Hour Rolling Median Filter |   |   |
+| - Standard Deviation Variance Check |   |   |
+| Dynamic Hydrograph Accuracy Evaluator |   | Flat Baseflow Stability Guard |
+| - Spearman Rank Correlation (rho_stage, rho_q) |   | - Lifecycle: BASEFLOW_STABLE |
+| - Pearson Linear Correlation (r, R^2) |   | - Stage RMSE <= +-0.025 m |
+| - Nash-Sutcliffe Model Efficiency (NSE) |   | - Stage MAE  <= +-0.018 m |
+| - Root Mean Square Error (RMSE_stage, RMSE_q) |   | - Suppress undefined NSE/Spearman |
+| - Percent Volume Bias (PBIAS %) | +-----------------------------------+ |   |
+| 90-Hour Lifecycle Progression & Verification Tracker |   |   |
+| - Hourly Verification Progress: verified_h / 90h (%) |   |   |
+| - Lead-Time Error Decay Analysis: [0-12, 12-24, ...] |   |   |
+| - 18-Station Rainfall Volume Verification |   |   |
 
-               +-------------------------------------------------------+
-               | Real-Time IoT Telemetry Stream (ThingSpeak #3424513)  |
-               | - Ultrasonic Distance Sensor at Shivaji Maharaj Bridge|
-               | - Sensor Mounting Datum: 549.35 m MSL                 |
-               +-------------------------------------------------------+
-                                           |
-                                           v
-               +-------------------------------------------------------+
-               | Physical Quality Control & Noise Filtering Pipeline   |
-               | - Physical Stage Guard: 528.0m <= Stage <= 548.0m MSL |
-               | - 1-Hour Rolling Median Filter                        |
-               | - Standard Deviation Variance Check                   |
-               +-------------------------------------------------------+
-                                           |
-                    +----------------------+----------------------+
-                    |                                             |
-                    v (Active Storm: std >= 0.05m)                v (Low-Flow: std < 0.05m)
-    +-----------------------------------------------+   +-----------------------------------+
-    | Dynamic Hydrograph Accuracy Evaluator         |   | Flat Baseflow Stability Guard     |
-    | - Spearman Rank Correlation (rho_stage, rho_q)|   | - Lifecycle: BASEFLOW_STABLE      |
-    | - Pearson Linear Correlation (r, R^2)         |   | - Stage RMSE <= +-0.025 m         |
-    | - Nash-Sutcliffe Model Efficiency (NSE)       |   | - Stage MAE  <= +-0.018 m         |
-    | - Root Mean Square Error (RMSE_stage, RMSE_q) |   | - Suppress undefined NSE/Spearman |
-    | - Percent Volume Bias (PBIAS %)               |   +-----------------------------------+
-    +-----------------------------------------------+                     |
-                    |                                                     |
-                    +----------------------+------------------------------+
-                                           |
-                                           v
-               +-------------------------------------------------------+
-               | 90-Hour Lifecycle Progression & Verification Tracker  |
-               | - Hourly Verification Progress: verified_h / 90h (%)  |
-               | - Lead-Time Error Decay Analysis: [0-12, 12-24, ...]  |
-               | - 18-Station Rainfall Volume Verification             |
-               +-------------------------------------------------------+
-```
 
 Hydrological flood early warning systems must not be evaluated on single-point errors alone. A model might predict water levels with low mean error while failing to capture the timing, peak magnitude, or rank order of the flood wave.
 
@@ -111,18 +87,14 @@ Where:
 - $Q_{obs}(t)$ = Actual observed river discharge at hour $t$ ($m^3/s$)
 - $\overline{Q_{obs}}$ = Mean observed discharge over the simulation horizon
 
-```text
- NSE Performance Classification Table:
- +------------------+-----------------------+------------------------------------------+
- | NSE Value Range  | Performance Grade     | Operational Significance                 |
- +------------------+-----------------------+------------------------------------------+
- | NSE > 0.85       | EXCELLENT (Gold)      | Suitable for automated civil evacuation  |
- | 0.70 < NSE ≤ 0.85| VERY GOOD             | Reliable for municipal barrier deploy    |
- | 0.55 < NSE ≤ 0.70| SATISFACTORY          | General monitoring & alert readiness     |
- | 0.40 < NSE ≤ 0.55| MODERATE              | Requires manual hydrologist review       |
- | NSE ≤ 0.40       | UNSATISFACTORY        | Re-calibration required                  |
- +------------------+-----------------------+------------------------------------------+
-```
+| NSE Value Range | Performance Grade | Operational Significance |
+|:---|:---|:---|
+| NSE > 0.85 | EXCELLENT (Gold) | Suitable for automated civil evacuation |
+| 0.70 < NSE ≤ 0.85 | VERY GOOD | Reliable for municipal barrier deploy |
+| 0.55 < NSE ≤ 0.70 | SATISFACTORY | General monitoring & alert readiness |
+| 0.40 < NSE ≤ 0.55 | MODERATE | Requires manual hydrologist review |
+| NSE ≤ 0.40 | UNSATISFACTORY | Re-calibration required |
+
 
 ---
 
@@ -165,32 +137,29 @@ Across the Panchganga catchment, basin-wide volumetric rainfall accuracy current
 
 ## 4. Government WRD 19 Benchmark Field Records
 
-```text
-+----+--------------+--------------+-----------------+-----------------+------------------------+
-| No | Stage (m)    | Gauge Height | WRD Flow (cfs)  | Flow Q (m³/s)   | Hydraulic Regime       |
-+----+--------------+--------------+-----------------+-----------------+------------------------+
-| 01 | 530.18 m MSL | 00' 00"      | 0 cusecs        | 0.00 m³/s       | Gauge Zero Datum       |
-| 02 | 533.54 m MSL | 11' 00"      | 2,825 cusecs    | 80.00 m³/s      | In-Bank Flow           |
-| 03 | 533.56 m MSL | 11' 01"      | 2,869 cusecs    | 81.24 m³/s      | In-Bank Flow           |
-| 04 | 533.59 m MSL | 11' 02"      | 2,913 cusecs    | 82.49 m³/s      | In-Bank Flow           |
-| 05 | 533.64 m MSL | 11' 04"      | 3,002 cusecs    | 85.01 m³/s      | In-Bank Flow           |
-| 06 | 533.66 m MSL | 11' 05"      | 3,046 cusecs    | 86.25 m³/s      | In-Bank Flow           |
-| 07 | 533.69 m MSL | 11' 06"      | 3,090 cusecs    | 87.50 m³/s      | In-Bank Flow           |
-| 08 | 533.71 m MSL | 11' 07"      | 3,134 cusecs    | 88.74 m³/s      | In-Bank Flow           |
-| 09 | 533.99 m MSL | 12' 06"      | 3,902 cusecs    | 110.49 m³/s     | In-Bank Flow           |
-| 10 | 535.21 m MSL | 16' 06"      | 7,684 cusecs    | 217.59 m³/s     | Approaching Bankfull   |
-| 11 | 535.59 m MSL | 17' 09"      | 8,958 cusecs    | 253.66 m³/s     | Bankfull Level         |
-| 12 | 535.77 m MSL | 18' 04"      | 9,690 cusecs    | 274.39 m³/s     | K.T. Weir Overflow     |
-| 13 | 536.41 m MSL | 20' 05"      | 13,087 cusecs   | 370.58 m³/s     | Over-Weir Flow         |
-| 14 | 538.16 m MSL | 26' 02"      | 21,650 cusecs   | 613.06 m³/s     | Submerged Weir Flow    |
-| 15 | 539.02 m MSL | 29' 00"      | 28,270 cusecs   | 800.52 m³/s     | Valley Spreading       |
-| 16 | 541.50 m MSL | 37' 01"      | 52,266 cusecs   | 1,480.00 m³/s   | Rajaram Alert Stage    |
-| 17 | 542.10 m MSL | 39' 01"      | 63,567 cusecs   | 1,800.00 m³/s   | Shivaji Alert Stage    |
-| 18 | 542.70 m MSL | 41' 01"      | 77,692 cusecs   | 2,200.00 m³/s   | Warning Stage          |
-| 19 | 543.30 m MSL | 43' 00"      | 94,467 cusecs   | 2,675.00 m³/s   | Danger Stage           |
-| 20 | 545.33 m MSL | 49' 08"      | 135,961 cusecs  | 3,850.00 m³/s   | Highest Flood Level HFL|
-+----+--------------+--------------+-----------------+-----------------+------------------------+
-```
+| No | Stage (m) | Gauge Height | WRD Flow (cfs) | Flow Q (m³/s) | Hydraulic Regime |
+|:---|:---|:---|:---|:---|:---|
+| 01 | 530.18 m MSL | 00' 00" | 0 cusecs | 0.00 m³/s | Gauge Zero Datum |
+| 02 | 533.54 m MSL | 11' 00" | 2,825 cusecs | 80.00 m³/s | In-Bank Flow |
+| 03 | 533.56 m MSL | 11' 01" | 2,869 cusecs | 81.24 m³/s | In-Bank Flow |
+| 04 | 533.59 m MSL | 11' 02" | 2,913 cusecs | 82.49 m³/s | In-Bank Flow |
+| 05 | 533.64 m MSL | 11' 04" | 3,002 cusecs | 85.01 m³/s | In-Bank Flow |
+| 06 | 533.66 m MSL | 11' 05" | 3,046 cusecs | 86.25 m³/s | In-Bank Flow |
+| 07 | 533.69 m MSL | 11' 06" | 3,090 cusecs | 87.50 m³/s | In-Bank Flow |
+| 08 | 533.71 m MSL | 11' 07" | 3,134 cusecs | 88.74 m³/s | In-Bank Flow |
+| 09 | 533.99 m MSL | 12' 06" | 3,902 cusecs | 110.49 m³/s | In-Bank Flow |
+| 10 | 535.21 m MSL | 16' 06" | 7,684 cusecs | 217.59 m³/s | Approaching Bankfull |
+| 11 | 535.59 m MSL | 17' 09" | 8,958 cusecs | 253.66 m³/s | Bankfull Level |
+| 12 | 535.77 m MSL | 18' 04" | 9,690 cusecs | 274.39 m³/s | K.T. Weir Overflow |
+| 13 | 536.41 m MSL | 20' 05" | 13,087 cusecs | 370.58 m³/s | Over-Weir Flow |
+| 14 | 538.16 m MSL | 26' 02" | 21,650 cusecs | 613.06 m³/s | Submerged Weir Flow |
+| 15 | 539.02 m MSL | 29' 00" | 28,270 cusecs | 800.52 m³/s | Valley Spreading |
+| 16 | 541.50 m MSL | 37' 01" | 52,266 cusecs | 1,480.00 m³/s | Rajaram Alert Stage |
+| 17 | 542.10 m MSL | 39' 01" | 63,567 cusecs | 1,800.00 m³/s | Shivaji Alert Stage |
+| 18 | 542.70 m MSL | 41' 01" | 77,692 cusecs | 2,200.00 m³/s | Warning Stage |
+| 19 | 543.30 m MSL | 43' 00" | 94,467 cusecs | 2,675.00 m³/s | Danger Stage |
+| 20 | 545.33 m MSL | 49' 08" | 135,961 cusecs | 3,850.00 m³/s | Highest Flood Level HFL |
+
 
 ---
 
@@ -198,29 +167,6 @@ Across the Panchganga catchment, basin-wide volumetric rainfall accuracy current
 
 In addition to baseline simulation validation, HydroCast features a continuous, real-time IoT verification engine implemented in [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py):
 
-```text
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│             REAL-TIME THINGSPEAK TELEMETRY VALIDATION ENGINE ARCHITECTURE              │
-│                                                                                        │
-│   [ ThingSpeak Channel 3424513 ] ──> 800 Real-Time Transducer Feeds (5-min intervals)  │
-│   Sensor Mounting Deck Datum: 549.35 m MSL (Shivaji Bridge, Kolhapur)                  │
-│                                              │                                         │
-│                                              ▼                                         │
-│   [ Hourly Mean Resampling ] ──> Noise & Wave Ripple Filtering (Mean, Min, Max, Count) │
-│   Dual Units Preserved: Raw Sensor Air Distance (ft) & River Stage Elevation (m MSL)   │
-│                                              │                                         │
-│                                              ▼                                         │
-│   [ Timestamp Matching ] ──> Exact UTC Alignment vs 90-Hour Forecast (T+0h to T+89h)   │
-│                                              │                                         │
-│                                              ▼                                         │
-│   [ Pure Empirical Evaluation ] ──> RMSE · MAE · NSE · PBIAS · Spearman ρ · Pearson R² │
-│   (Strict Textbook Formulations · Zero Synthetic Noise · Zero Artificial Damping)     │
-│                                              │                                         │
-│                                              ▼                                         │
-│   [ Continuous 90h Verification State ] ──> IN_PROGRESS (e.g. 17/90h) ──> VERIFIED     │
-│   Automated 1-Hour Schedule: .github/workflows/telemetry_validation.yml (0 * * * *)   │
-└────────────────────────────────────────────────────────────────────────────────────────┘
-```
 
 ### 5.1 Dual-Units Conversion Mechanics
 
@@ -243,6 +189,14 @@ Historical prototypes included synthetic noise equations to simulate observed da
 ---
 
 ## 6. Continuous 90-Hour Lifecycle Tracking & 1-Hour Automation
+
+Every forecast cycle is identified by its issue time (`YYYYMMDD_HHz`) and tracked
+through a fixed lifecycle: `PENDING` when the scheduler enqueues it, `RUNNING`
+once precipitation has been fetched, `COMPLETED` when stage and discharge are
+persisted, and `FAILED` if any stage raises. Forecasts are issued at 00, 06, 12
+and 18 UTC; telemetry is ingested hourly, so a completed cycle is rescored
+against observation every hour until the 90-hour horizon closes. The scoreboard
+below is the aggregate of those re-scores, not a single end-of-run comparison.
 
 ### 6.1 Lifecycle Verification States
 
@@ -276,34 +230,6 @@ Upon execution:
 
 Beyond static validation, HydroCast implements an autonomous, physics-informed machine learning parameter recalibration engine in [`src/hydrology/ml_calibration.py`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py):
 
-```text
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│             REAL-TIME CLOSED-LOOP ML RECALIBRATION ENGINE ARCHITECTURE                 │
-│                                                                                        │
-│   [ ThingSpeak Live Telemetry ] ──> Hourly Mean Cache (data/telemetry/thingspeak.json) │
-│                                              │                                         │
-│                                              ▼                                         │
-│   [ Discrepancy Detector ] ──> Compare previous 90h forecast against observed stage    │
-│   - Wave Timing Offset Δt = t_peak,obs - t_peak,fcst (hours)                           │
-│   - Rising Limb Stage Discrepancy Δh (meters)                                          │
-│                                              │                                         │
-│                                              ▼                                         │
-│   [ Trigger Evaluation ] ──> |Δt| ≥ 1.0 hr  OR  Δh > 0.25 m                            │
-│                                              │                                         │
-│                                              ▼                                         │
-│   [ Levenberg-Marquardt Optimization ] ──> Minimize Hydrologic Loss L(θ)                          │
-│   - α_K   (Muskingum reach travel time scaling across R1–R5): [0.50, 1.80]             │
-│   - α_lag (Subbasin lag time scaling across S1–S9): [0.50, 1.80]                       │
-│   - ΔCN   (SCS Curve Number adjustment): [-8.0, +8.0]                                  │
-│   - X     (Muskingum wedge storage factor): [0.15, 0.40]                               │
-│                                              │                                         │
-│                                              ▼                                         │
-│   [ Simultaneous Dual Synchronization ]                                                │
-│   1. Updates Python HEC-HMS emulator parameters in memory (src/hms/runner.py)          │
-│   2. Atomically updates Basin_1.basin on disk (creates timestamped .bak backup)        │
-│   3. Persists state to data/telemetry/ml_calibration_state.json                        │
-└────────────────────────────────────────────────────────────────────────────────────────┘
-```
 
 ### 7.1 Mathematical Optimization Formulation
 
@@ -322,7 +248,7 @@ Where:
 
 When recalibrated, the engine creates an automated timestamped backup:
 
-```bash
+```
 data/hms/HMS_Automation_RJKT/Basin_1.basin.bak_20260910_120000
 ```
 
@@ -379,14 +305,11 @@ HydroCast enforces an automated **Variance Guard**:
 
 ## 10. Lead-Time Accuracy Degradation Curve (T+0 to T+90h)
 
-```text
-+--------------------+----------------+-----------------+----------------+----------------+
-| Lead-Time Window   | Mean Stage MAE | Mean Stage RMSE | Peak Time CI   | Reliability    |
-+--------------------+----------------+-----------------+----------------+----------------+
-| T+0h to T+12h      |  ±0.042 m      |   ±0.058 m      |   ±0.5 hours   | Extreme (98%)  |
-| T+12h to T+24h     |  ±0.086 m      |   ±0.114 m      |   ±1.0 hours   | High (95%)     |
-| T+24h to T+48h     |  ±0.142 m      |   ±0.188 m      |   ±1.5 hours   | Operational(91%)|
-| T+48h to T+72h     |  ±0.215 m      |   ±0.280 m      |   ±2.0 hours   | Advisory (86%) |
-| T+72h to T+90h     |  ±0.310 m      |   ±0.395 m      |   ±2.5 hours   | Outlook (81%)  |
-+--------------------+----------------+-----------------+----------------+----------------+
-```
+| Lead-Time Window | Mean Stage MAE | Mean Stage RMSE | Peak Time CI | Reliability |
+|:---|:---|:---|:---|:---|
+| T+0h to T+12h | ±0.042 m | ±0.058 m | ±0.5 hours | Extreme (98%) |
+| T+12h to T+24h | ±0.086 m | ±0.114 m | ±1.0 hours | High (95%) |
+| T+24h to T+48h | ±0.142 m | ±0.188 m | ±1.5 hours | Operational(91%) |
+| T+48h to T+72h | ±0.215 m | ±0.280 m | ±2.0 hours | Advisory (86%) |
+| T+72h to T+90h | ±0.310 m | ±0.395 m | ±2.5 hours | Outlook (81%) |
+

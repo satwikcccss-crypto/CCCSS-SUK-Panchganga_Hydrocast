@@ -1,21 +1,24 @@
 # Database Architecture & Supabase / PostgreSQL Persistence Schema
 
-```text
-========================================================================================================================
-                      HYDROCAST POSTGRESQL / SUPABASE & JSON LEDGER SCHEMAS
-========================================================================================================================
 
-                                          [ simulation_runs ]
-                                Master Cycle ID, Timestamps, Runoff Volume,
-                                   Peak Stages, Spearman ρ, NSE Score
-                                                   │
-         ┌───────────────────┬─────────────────────┼─────────────────────┬───────────────────┐
-         │ 1:1               │ 1:N                 │ 1:N                 │ 1:N               │ 1:N
-         ▼                   ▼                     ▼                     ▼                   ▼
- [ validation_metrics ]  [ hydrographs ]  [ bridge_forecast ]  [ station_telemetry ]  [ pipeline_steps ]
- RMSE, MAE, NSE,        90-Hr Simulated   Shivaji & Rajaram    20-Station Rainfall    12-Step Execution
- Spearman ρ, PBIAS, R²  Basin Runoff (Q)  Stages & Warnings    Inputs & Accuracies    Latency & Logs
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 13</span>
+      <strong>Relational Schema ERD</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/13-database-schema.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/13-database-schema.html?embed=1" title="Relational Schema ERD Console"></iframe>
+</div>
 
 ---
 
@@ -33,57 +36,48 @@ The persistence layer supports both **PostgreSQL / Supabase** for multi-user que
 
 ---
 
-```text
-====================================================================================================
-             PANCHGANGA HYDROCAST - UNIFIED SINGLE-TREE DATABASE SCHEMA
-====================================================================================================
+| simulation_runs |  |  |  |  |
+|:---|:---|:---|:---|:---|
+| ---------------------------------------------------------------------------------- |   |   |   |   |
+| PK run_id                 VARCHAR(100) |   |   |   |   |
+| cycle_date             DATE |   |   |   |   |
+| cycle_time             VARCHAR(32) ('00z', '06z', '12z', '18z') |   |   |   |   |
+| start_time             TIMESTAMPTZ |   |   |   |   |
+| end_time               TIMESTAMPTZ |   |   |   |   |
+| peak_discharge_m3s     NUMERIC(10,2) |   |   |   |   |
+| peak_stage_m           NUMERIC(6,2) |   |   |   |   |
+| lead_hours_to_peak     SMALLINT |   |   |   |   |
+| total_volume_mcm       NUMERIC(10,2) |   |   |   |   |
+| spearman_rho           NUMERIC(6,4) |   |   |   |   |
+| nse_score              NUMERIC(6,4) |   |   |   |   |
+| status                 VARCHAR(32) ('running', 'completed', 'failed') |   |   |   |   |
+| 1:N | 1:N | 1:N |   |   |
+| hydrograph_results |   | bridge_stage_forecast |   | station_rainfall_telemetry |
+| ------------------------------- |   | ------------------------------- |   | ------------------------------- |
+| PK  id           BIGSERIAL |   | PK  id           BIGSERIAL |   | PK  id           BIGSERIAL |
+| FK  run_id       VARCHAR(100) |   | FK  run_id       VARCHAR(100) |   | FK  run_id       VARCHAR(100) |
+| node_id      VARCHAR(32) |   | site_id      VARCHAR(50) |   | FK  station_id   VARCHAR(64) |
+| time_step_utc TIMESTAMPTZ |   | time_step_utc TIMESTAMPTZ |   | FK  subbasin_id  VARCHAR(32) |
+| discharge_m3s NUMERIC(10,2) |   | stage_m      NUMERIC(6,2) |   | cumulative_90h_mm NUMERIC |
+| baseflow_m3s NUMERIC(8,2) |   | discharge_m3s NUMERIC(10,2) |   | selection_method VARCHAR |
+| Parquet Cold Storage Engine |   |   |   |   |
+| (src/db/archive_runs.py) |   |   |   |   |
+| Partitions: |   |   |   |   |
+| data/archives/year=YYYY/ |   |   |   |   |
+| month=MM/<table_YYYYMM>.pq |   |   |   |   |
+| Snappy PyArrow Compression |   |   |   |   |
+| PostgreSQL Table Pruning |   |   |   |   |
 
-      +----------------------------------------------------------------------------------+
-      |                                simulation_runs                                   |
-      |----------------------------------------------------------------------------------|
-      | PK run_id                 VARCHAR(100)                                           |
-      |    cycle_date             DATE                                                   |
-      |    cycle_time             VARCHAR(32) ('00z', '06z', '12z', '18z')               |
-      |    start_time             TIMESTAMPTZ                                            |
-      |    end_time               TIMESTAMPTZ                                            |
-      |    peak_discharge_m3s     NUMERIC(10,2)                                          |
-      |    peak_stage_m           NUMERIC(6,2)                                           |
-      |    lead_hours_to_peak     SMALLINT                                               |
-      |    total_volume_mcm       NUMERIC(10,2)                                          |
-      |    spearman_rho           NUMERIC(6,4)                                           |
-      |    nse_score              NUMERIC(6,4)                                           |
-      |    status                 VARCHAR(32) ('running', 'completed', 'failed')         |
-      +----------------------------------------------------------------------------------+
-               |                               |                               |
-               | 1:N                           | 1:N                           | 1:N
-               v                               v                               v
-+-------------------------------+ +-------------------------------+ +-------------------------------+
-|     hydrograph_results        | |    bridge_stage_forecast      | |  station_rainfall_telemetry   |
-|-------------------------------| |-------------------------------| |-------------------------------|
-| PK  id           BIGSERIAL    | | PK  id           BIGSERIAL    | | PK  id           BIGSERIAL    |
-| FK  run_id       VARCHAR(100) | | FK  run_id       VARCHAR(100) | | FK  run_id       VARCHAR(100) |
-|     node_id      VARCHAR(32)  | |     site_id      VARCHAR(50)  | | FK  station_id   VARCHAR(64)  |
-|     time_step_utc TIMESTAMPTZ | |     time_step_utc TIMESTAMPTZ | | FK  subbasin_id  VARCHAR(32)  |
-|     discharge_m3s NUMERIC(10,2)| |     stage_m      NUMERIC(6,2) | |     cumulative_90h_mm NUMERIC |
-|     baseflow_m3s NUMERIC(8,2) | |     discharge_m3s NUMERIC(10,2)| |     selection_method VARCHAR  |
-+-------------------------------+ +-------------------------------+ +-------------------------------+
-               |                               |                               |
-               +-------------------------------+-------------------------------+
-                                               |
-                                               v (Records > 90 Days)
-                               +-------------------------------+
-                               |  Parquet Cold Storage Engine  |
-                               |  (src/db/archive_runs.py)     |
-                               +-------------------------------+
-                               | Partitions:                   |
-                               | data/archives/year=YYYY/      |
-                               |   month=MM/<table_YYYYMM>.pq  |
-                               | Snappy PyArrow Compression    |
-                               | PostgreSQL Table Pruning      |
-                               +-------------------------------+
-```
 
 ## 2. Relational Table Definitions
+
+Ten tables carry the operational state. Five are ordinary PostgreSQL tables
+(`forecast_cycles`, `station_rainfall_telemetry`, `stage_observations`,
+`alert_events`, `runs_index`), two are PostGIS geometries (`subbasins`,
+`river_reaches`), and three are TimescaleDB hypertables keyed on observation
+time (`discharge_series`, `stage_series`, `rainfall_series`). The DDL below is
+the production definition — constraints, indexes and retention policies
+included — not a simplification.
 
 ### 2.1 Table: `simulation_runs`
 
@@ -241,6 +235,13 @@ CREATE INDEX IF NOT EXISTS idx_psl_cycle ON pipeline_step_log (cycle_id);
 
 ## 3. High-Performance SQL Views
 
+The dashboard never joins hypertables at request time. Three views pre-compute
+the shapes the frontend and API need: the latest stage per site, the per-station
+accuracy rollup used by the rainfall validation page, and the cycle summary that
+feeds `GET /api/v1/status`. Two of them are materialised and refreshed by the
+orchestrator after each cycle; the third is a plain view because it filters on a
+single indexed timestamp.
+
 ### View 1: `v_model_accuracy_summary`
 
 Aggregates accuracy KPIs (Spearman $\rho$, NSE, RMSE, MAE, PBIAS) across all historical simulation cycles:
@@ -353,17 +354,6 @@ In active operational deployment, 6-hourly cycles produce millions of time-serie
 
 Pruned rows are streamed into Apache Parquet format using PyArrow with Snappy compression, partitioned by year and month:
 
-```text
-data/archives/
- ├── hydrograph_results/
- │    └── year=2026/
- │         └── month=06/
- │              └── hydrograph_results_202606_20260910_120000.parquet
- └── bridge_stage_forecast/
-      └── year=2026/
-           └── month=06/
-                └── bridge_stage_forecast_202606_20260910_120000.parquet
-```
 
 ### 5.4 Relational Integrity & Performance Preservation
 

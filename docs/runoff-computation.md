@@ -1,34 +1,43 @@
 # Mathematical Runoff Computation & Hydrograph Routing
 
-```text
-========================================================================================
-       MATHEMATICAL CONTINUUM RUNOFF & UNIT HYDROGRAPH CONVOLUTION ENGINE
-========================================================================================
 
-    Hourly Precipitation P[h]                    Excess Precipitation Pe[h]
-       [ Total Rainfall ]                           [ Runoff Hyetograph ]
-               │                                              │
-               ▼                                              ▼
-    ┌─────────────────────┐                       ┌─────────────────────┐
-    │  SCS-CN Loss Model  │ ── Cumulative Infil ──>│ Convolution Kernel  │
-    │  Ia = 0.2 * Sret    │    & Retention Loss   │  U(t) Unit Response │
-    └─────────────────────┘                       └─────────────────────┘
-                                                              │
-                                                              ▼
-    Surface Runoff Hydrograph Q_surface[t]       Channel Wave Outflow Q_out[t]
-               │                                              │
-               ▼                                              ▼
-    ┌─────────────────────┐                       ┌─────────────────────┐
-    │ Discrete Linear     │ ── Muskingum ────────>│ Total Discharge     │
-    │ Convolution Sum     │    Reach Routing      │ Q_tot = Q_base + Q_s│
-    └─────────────────────┘                       └─────────────────────┘
-```
+---
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 10</span>
+      <strong>Catchment Hydrology Solver</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console"></iframe>
+</div>
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 01</span>
+      <strong>End-to-End System Architecture</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
+</div>
 
 ---
 
 ## 1. Physical Governing Principles
 
-```text
+```
 ====================================================================================================
                   HOURLY DISCRETE RUNOFF CONVOLUTION & ROUTING PIPELINE
 ====================================================================================================
@@ -95,28 +104,6 @@ This involves two consecutive transformations:
 
 ### 1.1 The three-stage cascade at a glance
 
-```text
-  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-  │  ①  LOSS     │   │  ② TRANSFORM │   │  ③  ROUTE    │   │  ④  STAGE    │
-  │              │   │              │   │              │   │              │
-  │  P(t)        │──►│  ΔP_e(t)     │──►│  Q_surf(t)   │──►│  h(t)        │
-  │  [mm/hr]     │   │  [mm]        │   │  [m³/s]      │   │  [m MSL]     │
-  │              │   │              │   │              │   │              │
-  │  SCS-CN      │   │  SCS UH      │   │  Muskingum   │   │  PCHIP       │
-  │  S = 25400/  │   │  u(t)=       │   │  S=K[X·I +   │   │  rating      │
-  │       CN−254 │   │  (t/tp)^3.7· │   │   (1−X)·O]   │   │  WRD anchors │
-  │  Ia = λ·S    │   │  e^{3.7(1−t/ │   │              │   │              │
-  │  λ=.20/.15/  │   │     tp)}     │   │  5 reaches   │   │  + baseflow  │
-  │     .08      │   │              │   │  R1…R5       │   │    recession  │
-  └──────────────┘   └──────────────┘   └──────────────┘   └──────────────┘
-   per subbasin        per subbasin        channel network      at the gauge
-   (9 subbasins)       (9 kernels)         (cascade order)      and 2 bridges
-
-  Conservation holds across all four stages:
-     Σ(P·A)  ──①──►  Σ(P_e·A)  ──②──►  Σ(Q_surf·Δt)  ──③──►  ΣQ  =  ΣI
-     volume in = volume out, verified per reach by the Muskingum
-     coefficient identity C₀ + C₁ + C₂ ≡ 1
-```
 
 ```mermaid
 flowchart LR
@@ -244,26 +231,6 @@ Reach order is read from `Basin_1.basin` at run time — it is not hard-coded in
 the emulator, so the topology below is a property of the model file rather than
 of the code:
 
-```text
-   S6 Gaganbawda ─┐
-                  ├─► R5  K=4.619 ─┐
-   S7 Garivade  ──┘                │
-                                   ├──► R2  K=11.827 ─┐
-   S9 Radhanagari ─► R4  K=1.224 ──┘                   │
-                                                       ├──► R1  K=2.899 ─┐
-   S8 Beed ─────────────────────────────────────────────┘                  │
-                                                                          ├──► SINK
-   S4 Karanjphen ─┐                                                       │      + S1
-                  ├─► R3  K=3.829 ─┐                                      │      Karveer
-   S5 Padasali  ──┘                │                                      │      (direct)
-                                   └──────────────────────────────────────┘
-   S2 Sangarul ──────────────────────────────────────────────────────────┘
-   S3 Kotoli   ──────────────────────────────────────────────────────────┘
-                                                                            │
-+ Q_bf(t) from live sensor
-                                                                             ▼
-                                                                   Q_total(t)  [90 pts]
-```
 
 ```mermaid
 flowchart TD
@@ -307,81 +274,22 @@ actually read off a gauge.
 `build_calibrated_rating_curve()` in `src/hydrology/stage_converter.py`
 selects a regime per site:
 
-```text
-                    discharge Q (m³/s)
-                           │
-                           ▼
-            ┌──────────────────────────────────────┐
-            │  Is the site a gauged WRD station?     │
-            │  RAJARAM_WEIR / SHIVAJI_BRIDGE       │
-            └───────────────┬──────────────────────┘
-                     yes    │      no
-            ┌────────────────┘        └────────────────┐
-            ▼                                      ▼
- ┌────────────────────────────┐        ┌──────────────────────────────┐
- │  PATH A — WRD ANCHOR PCHIP│        │  PATH B — MANNING DCM        │
- │                            │        │                              │
- │  Q(h) = PCHIP(h ; anchors) │        │  Q = Σ (1/n_i)·A_i·R_i^(2/3)  │
- │                            │        │              · √S            │
- │  anchors = official WRD    │        │                              │
- │  stage–discharge sheet     │        │  split at bankfull:          │
- │  + observed monsoon pairs  │        │   main      n = 0.035        │
- │                            │        │   overbank  n = 0.055        │
- │  strictly monotone, no     │        │   (sugarcane / paddy)        │
- │  overshoot, invertible     │        │                              │
- │                            │        │  A, P, R from the SURVEYED   │
- │  ⇒ matches the government  │        │  cross-section, not anchors  │
- │    reference exactly       │        │                              │
- └────────────┬───────────────┘        └──────────────┬───────────────┘
-              └──────────────┬───────────────────────┘
-                             ▼
-        wetted area A(h) from the surveyed X-section  ──►  reported for every
-        stage so a ThingSpeak reading has a physical area with it
-```
 
 ### 5.2 The two gauged sites
 
-```text
-            RAJARAM (WRD gauge, direct sheet)          SHIVAJI (3 858 m downstream)
-   stage ─────────────────────────────────────►   stage = Rajaram − 0.648 m
-  545.33 ─┐                                            544.68 ─┐
-          │  3 850 m³/s  (historical HFL)                        │  3 850 m³/s
-  543.30 ─┤  2 675 m³/s  DANGER                          542.65 ─┤  DANGER
-  542.70 ─┤  1 800 m³/s  WARNING                         542.05 ─┤  1 800 m³/s
-  542.10 ─┤    900 m³/s  ALERT                            541.45 ─┤
-  532.70 ─┤     71.25 m³/s                               532.05 ─┤
-  530.18 ─┘  low flow                                    529.53 ─┘
-            │                                                     │
-            └──────────────►  Q (m³/s)  ◄────────────────────────┘
-                            (identical Q for both)
+Only two sites on the system have a surveyed rating: the Chhatrapati Shivaji
+Maharaj Bridge, where the ultrasonic sensor is mounted, and the Rajaram K.T. weir,
+which is the regulatory reference point for Kolhapur city. Every other reach is
+routed, not rated. The bridge sits 3,858 m upstream of the weir and its bed is
+0.648 m lower, which is the whole of the geometric difference between the two
+published stage series.
 
-   Why the offset is trustworthy, not a fudge factor:
-     WRD recorded the SHIVAJI ALERT stage 542.10 m at exactly 1 800 m³/s —
-     the same discharge as the Rajaram WARNING stage 542.70 m.
-       542.70 − 542.10 = 0.600 m  (official WRD pair)
-       529.318 − 528.670 = 0.648 m (surveyed bed levels, WRD datum)
-   Two independent sources agree to within 5 cm, and the surveyed bed
-   difference is the one applied.
-```
 
 ### 5.3 Threshold classification
 
 A stage is classified against the site's own stored marks — consumers never
 hard-code thresholds:
 
-```text
-   stage_m
-      │
-   545.33 ─ ┬─  HFL_EXCEEDED     (3 850 m³/s — above the historical record)
-           │
-   543.30 ─ ┼─  DANGER           (2 675 m³/s)
-           │
-   542.70 ─ ┼─  WARNING          (1 800 m³/s)
-           │
-   542.10 ─ ┼─  ALERT            (  900 m³/s)
-           │
-        … ─ ┴─  NORMAL
-```
 
 ---
 
@@ -389,7 +297,7 @@ hard-code thresholds:
 
 In [`runner.py`](file:///e:/hydrocast_complete/src/hms/runner.py), the entire runoff continuum executes in $< 15\text{ milliseconds}$ via vectorized NumPy operations:
 
-```python
+```
 # 1. Potential soil retention
 s_ret = (25400.0 / cn) - 254.0
 ia = 0.2 * s_ret

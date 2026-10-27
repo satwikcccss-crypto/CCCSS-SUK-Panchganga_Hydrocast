@@ -11,48 +11,6 @@ flattering itself.
 
 ## Discrepancy detection → recalibration
 
-```text
-  previous cycle forecast           ThingSpeak hourly cache
-   (bridgeShivaji.forecast)          (observed_stage_m per hour)
-            │                                    │
-            └──────────────┬─────────────────────┘
-                           ▼
-        detect_timing_and_stage_discrepancy()
-                           │
-        ┌──────────────────┴───────────────────┐
-        │                                      │
-   NOT warranted                        warranted
-   |Δt| < 1.0 h  AND                  |Δt| ≥ 1.0 h  OR
-   |Δh| ≤ 0.25 m                      |Δh| > 0.25 m
-        │                                      │
-        ▼                                      ▼
-  log "Baseline Stable"          recalibrate_parameters(Δt, Δh, hyetos)
-                                         │
-                                         ▼
-                            ┌────────────────────────────┐
-                            │  Levenberg–Marquardt        │
-                            │  scipy.optimize             │
-                            │    .least_squares(method=lm)│
-                            │                            │
-                            │  parameters p =            │
-                            │   α_K    ∈ [0.50, 1.80]    │
-                            │   α_lag  ∈ [0.50, 1.80]    │
-                            │   ΔCN    ∈ [−8.0, 8.0]     │
-                            │   X      ∈ [0.15, 0.40]    │
-                            │                            │
-                            │  residuals =               │
-                            │   (q_sim − q_target)/scale  │  hydrograph
-                            │   (timing error)/2.0        │  physics anchor
-                            │   (−ΔCN/4.5 − Δh)/0.25       │  stage anchor
-                            │   (X − X_expected)/0.05      │  wave shape
-                            │                            │
-                            │  max_nfev = 25              │
-                            └─────────────┬──────────────┘
-                                          ▼
-                            sync_to_hec_hms_basin(params)
-                            ├─ Basin_1.basin.bak_<ts>
-                            └─ os.replace() atomic swap
-```
 
 `q_target` is the *baseline* emulator hydrograph, translated by the timing offset
 and rescaled by the observed peak-discharge error — so the optimiser is fitting a
@@ -68,40 +26,6 @@ hand-constructed scalar surrogate.
 
 ## Metric reliability gating
 
-```text
-              matched (predicted, observed) pairs
-                           │
-                    n = 0 ────────────────────► status  INSUFFICIENT_DATA
-                           │                     grade   ACCUMULATING_TELEMETRY
-                    n ≥ 1
-                           │
-             ┌─────────────┴──────────────┐
-             │                            │
-     ERROR metrics                   SKILL metrics
-     (always defined)                 NSE · Spearman · Pearson
-     RMSE · MAE · PBIAS                      │
-             │                       needs ALL THREE:
-             │                       • n ≥ MIN_CORRELATION_SAMPLES (6)
-             │                       • σ(observed) ≥ 0.05 m
-             │                       • Σ(O−Ō)² > 1e-4
-             │                                │
-             │              not met ──► all three reported as None
-             │                                │   skill_metrics_reliable = false
-             │                                │   grade = BASEFLOW_STABLE (flat
-             │                                │            observed) or
-             │                                │   ACCUMULATING_TELEMETRY (short)
-             │                                ▼
-             └────────────────────────────►  grade from the Moriasi ladder
-```
-
-```text
-   nse_stage is not None
-     ├── nse ≥ 0.75 → EXCELLENT
-     ├── nse ≥ 0.60 → VERY_GOOD
-     ├── nse ≥ 0.40 → SATISFACTORY
-     ├── nse > 0.0  → MODERATE_BIAS
-     └── nse ≤ 0.0  → CALIBRATION_REQUIRED   (never grades better)
-```
 
 !!! warning "Discharge metrics are derived, not measured"
     The sensor measures **stage only**. "Observed discharge" is that stage pushed
@@ -112,6 +36,26 @@ hand-constructed scalar surrogate.
     independent discharge measurement.
 
 ---
+
+## What the calibrator compares
+
+The engine holds two series over the same window: the previous cycle's forecast
+stage at the bridge (`bridgeShivaji.forecast`) and the ThingSpeak hourly cache of
+observed stage. `detect_timing_and_stage_discrepancy()` reduces them to two
+scalars — a timing error $\Delta t$ in hours and a stage error $\Delta h$ in
+metres — which the gate then tests.
+
+When the gate fires, `recalibrate_parameters(Δt, Δh, hyetograph)` runs, with the
+hydrograph scaled by $(q_{sim} - q_{target})/scale$ and the timing anchor weighted
+at $\Delta t / 2.0$. When it does not fire, the run logs `Baseline Stable` and
+nothing is written.
+
+The skill scores are computed only over matched (predicted, observed) pairs. All
+three — NSE, Spearman and Pearson — are reported as `None` if the pair set is
+empty, and `skill_metrics_reliable = false` is set. An NSE at or below zero is
+classified `CALIBRATION_REQUIRED` and is never allowed to grade better than the
+baseline.
+
 
 ## `src/hydrology/ml_calibration.py`
 

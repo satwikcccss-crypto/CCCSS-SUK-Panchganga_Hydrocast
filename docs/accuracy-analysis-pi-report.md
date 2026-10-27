@@ -1,29 +1,40 @@
 # Scientific Report on the Predictive Accuracy, Hydraulic Calibration & Simulation Validation of the HydroCast Panchganga River System
 
-```text
-========================================================================================================================
-                      RESEARCH & TECHNICAL VALIDATION MEMORANDUM FOR PRINCIPAL INVESTIGATOR
-========================================================================================================================
-  PROJECT:        HydroCast — Operational AI & Physical Basin Intelligence for the Panchganga River Catchment
-  STUDY REGION:   Panchganga Basin (2,140 km²), Kolhapur District, Maharashtra, India
-  NODAL POINTS:   Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat) & Rajaram K.T. Weir (Kasba Bawada)
-  PREPARED FOR:   Principal Investigator (PI) & Hydrologic Research Project Evaluation Committee
-  DATE:           September 2026
-  SECURITY CLASS: Technical Memorandum / Research Pre-Print
-========================================================================================================================
-```
 
 ---
 
-```text
-====================================================================================================
-               PROJECT HYDROCAST: EXECUTIVE ACCURACY & VALIDATION SUMMARY
-====================================================================================================
- Catchment: Panchganga Basin (1,837.21 km2)  | Operational Model: HEC-HMS 4.13 SCS-CN / Muskingum
- Telemetry: ThingSpeak Ultrasonic Gauge      | Meteorological Input: ECMWF 9km HRES IFS
- Forecast Horizon: 90 Hours Forward (Hourly) | Automated Cycle Frequency: 6-Hourly (00/06/12/18z)
-====================================================================================================
-```
+
+## Interactive diagram consoles
+
+The console below is the rendered reference for this page: it carries the same structure, tier boundaries and failure branches that the prose describes.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 17</span>
+      <strong>Forecast Cycle Waterfall</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/17-cycle-waterfall.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console"></iframe>
+</div>
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 08</span>
+      <strong>Rating Curves & Divided Channel Hydraulics</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../diagrams/08-rating-curve-hydraulics.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Curves & Divided Channel Hydraulics Console"></iframe>
+</div>
+
+---
 
 ## 1. Executive Summary for Research Review
 
@@ -44,25 +55,6 @@ Through a comprehensive hydraulic re-calibration that replaced the pure-Manning/
 
 ## 2. Experimental Framework & Ground Truth Datasets
 
-```text
-  Validation Experimental Architecture:
-  
-  [ Input Meteorological Forcing ]            [ Real-Time Physical Observations ]
-  - ECMWF IFS HRES 9km NWP Hyetographs        - ThingSpeak IoT Ultrasonic Radar Sensor (549.35m MSL)
-  - 18 Panchganga Rain Gauge Telemetry        - 19 Maharashtra WRD Field Records (cusecs & feet)
-                 │                                                │
-                 ▼                                                ▼
-  [ Physical Hydrologic Routing ]             [ Benchmark Cross-Checking Engine ]
-  - SCS-CN Cumulative Infiltration            - Dual-Regime Monotonic PCHIP (dQ/dh > 0)
-  - SCS Unit Hydrograph Transform           - Muskingum Reach Wave Routing (K=4.2h)
-                 │                                                │
-                 └───────────────────────┬────────────────────────┘
-                                         ▼
-                     [ Multi-Metric Validation Engine ]
-                     - Spearman Rank Correlation (ρ)
-                     - Nash-Sutcliffe Efficiency (NSE)
-                     - Percent Bias (PBIAS) & RMSE/MAE
-```
 
 ### 2.1 The Two Ground Truth Observation Sources
 
@@ -109,22 +101,19 @@ $$\text{RMSE} = \sqrt{\frac{1}{n} \sum_{t=1}^{n} \left(h_{sim}(t) - h_{obs}(t)\r
 
 ### 4.1 "Before vs After" Calibration Performance Matrix
 
-```text
-+-----------------------------------+-----------------------+-----------------------+-------------------------+
-| Hydrologic / Hydraulic Metric     | Legacy Uncalibrated   | HydroCast Calibrated  | Scientific Significance |
-+-----------------------------------+-----------------------+-----------------------+-------------------------+
-| Rating Datum Anchoring            | Manning slope fit     | WRD sheet PCHIP (Shivaji −0.648m) | Exact govt. agreement |
-| Normal Stage Discharge (533.28m)  | 1–16.6 m³/s (Flawed)  | WRD-anchored (> 80 m³/s)          | Resolves low-flow bug |
-| Rating Monotonicity (dQ/dh)       | Non-monotonic (Dips)  | Strictly > 0 (PCHIP)  | Prevents perimeter drop |
-| Spearman Rank Correlation (ρ)     | 0.684                 | 0.9889 (p < 0.001)    | Monotonic wave tracking |
-| Nash-Sutcliffe Efficiency (NSE)   | 0.412 (Unsatisfactory)| 0.9879 (Excellent)    | High energy fit         |
-| Pearson Coefficient (R²)          | 0.582                 | 0.9880                | Linear correspondence   |
-| Percent Bias (PBIAS %)            | +34.8% (Severe bias)  | -0.08% (Optimal)      | Exact mass conservation |
-| Stage RMSE (m)                    | ± 0.842 m             | ± 0.031 m (3.1 cm)    | 27x error reduction     |
-| Stage MAE (m)                     | ± 0.615 m             | ± 0.024 m (2.4 cm)    | Millimeter-level fidelity|
-| Catchment Rain Volume Accuracy    | 74.2%                 | 99.4%                 | Station-wise agreement  |
-+-----------------------------------+-----------------------+-----------------------+-------------------------+
-```
+| Hydrologic / Hydraulic Metric | Legacy Uncalibrated | HydroCast Calibrated | Scientific Significance |
+|:---|:---|:---|:---|
+| Rating Datum Anchoring | Manning slope fit | WRD sheet PCHIP (Shivaji −0.648m) | Exact govt. agreement |
+| Normal Stage Discharge (533.28m) | 1–16.6 m³/s (Flawed) | WRD-anchored (> 80 m³/s) | Resolves low-flow bug |
+| Rating Monotonicity (dQ/dh) | Non-monotonic (Dips) | Strictly > 0 (PCHIP) | Prevents perimeter drop |
+| Spearman Rank Correlation (ρ) | 0.684 | 0.9889 (p < 0.001) | Monotonic wave tracking |
+| Nash-Sutcliffe Efficiency (NSE) | 0.412 (Unsatisfactory) | 0.9879 (Excellent) | High energy fit |
+| Pearson Coefficient (R²) | 0.582 | 0.9880 | Linear correspondence |
+| Percent Bias (PBIAS %) | +34.8% (Severe bias) | -0.08% (Optimal) | Exact mass conservation |
+| Stage RMSE (m) | ± 0.842 m | ± 0.031 m (3.1 cm) | 27x error reduction |
+| Stage MAE (m) | ± 0.615 m | ± 0.024 m (2.4 cm) | Millimeter-level fidelity |
+| Catchment Rain Volume Accuracy | 74.2% | 99.4% | Station-wise agreement |
+
 
 ### 4.2 International Classification Benchmark (Moriasi et al., 2007)
 
@@ -151,34 +140,30 @@ Under the continuous 1-hour automated verification pipeline (`.github/workflows/
 
 A rigorous hydrological model cannot be accurate at the basin outlet if the spatial rainfall input is distorted. The rain gauge stations across the 9 subbasins ($S_1$ to $S_9$, totaling $1,837.21\text{ km}^2$) were evaluated over the 90-hour forecast horizon:
 
-```text
-+----+-------------------+----------+-------------+-----------+--------------------+-------------------+--------------+
-| No | Station Name      | Subbasin | Subbasin km²| Elevation | Predicted Rain(mm) | Observed Rain(mm) | Accuracy (%) |
-+----+-------------------+----------+-------------+-----------+--------------------+-------------------+--------------+
-| 01 | KARVEER (Primary) | S1       | 86.213 km²  | 550 m     | 7.1 mm             | 7.3 mm            | 97.2 %       |
-| 02 | SANGARUL (Primary)| S2       | 153.770 km² | 572 m     | 6.1 mm             | 6.0 mm            | 98.4 %       |
-| 03 | BALINGA (Alt)     | S2       | —           | 560 m     | 4.5 mm             | 4.6 mm            | 97.8 %       |
-| 04 | KALE (Alt)        | S2       | —           | 580 m     | 6.1 mm             | 5.9 mm            | 96.7 %       |
-| 05 | KOTOLI (Primary)  | S3       | 261.320 km² | 585 m     | 8.9 mm             | 9.1 mm            | 97.8 %       |
-| 06 | BAJAR_BHOGAON(Alt)| S3       | —           | 590 m     | 6.6 mm             | 6.8 mm            | 97.0 %       |
-| 07 | PADAL (Alt)       | S3       | —           | 575 m     | 8.9 mm             | 8.7 mm            | 97.8 %       |
-| 08 | KARANJPHEN (Prim) | S4       | 262.000 km² | 640 m     | 37.5 mm            | 36.8 mm           | 98.1 %       |
-| 09 | PADASALI (Primary)| S5       | 106.390 km² | 620 m     | 48.7 mm            | 49.2 mm           | 99.0 %       |
-| 10 | SALWAN (Alt)      | S5       | —           | 595 m     | 16.5 mm            | 16.2 mm           | 98.2 %       |
-| 11 | GAGANBAWDA (Prim) | S6       | 227.720 km² | 680 m     | 50.1 mm            | 49.8 mm           | 99.4 %       |
-| 12 | GARIVADE (Primary)| S7       | 195.390 km² | 610 m     | 48.6 mm            | 48.0 mm           | 98.8 %       |
-| 13 | BEED (Primary)    | S8       | 177.440 km² | 565 m     | 5.4 mm             | 5.5 mm            | 98.1 %       |
-| 14 | SHIROLI_DHUMALA   | S8       | —           | 560 m     | 5.4 mm             | 5.3 mm            | 98.1 %       |
-| 15 | RADHANAGARI (Prim)| S9       | 366.970 km² | 615 m     | 28.1 mm            | 28.5 mm           | 98.6 %       |
-| 16 | HALADI (Alt)      | S9       | —           | 555 m     | 8.6 mm             | 8.4 mm            | 97.7 %       |
-| 17 | RASHIWADE_BK (Alt)| S9       | —           | 570 m     | 8.6 mm             | 8.7 mm            | 98.8 %       |
-| 18 | AAVALI_BK (Alt)   | S9       | —           | 585 m     | 15.7 mm            | 15.4 mm           | 98.1 %       |
-| 19 | KASABA_TARALE(Alt)| S9       | —           | 595 m     | 15.7 mm            | 15.5 mm           | 98.7 %       |
-| 20 | KASABA_WALAWE(Alt)| S9       | —           | 615 m     | 28.1 mm            | 27.8 mm           | 98.9 %       |
-+----+-------------------+----------+-------------+-----------+--------------------+-------------------+--------------+
-|    | BASIN-WIDE MEAN   | TOTAL    | 1,837.21 km²| —         | 18.2 mm            | 18.1 mm           | 99.4 %       |
-+----+-------------------+----------+-------------+-----------+--------------------+-------------------+--------------+
-```
+| No | Station Name | Subbasin | Subbasin km² | Elevation | Predicted Rain(mm) | Observed Rain(mm) | Accuracy (%) |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+| 01 | KARVEER (Primary) | S1 | 86.213 km² | 550 m | 7.1 mm | 7.3 mm | 97.2 % |
+| 02 | SANGARUL (Primary) | S2 | 153.770 km² | 572 m | 6.1 mm | 6.0 mm | 98.4 % |
+| 03 | BALINGA (Alt) | S2 | — | 560 m | 4.5 mm | 4.6 mm | 97.8 % |
+| 04 | KALE (Alt) | S2 | — | 580 m | 6.1 mm | 5.9 mm | 96.7 % |
+| 05 | KOTOLI (Primary) | S3 | 261.320 km² | 585 m | 8.9 mm | 9.1 mm | 97.8 % |
+| 06 | BAJAR_BHOGAON(Alt) | S3 | — | 590 m | 6.6 mm | 6.8 mm | 97.0 % |
+| 07 | PADAL (Alt) | S3 | — | 575 m | 8.9 mm | 8.7 mm | 97.8 % |
+| 08 | KARANJPHEN (Prim) | S4 | 262.000 km² | 640 m | 37.5 mm | 36.8 mm | 98.1 % |
+| 09 | PADASALI (Primary) | S5 | 106.390 km² | 620 m | 48.7 mm | 49.2 mm | 99.0 % |
+| 10 | SALWAN (Alt) | S5 | — | 595 m | 16.5 mm | 16.2 mm | 98.2 % |
+| 11 | GAGANBAWDA (Prim) | S6 | 227.720 km² | 680 m | 50.1 mm | 49.8 mm | 99.4 % |
+| 12 | GARIVADE (Primary) | S7 | 195.390 km² | 610 m | 48.6 mm | 48.0 mm | 98.8 % |
+| 13 | BEED (Primary) | S8 | 177.440 km² | 565 m | 5.4 mm | 5.5 mm | 98.1 % |
+| 14 | SHIROLI_DHUMALA | S8 | — | 560 m | 5.4 mm | 5.3 mm | 98.1 % |
+| 15 | RADHANAGARI (Prim) | S9 | 366.970 km² | 615 m | 28.1 mm | 28.5 mm | 98.6 % |
+| 16 | HALADI (Alt) | S9 | — | 555 m | 8.6 mm | 8.4 mm | 97.7 % |
+| 17 | RASHIWADE_BK (Alt) | S9 | — | 570 m | 8.6 mm | 8.7 mm | 98.8 % |
+| 18 | AAVALI_BK (Alt) | S9 | — | 585 m | 15.7 mm | 15.4 mm | 98.1 % |
+| 19 | KASABA_TARALE(Alt) | S9 | — | 595 m | 15.7 mm | 15.5 mm | 98.7 % |
+| 20 | KASABA_WALAWE(Alt) | S9 | — | 615 m | 28.1 mm | 27.8 mm | 98.9 % |
+|   | BASIN-WIDE MEAN | TOTAL | 1,837.21 km² | — | 18.2 mm | 18.1 mm | 99.4 % |
+
 
 ---
 
@@ -186,18 +171,15 @@ A rigorous hydrological model cannot be accurate at the basin outlet if the spat
 
 The persistent historical ledger records simulation runs across distinct monsoon hydrologic states:
 
-```text
-+--------------------+--------------+------------+-----------------+------------------+--------------+------------+
-| Cycle ID           | Date (UTC)   | Cycle Time | Peak Flow (m³/s)| Peak Stage (m)   | Spearman (ρ) | NSE Score  |
-+--------------------+--------------+------------+-----------------+------------------+--------------+------------+
-| CYC_20260831_06z   | 31 Aug 2026  | 06z        | 312.5 m³/s      | 534.92 m MSL     | 0.985        | 0.982      |
-| CYC_20260901_06z   | 01 Sep 2026  | 06z        | 420.8 m³/s      | 535.48 m MSL     | 0.987        | 0.984      |
-| CYC_20260902_06z   | 02 Sep 2026  | 06z        | 485.2 m³/s      | 535.61 m MSL     | 0.988        | 0.986      |
-| CYC_20260902_18z   | 02 Sep 2026  | 18z        | 510.0 m³/s      | 535.72 m MSL     | 0.989        | 0.987      |
-| CYC_20260903_06z   | 03 Sep 2026  | 06z        | 544.4 m³/s      | 535.84 m MSL     | 0.9889       | 0.9879     |
-| CYC_20260910_12z   | 10 Sep 2026  | 12z        | 568.2 m³/s      | 535.98 m MSL     | 0.9912       | 0.9894     |
-+--------------------+--------------+------------+-----------------+------------------+--------------+------------+
-```
+| Cycle ID | Date (UTC) | Cycle Time | Peak Flow (m³/s) | Peak Stage (m) | Spearman (ρ) | NSE Score |
+|:---|:---|:---|:---|:---|:---|:---|
+| CYC_20260831_06z | 31 Aug 2026 | 06z | 312.5 m³/s | 534.92 m MSL | 0.985 | 0.982 |
+| CYC_20260901_06z | 01 Sep 2026 | 06z | 420.8 m³/s | 535.48 m MSL | 0.987 | 0.984 |
+| CYC_20260902_06z | 02 Sep 2026 | 06z | 485.2 m³/s | 535.61 m MSL | 0.988 | 0.986 |
+| CYC_20260902_18z | 02 Sep 2026 | 18z | 510.0 m³/s | 535.72 m MSL | 0.989 | 0.987 |
+| CYC_20260903_06z | 03 Sep 2026 | 06z | 544.4 m³/s | 535.84 m MSL | 0.9889 | 0.9879 |
+| CYC_20260910_12z | 10 Sep 2026 | 12z | 568.2 m³/s | 535.98 m MSL | 0.9912 | 0.9894 |
+
 
 ---
 

@@ -10,21 +10,6 @@ Pre-simulation data-quality control and the offline DSS conversion CLI.
 
 ## Pre-run QC gate
 
-```text
-  step 3  validate_cycle(conn, run_dt)          BEFORE any data is written
-            │
-            ├── _check_ecmwf_freshness  ──►  source_id = 'selected_gauge'
-            │       empty table?  ──►  WARN (fresh DB / first cycle is expected)
-            │       age > threshold ─►  WARN
-            │       else              ──►  OK
-            │
-            ├── _check_gauge_coverage  ──►  every active station present?
-            │
-            └── report{critical_failures, warnings, details}
-                    │
-                    ├── critical_failures > 0 ──► pipeline ABORTS
-                    └── warnings only         ──► pipeline CONTINUES
-```
 
 !!! note "Why freshness is only a warning"
     The step-3 QC runs *before* step 4 writes the selected-gauge rows. On a fresh
@@ -34,6 +19,22 @@ Pre-simulation data-quality control and the offline DSS conversion CLI.
     (the ones the run actually consumed) rather than to raw ECMWF rows.
 
 ---
+
+## Validation contract
+
+`validate_cycle(conn, run_dt)` runs at step 3, before any forecast data is
+written. It returns `{critical_failures, warnings, details}`.
+
+`_check_ecmwf_freshness` requires a row for the cycle with
+`source_id = 'selected_gauge'`; an empty table produces a warning rather than a
+failure, because a fresh database on its first cycle is expected to be empty.
+`_check_gauge_coverage` requires every active station to be present in the
+cycle's gauge set.
+
+The rule is absolute: any critical failure aborts the pipeline before step 4, and
+warnings alone let it continue. Nothing is written and nothing is alerted on a
+failed validation.
+
 
 ## `src/processing/validator.py`
 
@@ -47,7 +48,7 @@ Standalone offline CSV → DSS converter. Binary writes are **delegated** to the
 canonical `src/dss/writer.py` so the offline tool and the operational pipeline
 produce byte-identical pathname conventions:
 
-```text
+```python
   //<GAGE>/PRECIP-INC/<DDMMMYYYY>/1HOUR/GAGE/
 ```
 
