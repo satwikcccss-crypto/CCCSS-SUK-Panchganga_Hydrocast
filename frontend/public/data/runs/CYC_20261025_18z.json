@@ -23955,7 +23955,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20261025_18z",
-    "validation_timestamp": "2026-10-25T22:49:19.679347+00:00",
+    "validation_timestamp": "2026-10-29T15:29:09.565014+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -23967,14 +23967,14 @@
       "travel_time_from_hms_outlet_hours": 1.5,
       "upstream_weir": "Rajaram K.T. Weir (3,858 m upstream, bed datum +0.648 m)"
     },
-    "lifecycle_status": "PENDING",
+    "lifecycle_status": "AWAITING_OBSERVATIONS",
     "verified_hours": 0,
     "total_forecast_hours": 90,
     "completion_pct": 0.0,
     "observation_gap": {
       "is_gap": false,
       "missing_hours": 90,
-      "hours_past_window": null,
+      "hours_past_window": 4.5,
       "grace_hours": 12.0,
       "note": null
     },
