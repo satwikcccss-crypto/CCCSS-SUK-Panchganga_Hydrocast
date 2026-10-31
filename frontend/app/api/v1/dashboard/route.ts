@@ -5,12 +5,19 @@ import path from "path";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+// run_id becomes a filename; restrict it to a simple token so "../" or absolute
+// paths can never escape data/runs/.
+const RUN_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const requestedRunId = searchParams.get("run_id");
 
   // If a specific historical run is requested, attempt to serve it directly
   if (requestedRunId) {
+    if (!RUN_ID_RE.test(requestedRunId)) {
+      return NextResponse.json({ error: "Invalid run_id" }, { status: 400 });
+    }
     const runCandidates = [
       path.join(process.cwd(), "..", "data", "runs", `${requestedRunId}.json`),
       path.join(process.cwd(), "public", "data", "runs", `${requestedRunId}.json`),

@@ -40,6 +40,14 @@ except ImportError:
     mean_squared_error = None  # type: ignore[assignment]
     r2_score = None  # type: ignore[assignment]
 
+try:
+    import joblib
+
+    JOBLIB_AVAILABLE = True
+except ImportError:  # pragma: no cover - joblib ships with scikit-learn
+    joblib = None  # type: ignore[assignment]
+    JOBLIB_AVAILABLE = False
+
 log = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -234,9 +242,18 @@ class HydrologicParameterPredictor:
         self.is_trained = False
         self.training_history: List[Dict] = []
 
-        self._model_path = PROJECT_ROOT / "data" / "telemetry" / "ml_parameter_model_et.json"
+        self._model_path = PROJECT_ROOT / "data" / "telemetry" / "ml_parameter_model_et.joblib"
         self._scaler_X_path = PROJECT_ROOT / "data" / "telemetry" / "ml_parameter_scaler_X.json"
         self._scaler_y_path = PROJECT_ROOT / "data" / "telemetry" / "ml_parameter_scaler_y.json"
+        self._validation_path = PROJECT_ROOT / "data" / "telemetry" / "ml_parameter_validation.json"
+
+        # SAFETY GATE: a fitted model is never trusted for operational use until
+        # an explicit backtest has marked it validated. Until then `predict()`
+        # returns None and the caller falls back to the deterministic physics
+        # prior — an unvalidated model must never steer life-safety parameters.
+        self.validation_passed = False
+        self.validation_info: Dict[str, Any] = {}
+        self._load_validation()
 
         if not SKLEARN_AVAILABLE:
             log.warning("scikit-learn is not installed; HydrologicParameterPredictor operating in fallback mode")
@@ -280,21 +297,26 @@ class HydrologicParameterPredictor:
         y_list: List[List[float]] = []
 
         for entry in history:
-            # Extract the full forecast stage series from the entry
-            forecast_series = entry.get("forecast_series", [])
-
-            if not forecast_series or len(forecast_series) < 10:
-                log.debug(
-                    "Entry skipped: insufficient forecast_series (got %d points)",
-                    len(forecast_series) if forecast_series else 0,
+            # Prefer the OBSERVED hydrograph (list of floats) written by the
+            # calibrator; fall back to a legacy `forecast_series` of point dicts.
+            observed_series = entry.get("observed_series")
+            if observed_series:
+                stage_series = np.array(
+                    [np.nan if v is None else float(v) for v in observed_series],
+                    dtype=np.float64,
                 )
-                continue
-
-            # Extract stage values at each hour
-            stage_series = np.array([
-                pt.get("stage_m") if pt.get("stage_m") is not None else np.nan
-                for pt in forecast_series
-            ], dtype=np.float64)
+            else:
+                forecast_series = entry.get("forecast_series", [])
+                if not forecast_series or len(forecast_series) < 10:
+                    log.debug(
+                        "Entry skipped: no usable hydrograph "
+                        "(observed_series/forecast_series missing or short)",
+                    )
+                    continue
+                stage_series = np.array([
+                    pt.get("stage_m") if pt.get("stage_m") is not None else np.nan
+                    for pt in forecast_series
+                ], dtype=np.float64)
 
             if np.all(np.isnan(stage_series)) or len(stage_series) < 5:
                 log.debug("Entry skipped: insufficient valid stage data")
@@ -428,16 +450,31 @@ class HydrologicParameterPredictor:
         )
 
     def _load_pretrained(self) -> None:
-        """Loads model and scalers from disk."""
+        """Loads model and scalers from disk.
+
+        The estimator is persisted with joblib so the ACTUAL fitted trees
+        survive a restart. The previous implementation round-tripped only
+        metadata (feature importances) and rebuilt an unfitted estimator, which
+        both discarded the model and crashed on the injected read-only
+        ``feature_importances_`` property — so a "loaded" model could never
+        predict, and the failure was swallowed silently.
+        """
         if not SKLEARN_AVAILABLE:
             self.is_trained = False
             self.model = None
             return
 
         try:
-            with open(self._model_path, "r", encoding="utf-8") as f:
-                model_data = json.load(f)
-            self.model = self._deserialize_model(model_data)
+            if not JOBLIB_AVAILABLE:
+                raise RuntimeError("joblib unavailable; cannot load persisted estimator")
+
+            model = joblib.load(self._model_path)
+            # Guard: only accept a genuinely fitted estimator.
+            if not hasattr(model, "estimators_"):
+                raise ValueError(
+                    "persisted estimator is not fitted (missing `estimators_`); refusing to load"
+                )
+            self.model = model
 
             with open(self._scaler_X_path, "r", encoding="utf-8") as f:
                 self.scaler_X = self._deserialize_scaler(json.load(f))
@@ -447,17 +484,22 @@ class HydrologicParameterPredictor:
             self.is_trained = True
             log.info("Loaded pretrained model: %s", self.model.__class__.__name__)
         except Exception as e:
-            log.warning("Failed to load pretrained model: %s", e)
+            # Loud, not silent: an unloadable model is a real operational fault.
+            log.error(
+                "Failed to load pretrained model (%s); predictor stays in physics-fallback", e
+            )
             self.is_trained = False
             self.model = None
 
     def _save_pretrained(self) -> None:
-        """Persists model and scalers to disk."""
+        """Persists the fitted estimator (joblib) and scalers (JSON) to disk."""
         try:
-            self._model_path.parent.mkdir(parents=True, exist_ok=True)
+            if self.model is None or not JOBLIB_AVAILABLE:
+                log.warning("Model not fitted or joblib unavailable; skipping persistence")
+                return
 
-            with open(self._model_path, "w", encoding="utf-8") as f:
-                json.dump(self._serialize_model(), f, indent=2)
+            self._model_path.parent.mkdir(parents=True, exist_ok=True)
+            joblib.dump(self.model, self._model_path)
 
             with open(self._scaler_X_path, "w", encoding="utf-8") as f:
                 json.dump(self._serialize_scaler(self.scaler_X), f, indent=2)
@@ -470,38 +512,62 @@ class HydrologicParameterPredictor:
             log.warning("Failed to save pretrained model: %s", e)
 
     # ------------------------------------------------------------------
-    # Serialization helpers
+    # Validation gate & serialization helpers
     # ------------------------------------------------------------------
 
-    def _serialize_model(self) -> Dict:
-        """Serializes the fitted model to a JSON-compatible dict."""
-        if self.model is None:
-            return {}
-        import numpy as np
+    def _load_validation(self) -> None:
+        """Loads the backtest verdict. ``passed`` defaults to False."""
+        try:
+            if self._validation_path.exists():
+                with open(self._validation_path, "r", encoding="utf-8") as f:
+                    info = json.load(f)
+                self.validation_info = info if isinstance(info, dict) else {}
+                self.validation_passed = bool(self.validation_info.get("passed", False))
+        except Exception as e:
+            log.warning("Failed to load ML validation verdict: %s", e)
+            self.validation_info = {}
+            self.validation_passed = False
+
+    def mark_validated(self, passed: bool, **metrics: Any) -> None:
+        """Records an explicit backtest verdict for the persisted model.
+
+        Only a ``passed=True`` verdict allows the model to influence the
+        calibration. This switch keeps an unvalidated model out of the
+        life-safety path.
+        """
+        self.validation_passed = bool(passed)
+        self.validation_info = {"passed": bool(passed), **metrics}
+        try:
+            self._validation_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(self._validation_path, "w", encoding="utf-8") as f:
+                json.dump(self.validation_info, f, indent=2)
+        except Exception as e:
+            log.warning("Failed to persist ML validation verdict: %s", e)
+        log.info("ML predictor validation set to %s", "PASSED" if passed else "REJECTED")
+
+    def get_status(self) -> Dict[str, Any]:
+        """Honest, machine-readable status of the ML predictor."""
+        if not SKLEARN_AVAILABLE:
+            state = "SKLEARN_UNAVAILABLE"
+        elif not self.is_trained or self.model is None:
+            state = "UNTRAINED"
+        elif not self.validation_passed:
+            state = "TRAINED_UNVALIDATED"
+        else:
+            state = "VALIDATED"
         return {
-            "__type__": "ExtraTreesRegressor",
-            "n_estimators": int(self.model.n_estimators),
-            "max_depth": int(self.model.max_depth) if self.model.max_depth else None,
-            "random_state": int(self.model.random_state),
-            "feature_importances": self.model.feature_importances_.tolist(),
-            "n_features": int(self.model.n_features_in_),
+            "state": state,
+            "is_trained": self.is_trained,
+            "validation_passed": self.validation_passed,
+            "validation_info": self.validation_info,
+            "contributes_to_calibration": bool(
+                SKLEARN_AVAILABLE and self.is_trained and self.validation_passed
+            ),
         }
 
-    def _deserialize_model(self, data: Dict):
-        """Restores a model from its JSON dict."""
-        if not SKLEARN_AVAILABLE or ExtraTreesRegressor is None:
-            return None
-        model = ExtraTreesRegressor(
-            n_estimators=data.get("n_estimators", 200),
-            max_depth=data.get("max_depth"),
-            random_state=data.get("random_state", 42),
-            n_jobs=-1,
-            verbose=0,
-        )
-        import numpy as np
-        model.feature_importances_ = np.array(data.get("feature_importances", [0.25] * 25))
-        model.n_features_in_ = data.get("n_features", 25)
-        return model
+    # ------------------------------------------------------------------
+    # Scaler serialization helpers
+    # ------------------------------------------------------------------
 
     def _serialize_scaler(self, scaler):
         """Serializes a StandardScaler."""
@@ -527,103 +593,68 @@ class HydrologicParameterPredictor:
 
     def predict(
         self,
+        stage_series: Optional[np.ndarray] = None,
         timing_offset_hours: Optional[float] = None,
         stage_discrepancy_m: Optional[float] = None,
         peak_discharge_error_m3s: Optional[float] = None,
-        stage_series: Optional[np.ndarray] = None,
     ) -> Optional[Dict[str, float]]:
         """
-        Predicts optimal calibration parameters from observed discrepancies.
+        Predicts calibration parameters from an OBSERVED 90-hour stage hydrograph.
 
-        Supports two interfaces:
+        Only a genuine stage hydrograph is accepted as a model input. The
+        previous "discrepancy summary" interface stuffed Δt / Δh / ΔQ into slots
+        the model interprets as mean / std / median stage — a semantic mismatch
+        that would emit garbage predictions the moment the model trained — so it
+        has been removed. The discrepancy kwargs are kept only so existing call
+        sites do not break; they are logged and ignored.
 
-        1. **Full stage series** (preferred, new): Provide 90-hour stage hydrograph.
-           Engineer features capturing rising/falling flood patterns.
-
-        2. **Discrepancy summary** (backward compatible): Provide timing offset,
-           signed stage error, and peak discharge error.
-
-        At least one of ``stage_series`` or the discrepancy arguments must be
-        provided.
+        The model is consulted ONLY when it is both fitted and backtest-validated;
+        otherwise None is returned and the caller uses the deterministic physics
+        prior. This is a life-safety gate.
 
         Args:
-            timing_offset_hours: Δt = t_peak,obs - t_peak,fcst (hrs).
-                Negative = early, Positive = late.
-            stage_discrepancy_m: Signed mean stage error (forecast - observed, m).
-                Positive = model over-predicts stage.
-            peak_discharge_error_m3s: Predicted peak Q minus observed peak Q (m³/s).
-                Positive = model over-predicts peak.
-            stage_series: np.ndarray of shape (90,) with stage values (m)
-                at each hour relative to forecast start.
+            stage_series: np.ndarray of shape (90,) with OBSERVED stage (m MSL).
+            timing_offset_hours: Accepted for backwards compatibility; not used as model input.
+            stage_discrepancy_m: Accepted for backwards compatibility; not used as model input.
+            peak_discharge_error_m3s: Accepted for backwards compatibility; not used as model input.
 
         Returns:
-            Dict with keys: alpha_k, alpha_lag, delta_cn, muskingum_x
-            Returns None if model is not trained.
+            Dict(alpha_k, alpha_lag, delta_cn, muskingum_x) or None.
         """
-        # Interface 1: Full stage series (new, preferred)
-        if stage_series is not None:
-            if not SKLEARN_AVAILABLE or not self.is_trained or self.model is None or self.scaler_X is None or self.scaler_y is None:
-                log.warning("ML predictor not trained or sklearn unavailable; returning None")
-                return None
+        if timing_offset_hours is not None or stage_discrepancy_m is not None or peak_discharge_error_m3s is not None:
+            log.debug("predict(): discrepancy kwargs are ignored; only stage_series is used")
 
-            # Ensure 90 points
-            if len(stage_series) != N_HOURS:
-                log.warning(
-                    "Stage series must be %d hours, got %d; will pad/truncate",
-                    N_HOURS, len(stage_series),
-                )
-                if len(stage_series) < N_HOURS:
-                    padded = np.full(N_HOURS, np.nan, dtype=np.float64)
-                    padded[:len(stage_series)] = stage_series
-                    stage_series = padded
-                else:
-                    stage_series = stage_series[:N_HOURS]
-
-            # Engineer features from the full stage series
-            features = extract_stage_features(stage_series)
-            features_scaled = self.scaler_X.transform(features.reshape(1, -1))[0]
-
-            # Predict
-            y_scaled = self.model.predict(features_scaled.reshape(1, -1))[0]
-            y_orig = self.scaler_y.inverse_transform(y_scaled.reshape(1, -1))[0]
-
-            return {
-                "alpha_k": float(y_orig[0]),
-                "alpha_lag": float(y_orig[1]),
-                "delta_cn": float(y_orig[2]),
-                "muskingum_x": float(y_orig[3]),
-            }
-
-        # Interface 2: Discrepancy summary (backward compatible)
-        # Use a simple feature mapping: the 3 discrepancy values mapped to
-        # a subset of the 25 expected features, rest zero-initialized
-        if not SKLEARN_AVAILABLE or not self.is_trained or self.model is None or self.scaler_X is None or self.scaler_y is None:
-            log.warning("ML predictor not trained or sklearn unavailable; returning None")
+        status = self.get_status()
+        if not status["contributes_to_calibration"]:
+            log.info(
+                "ML predictor not used (state=%s); caller falls back to physics prior",
+                status["state"],
+            )
             return None
 
-        # Build feature vector from discrepancy values
-        n_features = self.model.n_features_in_
-        X_raw = np.zeros(n_features, dtype=np.float64)
+        if stage_series is None:
+            log.warning("predict() requires an observed stage_series; returning None")
+            return None
 
-        # Map the 3 discrepancy values to positions in the feature vector
-        # The model expects 25 features from extract_stage_features.
-        # We'll use the first 3 features which correspond to stage statistics.
-        # Positions: 0=mean_stage, 1=std_stage, 2=median_stage (from feature list)
-        feat_positions = [0, 1, 2]  # mean_stage, std_stage, median_stage indices
+        # Ensure 90 points
+        if len(stage_series) != N_HOURS:
+            log.warning(
+                "Stage series must be %d hours, got %d; will pad/truncate",
+                N_HOURS, len(stage_series),
+            )
+            if len(stage_series) < N_HOURS:
+                padded = np.full(N_HOURS, np.nan, dtype=np.float64)
+                padded[: len(stage_series)] = stage_series
+                stage_series = padded
+            else:
+                stage_series = stage_series[:N_HOURS]
 
-        if timing_offset_hours is not None:
-            # Map timing offset to mean_stage_proxy
-            X_raw[feat_positions[0]] = float(timing_offset_hours)
-        if stage_discrepancy_m is not None:
-            X_raw[feat_positions[1]] = float(stage_discrepancy_m)
-        if peak_discharge_error_m3s is not None:
-            X_raw[feat_positions[2]] = float(peak_discharge_error_m3s)
-
-        # Scale features
-        X_scaled = self.scaler_X.transform(X_raw.reshape(1, -1))[0]
+        # Engineer features from the full observed stage series
+        features = extract_stage_features(stage_series)
+        features_scaled = self.scaler_X.transform(features.reshape(1, -1))[0]
 
         # Predict
-        y_scaled = self.model.predict(X_scaled.reshape(1, -1))[0]
+        y_scaled = self.model.predict(features_scaled.reshape(1, -1))[0]
         y_orig = self.scaler_y.inverse_transform(y_scaled.reshape(1, -1))[0]
 
         return {
@@ -669,7 +700,3 @@ class HydrologicParameterPredictor:
             return len(state.get("history", []))
         except Exception:
             return 0
-
-
-# Global singleton instance for app-wide use
-predictor = HydrologicParameterPredictor()

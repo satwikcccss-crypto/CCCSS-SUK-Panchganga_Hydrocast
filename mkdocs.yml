@@ -226,60 +226,58 @@ copyright: >-
 #  NAVIGATION
 # ══════════════════════════════════════════════════════════════════════════════
 nav:
-  - Home:
-      - index.md
-      - Project Background: project-background.md
-      - System Novelty: novelty-of-this-system.md
+  - "Overview & Context":
+      - "HydroCast System Overview": index.md
+      - "Project Background & Monsoon Context": project-background.md
+      - "System Novelty & Innovations": novelty-of-this-system.md
+      - "Production Roadmap": roadmap.md
+      - "Institutional Audit & Open Items": OPEN_ITEMS.md
 
-  - "System Diagrams":
-      - Architecture Atlas: architecture-atlas.md
-      - System Architecture: architecture.md
-      - Dataflow Pipeline: dataflow.md
+  - "Basin Hydrology & Datums":
+      - "Catchment Hydrology & Canonical Datums": basin-hydrology.md
+      - "Rain Gauge Network Registry": raingauge-network.md
+      - "GIS Spatial Boundaries & Vector Layers": gis-vector-layers.md
+      - "Historical Monsoon Flood Archives": flood-event-documentation.md
 
-  - "API Reference":
-      - api-reference/index.md
-      - "FastAPI Service":
-          - api-reference/backend.md
-          - api-reference/security.md
-      - "Hydrology Engine":
-          - api-reference/hydrology.md
-          - api-reference/hms.md
-          - api-reference/calibration.md
-      - "Data Ingestion":
-          - api-reference/ecmwf.md
-          - api-reference/sensors.md
-          - api-reference/processing.md
-      - "Alerts & Delivery":
-          - api-reference/alerts.md
-      - "Orchestration & Storage":
-          - api-reference/orchestrator.md
-          - api-reference/dss.md
+  - "Modeling Engines":
+      - "Dual-Engine Strategy & HEC-HMS Automation": hec-hms-engine.md
+      - "Pure-Python Vectorized Twin Emulator": python-twin-emulator.md
+      - "Runoff Computation & SCS Continuum": runoff-computation.md
+      - "Adaptive Physics-Informed Calibrator": ml-calibration-engine.md
+      - "Rating Physics & Stage Conversion (PCHIP)": stage-discharge-conversion.md
+      - "River Hydraulics & Channel Geometry": hydraulics.md
+      - "WRD Rating Curve Cross-Verification": wrd-rating-curve-cross-check.md
 
-  - Hydrology:
-      - Runoff Computation: runoff-computation.md
-      - HEC-HMS Engine: hec-hms-engine.md
-      - Basin Hydrology: basin-hydrology.md
-      - Stage-Discharge Conversion: stage-discharge-conversion.md
-      - River Hydraulics: hydraulics.md
-      - WRD Rating Curve Cross-Check: wrd-rating-curve-cross-check.md
+  - "Telemetry & Ingestion":
+      - "Numerical Weather Prediction (ECMWF IFS)": open-meteo-ecmwf.md
+      - "Real-Time Ultrasonic Radar Telemetry": iot-telemetry.md
+      - "Rainfall Quality Control & Outlier Filtering": rainfall-validation-pipeline.md
+      - "Model Calibration & Verification": calibration-validation.md
+      - "PI Accuracy & Performance Audit": accuracy-analysis-pi-report.md
 
-  - Data & Validation:
-      - Open-Meteo / ECMWF: open-meteo-ecmwf.md
-      - Rainfall Validation Pipeline: rainfall-validation-pipeline.md
-      - Calibration & Validation: calibration-validation.md
-      - Flood Event Documentation: flood-event-documentation.md
-      - ML Calibration Engine: ml-calibration-engine.md
-      - PI Accuracy Report: accuracy-analysis-pi-report.md
+  - "System Architecture & Operations":
+      - "System Architecture Specification": architecture.md
+      - "Architecture Atlas & Visual Consoles": architecture-atlas.md
+      - "Rainfall-to-Alert Dataflow Pipeline": dataflow.md
+      - "Engineering Assumptions & Failure Autopsy": errors-and-engineering-assumptions.md
+      - "PostgreSQL & PostGIS Database Schema": database.md
+      - "FastAPI Backend Architecture & Security": backend.md
+      - "Next.js Operations Dashboard": frontend.md
+      - "Hybrid OS Deployment & SRE Runbook": deployment-operations.md
 
-  - Field Systems:
-      - IoT Telemetry: iot-telemetry.md
-      - Raingauge Network: raingauge-network.md
-      - GIS Vector Layers: gis-vector-layers.md
+  - "Hydraulic Integration":
+      - "HydroSim 2D Hydraulic Handoff & Water-Level API": integration-hydrosim.md
 
-  - Engineering:
-      - Backend Services: backend.md
-      - Frontend Dashboard: frontend.md
-      - Database Architecture: database.md
-      - Deployment & Operations: deployment-operations.md
-      - Errors & Engineering Assumptions: errors-and-engineering-assumptions.md
-      - Production Roadmap: roadmap.md
+  - "API Reference & Development":
+      - "API Overview & Architecture": api-reference/index.md
+      - "FastAPI Endpoints & Routing": api-reference/backend.md
+      - "Authentication, Keys & Rate Limiting": api-reference/security.md
+      - "Hydrology Solvers & Transform Core": api-reference/hydrology.md
+      - "HEC-HMS Engine & Python Twin Runner": api-reference/hms.md
+      - "Physics-Informed Adaptive Calibrator": api-reference/calibration.md
+      - "ECMWF NWP Ingestion Client": api-reference/ecmwf.md
+      - "ThingSpeak Sensor Telemetry": api-reference/sensors.md
+      - "Data Quality & Ingestion Processing": api-reference/processing.md
+      - "Pipeline Orchestrator & Scheduling": api-reference/orchestrator.md
+      - "HEC-DSS Binary Record Management": api-reference/dss.md
+      - "Alert Evaluator & Telegram Dispatch": api-reference/alerts.md

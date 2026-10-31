@@ -94,9 +94,13 @@ def fetch_open_meteo_observed_station(lat: float, lon: float, past_hours: int = 
         f"https://api.open-meteo.com/v1/forecast?"
         f"latitude={lat}&longitude={lon}&hourly=precipitation&past_days={past_days}&forecast_days=1&timezone=Asia%2FKolkata"
     )
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme != "https" or parsed.hostname != "api.open-meteo.com":
+        raise ValueError(f"Refusing non-Open-Meteo URL: {url!r}")
     req = urllib.request.Request(url, headers={"User-Agent": "HydroCast/2.0 ObservedRainfallPipeline"})
+    # URL is HTTPS-only and host-pinned above; B310 is a reviewed false positive.
     try:
-        with urllib.request.urlopen(req, timeout=8) as resp:
+        with urllib.request.urlopen(req, timeout=8) as resp:  # nosec B310
             data = json.loads(resp.read().decode("utf-8"))
             hourly_precip = data.get("hourly", {}).get("precipitation", [])
             total_past_steps = past_days * 24

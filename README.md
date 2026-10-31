@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/badge/Documentation-GitHub_Pages_Portal-06B6D4?style=for-the-badge&logo=googledocs&logoColor=white" alt="Live Documentation Portal">
   </a>
   <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/tests.yml">
-    <img src="https://img.shields.io/badge/Unit_%26_Integration_Tests-154_Passed-22C55E?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests Status">
+    <img src="https://img.shields.io/badge/Unit_%26_Integration_Tests-284_Backend_%2B_3_Postgres-22C55E?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests Status">
   </a>
   <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/pipeline.yml">
     <img src="https://img.shields.io/badge/Operational_Pipeline-6--Hour_Cycles-3B82F6?style=for-the-badge&logo=githubactions&logoColor=white" alt="Forecast Pipeline Status">
@@ -41,7 +41,7 @@
 
 ## Executive Overview
 
-**HydroCast** is a mission-critical, operational hydrologic and hydraulic flood early-warning platform engineered specifically for the **2,140 km² Panchganga River Basin** in Western Maharashtra, India.
+**HydroCast** is a mission-critical, operational hydrologic and hydraulic flood early-warning platform engineered specifically for the **1,837.213 km² Panchganga River Basin** in Western Maharashtra, India.
 
 During the Southwest Monsoon (June–September), torrential orographic precipitation along the Western Ghats crest (Sahyadri ridge, regularly recording **100–250+ mm/day**) funnels through nine steep basaltic headwater subcatchments directly into the urban river corridor of **Kolhapur City**. Catastrophic inundations in **August 2019** and **July 2021** submerged large sections of the district and demonstrated that civic agencies require **48 to 72 hours of validated predictive lead time** to orchestrate flood defenses, operate reservoir gates, and evacuate floodplains.
 
@@ -192,7 +192,7 @@ hydrocast_complete/
 ├── database/                          # Database definitions & Supabase SQL schemas
 ├── windows/                           # Native Windows PostgreSQL & storage automation
 ├── data/                              # Catchment GIS shapefiles, station metadata & HMS models
-├── tests/                             # Comprehensive test suite (154 passing unit/integration tests)
+├── tests/                             # Comprehensive test suite (284 backend + 3 Postgres integration tests in CI)
 ├── archive/                           # Archived experimental & exploratory scripts
 ├── Dockerfile                         # Production multi-stage Docker build
 ├── docker-compose.yml                 # Multi-container orchestration (DB, API, UI, Docs)
@@ -258,7 +258,7 @@ npm run dev
 
 ### 6. Run the Test Suite
 ```bash
-# Execute all 154 unit and integration tests
+# Execute all 284 backend tests (the 3 Postgres integration tests run in CI)
 pytest tests -q
 
 # Run TypeScript validation on the frontend

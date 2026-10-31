@@ -90,7 +90,7 @@ The system tracks 18 distinct meteorological nodes across the 9 hydrologic subba
 
 ## 4. API Request Construction & Parameter Specification
 
-The forecast fetcher in [`open_meteo.py`](file:///e:/hydrocast_complete/src/ecmwf/open_meteo.py) queries the Open-Meteo v1 forecast endpoint:
+The forecast fetcher in `src/ecmwf/open_meteo.py` queries the Open-Meteo v1 forecast endpoint:
 
 ### 4.1 Endpoint URL
 
@@ -128,7 +128,7 @@ params = {
 
 ## 5. Enterprise Retry Engine, Fault Tolerance & Error Handling
 
-To guarantee 100% pipeline reliability without triggering IP-level rate-limiting (`HTTP 429 Too Many Requests`) or crashing on upstream cloud hiccups, HydroCast employs a dedicated retry engine ([`src/ecmwf/retry_utils.py`](file:///e:/hydrocast_complete/src/ecmwf/retry_utils.py)):
+To guarantee 100% pipeline reliability without triggering IP-level rate-limiting (`HTTP 429 Too Many Requests`) or crashing on upstream cloud hiccups, HydroCast employs a dedicated retry engine (`src/ecmwf/retry_utils.py`):
 
 ### 5.1 Architecture of `retry_with_backoff`
 
@@ -215,4 +215,4 @@ Values are clipped to the physical bound $[0.0,\; 0.60]\ \text{m}^3/\text{m}^3$ 
 - `pipeline_state["soil_moisture"] = {"unit": "m3/m3", "per_subbasin": {S1…S9}}` — full per-subbasin snapshot + antecedent.
 - `status.last_cycle["surface_soil_moisture_0_7cm"]` — catchment-mean surface (0–7 cm) VWC at forecast start, exposed for dashboard observability.
 
-Implements: [`fetch_soil_moisture_snapshot`](file:///e:/hydrocast_complete/src/ecmwf/open_meteo.py) and [`fetch_antecedent_soil_moisture`](file:///e:/hydrocast_complete/src/ecmwf/open_meteo.py), both in `src/ecmwf/open_meteo.py`. Tests: `tests/test_soil_moisture.py`.
+Implements: `fetch_soil_moisture_snapshot` and `fetch_antecedent_soil_moisture`, both in `src/ecmwf/open_meteo.py`. Tests: `tests/test_soil_moisture.py`.

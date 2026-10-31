@@ -84,22 +84,24 @@ overbank panels, with its own width, side slope and roughness per panel.
 #### Site 1: Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)
 
 - **Coordinates:** $16.708917^\circ\text{ N}, 74.219278^\circ\text{ E}$
-- **Bed Invert Level ($z_{min}$):** $530.18\text{ m MSL}$ (Gauge Zero Datum: $0'\ 0''$)
+- **Surveyed Bed Invert Level ($z_{bed}$):** $\mathbf{528.670\text{ m MSL}}$ (Bedrock thalweg from cross-section survey)
+- **WRD Gauge Zero Datum ($z_0$):** $\mathbf{530.180\text{ m MSL}}$ ($0'\ 0''$ on official WRD gauge post)
 - **Alert Stage:** $542.10\text{ m MSL}$ ($39'\ 1''$, $1,800\text{ m}^3/s$)
 - **Warning Stage:** $542.70\text{ m MSL}$ ($41'\ 1''$, $2,200\text{ m}^3/s$)
 - **Danger Stage:** $543.30\text{ m MSL}$ ($43'\ 0''$, $2,675\text{ m}^3/s$)
 - **Highest Flood Level (HFL):** $545.33\text{ m MSL}$ ($49'\ 8''$, $3,850\text{ m}^3/s$, August 2019)
-- **Sensor Elevation:** $549.35\text{ m MSL}$ (ThingSpeak Ultrasonic Radar Gauge)
+- **Sensor Transducer Face:** $549.35\text{ m MSL}$ (ThingSpeak Ultrasonic Radar Gauge #3424513)
 
 #### Site 2: Rajaram K.T. (Kolhapur Type) Weir (Kasba Bawada)
 
 - **Coordinates:** $16.736167^\circ\text{ N}, 74.235889^\circ\text{ E}$
-- **Weir Crest Level:** $535.50\text{ m MSL}$ (Needle gates removed during monsoon)
-- **Bed Invert Level:** $530.18\text{ m MSL}$
+- **Surveyed Bed Invert Level ($z_{bed}$):** $\mathbf{529.318\text{ m MSL}}$ (Weir apron / channel bed, 0.648 m higher than Shivaji)
+- **WRD Gauge Zero Datum ($z_0$):** $\mathbf{530.180\text{ m MSL}}$ ($0'\ 0''$ on official WRD gauge post)
+- **Weir Crest Level:** $535.50\text{ m MSL}$ / $535.77\text{ m MSL}$ (Needle gates removed during monsoon)
 - **Alert Stage:** $541.50\text{ m MSL}$ ($37'\ 1''$, $1,480\text{ m}^3/s$)
 - **Warning Stage:** $542.07\text{ m MSL}$ ($39'\ 0''$, $1,850\text{ m}^3/s$)
 - **Danger Stage:** $543.30\text{ m MSL}$ ($43'\ 0''$, $2,400\text{ m}^3/s$)
-- **HFL:** $545.33\text{ m MSL}$ ($3,600\text{ m}^3/s$)
+- **HFL:** $545.33\text{ m MSL}$ ($3,850\text{ m}^3/s$)
 
 ---
 
@@ -141,7 +143,7 @@ Three severe hydraulic flaws caused this:
 
 ### 3.2 The WRD-Anchored PCHIP Hydraulic Calibration (Sep 2026 Correction)
 
-To resolve this, we re-engineered the rating curve engine in [`stage_converter.py`](file:///e:/hydrocast_complete/src/hydrology/stage_converter.py). Both gauged sites are now **PCHIP-interpolated directly through the official Maharashtra WRD stage-discharge sheet** instead of a pure Manning/DCM curve:
+To resolve this, we re-engineered the rating curve engine in [`stage_converter.py`](stage-discharge-conversion.md) (`src/hydrology/stage_converter.py`). Both gauged sites are now **PCHIP-interpolated directly through the official Maharashtra WRD stage-discharge sheet** instead of a pure Manning/DCM curve:
 
 1. **Rajaram K.T. Weir:** PCHIP through the WRD sheet stages verbatim plus WRD 2021–2023 observed low-flow anchors ($532.70 \to 14.16$ … $533.36 \to 71.25\text{ m}^3/s$), removing the old fabricated $531.50 \to 3.0$ tail.
 2. **Shivaji Bridge:** PCHIP through the same sheet shifted **−0.648 m downstream** (its bed RL is 0.648 m lower than Rajaram, chainage 6+257 vs 10+115) plus its bed anchor $528.67 \to 0$. At the same stage Shivaji carries slightly more flow (deeper section). At the same discharge the two curves agree via the offset **above roughly 40 m³/s**, where the shift is exact to within 0.005 m.
@@ -169,25 +171,9 @@ To resolve this, we re-engineered the rating curve engine in [`stage_converter.p
 
 ## 4. Government WRD Stage-Discharge Alignment Table
 
-The table below reflects the exact benchmark records from the Maharashtra Water Resources Department (WRD) embedded directly into the HydroCast hydraulic solver:
+The HydroCast hydraulic solver integrates compound cross-section geometry with official field-gauged benchmarks from the Maharashtra Water Resources Department (WRD). The solver guarantees strict monotonicity across the entire gauged and overbank domain.
 
-| Stage $h$ (m MSL) | Stage (ft-in) | WRD Discharge (Cusecs) | Discharge $Q$ ($m^3/s$) | Flow Regime | Alert Classification |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **530.18** | $0'\ 0''$ | 0 | 0.00 | Gauge Zero Datum | DRY BED |
-| **533.54** | $11'\ 0''$ | 2,825 | 80.00 | In-Bank Baseflow | NORMAL |
-| **533.71** | $11'\ 7''$ | 3,134 | 88.74 | In-Bank Baseflow | NORMAL |
-| **533.99** | $12'\ 6''$ | 3,902 | 110.49 | Main Channel Flow | NORMAL |
-| **535.21** | $16'\ 6''$ | 7,684 | 217.59 | Approaching Bankfull | NORMAL |
-| **535.59** | $17'\ 9''$ | 8,958 | 253.66 | Bankfull Inundation | NORMAL |
-| **535.77** | $18'\ 4''$ | 9,690 | 274.39 | K.T. Weir Crest Overflow | NORMAL |
-| **536.41** | $20'\ 5''$ | 13,087 | 370.58 | Over-Weir Broad Flow | NORMAL |
-| **538.16** | $26'\ 2''$ | 21,650 | 613.06 | Weir Fully Drowned | NORMAL |
-| **539.02** | $29'\ 0''$ | 28,270 | 800.52 | Pre-Flood Valley Spreading | NORMAL |
-| **541.50** | $37'\ 1''$ | 52,266 | 1,480.00 | Rajaram K.T. Weir Alert Level | **ALERT** |
-| **542.10** | $39'\ 1''$ | 63,567 | 1,800.00 | Shivaji Bridge Alert Level | **ALERT** |
-| **542.70** | $41'\ 1''$ | 77,692 | 2,200.00 | Warning Stage | **WARNING** |
-| **543.30** | $43'\ 0''$ | 94,467 | 2,675.00 | Danger Stage | **DANGER** |
-| **545.33** | $49'\ 8''$ | 135,961 | 3,850.00 | Highest Flood Level (2019/2021) | **EMERGENCY (HFL)** |
+For the authoritative government regulatory datum schedule, elevation benchmarks, and complete 26-point rating schedule, see [Catchment Hydrology: Official Regulatory Datums](basin-hydrology.md#regulatory-datums).
 
 ---
 

@@ -3,6 +3,10 @@ frontend/node_modules/
 frontend/.next/
 frontend/out/
 frontend/build/
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+frontend/playwright/.cache/
 frontend/.env
 frontend/.env.local
 *.tsbuildinfo
@@ -80,3 +84,9 @@ docs_site/
 /docs/assets/javascripts/
 .cache/
 OPENCODE_HANDOVER_CONTEXT.md
+
+# Python test / coverage artifacts
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/

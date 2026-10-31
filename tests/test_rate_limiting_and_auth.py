@@ -45,29 +45,43 @@ class TestRateLimitingAndAuth(unittest.TestCase):
         })
         self.assertEqual(resp.status_code, 401)
 
+    def test_admin_auth_disabled_when_password_unset(self):
+        # Security regression guard: an unset ADMIN_PASSWORD must NOT authorize
+        # a blank password (previously compare_digest("", "") was True).
+        from unittest.mock import patch
+        with patch("src.api.security.ADMIN_PASSWORD", ""):
+            resp = self.client.post("/api/v1/admin/auth/token", json={
+                "username": ADMIN_USERNAME,
+                "password": "",
+            })
+            self.assertEqual(resp.status_code, 401)
+
     def test_admin_auth_success_and_protected_me(self):
-        # 1. Login
-        resp = self.client.post("/api/v1/admin/auth/token", json={
-            "username": ADMIN_USERNAME,
-            "password": ADMIN_PASSWORD,
-        })
-        self.assertEqual(resp.status_code, 200)
-        data = resp.json()
-        self.assertIn("access_token", data)
-        token = data["access_token"]
+        from unittest.mock import patch
+        password = "correct horse battery staple"
+        with patch("src.api.security.ADMIN_PASSWORD", password):
+            # 1. Login
+            resp = self.client.post("/api/v1/admin/auth/token", json={
+                "username": ADMIN_USERNAME,
+                "password": password,
+            })
+            self.assertEqual(resp.status_code, 200)
+            data = resp.json()
+            self.assertIn("access_token", data)
+            token = data["access_token"]
 
-        # 2. Access /me without token -> 401
-        unauth_resp = self.client.get("/api/v1/admin/me")
-        self.assertEqual(unauth_resp.status_code, 401)
+            # 2. Access /me without token -> 401
+            unauth_resp = self.client.get("/api/v1/admin/me")
+            self.assertEqual(unauth_resp.status_code, 401)
 
-        # 3. Access /me with Bearer token -> 200
-        auth_resp = self.client.get("/api/v1/admin/me", headers={
-            "Authorization": f"Bearer {token}"
-        })
-        self.assertEqual(auth_resp.status_code, 200)
-        user_info = auth_resp.json()
-        self.assertEqual(user_info["user"], ADMIN_USERNAME)
-        self.assertEqual(user_info["role"], "admin")
+            # 3. Access /me with Bearer token -> 200
+            auth_resp = self.client.get("/api/v1/admin/me", headers={
+                "Authorization": f"Bearer {token}"
+            })
+            self.assertEqual(auth_resp.status_code, 200)
+            user_info = auth_resp.json()
+            self.assertEqual(user_info["user"], ADMIN_USERNAME)
+            self.assertEqual(user_info["role"], "admin")
 
     def test_admin_access_via_api_key_header(self):
         # X-API-Key fallback for scripts & systems

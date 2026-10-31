@@ -125,7 +125,7 @@ The cross-section viewer renders a direct 2D geometric elevation slice of the Pa
 
 ## 5. State Synchronization, SWR & Vercel Serverless Architecture
 
-Data fetching is wrapped through the client abstraction [`lib/api.ts`](file:///e:/hydrocast_complete/frontend/lib/api.ts):
+Data fetching is wrapped through the client abstraction `frontend/lib/api.ts`:
 
 ```bash
 export async function fetchDashboardData(runId?: string) {
@@ -143,12 +143,12 @@ export async function fetchDashboardData(runId?: string) {
 
 On Vercel, serverless function workers execute isolated from external project folders (`../data/runs/` is not packaged). To guarantee 100% production reliability:
 
-- All historical computation runs (`CYC_*.json`) and `runs_index.json` are mirrored into [`frontend/public/data/runs/`](file:///e:/hydrocast_complete/frontend/public/data/runs/).
-- When `/api/v1/dashboard?run_id=...` is called, the serverless handler resolves `path.join(process.cwd(), "public", "data", "runs",`${requestedRunId}.json`)`, instantly serving the archived run without 404s or empty metrics.
+- All historical computation runs (`CYC_*.json`) and `runs_index.json` are mirrored into `frontend/public/data/runs/`.
+- When `/api/v1/dashboard?run_id=...` is called, the serverless handler resolves `path.join(process.cwd(), "public", "data", "runs", `${requestedRunId}.json`)`, instantly serving the archived run without 404s or empty metrics.
 
 ### 5.2 Hydration Exception Hardening
 
-All metric formatters in [`AccuracyPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/AccuracyPanel.tsx) and [`SystemPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/SystemPanel.tsx) are safely guarded:
+All metric formatters in `AccuracyPanel.tsx` and `SystemPanel.tsx` are safely guarded:
 
 ```
 ρ = {spearmanRho != null ? spearmanRho.toFixed(3) : "—"} · R² = {pearsonR2 != null ? pearsonR2.toFixed(3) : "—"}
@@ -160,7 +160,7 @@ This prevents `TypeError: Cannot read properties of null (reading 'toFixed')` du
 
 ## 6. Peak Flood Strike Horizon & Permissible Uncertainty Window UI
 
-To provide municipal emergency coordinators with actionable disaster timelines rather than ambiguous single-point predictions, [`DischargeDetailsCard.tsx`](file:///e:/hydrocast_complete/frontend/components/DischargeDetailsCard.tsx) and [`OverviewPanel.tsx`](file:///e:/hydrocast_complete/frontend/components/OverviewPanel.tsx) render a dedicated early warning card:
+To provide municipal emergency coordinators with actionable disaster timelines rather than ambiguous single-point predictions, `DischargeDetailsCard.tsx` and `OverviewPanel.tsx` render a dedicated early warning card:
 
 ```
 <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg">

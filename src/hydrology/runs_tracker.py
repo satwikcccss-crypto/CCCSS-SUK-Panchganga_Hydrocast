@@ -9,6 +9,7 @@ and alignment with actual observed sensor hits.
 import json
 import logging
 import os
+import re
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any
@@ -25,6 +26,25 @@ FRONTEND_HISTORY_FILE = PROJECT_ROOT / "frontend" / "public" / "data" / "runs_hi
 FRONTEND_HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
 FRONTEND_RUNS_DIR = PROJECT_ROOT / "frontend" / "public" / "data" / "runs"
 FRONTEND_RUNS_DIR.mkdir(parents=True, exist_ok=True)
+
+# A run id becomes a filename, so it must never contain path separators, "..",
+# drive letters, or anything else that could escape the runs directory.
+_SAFE_RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_\-]{0,127}$")
+
+
+def _run_path(base: Path, cycle_id: str) -> Path:
+    """Return a traversal-safe ``<base>/<cycle_id>.json`` path.
+
+    Raises ``ValueError`` for any id that is not a simple token or whose resolved
+    path would leave ``base`` (defence against ``../`` and absolute injection).
+    """
+    if not isinstance(cycle_id, str) or not _SAFE_RUN_ID.fullmatch(cycle_id):
+        raise ValueError(f"unsafe run id: {cycle_id!r}")
+    candidate = (base / f"{cycle_id}.json").resolve()
+    base_resolved = base.resolve()
+    if candidate.parent != base_resolved:
+        raise ValueError(f"run path escapes {base_resolved}")
+    return candidate
 
 
 def load_runs_index() -> List[Dict[str, Any]]:
@@ -62,12 +82,12 @@ def save_computation_run(run_state: Dict[str, Any]) -> str:
         cycle_id = f"CYC_{now.strftime('%Y%m%d_%H')}z"
         run_state["cycle_id"] = cycle_id
 
-    run_file = RUNS_DIR / f"{cycle_id}.json"
+    run_file = _run_path(RUNS_DIR, cycle_id)
     with open(run_file, "w", encoding="utf-8") as f:
         json.dump(run_state, f, indent=2)
 
     try:
-        frontend_run_file = FRONTEND_RUNS_DIR / f"{cycle_id}.json"
+        frontend_run_file = _run_path(FRONTEND_RUNS_DIR, cycle_id)
         with open(frontend_run_file, "w", encoding="utf-8") as f:
             json.dump(run_state, f, indent=2)
     except Exception as e:
@@ -130,8 +150,16 @@ def save_computation_run(run_state: Dict[str, Any]) -> str:
 
 
 def get_computation_run(cycle_id: str) -> Optional[Dict[str, Any]]:
-    """Retrieves full computation run payload by cycle_id."""
-    run_file = RUNS_DIR / f"{cycle_id}.json"
+    """Retrieves full computation run payload by cycle_id.
+
+    The id is validated before touching the filesystem: an attacker-supplied
+    ``run_id`` must never be able to read files outside ``data/runs``.
+    """
+    try:
+        run_file = _run_path(RUNS_DIR, cycle_id)
+    except ValueError:
+        log.warning("Rejected unsafe run id: %r", cycle_id)
+        return None
     if run_file.exists():
         try:
             with open(run_file, "r", encoding="utf-8") as f:

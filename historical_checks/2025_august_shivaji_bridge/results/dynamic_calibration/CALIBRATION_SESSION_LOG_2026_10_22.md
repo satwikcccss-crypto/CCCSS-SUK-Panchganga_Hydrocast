@@ -480,10 +480,304 @@ delta_cn=0.0, ia_frac=0.05, uh_max_hr=90, uh_m_exp=20**, per-subbasin CN + per-r
 Results: 2019 acc 86.2%, 2025 acc 96.5% (NSE 0.932, timing −4 h), 2021 −24% on discharge.
 Per-event documentation: `EVENT_DOCUMENTATION_2019_2021_2025.md`.
 
+### 13.8 ML-calibration honesty overhaul (2026-10-28)
+An audit found the "ML calibration" layer was largely decorative/stale. Professional fixes
+applied (physics core retained; no change to the promoted parameters):
+
+| Audit finding | Fix |
+|:---|:---|
+| `confidence_pct` came from a self-constructed synthetic-target RMS (99.9% on no-ops, 50% on bound-pinned fits) | Now an **observation-fit score**: exp of normalized Δt/Δh misfit (tol 1.0 h / 0.25 m) × aligned-point evidence, degraded when pinned at bounds or non-converged. Bounded [50, 99.9]. No-op with 0 evidence now reads ~79%, not 99.9%. `confidence_basis` explains it in state. |
+| Hardcoded `CALIBRATED_ACCURATE` status | Replaced with `PEAK_IDENTIFIED`; docstring states CI is a configured tolerance, not statistical 95%. |
+| ExtraTrees "ML" never trains (reader required `forecast_series` that nothing wrote) | Predictor now consumes `observed_series` (calibrator writes it) and is **gated**: contributes only when fitted **and** backtest-validated (`mark_validated`). Reports `ml_predictor_state` = UNTRAINED today. |
+| Broken persistence (`_serialize_model` metadata-only; `_deserialize_model` crashed on read-only `feature_importances_`, swallowed) | Persisted with **joblib** (actual fitted trees); load verifies `estimators_` and logs an error (not silent) on failure. |
+| Semantically-wrong "Interface-2" predict stuffed Δt/Δh/ΔQ into mean/std/median stage slots | Removed; `predict()` requires a genuine observed stage series. |
+| Dead `self.predictor` instance + separate global singleton | Single `self.predictor`; dead module singleton removed. |
+| Manual admin endpoint fitted a fabricated 0.5 mm/h rainfall | Hydrograph-mismatch residual is dropped when no hyetographs are supplied; only observation anchors are fitted. |
+| Docs claimed ML does the work | Module header + `docs/ml-calibration-engine.md` (title, warning admonition, §3.1 residual vector corrected — no NSE term, §6 status gate & confidence meaning) + `docs/backend.md` example updated. |
+
+**State-file recovery.** On restart the working-tree `data/telemetry/ml_calibration_state.json`
+was swapped back to a checkpoint commit (`087cd64c`) that had been committed *with unresolved git
+conflict markers* (`<<<<<<< HEAD`), so it no longer parsed; the valid promoted copy and its `.bak`
+were lost. The two sides had diverged by region (HEAD = older α_K=1.218/x=0.19 config with cleaner
+history; `087cd64c` = promoted α_K=0.60/x=0.30 with degenerate Δt=−314 history), so a whole-file
+pick was unsafe. Regenerated deterministically from `load_immutable_baseline()` + the validated
+promoted scalars via `scripts/comparison/restore_calibration_state.py`; the corrupted file is
+preserved as `ml_calibration_state.json.corrupted_<stamp>`. Verified: state loads, runner keys
+present, α_K=0.60 / x=0.30 / R1 k=1.739 / S6 CN=61.783.
+
+**Verification.** Full suite **154 passed**. MkDocs build exit 0; `/`, `/ml-calibration-engine/`,
+`/flood-event-documentation/` all HTTP 200.
+
+**Honest limitation.** There is still no *validated* ML model — only one event (2025) has an
+hourly observed series, far too few to train. The engine will report `UNTRAINED` and use the
+physics prior until enough observed hydrographs accumulate and a backtest passes.
+
+### 13.9 Engineering hardening — "par to standard" (2026-10-28)
+A senior code review scored the backend **7.0/10 for production life-safety** (8.5/10 vs comparable
+flood-forecasting code). P0 gaps and their fixes:
+
+| Gap | Fix |
+|:---|:---|
+| CI ran `pytest` with **no coverage gate**; mypy/black were pre-commit-only | `tests.yml` now installs from the pinned lock, runs `pytest --cov=src --cov-fail-under=38`, and runs mypy as an **advisory** step (`continue-on-error`) until its 119-error backlog is cleared. |
+| No dependency lock (`>=` everywhere) | Generated **`requirements.lock`** (direct deps pinned to the validated env) via `scripts/gen_requirements_lock.py`; CI installs it. Optional heavy deps (cfgrib/eccodes/pydsstools) keep their spec. |
+| `orchestrator.py` (production entry point) at **0%** coverage | Added `tests/test_orchestrator.py` — fake psycopg2 conn, verifies DB helpers, `timed_step` success/fail, 12-step order, and non-zero exit on failure. Orchestrator **0% → 55%**. |
+| Emulator "mirrors HEC-HMS" asserted but unproven; no regression guard | Added `tests/test_golden_emulator.py` — freezes the validated emulator output (AMC-III, peak 3345.6 m³/s @ T+105 h, 754.115 MCM) and asserts determinism. Real HEC-HMS DSS equivalence still needs a checked-in binary reference. |
+| No central tool config | Added `pyproject.toml` (black/isort/coverage/mypy). |
+
+**Verification:** **164 passed** (was 154), total coverage **37% → 39%**, gate passes, smoke import
+incl. `src.orchestrator` OK, workflow YAML valid.
+
+### 13.10 P1 — write-path coverage, monolith splits, and a production SQL bug (2026-10-28)
+
+**Critical fix (found by finally testing the 0%-coverage write path).**
+`src/db/store_results.py::_store_hydrograph` inserted into **9 columns but supplied 10
+VALUES items with only 7 parameters** — Postgres rejects that with `INSERT has more
+expressions than target columns`, so pipeline step 10 would have failed on *every* real
+cycle. Corrected to `VALUES (%s, 'MAIN_BASIN', 'J_Outlet', %s, %s, %s, %s, %s, %s)` (mirrors
+the two sibling INSERTs) and added a **placeholder/parameter arity assertion** to the test
+connection double so this class of bug cannot silently return.
+
+**Write-path tests (`tests/test_write_paths.py`, 21 tests — no DB or pydsstools needed).**
+`db/store_results` 0% → **100%**, `dss/writer` 0% → **94%**, `hydrology/post_process`
+0% → **100%**.
+
+**Monolith splits (behaviour-preserving; every moved name is re-exported).**
+- `hydrology/rating_physics.py` — pure cross-section geometry (`wetted_properties`,
+  `station_from_points`) extracted from `stage_converter`; **100%** covered.
+- `hydrology/telemetry_metrics.py` — hourly resampling, `parse_cycle_time`, and the
+  NSE/RMSE/PBIAS/Spearman/Pearson core extracted from `realtime_telemetry_validator`
+  (now 363 statements, down from the 852-line monolith); **92%** covered.
+
+**Verification:** **197 passed** (was 164), coverage **39% → 42.89%**, CI gate ratcheted
+**38 → 42**, smoke import + workflow YAML still valid. Still open: the remaining
+`stage_converter`/validator I/O split, `print()` cleanup, and the domain-side flood-flow
+rating re-anchor.
+
+### 13.11 Security hardening - backend + frontend (2026-10-28)
+
+A full audit of the FastAPI backend (`src/api`) and Next.js frontend (`frontend/`) found
+**four exploitable issues** and several hardening gaps. All are fixed and covered by
+regression tests. Full write-up: **`SECURITY.md`** at the repo root.
+
+**Critical findings**
+
+| Finding | Impact | Fix |
+|:---|:---|:---|
+| **Admin login bypass when `ADMIN_PASSWORD` is unset** | `hmac.compare_digest("", "")` is `True`, so `{"username":"admin","password":""}` minted a valid admin JWT on any deployment that forgot to set the password. | `verify_admin_credentials` now fails closed if `ADMIN_PASSWORD`/`ADMIN_USERNAME` are empty; password compared exactly (no `.strip()`). |
+| **Wildcard CORS with `allow_credentials=True`** | Starlette echoes the request `Origin` and sets `Allow-Credentials`, letting *any* site make credentialed cross-origin calls. | Default is now **same-origin only**; `CORS_ORIGINS` is an explicit allowlist. `*` is only honoured with credentials disabled, and logs a warning. |
+| **Path traversal via `run_id` (backend + frontend)** | `GET /api/v1/runs/{run_id}` and the Next `/api/v1/dashboard?run_id=` built `data/runs/<id>.json` directly -> arbitrary `.json` read (`../../...`). | New `_run_path()` sanitizer in `runs_tracker` (regex `^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$` + resolved-path containment). Next route validates the same regex. |
+| **Telegram webhook fail-open** | With `TELEGRAM_WEBHOOK_SECRET` unset, every request was accepted -> anyone could forge bot updates. | Fails **closed** when `NODE_ENV=production`; payload shape-checked, text capped at 512 chars, HTML escaped. |
+
+**Other controls added**
+- Constant-time `X-API-Key` checks (backend + Next export route); unset server key authorises nobody.
+- Admin login throttled (`RATE_LIMIT_LOGIN`, default 5/min) via a shared limiter (`src/api/limits.py`).
+- JWT algorithm restricted to HS256/384/512; parser details no longer echoed in 401s.
+- `INTERNAL_KEY` must be >=16 chars or `/internal/broadcast` returns 503.
+- Security headers on every API response (nosniff, XFO DENY, Referrer-Policy, Permissions-Policy, COOP, HSTS, `no-store`).
+- Request body cap (`MAX_REQUEST_BYTES`, 1 MB) and WebSocket connection cap (`MAX_WS_CONNECTIONS`, 200).
+- Pagination `limit` clamped to `1..500`.
+- Visitor IP hash optionally salted (`VISIT_HASH_SALT`); visits route throttled per IP; Telegram/export error messages no longer reveal config state.
+- Frontend: CSP + HSTS + `poweredByHeader:false`; removed the third-party `unpkg.com` Leaflet CSS `<link>` (`BasinMap` already imports it locally).
+
+**Verification.** Backend **211 passed** (was 197), coverage **43.35%** (gate 42); new
+`tests/test_security_hardening.py` (blank-password rejection, exact-password matching,
+tampered/expired JWT, traversal rejection). The one test that asserted the old blank-password
+behaviour was rewritten to the secure contract. `tsc --noEmit` exits 0; `next.config.js`
+headers validated (7 headers incl. CSP). `.env.example` documents every new fail-closed setting.
+
+**Residual risk (documented, not code):** TLS termination, secret injection/rotation, proxy
+trust for `X-Forwarded-For`, dependency scanning, and upgrading Next 14.2.5. CSP still needs
+`'unsafe-inline'` for Next's hydration bootstrap until a nonce-based policy is added. The live
+WebSocket is read-only and intentionally public.
+
+### 13.12 Backend API coverage + local secret bootstrap (2026-10-29)
+
+**API contract tests.** Added `tests/test_api_endpoints.py` (28 tests) using a deterministic
+asyncpg double: health + security headers, CORS reflection guard, oversized-body 413, API-key
+401 path, status success/failure degradation, visit counter, every rainfall/runoff/alert/pipeline
+read endpoint, stage 404, historical runs, accuracy (stored vs computed), pagination validation,
+and internal-broadcast fail-closed. `src/api/main.py` coverage **41% -> 81%**; suite **211 -> 239**;
+total **43.35% -> 45.70%**. CI gate ratcheted **42 -> 45**.
+
+**CI environment alignment.** `tests.yml` moved from Python **3.11 -> 3.12** to match the Docker
+runtime and the environment the lockfile was validated against.
+
+**Local secret bootstrap.** `scripts/bootstrap_env.py` generates `.env` and
+`frontend/.env.local` from `.env.example` with strong random values for
+`POSTGRES_PASSWORD`, `API_KEY`, `INTERNAL_KEY`, `JWT_SECRET`, `ADMIN_PASSWORD`,
+`VISIT_HASH_SALT`, `TELEGRAM_WEBHOOK_SECRET`, `JUPYTER_TOKEN`. It refuses to overwrite without
+`--force` and prints only masked values. Both output files are git-ignored (verified with
+`git check-ignore`). External credentials (Telegram bot token, SMTP, Supabase, Upstash, ECMWF)
+remain blank for the operator to supply.
+
+**Flagged for decision.** `requirements.txt` pins `pyarrow>=15,<17` while `requirements.lock`
+pins `pyarrow==23.0.1`; resolve before switching the Docker image from `requirements.txt` to the
+lock (P0 #2).
+
+### 13.13 Hydrosim water-level feed + supply-chain scanning (2026-10-29)
+
+**`.env` was inert locally.** No module called `load_dotenv()`, so the secrets generated by
+`scripts/bootstrap_env.py` were only visible to Docker Compose (which injects env directly).
+`load_dotenv()` is now called before the first `os.getenv` in `src/api/main.py`,
+`src/api/limits.py`, `src/api/keys.py`, `src/api/security.py`, `src/orchestrator.py` and
+`src/db/connection.py`. Local `uvicorn ...` now uses the same credentials as Compose.
+`tests/test_db_connection.py` was made deterministic with `patch.dict(os.environ, {}, clear=True)`.
+
+**Scoped consumer keys.** `src/api/keys.py` adds a second key class: the master `API_KEY` plus
+read-only consumer keys (`HYDROCAST_READONLY_KEY`, legacy `HYDROSIM_API_KEY` still accepted, and
+comma-separated `CONSUMER_API_KEYS` for
+zero-downtime rotation). All comparisons are constant-time and every configured key is compared
+even after a match, so timing does not disclose how many keys exist. Consumer keys are accepted by
+public reads via `verify_public_key()` but **never** by `/api/v1/admin/*`, which still requires the
+master key or an admin JWT. Unset keys authorise nobody. `scripts/bootstrap_env.py` gained
+`--add-missing`, which appended `HYDROCAST_READONLY_KEY` (then still labelled
+`HYDROSIM_API_KEY`; later renamed, with the old name kept as an alias) and a missing
+`JUPYTER_TOKEN` to the existing
+`.env` without rotating any other secret.
+
+**Feed for HEC-RAS.** `GET /api/v1/integration/hydrosim/stage` returns the latest cycle's 90-hour
+stage series per bridge with thresholds, coordinates and `zero_datum_m`. `?format=csv` emits a
+tidy long-form table (`site_id,site_name,forecast_time_utc,lead_hours,stage_m,discharge_m3s,
+alert_level,is_above_danger`) for direct import as a stage or flow hydrograph. `?site_id=` filters
+one bridge; `404` means no cycle exists yet; `422` rejects an unknown format. The JSON carries an
+explicit `vertical_datum` caveat: the WRD gauge datum must be aligned to the HEC-RAS geometry datum
+before use. Documented in `docs/integration-hydrosim.md` (MkDocs strict build passes).
+
+**Open-Meteo-style URL.** For a non-programmer, the key can go in the query string
+(`?key=hydrocast_PS_V1_...`). The branded aliases `GET /api/v1/hydrocast/water-levels` and
+`GET /api/v1/water-levels` return the same payload as `/api/v1/hydrosim/water-levels` and the full
+`/api/v1/integration/hydrosim/stage`. The key prefix is fixed (`hydrocast_PS_V1_`) with a random
+suffix; it remains read-only and is never accepted by `/admin`. The read-only variable was renamed
+`HYDROCAST_READONLY_KEY` (legacy `HYDROSIM_API_KEY` still accepted) because the key belongs to
+HydroCast, not to the external model. Query keys can appear in access logs, so the docs prefer the
+header for production and describe the URL form as a convenience over read-only, rate-limited data.
+`scripts/fetch_hydrocast_levels.py` reads the key from `.env`, downloads JSON or CSV, prints the
+peak stage per bridge, and saves the file a flood model can read.
+
+**P0 #3 — supply chain.** Added `.github/dependabot.yml` (pip, npm, Actions, Docker; weekly) and
+`.github/workflows/security.yml` (`pip-audit` on the lock, `bandit -ll`, `npm audit --audit-level=high`)
+on push/PR/weekly cron. Audits are **advisory** (`continue-on-error`) until the current pins are
+triaged; the intent is to flip them to blocking. `tests.yml` and `security.yml` now declare
+`permissions: contents: read` and a `concurrency` group. Actions remain tag-pinned; SHA-pinning and
+blocking audits are parked.
+
+**Verification.** 17 new integration tests (`tests/test_hydrosim_integration.py`): consumer-key
+read, master-key read, unknown-key 401, query-key read, HydroCast alias parity, master key in the
+URL, branded aliases, legacy `HYDROSIM_API_KEY` alias, wrong-query-key 401, consumer-key admin 401
+(header and query), rotation overlap, JSON shape, CSV shape, site filter, no-cycle 404, invalid
+format 422. Suite **239 -> 256**; total **45.70% -> 46.38%**; `src/api/main.py` **81% -> 83%**.
+Full suite green; workflow YAML and MkDocs build validated locally (the MkDocs exit code on Windows
+is a PowerShell stderr artefact; the build itself reports success).
+
+### 13.14 P0 #1 — frontend CI gate + Next.js security patch (2026-10-30)
+
+**The gap.** `tests.yml` only ran Python; the Next dashboard was never type-checked, built, or
+browser-tested in CI. A broken dashboard could merge.
+
+**What shipped.**
+- A `frontend` job in `.github/workflows/tests.yml`: `npm ci`, `npx tsc --noEmit`,
+  `npm run build`, `npx playwright install --with-deps chromium`, `npx playwright test`.
+- `frontend/playwright.config.ts` + `frontend/e2e/smoke.spec.ts`: the root redirects to
+  `/dashboard`; the dashboard renders the HydroCast shell. The smoke test needs no backend.
+- `package.json` script `test:e2e`.
+- The build was verified **without** `frontend/.env.local`, matching CI.
+
+**Next.js security.** `npm ci` flagged Next 14.2.5 as critical. Upgraded 14.2.5 -> **14.2.35**
+(no breaking changes; typecheck and build pass). Residual `npm audit --omit=dev` on 14.2.35:
+**1 critical + 1 high**; only **Next 16.4.3** clears them. The app uses no `next/image` and no
+`"use server"`, so the image-optimizer and Server Action surfaces are narrower, but this is now
+tracked as **P0 #6**. Decision: hold 14.2.35 for this cycle, block `/_next/image` at the proxy,
+keep the dev server off the network, and schedule the Next 16 + React 19 migration as its own
+change.
+
+**Verification.** `npx tsc --noEmit` clean; `npm run build` clean (with and without `.env.local`);
+2 Playwright tests pass locally; `tests.yml` YAML valid. Backend suite unchanged at **256 passed**
+/ **46.38%**.
+
+### 13.15 P0 #2 — Docker installs the tested lock (2026-10-30)
+
+**Dependency conflict resolved.** `requirements.txt` pinned `pyarrow>=15,<17` while
+`requirements.lock` pinned `pyarrow==23.0.1`; the lock is generated from the validated local
+environment, so the two could never agree. Relaxed the range to `pyarrow>=15` (the installed 23.0.1
+passes the suite).
+
+**Extras preserved.** The lock generator wrote `uvicorn==0.52.4`, silently dropping the
+`[standard]` extra (and therefore `websockets`/`uvloop`). It now parses and preserves extras, so the
+regenerated lock contains `uvicorn[standard]==0.52.4`. Without this, the container's WebSocket
+endpoint would have broken in production while CI stayed green.
+
+**Image now installs the tested set.** The Docker builder copies `requirements.txt` and
+`requirements.lock` and runs `pip install -r requirements.lock && pip check`; `requirements.txt`
+stays for provenance and lock regeneration.
+
+**Remaining.** The runner image build + `/api/v1/health` smoke job is now in CI; the 30-day plan
+item stays open until its first green run (no Docker on the local host).
+
+**Verification.** Lock regenerated (29 lines; `cfgrib`, `eccodes`, `pydsstools` remain specs because
+they are not installed in the local validated env). Backend suite unchanged at **256 passed** /
+**46.38%**.
+
+### 13.16 P0 #4 — real Postgres integration + schema drift fix (2026-10-30)
+
+**What the fake tests missed.** The shipped schema did not create `peak_discharge_events` or
+`runoff_summary` (both written by `store_all`), did not have `simulation_runs.error_message`
+(written by `step_fail`), and did not create the four views the API reads
+(`v_latest_hydrograph`, `v_latest_peak_summary`, `v_active_alerts_enriched`,
+`v_cycle_performance`). A fresh database could not run the write path or those endpoints. The
+Supabase-only `ALTER ROLE authenticator` also aborted a plain PostGIS init.
+
+**What changed.**
+- `database/supabase_schema.sql`: added the two write tables, `alert_events`, `error_message`, the
+  four views, and a guarded role block; `wrd_field_benchmarks` is now idempotent.
+- `src/db/sync_all_to_supabase.py`: mirrored the same objects in the bootstrap.
+- `tests/test_postgres_integration.py`: applies the real schema to a PostGIS service container,
+  runs `run_pipeline` with network/DSS/alert steps stubbed but step 10 real, checks the hydrograph,
+  peak-event and runoff-summary rows, and verifies a failure writes `error_message`.
+- `.github/workflows/tests.yml`: new `postgres` job with `postgis/postgis:15-3.4` and
+  `HYDROCAST_TEST_DATABASE_URL`; new `docker` job builds the runtime image and waits for
+  `/api/v1/health`.
+- The Postgres test is skipped unless `HYDROCAST_TEST_DATABASE_URL` is set, so it cannot
+  accidentally point at production.
+
+**Verification.** Schema parses with `pglast`; 284 backend tests pass; 3 integration tests skip locally
+(no Docker/Postgres on this host); workflow YAML valid. The first CI run is the gate.
+
+### 13.17 P0 #3 — SHA-pinned actions, blocking audits, PyJWT patch (2026-10-31)
+
+**What changed.** All 23 `uses:` entries across the five workflows are pinned to commit SHAs with a
+version comment. `pip-audit` and `bandit` are blocking. `bandit -r src -ll` is clean after two real
+fixes:
+
+- `src/db/archive_runs.py` now allow-lists archive targets and uses `psycopg2.sql.Identifier` for
+  the dynamic table/column names instead of f-string SQL.
+- The Open-Meteo and ThingSpeak `urlopen` calls validate an HTTPS host (and a numeric channel id)
+  before fetching; the two remaining B310 findings are reviewed `# nosec` with the reason above.
+
+**Dependency triage.** `pip-audit` found 15 advisories in PyJWT 2.13.0; upgraded to **2.15.0**, and
+the pinned direct dependency set is clean. npm audit still reports the known Next 14.2.35 + PostCSS
+advisories; `frontend/scripts/npm-audit-gate.mjs` + `frontend/audit-allowlist.json` make the gate
+blocking for any **new** high/critical advisory while explicitly allowlisting the 29 tracked GHSA
+IDs (remove them with P0 #6).
+
+**Verification.** 284 backend tests pass; 3 Postgres tests skip locally; schema parses; workflow
+YAML valid; `npm run audit:gate` passes; `bandit -r src -ll` exits 0; `pip-audit` on pinned direct
+dependencies exits 0.
+
 ---
 
 *This log was updated on 2026-10-22 during the life-safety calibration session, extended
 2026-10-24 (per-subbasin re-calibration), 2026-10-26 (generalization + joint + two-event
 digital-twin), and 2026-10-27 (WSE-is-truth reframe; backwater ≤1 m; routing K/X/lag lever;
 peak-stage target; 2021 discharge 2162 reverses data-capped; production promotion; decision to
-fix the flood-flow rating). Last updated: 2026-10-27.*
+fix the flood-flow rating), and 2026-10-28 (ML-calibration honesty overhaul + state-file
+conflict-marker recovery; engineering hardening — coverage gate, lockfile, orchestrator &
+golden-emulator tests; P1 write-path coverage, monolith splits, and the `_store_hydrograph`
+SQL fix; security hardening of the FastAPI backend and Next.js frontend), and 2026-10-29
+(backend API contract coverage, CI 3.12 + gate 45, local secret bootstrap; Hydrosim read-only
+water-level feed + `.env` loading; P0 #3 Dependabot/audits/least-privilege CI; Open-Meteo-style
+`?key=` URL and one-step fetch script), and 2026-10-30 (P0 #1 frontend CI + Playwright smoke;
+Next.js 14.2.5 → 14.2.35 security patch; Next 16 migration tracked as P0 #6; P0 #2 Docker now
+installs the tested lock, extras preserved, pyarrow conflict resolved; P0 #4 PostGIS service
+container + orchestrator write-path test; schema drift fixed — write tables, `alert_events`,
+`error_message`, and the four API views; P0 #3 SHA-pinned actions, blocking `pip-audit`/`bandit`,
+npm audit gate, and PyJWT 2.13.0 → 2.15.0). Last updated: 2026-10-31.*

@@ -30,7 +30,7 @@ HydroCast relies on PostgreSQL (local production, Docker PostGIS, or Supabase ma
 
 ### 1. Cloud Deployment (Supabase)
 1. Open the **SQL Editor** in your Supabase project dashboard.
-2. Execute [`supabase_schema.sql`](file:///e:/hydrocast_complete/database/supabase_schema.sql).
+2. Execute `supabase_schema.sql`.
 3. The script executes idempotently with `IF NOT EXISTS` and migration safety guards.
 
 ### 2. Local Production PostgreSQL / Docker PostGIS

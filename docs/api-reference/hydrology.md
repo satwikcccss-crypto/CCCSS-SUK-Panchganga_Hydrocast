@@ -8,6 +8,25 @@ The physics: turning rainfall and channel geometry into stage.
 
 ---
 
+## Interactive diagram consoles
+
+The console below provides interactive visualization of the catchment hydrology core across the 9 subbasins (AMC classification, dynamic initial abstraction, SCS-UH convolution, and 5-reach Muskingum cascade).
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 10</span>
+      <strong>Catchment Hydrology Solver (Runoff & Muskingum Routing)</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../../diagrams/10-catchment-hydrology-solver.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../../diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console" loading="lazy"></iframe>
+</div>
+
+---
+
 ## Pipeline position
 
 `stage_converter` sits between the routing engine and everything that consumes a

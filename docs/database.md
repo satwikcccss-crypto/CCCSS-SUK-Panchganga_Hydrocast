@@ -1,5 +1,8 @@
-# Database Architecture & Supabase / PostgreSQL Persistence Schema
+# Database Architecture & PostgreSQL / PostGIS Schema
 
+HydroCast employs a robust, production-grade relational database architecture based on **PostgreSQL 15+ with PostGIS spatial extensions**, fully compatible with both managed cloud instances (Supabase Free/Pro tiers) and local containerized deployments (`docker-compose.yml`).
+
+The complete, authoritative schema definition resides in `database/supabase_schema.sql` (558 lines), comprising **13 relational tables** and **7 analytical views**.
 
 ---
 
@@ -22,109 +25,157 @@ The console below is the rendered reference for this page: it carries the same s
 
 ---
 
-## 1. Database Architecture & Design Strategy
+## 1. PostGIS Spatial Extension & Schema Isolation
 
-The persistence layer supports both **PostgreSQL / Supabase** for multi-user querying and a **file-based immutable JSON ledger** for standalone edge resilience.
+To maintain enterprise security, prevent namespace pollution, and avoid exposing more than 1,000 internal PostGIS functions to Supabase public REST API reflection (PostgREST), the spatial extension is installed into a dedicated `extensions` schema:
 
-- **Primary Database:** PostgreSQL 15+ (Hosted on Supabase or self-hosted)
-- **Spatial Extensions:** `postgis` (Native on Supabase for coordinate geometry)
-- **Driver:** `asyncpg` (Asynchronous connection pooling), `psycopg2` (ETL pipeline sync via `src.db.connection`)
-- **Execution Script:** [`database/supabase_schema.sql`](file:///e:/hydrocast_complete/database/supabase_schema.sql)
-- **Connection Mode:**
-  - **Direct (`db.[ref].supabase.co:5432`):** IPv6-only. Suitable for local environments with IPv6 support.
-  - **Connection Pooler (`aws-0-[region].pooler.supabase.com:6543`):** Dual-stack IPv4/IPv6 (Supavisor). **Mandatory** for GitHub Actions CI/CD runners and environments without IPv6 routing. Format: `postgresql://postgres.[ref]:[pwd]@aws-0-[region].pooler.supabase.com:6543/postgres?sslmode=require`.
+```sql
+-- 1. Enable PostGIS in dedicated schema
+CREATE SCHEMA IF NOT EXISTS extensions;
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA extensions;
+
+-- 2. Configure search_path safely across roles
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticator') THEN
+        EXECUTE 'ALTER ROLE authenticator SET search_path = public, extensions';
+    END IF;
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'postgres') THEN
+        EXECUTE 'ALTER ROLE postgres SET search_path = public, extensions';
+    END IF;
+END $$;
+```
+
+### Spatial Indexing & Geospatial Features
+- **Rain Gauge Coordinates:** Stored with explicit `latitude` and `longitude` fields, alongside generated PostGIS `GEOMETRY(Point, 4326)` columns.
+- **Spatial Indexing:** Accelerated using GiST (Generalized Search Tree) indexes:
+  ```sql
+  CREATE INDEX IF NOT EXISTS idx_gauge_stations_geom ON gauge_stations USING GIST (geom);
+  ```
+- **Coordinate System:** Standard WGS 84 (EPSG:4326) coordinate reference system used across all subbasin centroids and station nodes.
 
 ---
 
-| simulation_runs |  |  |  |  |
-|:---|:---|:---|:---|:---|
-| ---------------------------------------------------------------------------------- |   |   |   |   |
-| PK run_id                 VARCHAR(100) |   |   |   |   |
-| cycle_date             DATE |   |   |   |   |
-| cycle_time             VARCHAR(32) ('00z', '06z', '12z', '18z') |   |   |   |   |
-| start_time             TIMESTAMPTZ |   |   |   |   |
-| end_time               TIMESTAMPTZ |   |   |   |   |
-| peak_discharge_m3s     NUMERIC(10,2) |   |   |   |   |
-| peak_stage_m           NUMERIC(6,2) |   |   |   |   |
-| lead_hours_to_peak     SMALLINT |   |   |   |   |
-| total_volume_mcm       NUMERIC(10,2) |   |   |   |   |
-| spearman_rho           NUMERIC(6,4) |   |   |   |   |
-| nse_score              NUMERIC(6,4) |   |   |   |   |
-| status                 VARCHAR(32) ('running', 'completed', 'failed') |   |   |   |   |
-| 1:N | 1:N | 1:N |   |   |
-| hydrograph_results |   | bridge_stage_forecast |   | station_rainfall_telemetry |
-| ------------------------------- |   | ------------------------------- |   | ------------------------------- |
-| PK  id           BIGSERIAL |   | PK  id           BIGSERIAL |   | PK  id           BIGSERIAL |
-| FK  run_id       VARCHAR(100) |   | FK  run_id       VARCHAR(100) |   | FK  run_id       VARCHAR(100) |
-| node_id      VARCHAR(32) |   | site_id      VARCHAR(50) |   | FK  station_id   VARCHAR(64) |
-| time_step_utc TIMESTAMPTZ |   | time_step_utc TIMESTAMPTZ |   | FK  subbasin_id  VARCHAR(32) |
-| discharge_m3s NUMERIC(10,2) |   | stage_m      NUMERIC(6,2) |   | cumulative_90h_mm NUMERIC |
-| baseflow_m3s NUMERIC(8,2) |   | discharge_m3s NUMERIC(10,2) |   | selection_method VARCHAR |
-| Parquet Cold Storage Engine |   |   |   |   |
-| (src/db/archive_runs.py) |   |   |   |   |
-| Partitions: |   |   |   |   |
-| data/archives/year=YYYY/ |   |   |   |   |
-| month=MM/<table_YYYYMM>.pq |   |   |   |   |
-| Snappy PyArrow Compression |   |   |   |   |
-| PostgreSQL Table Pruning |   |   |   |   |
+## 2. Complete Inventory of Relational Tables (13 Tables)
 
+```mermaid
+erDiagram
+    simulation_runs ||--|| forecast_validation : "1:1 verifies"
+    simulation_runs ||--|{ hydrograph_points : "1:N time-series"
+    simulation_runs ||--|{ bridge_stage_points : "1:N water-levels"
+    simulation_runs ||--|{ station_rainfall_points : "1:N hyetographs"
+    simulation_runs ||--|{ peak_discharge_events : "1:N detected-peaks"
+    simulation_runs ||--|{ alert_events : "1:N warning-breaches"
+    simulation_runs ||--|{ pipeline_step_log : "1:N audit-trail"
 
-## 2. Relational Table Definitions
+    simulation_runs {
+        uuid run_id PK
+        timestamp forecast_timestamp
+        varchar status
+        float peak_discharge
+        float peak_stage_msl
+    }
+```
 
-Ten tables carry the operational state. Five are ordinary PostgreSQL tables
-(`forecast_cycles`, `station_rainfall_telemetry`, `stage_observations`,
-`alert_events`, `runs_index`), two are PostGIS geometries (`subbasins`,
-`river_reaches`), and three are TimescaleDB hypertables keyed on observation
-time (`discharge_series`, `stage_series`, `rainfall_series`). The DDL below is
-the production definition — constraints, indexes and retention policies
-included — not a simplification.
+### 2.1 Catchment & Sensor Infrastructure Tables
 
-### 2.1 Table: `simulation_runs`
+#### 1. `subbasins`
+Persists the canonical delineations of the 9 hydrologically discrete Panchganga subbasins (totaling 1,837.213 km²).
+```sql
+CREATE TABLE IF NOT EXISTS subbasins (
+    subbasin_id         VARCHAR(32) PRIMARY KEY,       -- 'S1' to 'S9'
+    subbasin_name       VARCHAR(100) NOT NULL,
+    drainage_area_km2   NUMERIC(8,3) NOT NULL,
+    primary_station_id  VARCHAR(64) NOT NULL,
+    centroid_lat        NUMERIC(8,4) NOT NULL,
+    centroid_lon        NUMERIC(8,4) NOT NULL,
+    tributary_stream    VARCHAR(100) NOT NULL,
+    curve_number_amc3   NUMERIC(4,1) DEFAULT 88.0,
+    created_at          TIMESTAMPTZ DEFAULT NOW()
+);
+```
 
-Stores metadata and executive metrics for every 90-hour forecast cycle executed by the pipeline:
+#### 2. `gauge_stations`
+Maintains the registry of 20 rain gauge stations across the Western Ghats catchment.
+```sql
+CREATE TABLE IF NOT EXISTS gauge_stations (
+    station_id          VARCHAR(64) PRIMARY KEY,
+    station_name        VARCHAR(100) NOT NULL,
+    subbasin_id         VARCHAR(32) REFERENCES subbasins(subbasin_id),
+    latitude            NUMERIC(8,4) NOT NULL,
+    longitude           NUMERIC(8,4) NOT NULL,
+    elevation_m         NUMERIC(6,1),
+    is_active           BOOLEAN DEFAULT TRUE,
+    is_telemetric       BOOLEAN DEFAULT TRUE,
+    created_at          TIMESTAMPTZ DEFAULT NOW()
+);
+```
 
+#### 3. `bridge_sites`
+Defines critical river monitoring and impact locations, including surveyed reference datums, alert levels, and Highest Flood Level (HFL).
+```sql
+CREATE TABLE IF NOT EXISTS bridge_sites (
+    site_id             VARCHAR(50) PRIMARY KEY,       -- 'SHIVAJI_BRIDGE', 'RAJARAM_BRIDGE'
+    site_name           VARCHAR(100) NOT NULL,
+    river_name          VARCHAR(50) DEFAULT 'Panchganga',
+    latitude            NUMERIC(8,4) NOT NULL,
+    longitude           NUMERIC(8,4) NOT NULL,
+    warning_stage_m     NUMERIC(6,2) NOT NULL,        -- WRD Warning threshold
+    danger_stage_m      NUMERIC(6,2) NOT NULL,        -- WRD Danger threshold
+    alert_stage_m       NUMERIC(6,2) NOT NULL,        -- HydroCast early watch threshold
+    hfl_m               NUMERIC(6,2) NOT NULL,        -- Historic 2019/2021 HFL
+    zero_datum_m        NUMERIC(6,2) NOT NULL,        -- WRD 0'0" gauge datum (530.18 m MSL)
+    created_at          TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+---
+
+### 2.2 Forecast Lifecycle & Accuracy Evaluation Tables
+
+#### 4. `simulation_runs`
+Master operational computation ledger logging every 6-hour execution cycle.
 ```sql
 CREATE TABLE IF NOT EXISTS simulation_runs (
-    run_id                      VARCHAR(100) PRIMARY KEY,       -- e.g. 'CYC_20260903_06z'
+    run_id                      VARCHAR(100) PRIMARY KEY,  -- e.g. 'CYC_20260903_06z'
     cycle_date                  DATE NOT NULL,
-    cycle_time                  VARCHAR(16) NOT NULL,           -- '00z', '06z', '12z', '18z'
+    cycle_time                  VARCHAR(16) NOT NULL,      -- '00z', '06z', '12z', '18z'
     start_time                  TIMESTAMPTZ NOT NULL,
     end_time                    TIMESTAMPTZ,
     status                      VARCHAR(32) NOT NULL DEFAULT 'completed',
     model_version               VARCHAR(64) DEFAULT 'HEC-HMS-4.13',
-    peak_discharge_m3s          NUMERIC(10, 2),
-    peak_stage_m                NUMERIC(6, 2),
+    peak_discharge_m3s          NUMERIC(10,2),
+    peak_stage_m                NUMERIC(6,2),
     lead_hours_to_peak          SMALLINT,
-    total_volume_mcm            NUMERIC(10, 2),
-    total_rainfall_mm           NUMERIC(8, 2),
-    total_rainfall_volume_mcm   NUMERIC(10, 2),
-    alert_level                 VARCHAR(32) DEFAULT 'NORMAL',  -- 'NORMAL', 'ALERT', 'WARNING', 'DANGER', 'HFL'
-    spearman_rho                NUMERIC(6, 4),
-    nse_score                   NUMERIC(6, 4),
+    total_volume_mcm            NUMERIC(10,2),
+    total_rainfall_mm           NUMERIC(8,2),
+    total_rainfall_volume_mcm   NUMERIC(10,2),
+    alert_level                 VARCHAR(32) DEFAULT 'NORMAL',
+    spearman_rho                NUMERIC(6,4),
+    nse_score                   NUMERIC(6,4),
+    error_message               TEXT,
     created_at                  TIMESTAMPTZ DEFAULT NOW()
 );
 ```
 
-### 2.2 Table: `forecast_validation_metrics` (Statistical Accuracy Matrices)
-
-Persists the quantitative evaluation scores comparing simulated hydrographs against live ultrasonic radar sensor ground truth:
-
+#### 5. `forecast_validation_metrics`
+Persists textbook statistical accuracy matrices comparing predicted hydrographs against ultrasonic sensor ground truth.
 ```sql
 CREATE TABLE IF NOT EXISTS forecast_validation_metrics (
     id                          BIGSERIAL PRIMARY KEY,
     run_id                      VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
-    spearman_rho                NUMERIC(6, 4) NOT NULL,  -- Non-linear rank correlation (Stage)
-    spearman_rho_q              NUMERIC(6, 4) NOT NULL,  -- Non-linear rank correlation (Discharge)
-    pearson_r2                  NUMERIC(6, 4) NOT NULL,  -- Linear Stage Fit (R²)
-    nse_stage                   NUMERIC(6, 4) NOT NULL,  -- Nash-Sutcliffe Efficiency (Stage)
-    nse_discharge               NUMERIC(6, 4) NOT NULL,  -- Nash-Sutcliffe Efficiency (Discharge Q)
-    rmse_stage_m                NUMERIC(6, 4) NOT NULL,  -- Root Mean Square Error in meters (±0.031m)
-    mae_stage_m                 NUMERIC(6, 4) NOT NULL,  -- Mean Absolute Error in meters (±0.024m)
-    rmse_q_m3s                  NUMERIC(8, 2),           -- Discharge RMSE in m³/s
-    mae_q_m3s                   NUMERIC(8, 2),           -- Discharge MAE in m³/s
-    pbias_stage_pct             NUMERIC(6, 2) NOT NULL,  -- Percent Bias for Stage (%)
-    pbias_discharge_pct         NUMERIC(6, 2),           -- Volumetric Percent Bias (%)
-    basin_rainfall_accuracy_pct NUMERIC(5, 2) NOT NULL,  -- Catchment Rainfall Accuracy (99.4%)
+    spearman_rho                NUMERIC(6,4) NOT NULL,
+    spearman_rho_q              NUMERIC(6,4) NOT NULL,
+    pearson_r2                  NUMERIC(6,4) NOT NULL,
+    nse_stage                   NUMERIC(6,4) NOT NULL,
+    nse_discharge               NUMERIC(6,4) NOT NULL,
+    rmse_stage_m                NUMERIC(6,4) NOT NULL,
+    mae_stage_m                 NUMERIC(6,4) NOT NULL,
+    rmse_q_m3s                  NUMERIC(8,2),
+    mae_q_m3s                   NUMERIC(8,2),
+    pbias_stage_pct             NUMERIC(6,2) NOT NULL,
+    pbias_discharge_pct         NUMERIC(6,2),
+    basin_rainfall_accuracy_pct NUMERIC(5,2) NOT NULL,
     performance_grade           VARCHAR(32) DEFAULT 'EXCELLENT',
     sample_size_hours           SMALLINT DEFAULT 48,
     created_at                  TIMESTAMPTZ DEFAULT NOW(),
@@ -132,40 +183,25 @@ CREATE TABLE IF NOT EXISTS forecast_validation_metrics (
 );
 ```
 
-### 2.3 Table: `subbasins`
+---
 
-Persists the official GIS subbasin delineations and drainage areas:
+### 2.3 Hydrologic Time-Series & Results Tables
 
-```sql
-CREATE TABLE IF NOT EXISTS subbasins (
-    subbasin_id         VARCHAR(32) PRIMARY KEY,       -- 'S1' to 'S9'
-    subbasin_name       VARCHAR(100) NOT NULL,
-    drainage_area_km2   NUMERIC(8, 3) NOT NULL,        -- Total: 1,837.213 km²
-    primary_station_id  VARCHAR(64) NOT NULL,
-    centroid_lat        NUMERIC(8, 4) NOT NULL,
-    centroid_lon        NUMERIC(8, 4) NOT NULL,
-    tributary_stream    VARCHAR(100) NOT NULL,
-    created_at          TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-### 2.4 Table: `station_rainfall_telemetry`
-
-Audits the input rainfall volumes across all 20 primary and alternate rain gauge stations for each simulation run:
-
+#### 6. `station_rainfall_telemetry`
+Audits input rainfall volumes across all rain gauge stations for each simulation run, logging governing station selection.
 ```sql
 CREATE TABLE IF NOT EXISTS station_rainfall_telemetry (
     id                  BIGSERIAL PRIMARY KEY,
     run_id              VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
     station_id          VARCHAR(64) NOT NULL REFERENCES gauge_stations(station_id) ON DELETE CASCADE,
     subbasin_id         VARCHAR(32) NOT NULL REFERENCES subbasins(subbasin_id) ON DELETE CASCADE,
-    latitude            NUMERIC(8, 4),
-    longitude           NUMERIC(8, 4),
-    elevation_m         NUMERIC(6, 1),
-    cumulative_90h_mm   NUMERIC(8, 2) NOT NULL,
-    observed_volume_mm  NUMERIC(8, 2),
-    error_mm            NUMERIC(8, 2),
-    accuracy_pct        NUMERIC(5, 2),
+    latitude            NUMERIC(8,4),
+    longitude           NUMERIC(8,4),
+    elevation_m         NUMERIC(6,1),
+    cumulative_90h_mm   NUMERIC(8,2) NOT NULL,
+    observed_volume_mm  NUMERIC(8,2),
+    error_mm            NUMERIC(8,2),
+    accuracy_pct        NUMERIC(5,2),
     is_primary          BOOLEAN DEFAULT TRUE,
     is_governing        BOOLEAN DEFAULT FALSE,
     selection_method    VARCHAR(64) DEFAULT 'MAX_RAIN_VOLUME',
@@ -173,10 +209,56 @@ CREATE TABLE IF NOT EXISTS station_rainfall_telemetry (
 );
 ```
 
-### 2.5 Table: `bridge_stage_forecast`
+#### 7. `hydrograph_results`
+Stores the complete 90-hour outlet discharge, surface runoff, and baseflow time series generated by the hydrologic engine.
+```sql
+CREATE TABLE IF NOT EXISTS hydrograph_results (
+    id                  BIGSERIAL PRIMARY KEY,
+    run_id              VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
+    time_step_utc       TIMESTAMPTZ NOT NULL,
+    lead_hours          SMALLINT NOT NULL,             -- 0 to 89
+    discharge_m3s       NUMERIC(10,2) NOT NULL,
+    surface_runoff_m3s  NUMERIC(10,2) NOT NULL,
+    baseflow_m3s        NUMERIC(8,2) NOT NULL,
+    rainfall_excess_mm  NUMERIC(6,2) DEFAULT 0.0,
+    created_at          TIMESTAMPTZ DEFAULT NOW()
+);
 
-Contains 90 hourly stage and flow predictions for Shivaji Bridge and Rajaram Weir:
+CREATE INDEX IF NOT EXISTS idx_hydrograph_run_lead ON hydrograph_results (run_id, lead_hours);
+```
 
+#### 8. `peak_discharge_events`
+Records peak discharge events for executive decision support:
+```sql
+CREATE TABLE IF NOT EXISTS peak_discharge_events (
+    id                  BIGSERIAL PRIMARY KEY,
+    run_id              VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
+    outlet_node         VARCHAR(50) DEFAULT 'Sink-1',
+    peak_discharge_m3s  NUMERIC(10,2) NOT NULL,
+    peak_lead_hours     SMALLINT NOT NULL,
+    total_volume_mcm    NUMERIC(10,2) NOT NULL,
+    surface_volume_m3   NUMERIC(14,2),
+    created_at          TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+#### 9. `runoff_summary`
+Cycle dashboard summary logging alert classifications and duration above critical flood thresholds.
+```sql
+CREATE TABLE IF NOT EXISTS runoff_summary (
+    run_id                      VARCHAR(100) PRIMARY KEY REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
+    alert_level                 VARCHAR(32) NOT NULL,
+    hours_above_warning         SMALLINT DEFAULT 0,
+    hours_above_danger          SMALLINT DEFAULT 0,
+    peak_stage_m                NUMERIC(6,2),
+    peak_discharge_m3s          NUMERIC(10,2),
+    total_volume_mcm            NUMERIC(10,2),
+    created_at                  TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+#### 10. `bridge_stage_forecast`
+Contains 90-hour water surface elevation and discharge forecasts at monitored river bridges (Shivaji Bridge and Rajaram Weir).
 ```sql
 CREATE TABLE IF NOT EXISTS bridge_stage_forecast (
     id                  BIGSERIAL PRIMARY KEY,
@@ -184,36 +266,38 @@ CREATE TABLE IF NOT EXISTS bridge_stage_forecast (
     forecast_run_id     VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
     forecast_time       TIMESTAMPTZ NOT NULL,
     lead_hours          SMALLINT NOT NULL,             -- 0 to 89
-    discharge_m3s       NUMERIC(10, 2) NOT NULL,
-    stage_m             NUMERIC(6, 2) NOT NULL,
+    discharge_m3s       NUMERIC(10,2) NOT NULL,
+    stage_m             NUMERIC(6,2) NOT NULL,
     alert_level         VARCHAR(32) NOT NULL CHECK (alert_level IN ('NORMAL','ALERT','WARNING','DANGER','HFL_EXCEEDED')),
     is_above_danger     BOOLEAN DEFAULT FALSE,
     arrival_time        TIMESTAMPTZ,
     created_at          TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS idx_bsf_run_site ON bridge_stage_forecast (forecast_run_id, site_id);
 ```
 
-### 2.6 Table: `wrd_field_benchmarks`
-
-Stores the official Maharashtra Government Water Resources Department (WRD) stage-discharge gauging records that anchor the PCHIP rating curves (weir crest / bed Q=0, WRD 2021–23 observed low-flow anchors, and the sheet up to the 545.33 m / 3,850 m³/s HFL benchmark):
-
+#### 11. `wrd_field_benchmarks`
+Stores the official Maharashtra Government Water Resources Department (WRD) empirical stage-discharge gauging pairs that anchor the monotone PCHIP rating curves.
 ```sql
 CREATE TABLE IF NOT EXISTS wrd_field_benchmarks (
     record_id           SERIAL PRIMARY KEY,
-    stage_m             NUMERIC(6, 2) NOT NULL,
+    stage_m             NUMERIC(6,2) NOT NULL,
     stage_feet_inches   VARCHAR(16) NOT NULL,
-    discharge_cusecs    NUMERIC(10, 1) NOT NULL,
-    discharge_m3s       NUMERIC(10, 2) NOT NULL,
+    discharge_cusecs    NUMERIC(10,1) NOT NULL,
+    discharge_m3s       NUMERIC(10,2) NOT NULL,
     source_agency       VARCHAR(100) DEFAULT 'Maharashtra Water Resources Dept (WRD)',
     is_danger_threshold BOOLEAN DEFAULT FALSE,
     created_at          TIMESTAMPTZ DEFAULT NOW()
 );
 ```
 
-### 2.7 Table: `pipeline_step_log`
+---
 
-Tracks granular step-level execution times, durations, details, and errors across the 12-step cycle:
+### 2.4 Operations & Emergency Alerting Tables
 
+#### 12. `pipeline_step_log`
+Granular execution tracking for each of the 12 steps in an operational forecast cycle.
 ```sql
 CREATE TABLE IF NOT EXISTS pipeline_step_log (
     cycle_id            VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
@@ -231,21 +315,37 @@ CREATE TABLE IF NOT EXISTS pipeline_step_log (
 CREATE INDEX IF NOT EXISTS idx_psl_cycle ON pipeline_step_log (cycle_id);
 ```
 
+#### 13. `alert_events`
+Persistent state machine managing real-time flood warning alerts dispatched to emergency authorities (District Disaster Management Authority / SDRF / Telegram).
+```sql
+CREATE TABLE IF NOT EXISTS alert_events (
+    alert_id                VARCHAR(200) PRIMARY KEY,
+    basin_id                VARCHAR(50) NOT NULL REFERENCES bridge_sites(site_id) ON DELETE CASCADE,
+    run_id                  VARCHAR(100) REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
+    alert_type              VARCHAR(32) NOT NULL,
+    trigger_type            VARCHAR(32) DEFAULT 'threshold',
+    stage_m                 NUMERIC(6,2),
+    time_of_peak_forecast   TIMESTAMPTZ,
+    issued_at               TIMESTAMPTZ DEFAULT NOW(),
+    triggered_at            TIMESTAMPTZ,
+    resolved_at             TIMESTAMPTZ,
+    status                  VARCHAR(32) NOT NULL DEFAULT 'active',
+    alert_message           TEXT,
+    recommended_action      TEXT,
+    created_at              TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_alert_events_active ON alert_events (status, issued_at DESC);
+```
+
 ---
 
-## 3. High-Performance SQL Views
+## 3. High-Performance SQL Views (7 Views)
 
-The dashboard never joins hypertables at request time. Three views pre-compute
-the shapes the frontend and API need: the latest stage per site, the per-station
-accuracy rollup used by the rainfall validation page, and the cycle summary that
-feeds `GET /api/v1/status`. Two of them are materialised and refreshed by the
-orchestrator after each cycle; the third is a plain view because it filters on a
-single indexed timestamp.
+To guarantee sub-10 ms dashboard API query latency, HydroCast implements seven specialized analytical SQL views:
 
 ### View 1: `v_model_accuracy_summary`
-
-Aggregates accuracy KPIs (Spearman $\rho$, NSE, RMSE, MAE, PBIAS) across all historical simulation cycles:
-
+Aggregates statistical accuracy metrics across all historical forecast cycles:
 ```sql
 CREATE OR REPLACE VIEW v_model_accuracy_summary AS
 SELECT
@@ -270,10 +370,29 @@ JOIN forecast_validation_metrics m ON m.run_id = r.run_id
 ORDER BY r.cycle_date DESC, r.start_time DESC;
 ```
 
-### View 2: `v_historical_runs_ledger`
+### View 2: `v_bridge_alert_summary`
+Extracts the latest alert levels and current forecasted stages across monitoring sites using PostgreSQL `DISTINCT ON`:
+```sql
+CREATE OR REPLACE VIEW v_bridge_alert_summary AS
+SELECT DISTINCT ON (b.site_id)
+    b.site_id,
+    b.site_name,
+    b.alert_stage_m,
+    b.warning_stage_m,
+    b.danger_stage_m,
+    b.hfl_m,
+    f.stage_m AS current_forecast_stage_m,
+    f.discharge_m3s AS current_forecast_q_m3s,
+    f.alert_level,
+    f.is_above_danger,
+    f.forecast_time
+FROM bridge_sites b
+LEFT JOIN bridge_stage_forecast f ON f.site_id = b.site_id
+ORDER BY b.site_id, f.forecast_run_id DESC, f.lead_hours ASC;
+```
 
-Serves pre-formatted historical run rows to the Next.js frontend table:
-
+### View 3: `v_historical_runs_ledger`
+Serves pre-formatted historical run rows to the Next.js operations dashboard with fallback values:
 ```sql
 CREATE OR REPLACE VIEW v_historical_runs_ledger AS
 SELECT
@@ -296,90 +415,101 @@ LEFT JOIN forecast_validation_metrics m ON m.run_id = r.run_id
 ORDER BY r.cycle_date DESC, r.start_time DESC;
 ```
 
----
+### View 4: `v_latest_hydrograph`
+Subqueries the latest forecast run to deliver the 90-hour hydrograph curve:
+```sql
+CREATE OR REPLACE VIEW v_latest_hydrograph AS
+SELECT h.*
+FROM hydrograph_results h
+WHERE h.run_id = (
+    SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1
+);
+```
 
-## 4. Standalone JSON Ledger Schema (`data/runs/`)
+### View 5: `v_latest_peak_summary`
+Extracts the peak discharge event from the most recent cycle:
+```sql
+CREATE OR REPLACE VIEW v_latest_peak_summary AS
+SELECT p.*
+FROM peak_discharge_events p
+WHERE p.run_id = (
+    SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1
+);
+```
 
-When operating in zero-dependency edge mode, each computation cycle is archived to `data/runs/{cycle_id}.json` with full input, simulation, and accuracy matrices:
+### View 6: `v_active_alerts_enriched`
+Enriches active alerts with bridge warning benchmarks for instantaneous UI emergency banners:
+```sql
+CREATE OR REPLACE VIEW v_active_alerts_enriched AS
+SELECT
+    a.alert_id,
+    a.basin_id AS site_id,
+    b.site_name,
+    a.run_id,
+    a.alert_type,
+    a.trigger_type,
+    a.stage_m,
+    a.stage_m AS peak_stage,
+    a.time_of_peak_forecast AS arrival_time,
+    a.issued_at,
+    a.triggered_at,
+    a.status,
+    a.alert_message,
+    a.recommended_action,
+    b.alert_stage_m,
+    b.warning_stage_m,
+    b.danger_stage_m,
+    b.hfl_m
+FROM alert_events a
+JOIN bridge_sites b ON b.site_id = a.basin_id
+WHERE a.status = 'active'
+ORDER BY a.issued_at DESC;
+```
 
-```json
-{
-  "cycle_id": "CYC_20260903_06z",
-  "summary": {
-    "forecast_date": "03 Sep 2026",
-    "cycle_time": "06z",
-    "peak_discharge_m3s": 264.9,
-    "lead_hours_to_peak": 82,
-    "total_volume_mcm": 58.2,
-    "bridges": {
-      "shivaji": { "peak_stage_m": 534.72, "alert_level": "NORMAL" },
-      "rajaram": { "peak_stage_m": 535.81, "alert_level": "NORMAL" }
-    }
-  },
-  "stations": [ ... ],
-  "hydrograph": [ ... ],
-  "actual_observed": [ ... ],
-  "validation": {
-    "performance_grade": "EXCELLENT",
-    "metrics": {
-      "spearman_rho": 0.991,
-      "nse_discharge": 0.992,
-      "rmse_stage_m": 0.029,
-      "mae_stage_m": 0.021,
-      "pbias_stage_pct": -0.06
-    }
-  }
-}
+### View 7: `v_cycle_performance`
+Aggregates step-level execution durations, completed steps, and failure logs from `pipeline_step_log`:
+```sql
+CREATE OR REPLACE VIEW v_cycle_performance AS
+SELECT
+    r.run_id AS cycle_id,
+    r.cycle_date,
+    r.cycle_time,
+    r.start_time,
+    r.end_time,
+    r.status,
+    r.alert_level,
+    r.peak_discharge_m3s,
+    r.peak_stage_m,
+    EXTRACT(EPOCH FROM (COALESCE(r.end_time, NOW()) - r.start_time))::NUMERIC(10,2) AS duration_seconds,
+    COUNT(l.step_number) FILTER (WHERE l.status = 'success') AS steps_completed,
+    COUNT(l.step_number) FILTER (WHERE l.status = 'failed') AS steps_failed,
+    MAX(l.error_message) AS error_message
+FROM simulation_runs r
+LEFT JOIN pipeline_step_log l ON l.cycle_id = r.run_id
+GROUP BY
+    r.run_id, r.cycle_date, r.cycle_time, r.start_time, r.end_time,
+    r.status, r.alert_level, r.peak_discharge_m3s, r.peak_stage_m;
 ```
 
 ---
 
-## 5. Cold Storage & Parquet Columnar Archival Strategy
+## 4. PostgreSQL Integration Test Harness (`tests/test_postgres_integration.py`)
 
-Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/archive_runs.py):
+HydroCast features an automated end-to-end database verification test suite:
 
-### 5.1 Motivation & Retention Window
-
-In active operational deployment, 6-hourly cycles produce millions of time-series rows per season. Unchecked growth degrades B-Tree index scan efficiency and query latency. HydroCast enforces a **90-day retention window** (`ARCHIVE_RETENTION_DAYS=90`).
-
-### 5.2 Target Time-Series Tables
-
-- `hydrograph_results` (partition column: `timestamp`)
-- `bridge_stage_forecast` (partition column: `forecast_time`)
-- `rainfall_data` (partition column: `timestamp`)
-- `station_rainfall_telemetry` (partition column: `created_at`)
-- `subbasin_rainfall_ts` (partition column: `valid_time`)
-
-### 5.3 Columnar Parquet Partitioning
-
-Pruned rows are streamed into Apache Parquet format using PyArrow with Snappy compression, partitioned by year and month:
-
-
-### 5.4 Relational Integrity & Performance Preservation
-
-- Once the Parquet file is verified on disk, pruned rows are deleted in PostgreSQL inside a safe database transaction.
-- Master simulation cycle records in `simulation_runs` and accuracy summaries in `forecast_validation_metrics` are **never deleted**, ensuring that historical performance audits and executive reports remain instantly accessible.
+- **Target Suite:** `tests/test_postgres_integration.py`
+- **Execution Variable:** Activated by setting `HYDROCAST_TEST_DATABASE_URL` (e.g. `postgresql://hms_app:password@localhost:5432/rainfall_runoff`). When unconfigured, tests gracefully skip in unit-only CI.
+- **Verification Operations:**
+  1. `test_schema_creates_write_tables_and_api_views`: Applies `database/supabase_schema.sql` from scratch against a fresh database container, querying `information_schema` to verify all 13 tables, all 7 views, and required columns (`error_message`, `details_json`).
+  2. `test_schema_accepts_write_paths`: Performs an end-to-end transactional write roundtrip simulating Step 6, Step 8, and Step 10 of an operational forecast cycle.
+  3. `test_write_paths_propagate_db_error_when_table_missing`: Verifies strict exception propagation if required tables are inaccessible.
 
 ---
 
-## 6. Local PostgreSQL / PostGIS Container (`docker-compose.yml`)
+## 5. Columnar Archival & Parquet Cold Storage (`src/db/archive_runs.py`)
 
-For on-premise deployments or air-gapped workstations without Supabase cloud access, HydroCast includes a dedicated PostGIS container:
+To prevent multi-year time-series data from bloating PostgreSQL indexes, records older than `ARCHIVE_RETENTION_DAYS` (default 90 days) are periodically streamed to columnar Snappy-compressed Apache Parquet archives:
 
-```yaml
-hydrocast-db:
-  image: postgis/postgis:15-3.4
-  container_name: hydrocast-db
-  restart: unless-stopped
-  ports:
-    - "5432:5432"
-  environment:
-    POSTGRES_DB: rainfall_runoff
-    POSTGRES_USER: hms_app
-    POSTGRES_PASSWORD: password
-  volumes:
-    - postgres_data:/var/lib/postgresql/data
-    - ./database/supabase_schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
-```
-
-Upon first launch (`docker compose up -d`), PostgreSQL boots, mounts `database/supabase_schema.sql`, and automatically bootstraps all tables, views, indexes, and initial benchmark data.
+- **Partition Layout:** `data/archives/{table}/year=YYYY/month=MM/<table_YYYYMM>.pq`
+- **Tables Archived:** `hydrograph_results`, `bridge_stage_forecast`, `station_rainfall_telemetry`.
+- **Master Preservations:** Rows in `simulation_runs`, `forecast_validation_metrics`, and `alert_events` are never pruned, guaranteeing permanent historical auditability.

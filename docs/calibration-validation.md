@@ -135,37 +135,18 @@ Across the Panchganga catchment, basin-wide volumetric rainfall accuracy current
 
 ---
 
-## 4. Government WRD 19 Benchmark Field Records
+## 4. Government WRD Benchmark Field Records
 
-| No | Stage (m) | Gauge Height | WRD Flow (cfs) | Flow Q (m³/s) | Hydraulic Regime |
-|:---|:---|:---|:---|:---|:---|
-| 01 | 530.18 m MSL | 00' 00" | 0 cusecs | 0.00 m³/s | Gauge Zero Datum |
-| 02 | 533.54 m MSL | 11' 00" | 2,825 cusecs | 80.00 m³/s | In-Bank Flow |
-| 03 | 533.56 m MSL | 11' 01" | 2,869 cusecs | 81.24 m³/s | In-Bank Flow |
-| 04 | 533.59 m MSL | 11' 02" | 2,913 cusecs | 82.49 m³/s | In-Bank Flow |
-| 05 | 533.64 m MSL | 11' 04" | 3,002 cusecs | 85.01 m³/s | In-Bank Flow |
-| 06 | 533.66 m MSL | 11' 05" | 3,046 cusecs | 86.25 m³/s | In-Bank Flow |
-| 07 | 533.69 m MSL | 11' 06" | 3,090 cusecs | 87.50 m³/s | In-Bank Flow |
-| 08 | 533.71 m MSL | 11' 07" | 3,134 cusecs | 88.74 m³/s | In-Bank Flow |
-| 09 | 533.99 m MSL | 12' 06" | 3,902 cusecs | 110.49 m³/s | In-Bank Flow |
-| 10 | 535.21 m MSL | 16' 06" | 7,684 cusecs | 217.59 m³/s | Approaching Bankfull |
-| 11 | 535.59 m MSL | 17' 09" | 8,958 cusecs | 253.66 m³/s | Bankfull Level |
-| 12 | 535.77 m MSL | 18' 04" | 9,690 cusecs | 274.39 m³/s | K.T. Weir Overflow |
-| 13 | 536.41 m MSL | 20' 05" | 13,087 cusecs | 370.58 m³/s | Over-Weir Flow |
-| 14 | 538.16 m MSL | 26' 02" | 21,650 cusecs | 613.06 m³/s | Submerged Weir Flow |
-| 15 | 539.02 m MSL | 29' 00" | 28,270 cusecs | 800.52 m³/s | Valley Spreading |
-| 16 | 541.50 m MSL | 37' 01" | 52,266 cusecs | 1,480.00 m³/s | Rajaram Alert Stage |
-| 17 | 542.10 m MSL | 39' 01" | 63,567 cusecs | 1,800.00 m³/s | Shivaji Alert Stage |
-| 18 | 542.70 m MSL | 41' 01" | 77,692 cusecs | 2,200.00 m³/s | Warning Stage |
-| 19 | 543.30 m MSL | 43' 00" | 94,467 cusecs | 2,675.00 m³/s | Danger Stage |
-| 20 | 545.33 m MSL | 49' 08" | 135,961 cusecs | 3,850.00 m³/s | Highest Flood Level HFL |
+Model calibration and validation performance are evaluated against official field records from the Maharashtra Water Resources Department (WRD), spanning the gauged continuum from zero datum (530.18 m MSL) through in-bank baseflow, bankfull transition, weir crest overtopping, to historical extreme flood stages (545.33 m MSL).
+
+For the complete schedule of official regulatory datums, surveyed elevations, and the authoritative 26-point WRD rating pairs, see [Catchment Hydrology: Official Regulatory Datums](basin-hydrology.md#regulatory-datums).
 
 
 ---
 
 ## 5. Pure Real-Time ThingSpeak IoT Verification Engine
 
-In addition to baseline simulation validation, HydroCast features a continuous, real-time IoT verification engine implemented in [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py):
+In addition to baseline simulation validation, HydroCast features a continuous, real-time IoT verification engine implemented in `src/hydrology/realtime_telemetry_validator.py`:
 
 
 ### 5.1 Dual-Units Conversion Mechanics
@@ -208,7 +189,7 @@ As time progresses throughout an active 90-hour forecast cycle:
 
 ### 6.2 Automated 1-Hour CI/CD Execution
 
-The validation engine runs autonomously every hour via GitHub Actions in [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
+The validation engine runs autonomously every hour via GitHub Actions in `.github/workflows/telemetry_validation.yml`:
 
 ```yaml
 on:
@@ -228,7 +209,7 @@ Upon execution:
 
 ## 7. Real-Time Adaptive ML Recalibration Engine
 
-Beyond static validation, HydroCast implements an autonomous, physics-informed machine learning parameter recalibration engine in [`src/hydrology/ml_calibration.py`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py):
+Beyond static validation, HydroCast implements an autonomous, physics-informed machine learning parameter recalibration engine in `src/hydrology/ml_calibration.py`:
 
 
 ### 7.1 Mathematical Optimization Formulation

@@ -246,7 +246,7 @@ During extremely rapid flash flood events ($\frac{\partial Q}{\partial t} > 500\
 
 ### 2. Lumped Hydrologic Parameters (S1 to S9)
 
-The $2,140\text{ km}^2$ catchment is discretized into 9 subbasins ranging from $80.1\text{ km}^2$ ($S_9$) to $510.5\text{ km}^2$ ($S_7$). Within each subbasin, soil infiltration capacity ($CN$), Time of Concentration ($T_c$), and Storage Coefficient ($R$) are spatially lumped.
+The $1,837.213\text{ km}^2$ catchment is discretized into 9 subbasins ranging from $86.213\text{ km}^2$ ($S_1$) to $366.970\text{ km}^2$ ($S_9$) (see [Catchment Hydrology: Subbasin Parameters](basin-hydrology.md#subbasin-parameters)). Within each subbasin, soil infiltration capacity ($CN$), Time of Concentration ($T_c$), and Storage Coefficient ($R$) are spatially lumped.
 
 **Justification:** While fully distributed grid-cell models (e.g., $100\text{m} \times 100\text{m}$ raster cells) provide higher spatial resolution, they require extensive distributed soil data that does not exist for the upper Western Ghats and increase compute time from **$< 20\text{ milliseconds}$** to over **$45\text{ minutes}$**, making real-time automated 6-hourly operational execution impractical.
 
@@ -614,12 +614,18 @@ outlet, with no error raised.
 falls through and is reported as `watch`. The condition is reachable, since the
 HFL threshold is 545.33 m and the rating curve extends to 548.00 m.
 
-### 13. Two tables are written but never created
+### 13. Schema drift: tables and views missing from the shipped schema (fixed 2026-10-30)
 
-`src/db/store_results.py` inserts into `peak_discharge_events` and
-`runoff_summary`. Neither appears in `database/supabase_schema.sql`, which
-defines ten tables and three views, nor in the `sync_all_to_supabase` bootstrap.
-Those two inserts fail against a database initialised from the shipped schema.
+`src/db/store_results.py` previously inserted into `peak_discharge_events` and
+`runoff_summary`, and the API queried `v_latest_hydrograph`,
+`v_latest_peak_summary`, `v_active_alerts_enriched`, and `v_cycle_performance`,
+none of which the shipped schema created. A fresh database could not run the
+pipeline write path or those API endpoints.
+
+The schema now creates both write tables, `alert_events`, the four views, and
+`simulation_runs.error_message`. The Supabase-only `ALTER ROLE authenticator`
+is guarded, so the same file applies to a plain PostGIS container. Verified by
+`tests/test_postgres_integration.py` in CI.
 
 ### 14. Archival is not scheduled
 
@@ -662,7 +668,7 @@ slicing.
 `baseflow = max(sensor_baseflow, WRD_MONSOON_BASEFLOW_FLOOR_M3S)` unconditionally,
 so a 40 m³/s floor overrode the ultrasonic reading whenever the river was below
 that. The floor's own comment justified it as *"WRD 2021-23 observed July-Oct min
-~71 m³/s"* and *"unphysical for 2140 km²"*, reasoning that predates the telemetry
+~71 m³/s"* and *"unphysical for 2140 km²"* (an obsolete pre-calibration catchment estimate, now canonicalized at 1,837.213 km²), reasoning that predates the telemetry
 link.
 
 Field verification confirmed the sensor: the Panchganga genuinely runs at

@@ -26,13 +26,30 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
 
 // Constant-time validation of Telegram's X-Telegram-Bot-Api-Secret-Token header.
-// Disabled (returns true) when no secret is configured.
+// Fails CLOSED in production: an unauthenticated webhook would let anyone forge
+// updates. Local/dev may omit the secret for convenience.
 function isValidWebhookSecret(provided: string | null): boolean {
-  if (!TELEGRAM_WEBHOOK_SECRET) return true;
+  if (!TELEGRAM_WEBHOOK_SECRET) {
+    return process.env.NODE_ENV !== "production";
+  }
   if (!provided) return false;
   const a = Buffer.from(provided);
   const b = Buffer.from(TELEGRAM_WEBHOOK_SECRET);
   return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+// Telegram is sent with parse_mode=HTML, so any interpolated value must be
+// escaped to avoid markup injection from stored pipeline data.
+function escapeHtml(value: unknown): string {
+  return String(value ?? "").replace(/[&<>"']/g, (ch) => {
+    switch (ch) {
+      case "&": return "&amp;";
+      case "<": return "&lt;";
+      case ">": return "&gt;";
+      case '"': return "&quot;";
+      default: return "&#39;";
+    }
+  });
 }
 
 async function sendMessage(chatId: number, text: string) {
@@ -65,13 +82,15 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
-    // Respond immediately if not a text message
-    if (!body?.message?.text) {
+    const rawText = body?.message?.text;
+    const chatId = body?.message?.chat?.id;
+
+    // Respond immediately if not a well-formed text message.
+    if (typeof rawText !== "string" || typeof chatId !== "number") {
       return NextResponse.json({ ok: true });
     }
 
-    const chatId = body.message.chat.id;
-    const text = body.message.text.trim();
+    const text = rawText.trim().slice(0, 512);
     const data = getLatestData();
 
     if (text.startsWith("/start") || text.startsWith("/help")) {
@@ -88,7 +107,7 @@ export async function POST(req: Request) {
       const time = data?.summary?.peak_time || new Date().toISOString();
       const msg = `✅ <b>HydroCast System Status</b>: OPERATIONAL\n` +
                   `Server Time: ${new Date().toISOString()}\n` +
-                  `Latest Cycle: ${cycle}\n` +
+                  `Latest Cycle: ${escapeHtml(cycle)}\n` +
                   `Forecasting Interval: 6-hourly automated cycles (00z, 06z, 12z, 18z)`;
       await sendMessage(chatId, msg);
     } 
@@ -101,21 +120,21 @@ export async function POST(req: Request) {
         
         let msg = `📊 <b>Current Bridge Stages</b>\n━━━━━━━━━━━━━━━━━━━━━━\n`;
         if (shivaji) {
-          msg += `📍 <b>${shivaji.site_name}</b>\n`;
+          msg += `📍 <b>${escapeHtml(shivaji.site_name)}</b>\n`;
           msg += `Current: ${shivaji.current_stage_m?.toFixed(2)} m\n`;
           if (shivaji.is_receding) {
             msg += `Status: 📉 Flow Receding (No Strike Expected)\n\n`;
           } else {
-            msg += `Peak: <code>${shivaji.peak_stage_m?.toFixed(2)} m</code> at ${shivaji.peak_arrival_time || 'N/A'}\n\n`;
+            msg += `Peak: <code>${shivaji.peak_stage_m?.toFixed(2)} m</code> at ${escapeHtml(shivaji.peak_arrival_time || 'N/A')}\n\n`;
           }
         }
         if (rajaram) {
-          msg += `📍 <b>${rajaram.site_name}</b>\n`;
+          msg += `📍 <b>${escapeHtml(rajaram.site_name)}</b>\n`;
           msg += `Current: ${rajaram.current_stage_m?.toFixed(2)} m\n`;
           if (rajaram.is_receding) {
             msg += `Status: 📉 Flow Receding (No Strike Expected)\n\n`;
           } else {
-            msg += `Peak: <code>${rajaram.peak_stage_m?.toFixed(2)} m</code> at ${rajaram.peak_arrival_time || 'N/A'}\n\n`;
+            msg += `Peak: <code>${rajaram.peak_stage_m?.toFixed(2)} m</code> at ${escapeHtml(rajaram.peak_arrival_time || 'N/A')}\n\n`;
           }
         }
         await sendMessage(chatId, msg);
@@ -134,8 +153,8 @@ export async function POST(req: Request) {
         } else {
           let msg = `🚨 <b>Active Flood Alerts</b>\n━━━━━━━━━━━━━━━━━━━━━━\n`;
           for (const a of alerts) {
-            msg += `🔴 <b>[${a.alert_level}] ${a.site_name}</b>\n`;
-            msg += `Peak: ${a.peak_stage_m?.toFixed(2)} m (Arrival: ${a.peak_arrival_time})\n\n`;
+            msg += `🔴 <b>[${escapeHtml(a.alert_level)}] ${escapeHtml(a.site_name)}</b>\n`;
+            msg += `Peak: ${a.peak_stage_m?.toFixed(2)} m (Arrival: ${escapeHtml(a.peak_arrival_time)})\n\n`;
           }
           await sendMessage(chatId, msg);
         }

@@ -56,8 +56,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libeccodes-tools \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt ./
-RUN pip install -r requirements.txt && pip check
+# Install the same pinned set CI tests, not the floating requirements.txt.
+# requirements.txt is kept for provenance and lock regeneration.
+COPY requirements.txt requirements.lock ./
+RUN pip install -r requirements.lock && pip check
 
 
 # ── Stage: runner (default target) ────────────────────────────────────────────

@@ -54,7 +54,7 @@ The complete system architecture, data pipelines, state machines, and mathematic
 
 ## 1. Architectural Philosophy & Core Tenets
 
-HydroCast is designed as a mission-critical, operational flood early warning system engineered to provide **48 to 72 hours of validated predictive lead time** for the **2,140 km² Panchganga River Basin**. The system adheres to four core engineering principles:
+HydroCast is designed as a mission-critical, operational flood early warning system engineered to provide **48 to 72 hours of validated predictive lead time** for the **1,837.213 km² Panchganga River Basin**. The system adheres to four core engineering principles:
 
 1. **Operational Determinism**: Every forecast cycle is reproducible, idempotent, and tracked in a cryptographic run ledger (`simulation_runs`). Missing rainfall or telemetry data triggers fallback interpolation rather than pipeline crashes.
 2. **Strict Physical Monotonicity**: Stage-discharge conversions must strictly satisfy $\frac{dQ}{dh} > 0$ across the full domain ($530.18\text{ m}$ to $546.00\text{ m MSL}$). Non-physical oscillations from standard cubic splines are strictly prohibited via Piecewise Cubic Hermite Interpolating Polynomials (PCHIP).
@@ -156,7 +156,7 @@ The operational conductor [`src/orchestrator.py`](src/orchestrator.py) executes 
 
 ## 4. Hydrologic Continuum & Catchment Physics
 
-The hydrological continuum models runoff generation across **nine subbasins** covering the $2,140\text{ km}^2$ Panchganga catchment.
+The hydrological continuum models runoff generation across **nine subbasins** covering the $1,837.213\text{ km}^2$ Panchganga catchment.
 
 > 🎮 **Interactive Archify Visualizations for Hydrology & HEC-HMS**:  
 > • [Launch Diagram 10: Catchment Hydrology Solver ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/10-catchment-hydrology-solver.html) · [Local File](docs/diagrams/10-catchment-hydrology-solver.html)  

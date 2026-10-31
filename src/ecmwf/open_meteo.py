@@ -493,7 +493,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
         record_log("INFO", f"ThingSpeak Shivaji Live Ground Truth: Distance={raw_feet:.2f} ft -> Water Level={live_stage:.2f} m MSL")
     _end_step(s3)
 
-    s4 = _start_step("04. Real-Time ML Recalibration Assessment")
+    s4 = _start_step("04. Real-Time Calibration Assessment (physics-informed, gated ML)")
     # Real-Time ML Recalibration Check against Live Telemetry
     from src.hydrology.realtime_telemetry_validator import get_all_available_observations
     obs_cache = get_all_available_observations(fetch_remote=True)
@@ -540,6 +540,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
             stage_error_m=signed_stage_err,
             peak_discharge_error_m3s=peak_q_err,
             subbasin_hyetographs=subbasin_arrays,
+            n_aligned_points=discrepancy.get("n_aligned_points", 0),
         )
         calibrator.sync_to_hec_hms_basin(cal_params)
         record_log("INFO", f"HEC-HMS & Emulator Synchronized: α_K={cal_params['alpha_k']}, α_lag={cal_params['alpha_lag']}, ΔCN={cal_params['delta_cn']}, X={cal_params['muskingum_x']}, ΔQpeak={peak_q_err:+.1f} m³/s")
@@ -763,9 +764,10 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
                 "database": "CONNECTED" if os.environ.get("DATABASE_URL") else "STANDALONE",
                 "hec_hms": "CALIBRATED_RJKT (COMPUTED)",
                 "ml_calibration": (
-                    "TUNED (Δt={:+.1f}h, conf={:.1f}%)".format(
+                    "TUNED (Δt={:+.1f}h, obs-fit={:.1f}%, ML={})".format(
                         float(calibrator.state.get("timing_offset_hours", 0.0)),
                         float(calibrator.state.get("confidence_pct", 0.0)),
+                        calibrator.state.get("ml_predictor_state", "UNTRAINED"),
                     )
                     if calibrator.state.get("is_recalibrated")
                     else "BASELINE (PHYSICS PRIOR)"

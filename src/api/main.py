@@ -18,6 +18,7 @@ GET /api/v1/rainfall/gauges         all raw gauge hyetographs (last cycle)
 GET /api/v1/runoff/hydrograph       outlet discharge hydrograph (90 pts)
 GET /api/v1/runoff/summary          peak Q, Tp, volume, stage per bridge
 GET /api/v1/runoff/stage/{site_id}  90-hr stage forecast at bridge
+GET /api/v1/integration/hydrosim/stage  water-level boundary conditions (JSON/CSV)
 GET /api/v1/alerts                  active CWC alerts
 GET /api/v1/alerts/bulletin         formatted flood bulletin (PDF-ready JSON)
 GET /api/v1/pipeline                pipeline step status for current cycle
@@ -34,6 +35,9 @@ WS  /ws/live                        WebSocket: push on each new cycle result
 import os
 import hmac
 import json
+import csv
+import io
+import re
 import asyncio
 import logging
 import hashlib
@@ -41,21 +45,23 @@ from datetime import datetime, timezone
 from typing import Optional, Any
 
 import asyncpg
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Depends, Header, Request, status
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Depends, Header, Request, Query, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
+from fastapi.responses import JSONResponse, Response
+from starlette.middleware.base import BaseHTTPMiddleware
 from slowapi.errors import RateLimitExceeded
 
-from src.api.admin import router as admin_router
+load_dotenv()  # must run before src modules read os.environ
+
+from src.api.admin import router as admin_router  # noqa: E402
+from src.api.limits import limiter, RATE_LIMIT_PUBLIC  # noqa: E402
+from src.api.keys import verify_public_key  # noqa: E402
 
 log = logging.getLogger(__name__)
 
-# ── Rate Limiter Initialization (slowapi) ─────────────────────────────────────
-RATE_LIMIT_PUBLIC = os.getenv("RATE_LIMIT_PUBLIC", "100/minute")
-limiter = Limiter(key_func=get_remote_address, default_limits=[RATE_LIMIT_PUBLIC])
-
+# ── Rate limiter ──────────────────────────────────────────────────────────────
+# The shared instance lives in src.api.limits (also used by the admin login).
 app = FastAPI(
     title="HydroCast Panchganga Operational API",
     version="2.0.0",
@@ -122,13 +128,53 @@ async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
         headers={"Retry-After": str(retry_after)},
     )
 
+# ── CORS ──────────────────────────────────────────────────────────────────────
+# NEVER combine a wildcard origin with credentials: Starlette would then echo
+# the request Origin and set Allow-Credentials, letting any site make
+# credentialed cross-origin calls. The dashboard is same-origin (it proxies via
+# Next route handlers), so the safe default is an empty allowlist.
+_cors_raw = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
+_cors_wildcard = "*" in _cors_raw
+if _cors_wildcard:
+    log.warning(
+        "CORS_ORIGINS contains '*' — allowing any origin WITHOUT credentials. "
+        "Set an explicit allowlist for credentialed deployments."
+    )
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("CORS_ORIGINS", "*").split(","),
-    allow_credentials=True,
+    allow_origins=["*"] if _cors_wildcard else _cors_raw,
+    allow_credentials=not _cors_wildcard,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=["Authorization", "Content-Type", "X-API-Key", "X-Internal-Key"],
 )
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Attach hardening headers to every response and reject oversized bodies."""
+
+    MAX_BODY_BYTES = int(os.getenv("MAX_REQUEST_BYTES", str(1_000_000)))
+
+    async def dispatch(self, request: Request, call_next):
+        content_length = request.headers.get("content-length")
+        if content_length and content_length.isdigit() and int(content_length) > self.MAX_BODY_BYTES:
+            return JSONResponse(
+                status_code=413,
+                content={"detail": "Request body too large"},
+            )
+        response = await call_next(request)
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "no-referrer")
+        response.headers.setdefault("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
+        response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+        response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        if request.url.path.startswith("/api/"):
+            response.headers.setdefault("Cache-Control", "no-store")
+        return response
+
+
+app.add_middleware(SecurityHeadersMiddleware)
 
 # Mount Administrative & Control Router (protected by JWT & API Key)
 app.include_router(admin_router)
@@ -199,14 +245,25 @@ async def shutdown():
 
 # ── Auth & Dependencies ───────────────────────────────────────────────────────
 
-async def verify_public_or_key(x_api_key: Optional[str] = Header(None, alias="X-API-Key")):
+async def verify_public_or_key(
+    request: Request,
+    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
+):
     """
-    If REQUIRE_API_KEY is True, enforce X-API-Key validation.
-    Otherwise, permit access (protected by IP rate-limiting).
+    If REQUIRE_API_KEY is True, accept either:
+
+    * ``X-API-Key: <key>`` (preferred; never appears in logs), or
+    * ``?key=<key>`` (Open-Meteo style, for a simple paste-able URL).
+
+    Fails closed: an unset server key authorises nobody.
     """
     if REQUIRE_API_KEY:
-        if not x_api_key or x_api_key != API_KEY:
-            raise HTTPException(status_code=401, detail="Invalid or missing X-API-Key")
+        supplied = x_api_key or request.query_params.get("key") or ""
+        if not verify_public_key(supplied, API_KEY or ""):
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid or missing API key (use X-API-Key header or ?key=)",
+            )
     return True
 
 PublicDep = Depends(verify_public_or_key)
@@ -215,12 +272,20 @@ PublicDep = Depends(verify_public_or_key)
 # ── WebSocket manager ─────────────────────────────────────────────────────────
 
 class WSManager:
+    MAX_CONNECTIONS = int(os.getenv("MAX_WS_CONNECTIONS", "200"))
+
     def __init__(self):
         self.connections: list[WebSocket] = []
 
-    async def connect(self, ws: WebSocket):
+    async def connect(self, ws: WebSocket) -> bool:
+        """Accept a socket unless the connection cap is reached (DoS guard)."""
+        if len(self.connections) >= self.MAX_CONNECTIONS:
+            await ws.close(code=1013)  # 1013 = Try Again Later
+            log.warning("WebSocket connection cap (%d) reached — rejecting client", self.MAX_CONNECTIONS)
+            return False
         await ws.accept()
         self.connections.append(ws)
+        return True
 
     def disconnect(self, ws: WebSocket):
         if ws in self.connections:
@@ -338,7 +403,15 @@ async def record_visit(request: Request):
     from the same address on the same day increments nothing.
     """
     client_ip = request.client.host if request.client else "unknown"
-    ip_hash = hashlib.sha256(client_ip.encode()).hexdigest()
+    _salt = os.getenv("VISIT_HASH_SALT", "")
+    if _salt:
+        ip_hash = hmac.new(
+            _salt.encode("utf-8"), client_ip.encode("utf-8"), hashlib.sha256
+        ).hexdigest()
+    else:
+        # A bare SHA-256 of an IPv4 address is trivially enumerable. Set
+        # VISIT_HASH_SALT in production for a non-reversible pseudonym.
+        ip_hash = hashlib.sha256(client_ip.encode("utf-8")).hexdigest()
     
     pool = await get_pool()
     async with pool.acquire() as conn:
@@ -732,7 +805,7 @@ async def pipeline_status(request: Request):
     response_description="Newest-first list of cycle durations and execution statuses.",
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
-async def cycle_history(request: Request, limit: int = 48):
+async def cycle_history(request: Request, limit: int = Query(48, ge=1, le=500)):
     """Last N cycle summaries.
 
     :param limit: How many cycles to return. Defaults to 48 — twelve days at
@@ -758,7 +831,7 @@ async def cycle_history(request: Request, limit: int = 48):
     response_description="Newest-first run summaries with KPIs and an accuracy rollup.",
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
-async def list_runs(request: Request, limit: int = 50):
+async def list_runs(request: Request, limit: int = Query(50, ge=1, le=500)):
     """List all tracked historical computation runs with KPIs & accuracy summary.
 
     :param limit: Maximum number of runs to return. Defaults to 50.
@@ -848,6 +921,186 @@ async def forecast_accuracy(request: Request, run_id: Optional[str] = None):
     }
 
 
+# ── External integration: Hydrosim (HEC-RAS) boundary conditions ─────────────
+
+def _row_get(row, key: str, default=None):
+    """Read a column from an asyncpg Record or a plain dict."""
+    try:
+        return row[key]
+    except (KeyError, IndexError, TypeError):
+        return default
+
+
+@app.get(
+    "/api/v1/water-levels",
+    dependencies=[PublicDep],
+    tags=["Integration"],
+    summary="HydroCast water levels (simplest URL)",
+    response_description="Latest forecast stage/discharge series for both bridges (JSON or CSV).",
+    responses={404: {"description": "No forecast cycle is available yet."}},
+)
+@app.get(
+    "/api/v1/hydrocast/water-levels",
+    dependencies=[PublicDep],
+    tags=["Integration"],
+    summary="HydroCast-branded water-level URL",
+    response_description="Same payload as /api/v1/water-levels.",
+    responses={404: {"description": "No forecast cycle is available yet."}},
+)
+@app.get(
+    "/api/v1/hydrosim/water-levels",
+    dependencies=[PublicDep],
+    tags=["Integration"],
+    summary="Hydrosim alias for the water-level feed",
+    response_description="Same payload as /api/v1/water-levels.",
+    responses={404: {"description": "No forecast cycle is available yet."}},
+)
+@app.get(
+    "/api/v1/integration/hydrosim/stage",
+    dependencies=[PublicDep],
+    tags=["Integration"],
+    summary="Water-level boundary conditions for Hydrosim (HEC-RAS)",
+    response_description="90-hour stage series per bridge, with datum/thresholds (JSON or CSV).",
+    responses={404: {"description": "No forecast cycle is available yet."}},
+)
+@limiter.limit(RATE_LIMIT_PUBLIC)
+async def hydrosim_stage(
+    request: Request,
+    site_id: Optional[str] = Query(None, max_length=50),
+    fmt: str = Query("json", alias="format", pattern="^(json|csv)$"),
+):
+    """Stage hydrographs shaped for a HEC-RAS unsteady-flow boundary condition.
+
+    **Authentication.** The easiest way is to put the read-only key in the URL
+    (Open-Meteo style) and paste it straight into a browser or Python::
+
+        GET /api/v1/hydrocast/water-levels?key=<HYDROCAST_READONLY_KEY>
+
+    The key may also be sent as a header (preferred for production, because
+    query strings can appear in access logs)::
+
+        X-API-Key: <HYDROCAST_READONLY_KEY>
+
+    **JSON** (default) returns one object per bridge with metadata, WRD
+    thresholds and a hourly ``series``. **CSV** (``?format=csv``) returns the
+    long/tidy form that is easy to import as a stage hydrograph::
+
+        site_id,site_name,forecast_time_utc,lead_hours,stage_m,discharge_m3s,alert_level,is_above_danger
+
+    **Datum.** ``stage_m`` is on the WRD gauge datum; ``zero_datum_m`` is the
+    site's zero offset. HEC-RAS needs a common vertical datum, so apply
+    ``stage_m - zero_datum_m`` (or the datum expected by your geometry) before
+    assigning the boundary condition. Do not silently mix datums.
+
+    The series is the *latest* forecast cycle only — never a blend of cycles.
+    """
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        run = await conn.fetchrow(
+            "SELECT run_id, start_time FROM simulation_runs ORDER BY start_time DESC LIMIT 1"
+        )
+        rows = await conn.fetch(
+            """
+            SELECT f.site_id, b.site_name, b.river_name, b.latitude, b.longitude,
+                   b.alert_stage_m, b.warning_stage_m, b.danger_stage_m, b.hfl_m,
+                   b.zero_datum_m,
+                   f.forecast_time, f.lead_hours, f.stage_m, f.discharge_m3s,
+                   f.alert_level, f.is_above_danger
+            FROM bridge_stage_forecast f
+            JOIN bridge_sites b ON b.site_id = f.site_id
+            WHERE f.forecast_run_id = (
+                SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1
+            )
+              AND ($1::text IS NULL OR f.site_id = $1)
+            ORDER BY f.site_id, f.lead_hours
+            """,
+            site_id,
+        )
+
+    if not run:
+        raise HTTPException(
+            status_code=404, detail="No forecast cycle available for Hydrosim yet"
+        )
+
+    cycle_id = str(_row_get(run, "run_id", "unknown"))
+    start_time = _row_get(run, "start_time")
+    issued_at = start_time.isoformat() if hasattr(start_time, "isoformat") else str(start_time)
+
+    if fmt == "csv":
+        buf = io.StringIO(newline="")
+        writer = csv.writer(buf)
+        writer.writerow([
+            "site_id", "site_name", "forecast_time_utc", "lead_hours",
+            "stage_m", "discharge_m3s", "alert_level", "is_above_danger",
+        ])
+        for r in rows:
+            ft = _row_get(r, "forecast_time")
+            writer.writerow([
+                _row_get(r, "site_id", ""),
+                _row_get(r, "site_name", ""),
+                ft.isoformat() if hasattr(ft, "isoformat") else str(ft),
+                _row_get(r, "lead_hours", ""),
+                _row_get(r, "stage_m", ""),
+                _row_get(r, "discharge_m3s", ""),
+                _row_get(r, "alert_level", ""),
+                bool(_row_get(r, "is_above_danger", False)),
+            ])
+        safe_id = re.sub(r"[^A-Za-z0-9_.-]", "_", cycle_id)
+        return Response(
+            content=buf.getvalue(),
+            media_type="text/csv; charset=utf-8",
+            headers={
+                "Content-Disposition": f'attachment; filename="hydrocast_stage_{safe_id}.csv"'
+            },
+        )
+
+    sites: dict[str, dict] = {}
+    for r in rows:
+        sid = str(_row_get(r, "site_id", ""))
+        site = sites.setdefault(
+            sid,
+            {
+                "site_id": sid,
+                "site_name": _row_get(r, "site_name"),
+                "river_name": _row_get(r, "river_name"),
+                "latitude": _row_get(r, "latitude"),
+                "longitude": _row_get(r, "longitude"),
+                "zero_datum_m": _row_get(r, "zero_datum_m"),
+                "thresholds": {
+                    "alert_m": _row_get(r, "alert_stage_m"),
+                    "warning_m": _row_get(r, "warning_stage_m"),
+                    "danger_m": _row_get(r, "danger_stage_m"),
+                    "hfl_m": _row_get(r, "hfl_m"),
+                },
+                "series": [],
+            },
+        )
+        ft = _row_get(r, "forecast_time")
+        site["series"].append(
+            {
+                "forecast_time": ft.isoformat() if hasattr(ft, "isoformat") else str(ft),
+                "lead_hours": _row_get(r, "lead_hours"),
+                "stage_m": _row_get(r, "stage_m"),
+                "discharge_m3s": _row_get(r, "discharge_m3s"),
+                "alert_level": _row_get(r, "alert_level"),
+                "is_above_danger": bool(_row_get(r, "is_above_danger", False)),
+            }
+        )
+
+    return {
+        "schema_version": "1.0",
+        "source": "HydroCast",
+        "cycle_id": cycle_id,
+        "issued_at": issued_at,
+        "units": {"stage": "m", "discharge": "m3/s"},
+        "vertical_datum": (
+            "WRD gauge datum; zero_datum_m is the site zero offset. "
+            "Align to your HEC-RAS geometry datum before use."
+        ),
+        "sites": list(sites.values()),
+    }
+
+
 # ── WebSocket live push ────────────────────────────────────────────────────────
 
 @app.websocket(
@@ -861,7 +1114,8 @@ async def ws_live(websocket: WebSocket):
     Dead connections are detected on send and reaped automatically, so a
     browser that vanishes mid-cycle does not block the remaining subscribers.
     """
-    await ws_manager.connect(websocket)
+    if not await ws_manager.connect(websocket):
+        return
     try:
         while True:
             await websocket.receive_text()
@@ -873,7 +1127,11 @@ async def ws_live(websocket: WebSocket):
 async def internal_broadcast(payload: dict, x_internal_key: str = Header(None)):
     """Called by orchestrator after each successful cycle. Not public."""
     _ik = os.getenv("INTERNAL_KEY", "")
-    if not _ik or not hmac.compare_digest(str(x_internal_key or ""), _ik):
+    if len(_ik) < 16:
+        # Fail closed: a short/empty shared secret is not an acceptable credential.
+        raise HTTPException(status_code=503, detail="Internal auth not configured")
+    supplied = str(x_internal_key or "")
+    if not hmac.compare_digest(supplied.encode("utf-8"), _ik.encode("utf-8")):
         raise HTTPException(status_code=403, detail="Invalid internal key")
     await ws_manager.broadcast(payload)
     return {"broadcast_to": len(ws_manager.connections)}

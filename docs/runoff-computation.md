@@ -229,7 +229,7 @@ $\sum O = \sum I$ to floating-point precision.
 
 Reach order is read from `Basin_1.basin` at run time — it is not hard-coded in
 the emulator, so the topology below is a property of the model file rather than
-of the code:
+of the code. Authoritative subbasin parameters and Muskingum reach matrices are canonically defined in [Catchment Hydrology: Subbasin Parameters](basin-hydrology.md#subbasin-parameters) and [Catchment Hydrology: Muskingum Reaches](basin-hydrology.md#muskingum-reaches).
 
 
 ```mermaid
@@ -295,7 +295,7 @@ hard-code thresholds:
 
 ## 6. Vectorized Python Implementation (`runner.py`)
 
-In [`runner.py`](file:///e:/hydrocast_complete/src/hms/runner.py), the entire runoff continuum executes in $< 15\text{ milliseconds}$ via vectorized NumPy operations:
+In [`runner.py`](api-reference/hms.md) (`src/hms/runner.py`), the entire runoff continuum executes in $< 15\text{ milliseconds}$ via vectorized NumPy operations:
 
 ```
 # 1. Potential soil retention

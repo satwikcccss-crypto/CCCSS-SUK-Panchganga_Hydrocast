@@ -16,6 +16,14 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d, PchipInterpolator
 
+# Pure cross-section geometry (extracted to rating_physics.py, re-exported here
+# so existing ``_wetted_properties`` / ``_station_from_points`` call sites and
+# imports keep working unchanged).
+from src.hydrology.rating_physics import (
+    station_from_points as _station_from_points,
+    wetted_properties as _wetted_properties,
+)
+
 log = logging.getLogger(__name__)
 
 
@@ -369,35 +377,8 @@ def load_cross_section_array(site_id: str, pts: np.ndarray, meta: dict) -> Cross
     return cs
 
 
-def _wetted_properties(station: np.ndarray, elevation: np.ndarray, wse: float):
-    """Compute wetted Area (A) and wetted Perimeter (P) via vectorized trapezoidal integration."""
-    if len(station) == 0 or len(elevation) == 0 or wse <= np.min(elevation):
-        return 0.0, 0.0
-
-    d = np.maximum(wse - elevation, 0.0)
-    dx = np.diff(station)
-    dz = np.diff(elevation)
-    d1 = d[:-1]
-    d2 = d[1:]
-
-    # Wetted Area
-    a = float(np.sum(0.5 * (d1 + d2) * dx))
-
-    # Wetted Perimeter
-    wet_both = (d1 > 0) & (d2 > 0)
-    wet_1 = (d1 > 0) & (d2 <= 0)
-    wet_2 = (d1 <= 0) & (d2 > 0)
-
-    hyp = np.hypot(dx, dz)
-    p = float(np.sum(hyp[wet_both]))
-    if np.any(wet_1):
-        frac1 = d1[wet_1] / (d1[wet_1] - d2[wet_1] + 1e-12)
-        p += float(np.sum(np.hypot(dx[wet_1] * frac1, dz[wet_1] * frac1)))
-    if np.any(wet_2):
-        frac2 = d2[wet_2] / (d2[wet_2] - d1[wet_2] + 1e-12)
-        p += float(np.sum(np.hypot(dx[wet_2] * (1 - frac2), dz[wet_2] * (1 - frac2))))
-
-    return a, p
+# `_wetted_properties` and `_station_from_points` are imported from
+# src.hydrology.rating_physics at the top of this module (pure geometry).
 
 
 # ── Official Maharashtra WRD Government Stage-Discharge Records ──────────────
@@ -480,7 +461,7 @@ SHIVAJI_ANCHORS_Q = np.array([
     2675.00, 3850.00
 ])
 
-# WRD-grounded monsoon baseflow floor (m³/s) for the Panchganga (~2,140 km²).
+# WRD-grounded monsoon baseflow floor (m³/s) for the Panchganga (~1,837 km²).
 # WRD 2021–2023 observed July–October minimum ≈ 71 m³/s; 5th percentile ≈ 82 m³/s.
 # A 15.0 floor previously let the emulator report 1–15 m³/s — unphysical for a
 # perennial 2000+ km² monsoon catchment.  40.0 is a conservative WRD-derived minimum.
@@ -581,12 +562,7 @@ def _rajaram_elevation_m() -> np.ndarray:
     return RAJARAM_SURVEY[:, 2]
 
 
-def _station_from_points(points: np.ndarray) -> np.ndarray:
-    """Cumulative chainage along a surveyed cross-section."""
-    north, east = points[:, 0], points[:, 1]
-    return np.concatenate(
-        [[0.0], np.cumsum(np.hypot(np.diff(east), np.diff(north)))]
-    )
+# `_station_from_points` is imported from src.hydrology.rating_physics.
 
 
 def estimate_low_flow_discharge(

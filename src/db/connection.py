@@ -17,6 +17,10 @@ import re
 from typing import Any, Dict, List, Optional
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
+from dotenv import load_dotenv
+
+load_dotenv()  # local dev: pick up .env before reading DATABASE_URL
+
 log = logging.getLogger(__name__)
 
 # Common Supabase AWS pooler regions in order of likelihood

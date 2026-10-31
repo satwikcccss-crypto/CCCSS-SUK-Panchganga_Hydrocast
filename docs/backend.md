@@ -187,7 +187,7 @@ credential model.
 
 ## 5. API Security, JWT Authentication & Rate Limiting
 
-Implemented in [`src/api/security.py`](file:///e:/hydrocast_complete/src/api/security.py) and [`src/api/admin.py`](file:///e:/hydrocast_complete/src/api/admin.py):
+Implemented in [`src/api/security.py`](api-reference/security.md) and `src/api/admin.py`:
 
 ### 5.1 Public Rate Limiting (`slowapi`)
 
@@ -223,7 +223,7 @@ async def verify_admin_auth(
 
 ## 6. Administrative Endpoints & Background Orchestration
 
-The administrative router ([`src/api/admin.py`](file:///e:/hydrocast_complete/src/api/admin.py)) provides operational control:
+The administrative router (`src/api/admin.py`) provides operational control:
 
 ### 6.1 Manual Cycle Trigger (`POST /api/v1/admin/trigger-run`)
 
@@ -305,7 +305,7 @@ Now includes the high-precision peak strike horizon and permissible confidence i
         "stage_range_m": [543.52, 544.12],
         "discharge_range_m3s": [1335.0, 1505.0]
       },
-      "status": "CALIBRATED_ACCURATE"
+      "status": "PEAK_IDENTIFIED"
     }
   },
   "recalibration": {

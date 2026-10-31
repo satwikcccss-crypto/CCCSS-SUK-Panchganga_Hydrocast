@@ -1,15 +1,20 @@
 {
-  "last_calibrated_at": "2026-10-27T09:31:56.060340+00:00",
+  "last_calibrated_at": "2026-10-28T05:59:04.385328+00:00",
   "is_recalibrated": true,
   "trigger_reason": "Promoted timing-faithful peak-stage config: 2025@Shivaji 96.5% (NSE 0.93, -4h), 2019@Rajaram 86.2%; 2021@Rajaram ~68% is an Open-Meteo input-rainfall ceiling",
-  "timing_offset_hours": 20.0,
-  "stage_discrepancy_m": -1.8099999999999454,
-  "peak_discharge_error_m3s": -1298.2,
+  "timing_offset_hours": -4.0,
+  "stage_discrepancy_m": -0.28,
+  "peak_discharge_error_m3s": 0.0,
   "alpha_k": 0.6,
   "alpha_lag": 0.82,
   "delta_cn": 0.0,
   "muskingum_x": 0.3,
+  "ia_frac": 0.05,
+  "uh_max_hr": 90,
+  "uh_m_exp": 20.0,
   "confidence_pct": 92.0,
+  "confidence_basis": "Offline 3-event backtest confidence for the promoted config (2019 86.2% / 2025 96.5% NSE 0.93). Live recalibrations instead write an observation-fit score, not this offline figure.",
+  "ml_predictor_state": "UNTRAINED",
   "baseline_sub_models": {
     "S6": {
       "name": "Gaganbawda",
@@ -92,125 +97,60 @@
     "S6": {
       "name": "Gaganbawda",
       "area_km2": 227.72,
-<<<<<<< HEAD
-      "cn": 63.62,
-      "lag_min": 3885.5
-=======
       "cn": 61.783,
       "lag_min": 2720.8
->>>>>>> 087cd64c (checkpoint: prior-session docs console rollout, new diagram pages, telemetry data and src tweaks)
     },
     "S7": {
       "name": "Garivade",
       "area_km2": 195.39,
-<<<<<<< HEAD
-      "cn": 63.12,
-      "lag_min": 3937.2
-=======
       "cn": 61.281,
       "lag_min": 2757.1
->>>>>>> 087cd64c (checkpoint: prior-session docs console rollout, new diagram pages, telemetry data and src tweaks)
     },
     "S9": {
       "name": "Radhanagari",
       "area_km2": 366.97,
-<<<<<<< HEAD
-      "cn": 66.15,
-      "lag_min": 6088.1
-=======
       "cn": 64.306,
       "lag_min": 4263.2
->>>>>>> 087cd64c (checkpoint: prior-session docs console rollout, new diagram pages, telemetry data and src tweaks)
     },
     "S8": {
       "name": "Beed",
       "area_km2": 177.44,
-<<<<<<< HEAD
-      "cn": 67.6,
-      "lag_min": 3966.4
-=======
       "cn": 65.765,
       "lag_min": 2777.5
->>>>>>> 087cd64c (checkpoint: prior-session docs console rollout, new diagram pages, telemetry data and src tweaks)
     },
     "S4": {
       "name": "Karanjphen",
       "area_km2": 262.0,
-<<<<<<< HEAD
-      "cn": 63.73,
-      "lag_min": 3648.3
-=======
       "cn": 61.891,
       "lag_min": 2554.7
->>>>>>> 087cd64c (checkpoint: prior-session docs console rollout, new diagram pages, telemetry data and src tweaks)
     },
     "S5": {
       "name": "Padasali",
       "area_km2": 106.39,
-<<<<<<< HEAD
-      "cn": 62.81,
-      "lag_min": 2479.1
-=======
       "cn": 60.967,
       "lag_min": 1736.0
->>>>>>> 087cd64c (checkpoint: prior-session docs console rollout, new diagram pages, telemetry data and src tweaks)
     },
     "S3": {
       "name": "Kotoli",
       "area_km2": 261.32,
-<<<<<<< HEAD
-      "cn": 66.66,
-      "lag_min": 4681.3
-=======
       "cn": 64.817,
       "lag_min": 3278.1
->>>>>>> 087cd64c (checkpoint: prior-session docs console rollout, new diagram pages, telemetry data and src tweaks)
     },
     "S2": {
       "name": "Sangarul",
       "area_km2": 153.77,
-<<<<<<< HEAD
-      "cn": 67.58,
-      "lag_min": 3693.6
-=======
       "cn": 65.744,
       "lag_min": 2586.5
->>>>>>> 087cd64c (checkpoint: prior-session docs console rollout, new diagram pages, telemetry data and src tweaks)
     },
     "S1": {
       "name": "Karveer",
       "area_km2": 86.213,
-<<<<<<< HEAD
-      "cn": 76.69,
-      "lag_min": 2519.9
-=======
       "cn": 74.849,
       "lag_min": 1764.6
->>>>>>> 087cd64c (checkpoint: prior-session docs console rollout, new diagram pages, telemetry data and src tweaks)
     }
   },
   "active_reaches": {
     "R5": {
-<<<<<<< HEAD
-      "k_hr": 5.626,
-      "x": 0.19
-    },
-    "R4": {
-      "k_hr": 1.491,
-      "x": 0.19
-    },
-    "R2": {
-      "k_hr": 14.405,
-      "x": 0.19
-    },
-    "R3": {
-      "k_hr": 4.664,
-      "x": 0.19
-    },
-    "R1": {
-      "k_hr": 3.531,
-      "x": 0.19
-=======
       "k_hr": 2.771,
       "x": 0.3
     },
@@ -229,92 +169,24 @@
     "R1": {
       "k_hr": 1.739,
       "x": 0.3
->>>>>>> 087cd64c (checkpoint: prior-session docs console rollout, new diagram pages, telemetry data and src tweaks)
     }
+  },
+  "provenance": {
+    "restored": "Regenerated 20261028T055904Z after git conflict-marker corruption; values match the validated promote_digital_twin.py output.",
+    "validated_event": "2025_august (Shivaji Bridge, hourly observed, peak-stage acc 96.5%, NSE 0.93, timing -4h)",
+    "second_event": "2019_august (Rajaram, peak-stage acc 86.2%; reported Q 2111 m3/s confirmed accurate)",
+    "third_event": "2021_july (Rajaram, ~68% ONLY - Open-Meteo under-estimates the largest flood; input-data limitation, not tuning)",
+    "calibration_script": "historical_checks/2025_august_shivaji_bridge/scripts/comparison/calibrate_peak_stage_3event.py",
+    "results_json": "historical_checks/2025_august_shivaji_bridge/results/dynamic_calibration/peak_stage_3event_results.json",
+    "metric": "peak_stage_acc = 1 - |sim-obs|/(obs-bed); Rajaram bed 529.318, Shivaji bed 528.670",
+    "cn_style": "per_subbasin_baseline (differentiated 61-75; AMC-III -> eff 78-87)"
   },
   "history": [
     {
-      "timestamp": "2026-10-11T23:53:21.419172+00:00",
-      "timing_offset_hours": 0.0,
-      "stage_error_m": -0.192,
-      "peak_discharge_error_m3s": 3.5999999999999996,
-      "alpha_k": 1.0,
-      "alpha_lag": 1.0,
-      "delta_cn": 0.86,
-      "muskingum_x": 0.25,
-      "confidence_pct": 99.9
-    },
-    {
-      "timestamp": "2026-10-13T02:12:56.898330+00:00",
-      "timing_offset_hours": 0.0,
-      "stage_error_m": -0.197,
-      "peak_discharge_error_m3s": 2.799999999999999,
-      "alpha_k": 1.0,
-      "alpha_lag": 1.0,
-      "delta_cn": 0.89,
-      "muskingum_x": 0.25,
-      "confidence_pct": 99.9
-    },
-    {
-<<<<<<< HEAD
-      "timestamp": "2026-10-22T14:12:39.797147+00:00",
-      "timing_offset_hours": 3.0,
-      "stage_error_m": -0.41,
-      "peak_discharge_error_m3s": 3.3000000000000007,
-      "alpha_k": 1.218,
-      "alpha_lag": 1.171,
-      "delta_cn": 1.84,
-      "muskingum_x": 0.19,
-      "confidence_pct": 51.6
-=======
-      "timestamp": "2026-10-22T06:00:43.725800+00:00",
-      "timing_offset_hours": -314.0,
-      "stage_error_m": -542.56,
-      "peak_discharge_error_m3s": -1080.3,
-      "alpha_k": 0.5,
-      "alpha_lag": 0.987,
-      "delta_cn": 8.0,
-      "muskingum_x": 0.4,
-      "confidence_pct": 50.0
-    },
-    {
-      "timestamp": "2026-10-22T06:00:44.427962+00:00",
-      "timing_offset_hours": -314.0,
-      "stage_error_m": -542.56,
-      "peak_discharge_error_m3s": -975.0,
-      "alpha_k": 0.5,
-      "alpha_lag": 0.987,
-      "delta_cn": 8.0,
-      "muskingum_x": 0.4,
-      "confidence_pct": 50.0
-    },
-    {
-      "timestamp": "2026-10-22T06:01:22.572240+00:00",
-      "timing_offset_hours": 1.0,
-      "stage_error_m": -1.3799999999999955,
-      "peak_discharge_error_m3s": -975.0,
-      "alpha_k": 1.22,
-      "alpha_lag": 1.184,
-      "delta_cn": 5.36,
-      "muskingum_x": 0.15,
-      "confidence_pct": 50.0
-    },
-    {
-      "timestamp": "2026-10-22T06:01:23.303305+00:00",
-      "timing_offset_hours": 20.0,
-      "stage_error_m": -1.8099999999999454,
-      "peak_discharge_error_m3s": -1298.2,
-      "alpha_k": 1.8,
-      "alpha_lag": 1.8,
-      "delta_cn": 8.0,
-      "muskingum_x": 0.15,
-      "confidence_pct": 55.2
-    },
-    {
-      "timestamp": "2026-10-27T09:31:56.060340+00:00",
+      "timestamp": "2026-10-28T05:59:04.385328+00:00",
       "timing_offset_hours": -4.0,
       "stage_error_m": -0.28,
-      "peak_discharge_error_m3s": null,
+      "peak_discharge_error_m3s": 0.0,
       "alpha_k": 0.6,
       "alpha_lag": 0.82,
       "delta_cn": 0.0,
@@ -323,22 +195,8 @@
       "uh_max_hr": 90,
       "uh_m_exp": 20.0,
       "confidence_pct": 92.0,
-      "note": "Promoted timing-faithful peak-stage config (replaces round-2 LM params NSE=0.45). 2025 acc 96.5% / NSE 0.93 / timing -4h; 2019 acc 86.2%; 2021 ~68% data-capped."
->>>>>>> 087cd64c (checkpoint: prior-session docs console rollout, new diagram pages, telemetry data and src tweaks)
+      "ml_predictor_state": "UNTRAINED",
+      "note": "Restored promoted timing-faithful peak-stage config (2025 96.5% / NSE 0.93, 2019 86.2%)."
     }
-  ],
-  "ia_frac": 0.05,
-  "uh_max_hr": 90,
-  "uh_m_exp": 20.0,
-  "provenance": {
-    "validated_event": "2025_august (Shivaji Bridge, hourly observed, peak-stage acc 96.5%, NSE 0.93, timing -4h)",
-    "second_event": "2019_august (Rajaram, peak-stage acc 86.2%; reported Q 2111 m3/s confirmed accurate)",
-    "third_event": "2021_july (Rajaram, ~68% ONLY - Open-Meteo under-estimates the largest flood; input-data limitation, not tuning)",
-    "calibration_script": "historical_checks/2025_august_shivaji_bridge/scripts/comparison/calibrate_peak_stage_3event.py",
-    "results_json": "historical_checks/2025_august_shivaji_bridge/results/dynamic_calibration/peak_stage_3event_results.json",
-    "metric": "peak_stage_acc = 1 - |sim-obs|/(obs-bed); Rajaram bed 529.318, Shivaji bed 528.670",
-    "cn_style": "per_subbasin_baseline (differentiated 61-75; AMC-III -> eff 78-87)",
-    "backwater": "Krishna backwater bounded at ~0.4-1.0 m (user); NOT the driver of 2019/2021 gaps -- routing (K/X/lag) is.",
-    "caveat": "Do not chase 2021 with parameter tuning: its ~69% ceiling is Open-Meteo rainfall under-estimation (largest observed flood, smallest reanalysis rain). Fixing 2021 needs gauge/orographic rainfall forcing."
-  }
+  ]
 }

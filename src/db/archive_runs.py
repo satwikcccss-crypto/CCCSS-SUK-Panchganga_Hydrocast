@@ -26,6 +26,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import psycopg2
 import psycopg2.extras
+from psycopg2 import sql
 
 from src.db.connection import get_db_connection
 
@@ -49,6 +50,18 @@ ARCHIVE_TARGETS = {
 }
 
 
+def _validate_archive_target(table_name: str, time_col: str) -> None:
+    """Refuse arbitrary identifiers; only configured archive targets are allowed."""
+    expected = ARCHIVE_TARGETS.get(table_name)
+    if expected is None:
+        raise ValueError(f"Refusing to archive unknown table: {table_name!r}")
+    if time_col != expected:
+        raise ValueError(
+            f"Refusing to archive {table_name!r} using {time_col!r}; "
+            f"expected {expected!r}"
+        )
+
+
 def get_cutoff_date(retention_days: int) -> datetime:
     """Calculate UTC cutoff timestamp based on retention days."""
     return datetime.now(timezone.utc) - timedelta(days=retention_days)
@@ -67,6 +80,8 @@ def archive_table_to_parquet(
     Export rows older than cutoff to Parquet files partitioned by year/month,
     and delete pruned rows from PostgreSQL.
     """
+    _validate_archive_target(table_name, time_col)
+
     stats = {
         "table": table_name,
         "rows_identified": 0,
@@ -91,7 +106,12 @@ def archive_table_to_parquet(
             stats["status"] = "table_not_found"
             return stats
 
-        cur.execute(f"SELECT COUNT(*) FROM {table_name} WHERE {time_col} < %s", (cutoff,))
+        cur.execute(
+            sql.SQL("SELECT COUNT(*) FROM {} WHERE {} < %s").format(
+                sql.Identifier(table_name), sql.Identifier(time_col)
+            ),
+            (cutoff,),
+        )
         total_rows = cur.fetchone()[0]
 
     stats["rows_identified"] = total_rows
@@ -106,8 +126,14 @@ def archive_table_to_parquet(
         stats["status"] = "dry_run"
         return stats
 
-    # Query and stream into DataFrame
-    query = f"SELECT * FROM {table_name} WHERE {time_col} < %s ORDER BY {time_col} ASC"
+    # Query and stream into DataFrame. Identifiers are allow-listed and quoted;
+    # the cutoff remains a bound parameter. psycopg2's Composed object is passed
+    # straight to the cursor by pandas, so no unsafe string interpolation occurs.
+    query = sql.SQL("SELECT * FROM {} WHERE {} < %s ORDER BY {} ASC").format(
+        sql.Identifier(table_name),
+        sql.Identifier(time_col),
+        sql.Identifier(time_col),
+    )
     df = pd.read_sql_query(query, conn, params=(cutoff,))
 
     if df.empty:
@@ -143,7 +169,12 @@ def archive_table_to_parquet(
 
     # Prune rows from DB inside transaction
     with conn.cursor() as cur:
-        cur.execute(f"DELETE FROM {table_name} WHERE {time_col} < %s", (cutoff,))
+        cur.execute(
+            sql.SQL("DELETE FROM {} WHERE {} < %s").format(
+                sql.Identifier(table_name), sql.Identifier(time_col)
+            ),
+            (cutoff,),
+        )
         deleted_count = cur.rowcount
     conn.commit()
 

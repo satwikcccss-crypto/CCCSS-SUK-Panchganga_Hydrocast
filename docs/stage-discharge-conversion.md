@@ -4,7 +4,7 @@
 **IMPORTANT (Sep 2026 correction):** The two gauged sites now use rating curves that are
 **PCHIP-interpolated DIRECTLY through the official Maharashtra WRD stage-discharge sheet** —
 not a pure Manning / slope-calibrated curve. This is what makes the discharge calculation
-correct for a ~2,140 km² Panchganga catchment (see §8 "How We Solved It").
+correct for the canonical 1,837.213 km² Panchganga catchment (see §8 "How We Solved It").
 
 ---
 
@@ -130,40 +130,15 @@ verbatim**; **SHIVAJI_BRIDGE uses the sheet stages minus the −0.648 m downstre
 offset** (see §8.1). Extra low-flow anchors below the first gauged point (533.54 m) come
 from the WRD 2021–2023 hourly register.
 
-| No | Rajaram Stage (m) | Discharge | Discharge (m³/s) | In Code As | Hydraulic Regime |
-|:---|:---|:---|:---|:---|:---|
-| 01 | 529.318 | 0 cusecs | 0.00 (Q=0) | RAJARAM_ANCHORS | Surveyed bed thalweg |
-| 02 | 532.70 | 500 cusecs | 14.16 | observed 2021-23 | In-bank low flow |
-| 03 | 532.83 | 800 cusecs | 22.65 | observed 2021-23 | In-bank low flow |
-| 04 | 532.98 | 1,150 cusecs | 32.56 | observed 2021-23 | In-bank low flow |
-| 05 | 533.00 | 1,200 cusecs | 34.00 | observed 2021-23 | In-bank low flow |
-| 06 | 533.36 | 2,516 cusecs | 71.25 | observed 2021-23 | In-bank low flow |
-| 07 | 533.54 | 2,825 cusecs | 80.00 | WRD sheet | In-bank baseflow |
-| 08 | 533.71 | 3,134 cusecs | 88.74 | WRD sheet | In-bank baseflow |
-| 09 | 533.99 | 3,902 cusecs | 110.49 | WRD sheet | In-bank baseflow |
-| 10 | 535.21 | 7,684 cusecs | 217.59 | WRD sheet | Main channel flow |
-| 11 | 535.59 | 8,958 cusecs | 253.66 | WRD sheet | Bankfull level |
-| 12 | 535.77 | 9,690 cusecs | 274.39 | WRD sheet | K.T. Weir overflow |
-| 13 | 536.41 | 13,087 cusecs | 370.58 | WRD sheet | Over-weir flow |
-| 14 | 538.16 | 21,650 cusecs | 613.06 | WRD sheet | Drowned weir flow |
-| 15 | 539.02 | 28,270 cusecs | 800.52 | WRD sheet | Channel spreading |
-| 16 | 541.50 | 52,266 cusecs | 1,480.00 | WRD sheet | Rajaram ALERT stage |
-| 17 | 542.10 | 63,567 cusecs | 1,800.00 | WRD sheet | Shivaji ALERT stage |
-| 18 | 542.70 | 77,692 cusecs | 2,200.00 | WRD sheet | WARNING stage |
-| 19 | 543.30 | 94,467 cusecs | 2,675.00 | WRD sheet | DANGER stage |
-| 20 | 545.33 | 135,961 cusecs | 3,850.00 | WRD sheet | HFL (2019/2021) |
+For the authoritative government regulatory datum schedule, surveyed thalweg elevations, and the complete 26-point calibration table with imperial gauge heights and alert tiers, see [Catchment Hydrology: Official Regulatory Datums](basin-hydrology.md#regulatory-datums).
 
-
-The complete official sheet with every intermediate foot-step (533.56 → 81.24,
-533.59 → 82.49, 533.64 → 85.01, 533.66 → 86.25, 533.69 → 87.50) is embedded in
-`RAJARAM_ANCHORS_STAGE` / `RAJARAM_ANCHORS_Q` and `SHIVAJI_ANCHORS_STAGE` /
-`SHIVAJI_ANCHORS_Q` in `src/hydrology/stage_converter.py`.
+The mathematical rating spline evaluates this calibration dataset via monotone PCHIP interpolators (`RAJARAM_ANCHORS_STAGE` / `RAJARAM_ANCHORS_Q` and `SHIVAJI_ANCHORS_STAGE` / `SHIVAJI_ANCHORS_Q`) implemented in `src/hydrology/stage_converter.py`, preserving monotonicity ($\frac{dQ}{dh} > 0$) across the full operational domain from bed zero to HFL.
 
 ---
 
 ## 5. API Functions & Code Implementation
 
-All conversions are encapsulated in [`stage_converter.py`](file:///e:/hydrocast_complete/src/hydrology/stage_converter.py):
+All conversions are encapsulated in `src/hydrology/stage_converter.py`:
 
 ```python
 # Stage to Discharge:
@@ -244,7 +219,7 @@ stages.
 
 | # | Problem (observed in real runs) | Root Cause | Fix |
 | :--- | :--- | :--- | :--- |
-| 1 | Shivaji discharge wrong for a 2,140 km² catchment: 209.9 m³/s at 533.54 m vs WRD 80 m³/s; only 2,797 m³/s at HFL vs WRD 3,850 m³/s | Pure Manning/DCM with a mismatched slope; wide-floodplain hyd-raulic-radius collapse above bankfull | Anchor Shivaji PCHIP **directly onto the official WRD sheet**, applying the **−0.648 m downstream datum offset** (`Shivaji_stage_for_Q = WRD_sheet_stage − 0.648`). Matches WRD at every official sheet point; the offset is **not** constant below ~20 m³/s (see §8.5). |
+| 1 | Shivaji discharge wrong for the 1,837.213 km² catchment: 209.9 m³/s at 533.54 m vs WRD 80 m³/s; only 2,797 m³/s at HFL vs WRD 3,850 m³/s | Pure Manning/DCM with a mismatched slope; wide-floodplain hyd-raulic-radius collapse above bankfull | Anchor Shivaji PCHIP **directly onto the official WRD sheet**, applying the **−0.648 m downstream datum offset** (`Shivaji_stage_for_Q = WRD_sheet_stage − 0.648`). Matches WRD at every official sheet point; the offset is **not** constant below ~20 m³/s (see §8.5). |
 | 2 | Erratic real-run baseflow: sometimes 13, 1, 7.5, 15 m³/s | Fabricated low-flow anchor `531.50 → 3.0` collapsed the Rajaram curve below the gauged WRD range | Replace fabricated tail with **observed WRD 2021–2023 monsoon low-flow anchors** (532.70→14.16 … 533.36→71.25) — monotonic, government-recorded. |
 | 3 | Discharge floored by an arbitrary 15 m³/s | `max(baseflow, 15.0)` was unphysical, but the replacement `40.0` floor was worse still — see §8.3 | Baseflow is now the **observed sensor discharge**, un-floored. |
 

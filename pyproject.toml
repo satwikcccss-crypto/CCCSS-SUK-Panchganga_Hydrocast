@@ -1,0 +1,35 @@
+# HydroCast — tooling configuration.
+#
+# Test discovery lives in pytest.ini. Runtime dependencies live in
+# requirements.txt (flexible spec) and requirements.lock (pinned, reproducible).
+# This file only centralises formatter / type-checker / coverage settings so the
+# same rules apply locally (pre-commit) and in CI.
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/__init__.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+exclude_also = [
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+warn_unused_ignores = false
+warn_redundant_casts = false
+# NOTE: mypy is ADVISORY in CI today (119 known errors in dynamic DB/HTTP code).
+# The CI step is `continue-on-error: true` so it reports without blocking. Flip
+# that off once the backlog is at zero — see .github/workflows/tests.yml.

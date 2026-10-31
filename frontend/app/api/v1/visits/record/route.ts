@@ -30,6 +30,25 @@ function hashIp(ip: string): string {
   return crypto.createHash("sha256").update(ip).digest("hex");
 }
 
+// Lightweight per-IP throttle. Each record call fans out to Supabase / Upstash /
+// the backend, so unthrottled calls are a cost and DoS vector. On throttle we
+// return the last in-memory counts (cheap) rather than erroring the widget.
+const RATE_WINDOW_MS = 5_000;
+const lastSeen = new Map<string, number>();
+
+function throttled(ip: string): boolean {
+  const now = Date.now();
+  const prev = lastSeen.get(ip) ?? 0;
+  if (now - prev < RATE_WINDOW_MS) return true;
+  lastSeen.set(ip, now);
+  if (lastSeen.size > 5_000) {
+    for (const [key, ts] of lastSeen) {
+      if (now - ts >= RATE_WINDOW_MS) lastSeen.delete(key);
+    }
+  }
+  return false;
+}
+
 async function recordViaSupabase(ipHash: string, today: string) {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey =
@@ -193,6 +212,9 @@ async function recordViaBackend(ip: string) {
 
 export async function POST(req: NextRequest) {
   const clientIp = getClientIp(req);
+  if (throttled(clientIp)) {
+    return NextResponse.json({ daily: fallbackDaily, total: fallbackTotal });
+  }
   const ipHash = hashIp(clientIp);
   const today = new Date().toISOString().split("T")[0];
 

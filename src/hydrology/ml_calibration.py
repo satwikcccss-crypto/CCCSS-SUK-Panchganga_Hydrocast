@@ -1,7 +1,19 @@
 """
 src/hydrology/ml_calibration.py
 ===============================
-Real-Time Machine Learning & Adaptive Hydrologic Recalibration Engine for Panchganga Basin.
+Real-Time Adaptive Hydrologic Recalibration Engine (physics-informed, with an
+OPTIONAL gated ML assist) for the Panchganga Basin.
+
+HONESTY NOTE: Despite the historical module name, the operational core is a
+deterministic physics-informed recalibrator — timing/stage-driven parameter
+scaling plus a Levenberg-Marquardt refit of the emulator against the
+observation-shifted hydrograph. The machine-learning component
+(``HydrologicParameterPredictor``) is OPTIONAL and GATED: it contributes only
+when a model is both fitted AND explicitly backtest-validated
+(``mark_validated``). No such validated model exists today, so the engine
+reports ``ml_predictor_state=UNTRAINED`` and uses the physics prior. The
+reported ``confidence_pct`` is an observation-fit score (how well the parameters
+explain the observed discrepancy), NOT a forecast-accuracy probability.
 
 Core Capabilities:
 1. High-Precision Peak Flood Arrival Time & Confidence Interval:
@@ -48,7 +60,7 @@ from scipy import optimize
 
 from src.hms import runner as hms_runner
 from src.hms.basin_parser import load_immutable_baseline
-from src.hydrology.ml_parameter_predictor import predictor as ml_predictor, HydrologicParameterPredictor
+from src.hydrology.ml_parameter_predictor import HydrologicParameterPredictor
 
 log = logging.getLogger(__name__)
 
@@ -96,8 +108,14 @@ def calculate_peak_arrival_window(
     site_name: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
-    Computes high-precision Peak Flood Arrival Time and permissible Confidence Interval (±2.0h)
-    for a bridge or outlet forecast series.
+    Computes the Peak Flood Arrival Time and a permissible arrival-time window
+    (default ±2.0 h) for a bridge or outlet forecast series.
+
+    NOTE ON HONESTY: ``margin_hours`` is a CONFIGURED operational tolerance
+    (``PEAK_ARRIVAL_CI_HOURS``), and the stage/discharge bands are heuristic
+    operational envelopes. They are NOT a statistically derived 95% confidence
+    interval and the ``status`` reflects only whether a peak was identified from
+    the forecast — it makes no claim about forecast accuracy.
 
     Returns:
       {
@@ -117,7 +135,7 @@ def calculate_peak_arrival_window(
             "stage_range_m": [543.52, 544.12],
             "discharge_range_m3s": [1335.0, 1505.0]
         },
-        "status": "CALIBRATED_ACCURATE"
+        "status": "PEAK_IDENTIFIED"
       }
     """
     if not forecast_series:
@@ -208,21 +226,34 @@ def calculate_peak_arrival_window(
             "discharge_range_m3s": [q_low, q_high],
         },
         "is_receding": is_receding,
-        "status": "RECEDING_NO_PEAK" if is_receding else "CALIBRATED_ACCURATE",
+        "status": "RECEDING_NO_PEAK" if is_receding else "PEAK_IDENTIFIED",
     }
 
 
 class AdaptiveHydrologicCalibrator:
     """
-    Real-Time Adaptive Machine Learning Hydrologic Calibrator.
-    Synchronizes Muskingum K & X, Subbasin Lag, and SCS Curve Numbers.
+    Adaptive physics-informed hydrologic calibrator with an OPTIONAL, gated ML
+    assist. Synchronizes Muskingum K & X, subbasin lag, and SCS Curve Numbers.
+
+    Honesty contract:
+      * The deterministic physics prior (timing/stage-driven scaling plus a
+        Levenberg-Marquardt refit of the emulator) is always available and is the
+        default source of corrections.
+      * An ML predictor contributes ONLY when it is both fitted and explicitly
+        backtest-validated (``HydrologicParameterPredictor.mark_validated``).
+        Until then the engine reports ``ml_predictor_state`` as UNTRAINED /
+        TRAINED_UNVALIDATED and ignores it. This keeps an unvalidated model out
+        of the life-safety path.
     """
 
     def __init__(self):
         self.state = self.load_calibration_state()
-        self.predictor = HydrologicParameterPredictor(
-            retrain_on_load=False,
-        )
+        # Single predictor instance consulted for the optional ML assist. The
+        # previous code built a `retrain_on_load=False` instance here but actually
+        # consulted a separate module-level singleton — an inconsistency. Loading
+        # here lets a persisted, backtest-validated model load; if none exists the
+        # predictor stays UNTRAINED and the physics prior is used.
+        self.predictor = HydrologicParameterPredictor(retrain_on_load=True)
 
     @staticmethod
     def load_calibration_state() -> Dict[str, Any]:
@@ -309,6 +340,7 @@ class AdaptiveHydrologicCalibrator:
             "observed_peak_stage_m": 0.0,
             "forecast_peak_stage_m": 0.0,
             "is_rising": False,
+            "n_aligned_points": 0,
         }
         if not recent_forecast or not observed_telemetry:
             return {**empty, "reason": "INSUFFICIENT_DATA"}
@@ -392,6 +424,7 @@ class AdaptiveHydrologicCalibrator:
             "observed_peak_stage_m": round(observed_peak, 2),
             "forecast_peak_stage_m": round(forecast_peak, 2),
             "is_rising": is_rising,
+            "n_aligned_points": int(len(stage_diffs)),
             "reason": reason,
         }
 
@@ -401,14 +434,25 @@ class AdaptiveHydrologicCalibrator:
         stage_error_m: float,
         peak_discharge_error_m3s: float = 0.0,
         subbasin_hyetographs: Optional[Dict[str, np.ndarray]] = None,
+        observed_stage_series: Optional[np.ndarray] = None,
+        n_aligned_points: int = 0,
     ) -> Dict[str, Any]:
         """
-        Performs hybrid physics-informed ML recalibration.
-        Adjusts:
+        Performs hybrid physics-informed recalibration with an OPTIONAL, gated ML
+        assist. Adjusts:
           α_K: Muskingum K scaling factor
           α_lag: Subbasin lag scaling factor
           ΔCN: SCS Curve Number delta
           X: Muskingum weighting parameter
+
+        The correction is anchored to the OBSERVED timing offset (Δt) and signed
+        stage error (Δh). When real rainfall forcing (``subbasin_hyetographs``) is
+        supplied, the emulator is also refitted to the observation-shifted
+        hydrograph; without it (e.g. the manual admin endpoint) only the
+        observation anchors are fitted — never a fabricated rainfall.
+
+        ``observed_stage_series`` (90 h) and ``n_aligned_points`` feed the optional
+        ML predictor and the honest observation-fit score; both are optional.
         """
         # Physics Guidance:
         # 1. Early Arrival (timing_offset_hours < 0):
@@ -435,15 +479,21 @@ class AdaptiveHydrologicCalibrator:
         # Muskingum X shift: steeper waves (early) have higher X
         x_shift = 0.25 - (timing_offset_hours * 0.02)
 
-        # ── Machine learning–informed initial guess ────────────────────────
-        # Predict parameters from historical discrepancy-to-parameter mappings.
-        # The ML model learns the systematic offset patterns that the analytical
-        # physics estimate may miss, especially for complex multi-parameter interactions.
-        ml_guess = ml_predictor.predict(
+        # ── Optional, GATED machine-learning assist ─────────────────────────
+        # consults the calibrated model only when it is fitted AND backtest-validated.
+        # Otherwise predict() returns None and the physics prior below is used
+        # unchanged — an unvalidated model must never steer these parameters.
+        ml_guess = self.predictor.predict(
+            stage_series=observed_stage_series,
             timing_offset_hours=timing_offset_hours,
             stage_discrepancy_m=stage_error_m,
             peak_discharge_error_m3s=peak_discharge_error_m3s,
         )
+        ml_status = self.predictor.get_status()["state"]
+        if ml_guess is not None:
+            log.info(
+                "Validated ML predictor contributed to the initial guess (state=%s)", ml_status
+            )
 
         if ml_guess is not None:
             # Blend ML prediction with analytical physics: 70% physics / 30% ML
@@ -494,26 +544,38 @@ class AdaptiveHydrologicCalibrator:
         # an observed-equivalent target.  The target is the baseline-run
         # hydrograph translated by the wave timing offset (Δt<0 → wave arrived
         # early → shift left) and rescaled by the observed peak discharge error.
-        ref = hms_runner.compute_emulator_hydrograph(
-            BASE_SUB_MODELS, BASE_REACHES, subbasin_hyetographs, baseflow_m3s=0.0,
-        )
-        q0 = np.asarray(ref["q_surface"], dtype=np.float64)
-        T = len(q0)
-        shift_n = int(round(-timing_offset_hours))
-        q_target = np.zeros(T, dtype=np.float64)
-        if abs(shift_n) < T:
-            if shift_n >= 0:
-                q_target[:T - shift_n] = q0[shift_n:]
-            else:
-                q_target[-shift_n:] = q0[:T + shift_n]
+        # The hydrograph-mismatch residual is only meaningful when REAL rainfall
+        # forcing is supplied. Without a hyetograph the emulator would run on a
+        # fabricated uniform drizzle, so fitting to that hydrograph is
+        # meaningless — in that case we fit the observation anchors (timing and
+        # stage) alone. This is the path the manual admin endpoint takes.
+        use_hydrograph_term = bool(subbasin_hyetographs)
+        T = 0
+        if use_hydrograph_term:
+            ref = hms_runner.compute_emulator_hydrograph(
+                BASE_SUB_MODELS, BASE_REACHES, subbasin_hyetographs, baseflow_m3s=0.0,
+            )
+            q0 = np.asarray(ref["q_surface"], dtype=np.float64)
+            T = len(q0)
+            shift_n = int(round(-timing_offset_hours))
+            q_target = np.zeros(T, dtype=np.float64)
+            if abs(shift_n) < T:
+                if shift_n >= 0:
+                    q_target[:T - shift_n] = q0[shift_n:]
+                else:
+                    q_target[-shift_n:] = q0[:T + shift_n]
 
-        ref_peak = float(np.max(q0))
-        if ref_peak > 0.0 and peak_discharge_error_m3s != 0.0:
-            q_scale = max(0.5, (ref_peak + peak_discharge_error_m3s) / ref_peak)
-            q_target *= q_scale
+            ref_peak = float(np.max(q0))
+            if ref_peak > 0.0 and peak_discharge_error_m3s != 0.0:
+                q_scale = max(0.5, (ref_peak + peak_discharge_error_m3s) / ref_peak)
+                q_target *= q_scale
 
-        wind = np.arange(0, min(T, 90))
-        resid_scale = max(1.0, float(np.max(q_target)) * 0.15)
+            wind = np.arange(0, min(T, 90))
+            resid_scale = max(1.0, float(np.max(q_target)) * 0.15)
+        else:
+            q_target = None
+            wind = np.array([], dtype=int)
+            resid_scale = 1.0
         expected_x = float(np.clip(0.25 - (timing_offset_hours * 0.02), 0.16, 0.36))
 
         def hydrologic_residuals(p):
@@ -522,26 +584,30 @@ class AdaptiveHydrologicCalibrator:
             p = np.clip(p, lo, hi)
             a_k, a_lag, d_cn, x_val = (float(p[0]), float(p[1]), float(p[2]), float(p[3]))
 
-            sub_m = copy.deepcopy(BASE_SUB_MODELS)
-            for sid, props in sub_m.items():
-                props["cn"] = float(np.clip(props["cn"] + d_cn, 45.0, 95.0))
-                props["lag_min"] = float(props["lag_min"] * a_lag)
-            rch = copy.deepcopy(BASE_REACHES)
-            for rid, rp in rch.items():
-                rp["k_hr"] = float(rp["k_hr"] * a_k)
-                rp["x"] = float(x_val)
+            if use_hydrograph_term:
+                sub_m = copy.deepcopy(BASE_SUB_MODELS)
+                for sid, props in sub_m.items():
+                    props["cn"] = float(np.clip(props["cn"] + d_cn, 45.0, 95.0))
+                    props["lag_min"] = float(props["lag_min"] * a_lag)
+                rch = copy.deepcopy(BASE_REACHES)
+                for rid, rp in rch.items():
+                    rp["k_hr"] = float(rp["k_hr"] * a_k)
+                    rp["x"] = float(x_val)
 
-            sim = hms_runner.compute_emulator_hydrograph(
-                sub_m, rch, subbasin_hyetographs, baseflow_m3s=0.0,
-            )
-            qs = np.asarray(sim["q_surface"], dtype=np.float64)
-            n = min(len(qs), T)
-            pts = wind[wind < n]
-            resid = (qs[pts] - q_target[pts]) / resid_scale
-            # Life-safety asymmetric loss: under-prediction (sim < target,
-            # resid < 0) is penalized 3x more than over-prediction so the
-            # optimizer avoids dangerous low-biased flood peaks.
-            resid = np.where(resid < 0.0, resid * 3.0, resid)
+                sim = hms_runner.compute_emulator_hydrograph(
+                    sub_m, rch, subbasin_hyetographs, baseflow_m3s=0.0,
+                )
+                qs = np.asarray(sim["q_surface"], dtype=np.float64)
+                n = min(len(qs), T)
+                pts = wind[wind < n]
+                resid = (qs[pts] - q_target[pts]) / resid_scale
+                # Life-safety asymmetric loss: under-prediction (sim < target,
+                # resid < 0) is penalized 3x more than over-prediction so the
+                # optimizer avoids dangerous low-biased flood peaks.
+                resid = np.where(resid < 0.0, resid * 3.0, resid)
+            else:
+                # No rainfall forcing: fit the observation anchors only.
+                resid = np.array([], dtype=np.float64)
 
             modeled_dt = 0.55 * ((a_k - 1.0) / 0.075) + 0.45 * ((a_lag - 1.0) / 0.060)
             dwell = (modeled_dt - timing_offset_hours) / 2.0
@@ -569,15 +635,32 @@ class AdaptiveHydrologicCalibrator:
             log.warning("Levenberg-Marquardt recalibration fell back to analytical physics: %s", e)
             final_p = initial_params
 
-        # Confidence is derived from the normalized RMS of the final residual
-        # vector: a perfect fit (rms -> 0) yields ~100%, a poor fit trends to the
-        # 50% floor. This replaces the previously hardcoded 95%.
-        try:
-            resid_vec = np.asarray(getattr(opt_res, "fun", []), dtype=np.float64)
-            rms = float(np.sqrt(np.mean(resid_vec ** 2))) if resid_vec.size else 1.0
-            confidence_pct = float(np.clip(100.0 * (1.0 - rms / (rms + 1.0)), 50.0, 99.9))
-        except Exception:
-            confidence_pct = 50.0
+        # ── Honest confidence (observation-fit score) ─────────────────────
+        # This is NOT a forecast-accuracy probability. It scores how well the
+        # calibrated parameters reproduce the OBSERVED timing (Δt) and stage (Δh)
+        # discrepancy, normalized by the operator's trigger tolerances (1.0 h /
+        # 0.25 m), then degraded when the solution is pinned at a physical bound,
+        # when the optimizer failed to converge, or when little aligned
+        # observation data supported the fit. It never claims more than 99.9%.
+        a_k_f, a_lag_f, d_cn_f, x_f = (
+            float(final_p[0]), float(final_p[1]), float(final_p[2]), float(final_p[3])
+        )
+        modeled_dt_f = 0.55 * ((a_k_f - 1.0) / 0.075) + 0.45 * ((a_lag_f - 1.0) / 0.060)
+        dt_misfit = (modeled_dt_f - timing_offset_hours) / 1.0   # tolerance 1.0 h
+        dh_misfit = ((-d_cn_f / 4.5) - stage_error_m) / 0.25     # tolerance 0.25 m
+        achieved = float(np.exp(-0.5 * (dt_misfit ** 2 + dh_misfit ** 2)))
+
+        _tol = 1e-4
+        at_bound = bool(np.any(final_p - lo <= _tol) or np.any(hi - final_p <= _tol))
+        converged = bool(getattr(opt_res, "success", False)) if opt_res is not None else False
+        evidence = float(np.clip(float(n_aligned_points) / 12.0, 0.30, 1.0))
+
+        confidence_pct = 100.0 * achieved * (0.70 + 0.30 * evidence)
+        if at_bound:
+            confidence_pct *= 0.70
+        if not converged:
+            confidence_pct *= 0.60
+        confidence_pct = float(np.clip(confidence_pct, 50.0, 99.9))
 
         alpha_k = round(float(final_p[0]), 3)
         alpha_lag = round(float(final_p[1]), 3)
@@ -629,11 +712,23 @@ class AdaptiveHydrologicCalibrator:
         self.state["delta_cn"] = delta_cn
         self.state["muskingum_x"] = muskingum_x
         self.state["confidence_pct"] = round(confidence_pct, 1)
+        # Provenance of the confidence number so no operator mistakes it for a
+        # forecast-accuracy probability.
+        self.state["confidence_basis"] = (
+            "Observation-fit score: exp of normalized timing+stage misfit "
+            "(tol 1.0 h / 0.25 m), scaled by aligned-point evidence, degraded when "
+            "parameters hit physical bounds or the optimizer did not converge. "
+            "NOT a forecast-accuracy probability."
+        )
+        self.state["ml_predictor_state"] = ml_status
+        self.state["n_aligned_points"] = int(n_aligned_points)
+        self.state["fit_used_hydrograph_term"] = bool(subbasin_hyetographs)
         # Snapshot the absolute parameters actually in force so the dashboard
         # can display them without re-deriving (and without hardcoding).
         self.state["active_sub_models"] = calibrated_params["sub_models"]
         self.state["active_reaches"] = calibrated_params["reaches"]
-        self.state["history"].append({
+
+        _hist_entry = {
             "timestamp": now_iso,
             "timing_offset_hours": timing_offset_hours,
             "stage_error_m": stage_error_m,
@@ -643,13 +738,29 @@ class AdaptiveHydrologicCalibrator:
             "delta_cn": delta_cn,
             "muskingum_x": muskingum_x,
             "confidence_pct": round(confidence_pct, 1),
-        })
+            "ml_predictor_state": ml_status,
+            "n_aligned_points": int(n_aligned_points),
+        }
+        # Persist the OBSERVED hydrograph alongside the applied parameters so the
+        # ML training pipeline finally has a reachable, observation-anchored
+        # feature source (previously the reader required a `forecast_series` that
+        # no writer ever emitted, so the model could never train).
+        if observed_stage_series is not None:
+            try:
+                _hist_entry["observed_series"] = [
+                    float(v) for v in np.asarray(observed_stage_series).tolist()
+                ]
+            except Exception:
+                pass
+        self.state["history"].append(_hist_entry)
         self.state["history"] = self.state["history"][-50:]
         self.save_calibration_state()
 
         log.info(
-            "ML Recalibration Completed: α_K=%.3f, α_lag=%.3f, ΔCN=%+.2f, X=%.3f, ΔQpeak=%+.1f m³/s, conf=%.1f%% (Δt=%+.1fh)",
-            alpha_k, alpha_lag, delta_cn, muskingum_x, peak_discharge_error_m3s, confidence_pct, timing_offset_hours
+            "Physics-informed recalibration completed (ML=%s): α_K=%.3f, α_lag=%.3f, "
+            "ΔCN=%+.2f, X=%.3f, ΔQpeak=%+.1f m³/s, obs-fit=%.1f%% (Δt=%+.1fh)",
+            ml_status, alpha_k, alpha_lag, delta_cn, muskingum_x,
+            peak_discharge_error_m3s, confidence_pct, timing_offset_hours
         )
 
         return calibrated_params

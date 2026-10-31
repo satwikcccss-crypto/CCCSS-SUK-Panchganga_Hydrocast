@@ -10,6 +10,25 @@ that reproduces the same loss / transform / routing continuum.
 
 ---
 
+## Interactive diagram consoles
+
+The console below provides interactive visualization of the USACE HEC-HMS 4.13 native automation, Jython control script generation, and pure-Python twin emulator execution and fallback.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 14</span>
+      <strong>HEC-HMS Native Automation & Python Twin Fallback</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../../diagrams/14-hec-hms-engine.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../../diagrams/14-hec-hms-engine.html?embed=1" title="HEC-HMS Engine & Python Twin Console" loading="lazy"></iframe>
+</div>
+
+---
+
 ## Execution decision tree
 
 The module prefers the native HEC-HMS binary when it is present and runnable, and

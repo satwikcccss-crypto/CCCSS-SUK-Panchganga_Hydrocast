@@ -334,29 +334,9 @@ cycle identifier encodes the run, so `CYC_20260901_06z` is the 06z cycle of
 Parameters below are read from
 `data/hms/HMS_Automation_RJKT/Basin_1.basin` by `src/hms/basin_parser.py`.
 
-| Subbasin | Name | Area (km²) | Baseline CN | Lag (min) | Registered primary station |
-| --- | --- | --- | --- | --- | --- |
-| S1 | Karveer (outlet) | 86.213 | 74.85 | 2 152.0 | `KARVEER` |
-| S2 | Sangarul | 153.770 | 65.74 | 3 154.3 | `SANGARUL` |
-| S3 | Kotoli | 261.320 | 64.82 | 3 997.7 | `KOTOLI` |
-| S4 | Karanjphen | 262.000 | 61.89 | 3 115.5 | `KARANJPHEN` |
-| S5 | Padasali | 106.390 | 60.97 | 2 117.1 | `PADASALI` |
-| S6 | Gaganbawda | 227.720 | 61.78 | 3 318.1 | `GAGANBAWDA` |
-| S7 | Garivade | 195.390 | 61.28 | 3 362.3 | `GARIVADE` |
-| S8 | Beed | 177.440 | 65.76 | 3 387.1 | `BEED` |
-| S9 | Radhanagari | 366.970 | 64.31 | 5 199.0 | `RADHANAGARI` |
+For the authoritative catchment parameters across all nine subbasins (totaling 1,837.213 km²), see [Catchment Hydrology: Subbasin Parameters](basin-hydrology.md#subbasin-parameters).
 
-The reaches are identified in the basin file only by ID, storage constant, and
-connectivity. The descriptive names that appeared in earlier revisions of this
-page were not present in the source.
-
-| Reach | Upstream inflow | Downstream outflow | K (h) | X |
-| --- | --- | --- | --- | --- |
-| R5 | S6, S7 | `J_Confluence` | 4.619 | 0.20 |
-| R4 | S9 | `J_Shivaji` | 1.224 | 0.20 |
-| R2 | S8, S4, S5 | `J_Confluence` | 11.827 | 0.20 |
-| R3 | S3, S2 | `J_Confluence` | 3.829 | 0.20 |
-| R1 | S8, S4, S5, S2, S3 | `J_Outlet` | 2.899 | 0.20 |
+Channel routing through the 5 Muskingum reaches (R5, R4, R2, R3, R1) connects subbasin outflows to the terminal sink at Rajaram K.T. Weir. For complete routing parameters, travel times $K$, wedge weights $X$, and numerical sub-stepping passes, see [Catchment Hydrology: Muskingum Reaches](basin-hydrology.md#muskingum-reaches).
 
 ```mermaid
 flowchart LR
@@ -419,19 +399,9 @@ sink through at least one Muskingum reach.
 
 ## 6. Official reference datums
 
-All regulatory levels are expressed against the WRD zero gauge datum of
-**530.18 m MSL**.
+All regulatory levels are expressed against the official Maharashtra Water Resources Department (WRD) zero gauge datum of **530.18 m MSL** and surveyed bridge cross-section thalwegs.
 
-| Regulatory level | Stage (m MSL) | Discharge (m³/s) | Tier |
-| --- | --- | --- | --- |
-| Zero gauge datum | 530.18 | 0 | `dry` |
-| Normal monsoon level | 533.28 | 109.2 | `normal` |
-| Rajaram weir crest | 535.77 | 274.4 | `normal` |
-| Rajaram alert | 541.50 | 1 480.0 | `alert` |
-| Shivaji alert | 542.10 | 1 800.0 | `alert` |
-| Warning | 542.70 | 2 200.0 | `warning` |
-| Danger | 543.30 | 2 675.0 | `danger` |
-| Highest flood level (2019) | 545.33 | 3 850.0 | `hfl_exceeded` |
+For the complete regulatory datum schedule, elevation benchmarks, and official 26-point rating schedule, see [Catchment Hydrology: Official Regulatory Datums](basin-hydrology.md#regulatory-datums).
 
 ```
   Elevation Profile of Bridge Gauge Stations:
@@ -467,16 +437,16 @@ with a default of 2.0.
 | Ingestion | `requests`, `openmeteo-requests`, SQLite cache | Backoff, jitter, QC bounds |
 | Hydrology | HEC-HMS 4.x + Python emulator | SCS-CN loss, UH transform, Muskingum routing |
 | Hydraulics | `scipy.interpolate.PchipInterpolator` | Monotone rating curves |
-| Calibration | `scipy.optimize.minimize`, NumPy | Bounded L-BFGS-B parameter fit |
+| Calibration | `scipy.optimize.least_squares` (LM), NumPy | Bounded Levenberg-Marquardt optimizer + gated ML |
 | Telemetry | ThingSpeak channel `3424513` | Ultrasonic level at Shivaji Bridge |
-| Database | PostgreSQL 15 + PostGIS 3.4, Supabase pooler | Cycles, hydrographs, step logs |
+| Database | PostgreSQL 15 + PostGIS 3.4, Supabase pooler | Cycles, hydrographs, step logs (13 tables, 7 views) |
 | Archival | PyArrow, Apache Parquet | Columnar retention export |
 | API | FastAPI, Uvicorn, asyncpg | REST endpoints and WebSocket push |
-| Security | PyJWT (HS256), `slowapi`, `hmac.compare_digest` | Admin auth, 100 req/min limit |
+| Security | PyJWT (HS256), `slowapi`, `hmac.compare_digest` | Scoped API keys, JWT, 100 req/min limit |
 | Alerting | Telegram Bot API, HTTP webhooks | DDMA bulletins |
 | Frontend | Next.js 14 App Router, React 18, Tailwind | Operations dashboard |
 | Deployment | Docker, Docker Compose | Three-service reproducible stack |
-| CI/CD | GitHub Actions | Scheduled cycles and tests |
+| CI/CD & QA | GitHub Actions, pytest | Automated 271-test suite (256 backend + 3 postgres + 12 integrity) |
 
 ## 8. Deployment
 

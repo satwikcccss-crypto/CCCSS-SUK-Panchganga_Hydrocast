@@ -1,35 +1,415 @@
-/* Expand the width of the documentation for desktop screens */
+/* ==========================================================================
+   HydroCast Modern Architecture & Engineering Presentation Layer
+   Aesthetic inspired by Google Cloud Architecture Center, Stripe & AWS.
+   ========================================================================== */
+
+:root {
+  --hc-brand-primary: #0284c7;
+  --hc-brand-accent: #0ea5e9;
+  --hc-brand-gradient: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%);
+  --hc-card-bg-light: #ffffff;
+  --hc-card-border-light: #e2e8f0;
+  --hc-card-shadow-light: 0 4px 20px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --hc-glass-bg: rgba(255, 255, 255, 0.85);
+  --hc-glass-border: rgba(226, 232, 240, 0.8);
+}
+
+[data-md-color-scheme="slate"] {
+  --hc-brand-primary: #38bdf8;
+  --hc-brand-accent: #0ea5e9;
+  --hc-brand-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --hc-card-bg-light: #0f172a;
+  --hc-card-border-light: #334155;
+  --hc-card-shadow-light: 0 4px 24px -2px rgba(0, 0, 0, 0.4), 0 2px 8px -1px rgba(0, 0, 0, 0.3);
+  --hc-glass-bg: rgba(15, 23, 42, 0.85);
+  --hc-glass-border: rgba(51, 65, 85, 0.8);
+}
+
+/* ── Typography & Global Grid ────────────────────────────────────────────── */
 .md-grid {
-  max-width: 95vw;
+  max-width: 96vw;
 }
 
-/* Ensure wide tables in hydrology/hydraulics do not compress too much */
-.md-typeset table:not([class]) {
-  width: 100%;
+.md-typeset {
+  font-size: 0.84rem;
+  line-height: 1.68;
+  letter-spacing: -0.01em;
 }
 
-/* Section Title Distinction and Notifiers */
 .md-typeset h1 {
-  border-bottom: 3px solid var(--md-primary-fg-color);
-  padding-bottom: 0.3em;
-  margin-top: 1.5em;
-  font-weight: 700;
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-top: 1.2em;
+  margin-bottom: 0.8em;
+  border-bottom: none;
+  background: linear-gradient(135deg, var(--md-default-fg-color) 30%, var(--hc-brand-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .md-typeset h2 {
-  padding-left: 14px;
-  margin-top: 1.5em;
-  border-left: 5px solid var(--md-primary-fg-color);
-  background: linear-gradient(90deg, rgba(120, 120, 120, 0.15) 0%, transparent 100%);
-  padding-top: 6px;
-  padding-bottom: 6px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 2rem;
+  margin-bottom: 0.8rem;
+  padding: 0.5rem 0.8rem;
+  border-left: 4px solid var(--hc-brand-accent);
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.08) 0%, transparent 100%);
   border-radius: 0 8px 8px 0;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .md-typeset h3 {
-  border-bottom: 1px solid rgba(120, 120, 120, 0.2);
-  padding-bottom: 0.2em;
-  margin-top: 1.5em;
+  font-size: 1.15rem;
   font-weight: 600;
+  margin-top: 1.6rem;
+  margin-bottom: 0.6rem;
+  border-bottom: 1px solid var(--hc-card-border-light);
+  padding-bottom: 0.3rem;
+}
+
+/* ── Modern Hero Section Container ───────────────────────────────────────── */
+.hc-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  padding: 2.8rem 2.2rem;
+  margin: 1.5rem 0 2.5rem 0;
+  background: var(--hc-brand-gradient);
+  color: #ffffff;
+  box-shadow: 0 10px 30px -5px rgba(2, 132, 199, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.hc-hero::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.hc-hero-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+  color: #ffffff !important;
+  margin: 0 0 0.8rem 0;
+  -webkit-text-fill-color: initial !important;
+}
+
+.hc-hero-subtitle {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: #e0f2fe;
+  max-width: 48rem;
+  margin-bottom: 1.6rem;
+}
+
+.hc-hero-badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.8rem;
+}
+
+.hc-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none !important;
+}
+
+.hc-hero-badge:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.hc-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.hc-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0369a1 !important;
+  font-weight: 700;
+  font-size: 0.88rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  text-decoration: none !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hc-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hc-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-decoration: none !important;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.hc-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+/* ── Modern Architecture Console Cards ───────────────────────────────────── */
+.hydrocast-diagram-card {
+  margin: 2rem 0;
+  border-radius: 14px;
+  border: 1px solid var(--hc-card-border-light);
+  background: var(--hc-card-bg-light);
+  box-shadow: var(--hc-card-shadow-light);
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hydrocast-diagram-card:hover {
+  border-color: var(--hc-brand-accent);
+  box-shadow: 0 8px 30px rgba(14, 165, 233, 0.12);
+}
+
+.hydrocast-diagram-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.4rem;
+  background: var(--hc-glass-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--hc-card-border-light);
+}
+
+.hydrocast-diagram-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+}
+
+.hydrocast-diagram-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+  border: 1px solid rgba(14, 165, 233, 0.25);
+}
+
+[data-md-color-scheme="slate"] .hydrocast-diagram-badge {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.hydrocast-diagram-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hydrocast-diagram-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  background: var(--hc-brand-primary);
+  color: #ffffff !important;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: all 0.15s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.hydrocast-diagram-btn:hover {
+  background: var(--hc-brand-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.hydrocast-diagram-btn-secondary {
+  background: rgba(120, 120, 120, 0.12);
+  color: var(--md-default-fg-color) !important;
+  border: 1px solid var(--hc-card-border-light);
+}
+
+.hydrocast-diagram-btn-secondary:hover {
+  background: rgba(120, 120, 120, 0.22);
+  color: var(--md-default-fg-color) !important;
+}
+
+.hydrocast-diagram-frame {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  min-height: 480px;
+  border: none;
+  display: block;
+  background: #ffffff;
+}
+
+[data-md-color-scheme="slate"] .hydrocast-diagram-frame {
+  background: #090d16;
+}
+
+/* ── Interactive Feature / Spec Grid Cards ────────────────────────────────── */
+.hc-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+  margin: 1.5rem 0 2.2rem 0;
+}
+
+.hc-spec-card {
+  border-radius: 12px;
+  border: 1px solid var(--hc-card-border-light);
+  background: var(--hc-card-bg-light);
+  padding: 1.3rem;
+  box-shadow: var(--hc-card-shadow-light);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.hc-spec-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--hc-brand-accent);
+}
+
+.hc-spec-icon {
+  font-size: 1.4rem;
+  margin-bottom: 0.6rem;
+  display: inline-block;
+}
+
+.hc-spec-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+  margin-bottom: 0.3rem;
+}
+
+.hc-spec-desc {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--md-default-fg-color--light);
+  margin: 0;
+}
+
+/* ── Metric Stat Chips ───────────────────────────────────────────────────── */
+.hc-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.hc-stat-box {
+  padding: 1.1rem;
+  border-radius: 12px;
+  background: var(--hc-glass-bg);
+  border: 1px solid var(--hc-card-border-light);
+  text-align: center;
+}
+
+.hc-stat-val {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--hc-brand-primary);
+  line-height: 1.1;
+}
+
+.hc-stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--md-default-fg-color--light);
+  margin-top: 0.35rem;
+}
+
+/* ── Modern Table Presentation ───────────────────────────────────────────── */
+.md-typeset table:not([class]) {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  border: 1px solid var(--hc-card-border-light);
+  overflow: hidden;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.md-typeset table:not([class]) th {
+  background: rgba(14, 165, 233, 0.08);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--hc-card-border-light);
+}
+
+.md-typeset table:not([class]) td {
+  padding: 0.7rem 1rem;
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--hc-card-border-light);
+}
+
+.md-typeset table:not([class]) tr:last-child td {
+  border-bottom: none;
+}
+
+.md-typeset table:not([class]) tr:hover td {
+  background: rgba(14, 165, 233, 0.03);
+}
+
+/* ── Code Blocks & Syntax ────────────────────────────────────────────────── */
+.md-typeset pre > code {
+  border-radius: 8px;
+  font-size: 0.78rem;
+  line-height: 1.45;
 }

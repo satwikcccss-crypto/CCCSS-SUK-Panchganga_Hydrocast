@@ -37,7 +37,7 @@ def _store_hydrograph(conn, cycle_id: str, hg: dict) -> dict:
                     (run_id, basin_id, outlet_node, timestamp,
                      lead_hours, discharge_m3s, surface_runoff_m3s,
                      baseflow_m3s, is_peak)
-                VALUES ('MAIN_BASIN', %s, 'J_Outlet', %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, 'MAIN_BASIN', 'J_Outlet', %s, %s, %s, %s, %s, %s)
             """, (
                 cycle_id, ts, lead,
                 round(float(q), 2),

@@ -4,7 +4,9 @@ tests/test_db_connection.py
 Unit tests for the enterprise database connection manager and Supabase IPv6/IPv4 resolver.
 """
 
+import os
 import unittest
+from unittest.mock import patch
 from src.db.connection import parse_supabase_ref, build_pooler_url, get_db_connection
 
 
@@ -51,8 +53,10 @@ class TestDatabaseConnection(unittest.TestCase):
         self.assertEqual(url, expected)
 
     def test_get_db_connection_none_when_no_env(self):
-        # When no URL is provided and env vars are unset or empty, should safely return None
-        conn = get_db_connection(db_url="")
+        # When no URL is provided and env vars are unset or empty, should safely return None.
+        # `clear=True` keeps the test independent of a developer's local .env file.
+        with patch.dict(os.environ, {}, clear=True):
+            conn = get_db_connection(db_url="")
         self.assertIsNone(conn)
 
 

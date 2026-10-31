@@ -144,7 +144,7 @@ export default function OverviewPanel({
             </span>
           </div>
           <div className="mt-2 text-xs text-gray-600 pt-2 border-t border-gray-100 flex items-center justify-between">
-            <span>Total Catchment 2,140 km²</span>
+            <span>Total Catchment 1,837 km²</span>
             <span className="text-emerald-600 font-medium">18 Stations Active</span>
           </div>
         </div>

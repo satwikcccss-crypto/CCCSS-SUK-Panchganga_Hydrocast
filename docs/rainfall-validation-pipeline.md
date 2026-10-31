@@ -1,4 +1,4 @@
-﻿# Panchganga Catchment Observed Rainfall Acquisition & Verification Pipeline
+# Panchganga Catchment Observed Rainfall Acquisition & Verification Pipeline
 
 
 ---
@@ -26,7 +26,7 @@ The console below is the rendered reference for this page: it carries the same s
 
 In numerical flood early warning systems, rainfall accuracy cannot be validated with random heuristics or synthetic noise. If a rainfall forecast is inaccurate, the hydrologic runoff simulation will fail, regardless of how well-calibrated the river hydraulics may be.
 
-HydroCast deploys a **3-Tier Concrete Verification Architecture** implemented in [`src/hydrology/observed_rainfall_pipeline.py`](file:///e:/hydrocast_complete/src/hydrology/observed_rainfall_pipeline.py):
+HydroCast deploys a **3-Tier Concrete Verification Architecture** implemented in `src/hydrology/observed_rainfall_pipeline.py`:
 
 1. **Tier 1 (Authoritative Local Ground Truth):** Direct file/API ingest of official **Maharashtra Water Resources Department (WRD Kolhapur Circle)** and **India Meteorological Department (IMD Pune)** daily 08:30 AM rain gauge observations.
 2. **Tier 2 (Automated Multi-Sensor Reanalysis):** Real-time automated query of **Open-Meteo's Past-Days Recorded Precipitation API**, which merges satellite, radar (DWR Goa/Goa-Sindhudurg radar corridor), and AWS telemetry for each station's exact coordinates.
@@ -47,7 +47,7 @@ the basin total and flagged, so a dead gauge cannot masquerade as a dry day.
 Field engineers and automated telemetry scripts deposit ground gauge records into:
 `data/observed_rainfall/`
 
-Accepted formats include CSV and JSON. A production template is maintained at [`data/observed_rainfall/wrd_daily_rainfall_template.csv`](file:///e:/hydrocast_complete/data/observed_rainfall/wrd_daily_rainfall_template.csv):
+Accepted formats include CSV and JSON. A production template is maintained at `data/observed_rainfall/wrd_daily_rainfall_template.csv`:
 
 ```
 station_id,rainfall_mm

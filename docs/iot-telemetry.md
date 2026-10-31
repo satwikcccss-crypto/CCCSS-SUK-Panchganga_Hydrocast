@@ -1,23 +1,8 @@
 # IoT Ultrasonic Water Level Telemetry & Sensor Integration
 
+HydroCast continuously grounds its hydrologic predictions in real-world ground truth via an autonomous solar-powered **ultrasonic water level radar** deployed on the Panchganga River at Kolhapur, Maharashtra. Telemetry ingestion, outlier filtering, hourly resampling, and textbook validation metrics are implemented in `src/hydrology/realtime_telemetry_validator.py` and `src/hydrology/telemetry_metrics.py`.
 
 ---
-
-| (5-Minute Cellular Uplink) |  |  |
-|:---|:---|:---|
-| REST Telemetry Polling Engine |   |   |
-| - Field1: Distance to Water |   |   |
-| - Field2: Temperature / Status |   |   |
-| Physical Elevation Conversion |   |   |
-| H_water (m MSL) = Sensor_Datum (549.35m) - Distance_m |   |   |
-| Quality Control & Outlier Rejection |   |   |
-| - Range Check: 528.0m <= H_water <= 548.0m MSL |   |   |
-| - 1-Hour Rolling Median Window |   |   |
-| - Rate of Change Guard: | dh/dt | <= 2.0 m/hr |
-| Active Cycle Verification |   | Real-Time Adaptive Calibrator |
-| Compares live H_obs to |   | Detects wave timing offset |
-| forecast H_pred(t) |   | Triggers Levenberg-Marquardt optimization |
-
 
 ## Interactive diagram consoles
 
@@ -27,7 +12,7 @@ The console below is the rendered reference for this page: it carries the same s
   <div class="hydrocast-diagram-header">
     <div class="hydrocast-diagram-title">
       <span class="hydrocast-diagram-badge">Interactive Console · Diagram 05</span>
-      <strong>Simulation Run Lifecycle</strong>
+      <strong>Simulation Run Lifecycle & Telemetry Integration</strong>
     </div>
     <div class="hydrocast-diagram-actions">
       <a class="hydrocast-diagram-btn" href="../diagrams/05-lifecycle-runs.html" target="_blank">Open Fullscreen ↗</a>
@@ -53,141 +38,130 @@ The console below is the rendered reference for this page: it carries the same s
 
 ## 1. Hardware Architecture & Mounting Geometry
 
-Real-time river stage observations are captured by an autonomous solar-powered ultrasonic level sensor installed beneath the central arch girder of **Chhatrapati Shivaji Maharaj Bridge** ($16.708917^\circ\text{ N}, 74.219278^\circ\text{ E}$) over the Panchganga river.
+Real-time river stage observations are captured by an autonomous ultrasonic radar sensor mounted beneath the central arch girder of **Chhatrapati Shivaji Maharaj Bridge** ($16.708917^\circ\text{ N}, 74.219278^\circ\text{ E}$) over the Panchganga River.
 
 ### 1.1 Structural Elevation Benchmarks
+- **Sensor Transducer Face Datum:** $\mathbf{549.35\text{ m MSL}}$ (Surveyed reference datum).
+- **River Bed Elevation at Bridge:** $\mathbf{528.670\text{ m MSL}}$ (Surveyed bedrock thalweg).
+- **WRD Gauge Zero Reference Level:** $\mathbf{530.180\text{ m MSL}}$ ($0'\ 0''$ on official gauge post).
+- **Alert Stage Threshold:** $\mathbf{542.10\text{ m MSL}}$ ($39'\ 1''$; air gap: $23.79\text{ ft}$).
+- **Warning Stage Threshold:** $\mathbf{542.70\text{ m MSL}}$ ($41'\ 1''$; air gap: $21.82\text{ ft}$).
+- **Danger Stage Threshold:** $\mathbf{543.30\text{ m MSL}}$ ($43'\ 0''$; air gap: $19.85\text{ ft}$).
+- **Highest Flood Level (HFL 2019/2021):** $\mathbf{545.33\text{ m MSL}}$ ($49'\ 8''$; air gap: $13.19\text{ ft}$).
 
-- **Sensor Transducer Face Elevation:** $\mathbf{549.35\text{ m MSL}}$ (Surveyed reference datum).
-- **River Bed Invert Elevation:** $\mathbf{530.18\text{ m MSL}}$ (Gauge Zero Datum: $0'\ 0''$).
-- **Alert Stage:** $\mathbf{542.10\text{ m MSL}}$ (Air gap: $23.79\text{ ft}$).
-- **Danger Stage:** $\mathbf{543.30\text{ m MSL}}$ (Air gap: $19.85\text{ ft}$).
-- **Highest Flood Level (HFL 2019):** $\mathbf{545.33\text{ m MSL}}$ (Air gap: $13.19\text{ ft}$).
+See [Catchment Hydrology: Regulatory Datums](basin-hydrology.md#regulatory-datums) for the full authoritative schedule of benchmark elevations.
 
----
+### 1.2 Mathematical Water Level Conversion
+The ultrasonic sensor measures the round-trip acoustic transit time, outputting air distance $d_{air}$ (feet) down to the water surface. Stage in meters above Mean Sea Level (MSL) is computed via:
 
-## 2. Water Stage Mathematical Conversion
+$$\text{Stage } H\text{ (m MSL)} = 549.35 - \left(d_{air} \times 0.3048\right)$$
 
-The physical ultrasonic transducer measures the round-trip acoustic pulse transit time ($t_{transit}$), computing the distance through air from the sensor face down to the water surface:
-
-$$d_{air} = \frac{v_{sound}(T) \cdot t_{transit}}{2} \quad (\text{measured in feet})$$
-
-Where $v_{sound}(T) \approx 331.3 \cdot \sqrt{1 + \frac{T}{273.15}}\text{ m/s}$ accounts for ambient air temperature compensation.
-
-### Conversion to Stage in Meters MSL
-
-In [`thingspeak_gauge.py`](file:///e:/hydrocast_complete/src/sensors/thingspeak_gauge.py):
-
-$$\text{Stage } h\text{ (m MSL)} = 549.35 - \left(d_{air} \times 0.3048\right)$$
-
-$$\text{Water Depth Above Bed } y\text{ (m)} = h - 530.18$$
-
-### Live Telemetry Example
-
-- **Measured Air Distance:** $52.72\text{ ft}$ ($16.07\text{ m}$)
-- **Computed Stage:** $549.35 - 16.07 = \mathbf{533.28\text{ m MSL}}$ ($10'\ 2''$ above bed datum)
-- **Live In-Bank Baseflow:** $\mathbf{109.2\text{ m}^3/s}$ ($3,856\text{ cusecs}$)
+$$\text{Water Depth Above WRD Zero Datum } y\text{ (m)} = H - 530.18$$
 
 ---
 
-## 3. ThingSpeak Cloud IoT Protocol & Endpoints
+## 2. Cloud Telemetry Uplink & Outlier Filtering
 
-The sensor reports telemetry via GSM/GPRS Cellular IoT to the MathWorks ThingSpeak cloud:
-
-### 3.1 Connection Parameters
-
+The field unit transmits raw observations via cellular IoT to MathWorks ThingSpeak cloud:
 - **Channel ID:** `3424513`
-- **Read API Key:** `TSUKPZEUN1BXODUF`
-- **REST Endpoint:** `https://api.thingspeak.com/channels/3424513/feeds.json`
-- **Update Frequency:** Every 15 minutes
+- **Field 1:** Distance from transducer face to water surface (feet)
+- **Reporting Cadence:** Every 5 minutes
 
-### 3.2 Live Telemetry Fetch Implementation
+### 2.1 Physical Outlier Rejection (`resample_feeds_hourly`)
+Spurious acoustic reflections from passing debris, river spray, or acoustic beam scattering are rejected by strict physical boundaries in `src/hydrology/telemetry_metrics.py`:
 
-```python
-def fetch_shivaji_live_telemetry() -> dict:
-    """
-    Queries ThingSpeak channel 3424513 to obtain the latest ultrasonic gauge reading.
-    Computes Stage (m MSL), depth above bed, and alert status.
-    """
-    url = "https://api.thingspeak.com/channels/3424513/feeds.json?results=1"
-    headers = {"X-THINGSPEAK-KEY": "TSUKPZEUN1BXODUF"}
-    
-    resp = requests.get(url, headers=headers, timeout=10.0)
-    resp.raise_for_status()
-    feed = resp.json()["feeds"][-1]
-    
-    raw_feet = float(feed["field1"])
-    stage_m = round(549.35 - (raw_feet * 0.3048), 2)
-    depth_m = round(stage_m - 530.18, 2)
-    
-    return {
-        "stage_m": stage_m,
-        "raw_feet": raw_feet,
-        "depth_m": depth_m,
-        "timestamp": feed["created_at"],
-        "status": "ONLINE"
-    }
-```
+$$15.0\text{ ft} \le d_{air} \le 80.0\text{ ft}$$
+
+- **Upper Air Boundary ($< 15.0$ ft):** Rejects impossible water stages above 544.78 m MSL (bridge deck submergence).
+- **Lower Bed Boundary ($> 80.0$ ft):** Rejects impossible reflections below 524.96 m MSL (far below the surveyed bedrock floor).
+
+### 2.2 Hourly UTC Mean Resampling
+Raw 5-minute pings passing physical bounds are aggregated into clean hourly UTC bins (`YYYY-MM-DDTHH:00:00Z`):
+
+$$\bar{d}_{hr} = \frac{1}{k} \sum_{j=1}^k d_{air, j} \quad (\text{for } k \ge 1 \text{ samples})$$
+
+$$\bar{H}_{hr} = 549.35 - (\bar{d}_{hr} \times 0.3048)$$
+
+Along with mean stage, the pipeline records minimum stage, maximum stage, and sample count per hour to monitor sensor stability.
+
+### 2.3 Resilient Local Persistence Cache
+To protect operations against cloud IoT outages or rate limits, verified hourly means are persisted to `data/telemetry/thingspeak_hourly_cache.json`. When internet connectivity drops during severe monsoon storms, the forecast runner reads verified observations directly from this persistent local cache.
 
 ---
 
-## 4. Outlier Rejection & Fault-Tolerance Filters
+## 3. Mathematical Accuracy Metrics (`telemetry_metrics.py`)
 
-To prevent spurious acoustic echoes from surface waves, heavy spray, or river debris from corrupting model baseflow initialization:
+For $n$ matched prediction-observation pairs $(S_{sim,i}, S_{obs,i})$ over the forecast horizon:
 
-| Metric | Valid Range | Physical Meaning |
-|:---|:---|:---|
-| Raw Air Distance | 10.0 ft to 64.0 ft | Cannot be above bridge or below bed |
-| Stage Elevation | 529.5 m to 546.5 m | Bounded between bed and over-bridge |
-| Max Rate of Change | ≤ 1.2 m / hour | Physical limit of Panchganga flood rise |
+### 3.1 Root Mean Square Error (RMSE)
+Measures the standard deviation of stage residuals, penalizing large peak errors:
 
+$$RMSE = \sqrt{\frac{1}{n} \sum_{i=1}^n \left(S_{sim,i} - S_{obs,i}\right)^2} \quad (\text{meters})$$
 
-1. **Median Filter:** A 3-sample moving median window filters out isolated ultrasonic sensor spike glitches.
-2. **Persistent Fallback:** If ThingSpeak drops offline or the cellular link fails during a storm, the system uses the last verified reading or defaults to the calibrated seasonal baseflow ($91.1\text{ m}^3/s$).
+### 3.2 Mean Absolute Error (MAE)
+Quantifies the average magnitude of absolute errors:
 
----
+$$MAE = \frac{1}{n} \sum_{i=1}^n \left|S_{sim,i} - S_{obs,i}\right| \quad (\text{meters})$$
 
-## 5. Real-Time Telemetry Validation Engine & 1-Hour Continuous Resampling
+### 3.3 Percent Bias (PBIAS)
+Measures average tendency of simulated values to be larger or smaller than observations:
 
-Beyond single-point initialization, HydroCast operates an autonomous, continuous real-time verification engine in [`src/hydrology/realtime_telemetry_validator.py`](file:///e:/hydrocast_complete/src/hydrology/realtime_telemetry_validator.py):
+$$PBIAS = \frac{\sum_{i=1}^n \left(S_{sim,i} - S_{obs,i}\right)}{\sum_{i=1}^n S_{obs,i}} \times 100\%$$
 
-### 5.1 Ingestion & Hourly Mean Resampling
+Low positive values indicate slight overestimation bias; negative values indicate underestimation.
 
-1. **Bulk Ingestion:** Fetches up to 800 recent 5-minute telemetry feeds from ThingSpeak Channel `3424513`.
-2. **Harmonic Hourly Bins:** Groups measurements into hourly UTC intervals (`YYYY-MM-DDTHH:00:00Z`).
-3. **Statistical Aggregation:** For each hour with $k \ge 1$ samples:
-   - $\text{Observed Distance (ft)} = \frac{1}{k} \sum_{j=1}^k d_{\text{air}, j}$
-   - $\text{Observed Stage (m MSL)} = 549.35 - (\text{Observed Distance (ft)} \times 0.3048)$
-   - Tracks minimum, maximum, sample count, and standard deviation to monitor sensor health.
+### 3.4 Nash-Sutcliffe Efficiency (NSE)
+Normalised statistic determining the relative magnitude of the residual variance compared to measured data variance:
 
-### 5.2 1-Hour Automated Execution via GitHub Actions
+$$NSE = 1 - \frac{\sum_{i=1}^n \left(S_{obs,i} - S_{sim,i}\right)^2}{\sum_{i=1}^n \left(S_{obs,i} - \bar{S}_{obs}\right)^2}$$
 
-A dedicated CI/CD workflow ([`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml)) triggers **every 1 hour**:
+### 3.5 Spearman Rank Correlation ($\rho$)
+Non-parametric measure of monotonic relationship between forecast and observed hydrographs:
 
-```yaml
-schedule:
-  - cron: "0 * * * *"  # Every 1 hour at minute 0
-```
+$$\rho = 1 - \frac{6 \sum_{i=1}^n d_i^2}{n(n^2 - 1)}, \quad d_i = \operatorname{rank}(S_{sim,i}) - \operatorname{rank}(S_{obs,i})$$
 
-- Compares resampled hourly means against the active 90-hour forecast.
-- Updates continuous lifecycle verification progress ($T+0\text{h} \to T+89\text{h}$).
-- Updates `latest_pipeline_state.json`, `data/runs/`, and mirrors archives to `frontend/public/data/runs/` for production Vercel edge deployment.
+### 3.6 Pearson Coefficient of Determination ($R^2$)
+Measures the proportion of the variance in observed stage explained by linear forecast correlation:
+
+$$r = \frac{\sum (S_{sim} - \bar{S}_{sim})(S_{obs} - \bar{S}_{obs})}{\sqrt{\sum (S_{sim} - \bar{S}_{sim})^2 \sum (S_{obs} - \bar{S}_{obs})^2}}, \qquad R^2 = r^2$$
 
 ---
 
-## 6. Integration with Real-Time Closed-Loop Adaptive ML Recalibration
+## 4. Skill Reliability & Low-Flow Variance Guards
 
-The resampled hourly telemetry stream is not merely displayed—it actively drives the **Adaptive ML Recalibration Loop** ([`src/hydrology/ml_calibration.py`](file:///e:/hydrocast_complete/src/hydrology/ml_calibration.py)):
+Standard hydrologic metrics can report misleading or mathematically invalid results if applied naively during baseflow periods. HydroCast implements strict safety guards:
 
-1. **Continuous Residual Pipeline:** Every 6 hours during cycle initialization, the engine converts recent hourly stages into observed discharge rates $Q_{\text{obs}}(t)$ via the Shivaji Bridge PCHIP rating curve.
-2. **Discrepancy Trigger:** If the empirical Nash-Sutcliffe Efficiency between recent simulation and observation drops below $0.85$ or volumetric bias exceeds $10\%$, an automated SciPy optimization is triggered.
-3. **Parameter Correction:** Subbasin Curve Numbers and lag times are dynamically adjusted within bounded limits ($\pm 15\%$), and the calibrated state is logged in `data/telemetry/ml_calibration_state.json`.
+### 4.1 Sample Size Gating ($n \ge 6$)
+Statistical ranking and efficiency require a representative sample window:
+- If matched observation points $n < 6$ (`MIN_CORRELATION_SAMPLES`), the evaluation status reports `ACCUMULATING_TELEMETRY`.
+- Skill metrics ($NSE, \rho, R^2$) are reported as `None` rather than computing noisy values from sparse data.
+
+### 4.2 Low-Flow Variance Floor ($\text{std}(S_{obs}) < 0.05$ m)
+During dry-spell baseflow conditions, river water level remains essentially flat ($\text{std}(S_{obs}) < 0.05$ m). Under these conditions:
+
+$$\sum_{i=1}^n \left(S_{obs,i} - \bar{S}_{obs}\right)^2 \to 0$$
+
+Because the denominator of the NSE equation approaches zero, any minor sub-centimeter sensor ripple causes the NSE score to explode into large negative numbers (e.g. $-500.0$), falsely signaling catastrophic model failure when the model is actually tracking baseflow within centimeters.
+
+**The Guard:** When $\operatorname{std}(S_{obs}) < 0.05\text{ m}$ (`MIN_OBS_STAGE_STD_M`) or observed variance is below $10^{-4}$ (`NSE_VARIANCE_FLOOR`), $NSE$ is reported as `None`, and the cycle is classified as:
+- `BASEFLOW_STABLE`: if $RMSE \le 0.15\text{ m}$
+- `BASEFLOW_MISMATCH`: if $RMSE > 0.15\text{ m}$
+
+### 4.3 Derived Discharge Attribution Warning
+Ultrasonic radar measures water stage elevation directly. Discharge is derived by pushing observed stage through the official PCHIP rating curve. To maintain scientific integrity:
+- Discharge metrics are explicitly flagged with `discharge_metrics_source = "RATING_IMPLIED_DERIVED"`.
+- Payloads carry an explanatory note reminding operators that discharge accuracy is a monotone transformation of stage errors, not an independent acoustic Doppler velocity measurement.
 
 ---
 
-## 7. Resilient Caching & Offline Fail-Safe Operation
+## 5. Performance Grading Matrix (Moriasi et al., 2007)
 
-To prevent API throttling or network blips from corrupting forecast cycles:
+When sample size and variance thresholds are satisfied, the cycle is graded according to international hydrological guidelines:
 
-1. **Local Hourly Cache:** Telemetry fetches are automatically persisted to [`data/telemetry/thingspeak_hourly_cache.json`](file:///e:/hydrocast_complete/data/telemetry/thingspeak_hourly_cache.json).
-2. **Exponential Backoff:** ThingSpeak queries utilize the enterprise retry wrappers from [`src/ecmwf/retry_utils.py`](file:///e:/hydrocast_complete/src/ecmwf/retry_utils.py) with exponential delay and random jitter.
-3. **Graceful Degradation:** If ThingSpeak is unreachable during a major storm outage, the pipeline seamlessly interpolates missing hours using the last known water stage and physical recession curve rate, ensuring zero interruption to the 12-step forecast runner.
+| Performance Grade | Nash-Sutcliffe Efficiency ($NSE$) | Root Mean Square Error ($RMSE$) | Percent Bias ($PBIAS$) | Operational Interpretation |
+| :--- | :---: | :---: | :---: | :--- |
+| **`EXCELLENT`** | $NSE \ge 0.75$ | $RMSE \le 0.25\text{ m}$ | $|PBIAS| \le 10\%$ | Highly accurate forecast; safe for automated emergency dispatch |
+| **`VERY_GOOD`** | $0.60 \le NSE < 0.75$ | $0.25 < RMSE \le 0.50\text{ m}$ | $10\% < |PBIAS| \le 15\%$ | Dependable forecast matching hydrograph wave structure |
+| **`SATISFACTORY`** | $0.40 \le NSE < 0.60$ | $0.50 < RMSE \le 1.00\text{ m}$ | $15\% < |PBIAS| \le 25\%$ | Acceptable guidance; advisory review recommended |
+| **`MODERATE_BIAS`** | $0.0 < NSE < 0.40$ | $RMSE > 1.00\text{ m}$ | $|PBIAS| > 25\%$ | Timing or volume drift; manual scrutiny required |
+| **`CALIBRATION_REQUIRED`** | $NSE \le 0.0$ | Any | Any | Model performs worse than the mean; triggers recalibration |

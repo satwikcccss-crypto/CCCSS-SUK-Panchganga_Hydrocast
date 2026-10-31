@@ -28,6 +28,9 @@ from typing import Optional
 import psycopg2
 import psycopg2.extras
 import numpy as np
+from dotenv import load_dotenv
+
+load_dotenv()  # local dev: pick up .env before reading DATABASE_URL
 
 log = logging.getLogger(__name__)
 

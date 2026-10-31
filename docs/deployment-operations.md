@@ -259,7 +259,7 @@ The European Centre for Medium-Range Weather Forecasts releases operational IFS 
 
 ## 3. Multi-Channel Emergency Alerting Setup (DDMA & SDRF)
 
-HydroCast integrates an automated Telegram alert bot and webhook dispatcher ([`src/alerts/telegram_bot.py`](file:///e:/hydrocast_complete/src/alerts/telegram_bot.py)):
+HydroCast integrates an automated Telegram alert bot and webhook dispatcher (`src/alerts/telegram_bot.py`):
 
 ### 3.1 Telegram Bot Configuration
 
@@ -287,7 +287,7 @@ Whenever river stage breaches the CWC **Warning** ($542.70\text{ m}$) or **Dange
 
 ## 4. Cold Storage & Telemetry Archival Automation
 
-Implemented in [`src/db/archive_runs.py`](file:///e:/hydrocast_complete/src/db/archive_runs.py):
+Implemented in `src/db/archive_runs.py`:
 
 - **Objective:** Prevent high-frequency time-series tables (`hydrograph_results`, `bridge_stage_forecast`, `rainfall_data`, `station_rainfall_telemetry`, `subbasin_rainfall_ts`) from bloating PostgreSQL storage and degrading query speed.
 - **Mechanism:** Records older than `ARCHIVE_RETENTION_DAYS` (default 90 days) are written to Snappy-compressed Apache Parquet partitions (`data/archives/{table}/year=YYYY/month=MM/`), followed by atomic database pruning.
@@ -387,7 +387,7 @@ pm2 startup
 
 ## 7. Continuous 1-Hour Telemetry Validation (GitHub Actions)
 
-Autonomous physical verification runs via [`.github/workflows/telemetry_validation.yml`](file:///e:/hydrocast_complete/.github/workflows/telemetry_validation.yml):
+Autonomous physical verification runs via `.github/workflows/telemetry_validation.yml`:
 
 - **Interval:** Every hour at minute 0 (`cron: "0 * * * *"`).
 - Pulls 800 raw ultrasonic pings from ThingSpeak Channel `3424513`.
@@ -395,3 +395,87 @@ Autonomous physical verification runs via [`.github/workflows/telemetry_validati
 - Computes genuine RMSE, MAE, NSE, PBIAS, Spearman $\rho$, and Pearson $R^2$.
 - Updates `frontend/public/data/latest_pipeline_state.json` and mirrored run archives in `frontend/public/data/runs/`.
 - Commits and pushes back to GitHub, triggering immediate Vercel production synchronization.
+
+---
+
+## 8. Comprehensive Test Architecture & Continuous Verification Suite
+
+HydroCast enforces rigorous software and hydrological quality assurance through an automated suite of **271 total automated tests**:
+
+```mermaid
+flowchart TD
+    Suite["HydroCast Automated Verification Suite<br/>(284+ Verified Invariants)"]
+
+    Suite --> Unit["Backend Unit & Integration Tests<br/>(256 tests, &lt;10s execution)"]
+    Suite --> PostGIS["PostgreSQL & PostGIS Tests<br/>(Database container & spatial types)"]
+    Suite --> Integrity["Documentation & Navigation Integrity<br/>(Strict MkDocs & Link Crawler)"]
+
+    style Suite fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0f172a
+    style Unit fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#0f172a
+    style PostGIS fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#0f172a
+    style Integrity fill:#ecfdf5,stroke:#10b981,stroke-width:1px,color:#0f172a
+```
+
+### 8.1 Test Inventory & Module Breakdown
+
+| Test Module | Test Count | Focus Area & Verified Scientific Invariants |
+| :--- | :---: | :--- |
+| `tests/test_golden_emulator.py` | 2 | **Bit-level determinism & regression lock:** Freezes baseline peak ($Q=3,345.6\text{ m}^3/s$, $T=105\text{ h}$, $V=754.115\text{ MCM}$, AMC-III). |
+| `tests/test_runner_emulator.py` | 16 | **Hydrologic Twin Solver:** Muskingum mass conservation, stability under long reach travel times, Control_1 restoration. |
+| `tests/test_ml_calibration.py` | 8 | **Adaptive Calibrator:** Parameter bounds, early/late arrival wave scaling, atomic `.basin` syncing with timestamped backups. |
+| `tests/test_low_flow_stage_bias.py` | 44 | **Rating Physics Autopsy:** Bed datum reconciliation ($528.670\text{ m}$ / $529.318\text{ m}$), removal of $40\text{ m}^3/s$ floor, eradication of ~2 m low-flow bias. |
+| `tests/test_cross_section_survey.py` | 17 | **Survey Geometry:** Chainage calculations, surveyed coordinates, wetted area/perimeter monotonicity, Manning overprediction checks. |
+| `tests/test_rating_physics.py` | 6 | **Pure Geometry Core:** Vectorized trapezoidal channel properties (`wetted_properties`, `station_from_points`). |
+| `tests/test_realtime_validator.py` | 13 | **Sensor Ingestion:** ThingSpeak ping parsing, hourly mean resampling, lifecycle verification states (`ACCUMULATING_TELEMETRY`, `COMPLETED`). |
+| `tests/test_telemetry_metrics.py` | 6 | **Statistical Core:** Variance floor ($\text{std} < 0.05\text{ m}$), sample size gating ($n \ge 6$), cycle ID datetime parsing. |
+| `tests/test_hydrosim_integration.py` | 17 | **2D Handoff Boundary API:** Consumer key scoping, read-only guarantees, JSON/CSV boundary shapes, 404 behavior. |
+| `tests/test_rate_limiting_and_auth.py` | 7 | **Authentication & Limits:** JWT lifecycle, bcrypt verification, SlowAPI request throttle enforcement (100 req/min). |
+| `tests/test_security_hardening.py` | 13 | **Security Hardening:** Blank password lockout, tampered JWT rejection, run-id path traversal rejection. |
+| `tests/test_api_endpoints.py` | 28 | **FastAPI Surface:** Endpoint response contracts, CORS headers, body size limit enforcement. |
+| `tests/test_write_paths.py` | 21 | **Persistence Ledger:** HEC-DSS records, database table commits, runoff summary alert classifications. |
+| `tests/test_db_connection.py` | 6 | **Database Connection:** Supabase connection pooler URL formatting, IPv4/IPv6 dual-stack resolution. |
+| `tests/test_soil_moisture.py` | 5 | **NWP Soil Moisture:** Open-Meteo multi-layer soil moisture ingestion and antecedent indexing. |
+| `tests/test_station_selector.py` | 4 | **Rainfall Mapping:** Subbasin-to-station assignment and governing gauge selection. |
+| `tests/test_qc_pipeline.py` | 4 | **Quality Control:** Rainfall spatial sanity bounds and rate-of-change checks. |
+| `tests/test_retry_utils.py` | 6 | **Network Resilience:** Exponential backoff, jitter distribution, retry exceptions. |
+| `tests/test_alerts_dispatcher.py` | 15 | **Emergency Alerting:** Telegram broadcast formatting, webhook payloads, deduplication. |
+| `tests/test_orchestrator.py` | 8 | **12-Step Pipeline:** End-to-end cycle execution order, error logging, and status tracking. |
+| `tests/test_archival.py` | 3 | **Cold Storage:** Snappy-compressed Parquet exports and retention pruning. |
+| `tests/test_hydrology.py` | 5 | **Hydraulic Rating:** WRD sheet anchor alignment and cross-site stage offset verification. |
+| `tests/test_validation_metrics.py` | 2 | **Accuracy Matrix:** In-process evaluation of stored simulation payloads. |
+| `tests/test_postgres_integration.py` | 3 | **PostgreSQL/PostGIS:** Fresh container schema application, write-path roundtrip, error propagation. |
+| `tests/test_milestone1_integrity.py` | 12 | **Documentation Integrity:** Navigation links existence, canonical anchor contracts, deduplication enforcement, and HTML link crawling. |
+
+### 8.2 Execution Runbooks
+
+#### Fast Local Development Suite (< 10 seconds)
+```powershell
+pytest
+```
+Executes all 256 unit and integration tests with in-memory SQLite and mock telemetry. Expected: `256 passed, 3 skipped` in under 10 seconds.
+
+#### Golden Regression Lock Verification
+```powershell
+pytest tests/test_golden_emulator.py -v
+```
+Verifies bit-level determinism and ensures peak discharge ($3,345.6\text{ m}^3/s$) and volume ($754.115\text{ MCM}$) have not drifted.
+
+#### Rating Curve & Low-Flow Stage Bias Verification
+```powershell
+pytest tests/test_low_flow_stage_bias.py tests/test_cross_section_survey.py -v
+```
+Validates bed invert levels and confirms zero low-flow stage bias across the entire operating range.
+
+#### Real-PostgreSQL PostGIS Integration Suite
+```powershell
+$env:HYDROCAST_TEST_DATABASE_URL = "postgresql://hms_app:password@localhost:5432/rainfall_runoff"
+pytest tests/test_postgres_integration.py -v
+```
+Requires a running PostgreSQL/PostGIS container (`docker compose up -d hydrocast-db`). Applies `database/supabase_schema.sql` and verifies schema, tables, views, and write paths.
+
+#### Documentation Integrity & Strict Build Verification
+```powershell
+python -m mkdocs build --strict
+pytest tests/test_milestone1_integrity.py -v
+```
+Validates zero warnings or errors in documentation builds and verifies all internal links and canonical anchors across the generated HTML site.

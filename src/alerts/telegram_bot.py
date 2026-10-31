@@ -728,8 +728,9 @@ def build_telegram_application():
 
         msg = "📐 <b>Hydrologic Calibration Parameters [OFFICIAL]</b>\n"
         msg += "━━━━━━━━━━━━━━━━━━━━━━\n"
-        msg += f"Status: <b>{'TUNED (Levenberg–Marquardt)' if is_tuned else 'BASELINE (Physics Prior)'}</b>\n"
-        msg += f"Confidence: <b>{conf:.1f}%</b>\n\n"
+        msg += f"Status: <b>{'TUNED (physics-informed LM)' if is_tuned else 'BASELINE (Physics Prior)'}</b>\n"
+        msg += f"Observation fit: <b>{conf:.1f}%</b> <i>(explains observed discrepancy — not forecast accuracy)</i>\n"
+        msg += f"ML predictor: <b>{cal_state.get('ml_predictor_state', 'UNTRAINED')}</b>\n\n"
         msg += f"• Curve Number Offset (ΔCN): <code>{delta_cn:+.2f}</code>\n"
         msg += f"• Routing Lag Scale (α_lag): <code>{alpha_lag:.3f}</code>\n"
         msg += f"• Muskingum K Scale (α_K): <code>{alpha_k:.3f}</code>\n"

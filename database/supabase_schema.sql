@@ -11,9 +11,18 @@
 CREATE SCHEMA IF NOT EXISTS extensions;
 CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA extensions;
 
--- Ensure the search_path includes the extensions schema so GEOMETRY types resolve natively
-ALTER ROLE authenticator SET search_path = public, extensions;
-ALTER ROLE postgres SET search_path = public, extensions;
+-- Ensure the search_path includes the extensions schema so GEOMETRY types resolve natively.
+-- `authenticator` exists on Supabase but not on a plain PostGIS container, so guard it;
+-- without this the docker-compose init and CI schema apply abort on a fresh database.
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticator') THEN
+        EXECUTE 'ALTER ROLE authenticator SET search_path = public, extensions';
+    END IF;
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'postgres') THEN
+        EXECUTE 'ALTER ROLE postgres SET search_path = public, extensions';
+    END IF;
+END $$;
 
 -- ---------------------------------------------------------------------------
 -- 2. Subbasins (Official Panchganga Delineation, Total Area: 1,837.213 km²)
@@ -180,6 +189,7 @@ CREATE TABLE IF NOT EXISTS simulation_runs (
     alert_level                 VARCHAR(32) DEFAULT 'NORMAL',
     spearman_rho                NUMERIC(6,4),
     nse_score                   NUMERIC(6,4),
+    error_message               TEXT,
     created_at                  TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -193,6 +203,7 @@ ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS total_rainfall_volume_mcm N
 ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS alert_level VARCHAR(32) DEFAULT 'NORMAL';
 ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS spearman_rho NUMERIC(6,4);
 ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS nse_score NUMERIC(6,4);
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS error_message TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_sim_runs_date ON simulation_runs (cycle_date DESC, start_time DESC);
 
@@ -266,6 +277,43 @@ CREATE INDEX IF NOT EXISTS idx_hg_run_lead ON hydrograph_results (run_id, lead_h
 CREATE INDEX IF NOT EXISTS idx_hg_timestamp ON hydrograph_results (timestamp DESC);
 
 -- ---------------------------------------------------------------------------
+-- 8b. Peak Discharge Events (one outlet peak per cycle)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS peak_discharge_events (
+    id                      BIGSERIAL PRIMARY KEY,
+    run_id                  VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
+    basin_id                VARCHAR(50) NOT NULL DEFAULT 'MAIN_BASIN',
+    outlet_node             VARCHAR(50) NOT NULL DEFAULT 'J_Outlet',
+    peak_discharge_m3s      NUMERIC(10,2) NOT NULL,
+    time_of_peak            TIMESTAMPTZ NOT NULL,
+    lead_hours_to_peak      SMALLINT,
+    total_runoff_volume_m3  NUMERIC(14,1),
+    forecast_run_time       TIMESTAMPTZ,
+    created_at              TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (run_id, basin_id, outlet_node)
+);
+
+CREATE INDEX IF NOT EXISTS idx_pde_run ON peak_discharge_events (run_id);
+
+-- ---------------------------------------------------------------------------
+-- 8c. Runoff Summary (one dashboard summary row per cycle)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS runoff_summary (
+    run_id                  VARCHAR(100) PRIMARY KEY REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
+    basin_id                VARCHAR(50) NOT NULL DEFAULT 'MAIN_BASIN',
+    forecast_run_time       TIMESTAMPTZ,
+    peak_discharge_m3s      NUMERIC(10,2),
+    time_of_peak            TIMESTAMPTZ,
+    lead_hours_to_peak      SMALLINT,
+    total_runoff_volume_m3  NUMERIC(14,1),
+    alert_level             VARCHAR(32) DEFAULT 'normal',
+    hours_above_watch       SMALLINT DEFAULT 0,
+    hours_above_warning     SMALLINT DEFAULT 0,
+    hours_above_emergency   SMALLINT DEFAULT 0,
+    created_at              TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ---------------------------------------------------------------------------
 -- 9. Bridge Stage Forecast (90-Hour Forward Water Level Time Series)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS bridge_stage_forecast (
@@ -290,7 +338,7 @@ CREATE INDEX IF NOT EXISTS idx_bsf_lead ON bridge_stage_forecast (lead_hours);
 -- ---------------------------------------------------------------------------
 DROP TABLE IF EXISTS wrd_field_benchmarks CASCADE;
 
-CREATE TABLE wrd_field_benchmarks (
+CREATE TABLE IF NOT EXISTS wrd_field_benchmarks (
     record_id           SERIAL PRIMARY KEY,
     stage_m             NUMERIC(6,2) NOT NULL,
     stage_feet_inches   VARCHAR(32) NOT NULL,
@@ -349,11 +397,38 @@ ALTER TABLE pipeline_step_log ALTER COLUMN duration_seconds DROP NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_psl_cycle ON pipeline_step_log (cycle_id);
 
 -- ---------------------------------------------------------------------------
+-- 11b. Alert Events (active/historical flood alerts)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS alert_events (
+    alert_id                VARCHAR(200) PRIMARY KEY,
+    basin_id                VARCHAR(50) NOT NULL REFERENCES bridge_sites(site_id) ON DELETE CASCADE,
+    run_id                  VARCHAR(100) REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
+    alert_type              VARCHAR(32) NOT NULL,
+    trigger_type            VARCHAR(32) DEFAULT 'threshold',
+    stage_m                 NUMERIC(6,2),
+    time_of_peak_forecast   TIMESTAMPTZ,
+    issued_at               TIMESTAMPTZ DEFAULT NOW(),
+    triggered_at            TIMESTAMPTZ,
+    resolved_at             TIMESTAMPTZ,
+    status                  VARCHAR(32) NOT NULL DEFAULT 'active',
+    alert_message           TEXT,
+    recommended_action      TEXT,
+    created_at              TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_alert_events_active
+    ON alert_events (status, issued_at DESC);
+
+-- ---------------------------------------------------------------------------
 -- 12. Analytical Views for Instant Dashboard Queries
 -- ---------------------------------------------------------------------------
 DROP VIEW IF EXISTS v_model_accuracy_summary CASCADE;
 DROP VIEW IF EXISTS v_bridge_alert_summary CASCADE;
 DROP VIEW IF EXISTS v_historical_runs_ledger CASCADE;
+DROP VIEW IF EXISTS v_latest_hydrograph CASCADE;
+DROP VIEW IF EXISTS v_latest_peak_summary CASCADE;
+DROP VIEW IF EXISTS v_active_alerts_enriched CASCADE;
+DROP VIEW IF EXISTS v_cycle_performance CASCADE;
 
 -- View 1: Complete Accuracy Metrics with Model Performance Grade
 CREATE OR REPLACE VIEW v_model_accuracy_summary AS
@@ -416,3 +491,67 @@ SELECT
 FROM simulation_runs r
 LEFT JOIN forecast_validation_metrics m ON m.run_id = r.run_id
 ORDER BY r.cycle_date DESC, r.start_time DESC;
+
+-- View 4: Latest outlet hydrograph for the dashboard
+CREATE OR REPLACE VIEW v_latest_hydrograph AS
+SELECT h.*
+FROM hydrograph_results h
+WHERE h.run_id = (
+    SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1
+);
+
+-- View 5: Latest outlet peak event (the API filters on outlet_node)
+CREATE OR REPLACE VIEW v_latest_peak_summary AS
+SELECT p.*
+FROM peak_discharge_events p
+WHERE p.run_id = (
+    SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1
+);
+
+-- View 6: Active alerts enriched with bridge warning thresholds
+CREATE OR REPLACE VIEW v_active_alerts_enriched AS
+SELECT
+    a.alert_id,
+    a.basin_id AS site_id,
+    b.site_name,
+    a.run_id,
+    a.alert_type,
+    a.trigger_type,
+    a.stage_m,
+    a.stage_m AS peak_stage,
+    a.time_of_peak_forecast AS arrival_time,
+    a.issued_at,
+    a.triggered_at,
+    a.status,
+    a.alert_message,
+    a.recommended_action,
+    b.alert_stage_m,
+    b.warning_stage_m,
+    b.danger_stage_m,
+    b.hfl_m
+FROM alert_events a
+JOIN bridge_sites b ON b.site_id = a.basin_id
+WHERE a.status = 'active'
+ORDER BY a.issued_at DESC;
+
+-- View 7: Per-cycle execution performance for the pipeline history page
+CREATE OR REPLACE VIEW v_cycle_performance AS
+SELECT
+    r.run_id AS cycle_id,
+    r.cycle_date,
+    r.cycle_time,
+    r.start_time,
+    r.end_time,
+    r.status,
+    r.alert_level,
+    r.peak_discharge_m3s,
+    r.peak_stage_m,
+    EXTRACT(EPOCH FROM (COALESCE(r.end_time, NOW()) - r.start_time))::NUMERIC(10,2) AS duration_seconds,
+    COUNT(l.step_number) FILTER (WHERE l.status = 'success') AS steps_completed,
+    COUNT(l.step_number) FILTER (WHERE l.status = 'failed') AS steps_failed,
+    MAX(l.error_message) AS error_message
+FROM simulation_runs r
+LEFT JOIN pipeline_step_log l ON l.cycle_id = r.run_id
+GROUP BY
+    r.run_id, r.cycle_date, r.cycle_time, r.start_time, r.end_time,
+    r.status, r.alert_level, r.peak_discharge_m3s, r.peak_stage_m;

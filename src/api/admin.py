@@ -27,9 +27,10 @@ import os
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, Request, status, BackgroundTasks
 from pydantic import BaseModel, Field
 
+from src.api.limits import RATE_LIMIT_LOGIN, limiter
 from src.api.security import (
     verify_admin_credentials,
     create_access_token,
@@ -130,7 +131,8 @@ class ArchiveRequest(BaseModel):
     response_description="A signed bearer token valid for 24 hours.",
     responses={401: {"description": "Incorrect username or password."}},
 )
-async def login_for_access_token(req: TokenRequest):
+@limiter.limit(RATE_LIMIT_LOGIN)
+async def login_for_access_token(request: Request, req: TokenRequest):
     """Authenticate administrator credentials and return a signed JWT bearer token.
 
     Use the returned `access_token` in the **Authorize** dialog on the Swagger
@@ -293,10 +295,16 @@ async def trigger_recalibration(
     req: RecalibrationRequest,
     auth: Dict[str, Any] = Depends(verify_admin_auth),
 ):
-    """Manually trigger ML parameter recalibration.
+    """Manually trigger physics-informed parameter recalibration.
 
     Recalibrates Muskingum K (`alpha_k`), subbasin lag (`alpha_lag`), Curve
-    Number (`delta_cn`) and the Muskingum routing exponent X.
+    Number (`delta_cn`) and the Muskingum routing exponent X from a supplied
+    timing offset and stage error.
+
+    NOTE: this manual endpoint supplies no rainfall, so the engine fits the
+    OBSERVATION anchors (timing/stage) only — it does not refit against a
+    fabricated rainfall. Supplying real hyetographs (as the live forecast cycle
+    does) additionally fits the emulator hydrograph.
 
     Synchronises both the Python emulator and `Basin_1.basin`. `Basin_1.basin`
     is the single source of truth for all routing and loss parameters, so when

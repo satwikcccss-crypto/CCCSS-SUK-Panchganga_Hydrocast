@@ -9,6 +9,25 @@ flattering itself.
 
 ---
 
+## Interactive diagram consoles
+
+The console below provides interactive visualization of the physics-informed adaptive parameter recalibrator (bounded Levenberg-Marquardt / L-BFGS-B optimization, rising limb detection, gated ML predictor, and atomic `.basin` syncing).
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 15</span>
+      <strong>Real-Time Adaptive ML Recalibration</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../../diagrams/15-ml-calibration.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../../diagrams/15-ml-calibration.html?embed=1" title="Real-Time Adaptive ML Recalibration Console" loading="lazy"></iframe>
+</div>
+
+---
+
 ## Discrepancy detection → recalibration
 
 
@@ -77,3 +96,11 @@ pure metric computation.
 In-process accuracy evaluation over a stored run payload.
 
 ::: src.hydrology.validation_metrics
+
+---
+
+## `src/hydrology/ml_parameter_predictor.py`
+
+Gated machine learning parameter predictor with strict 3-state lifecycle (`UNTRAINED`, `TRAINED_UNVALIDATED`, `VALIDATED`) and feature extraction.
+
+::: src.hydrology.ml_parameter_predictor

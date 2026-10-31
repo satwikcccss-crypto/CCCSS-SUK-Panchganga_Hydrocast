@@ -109,6 +109,7 @@ def apply_core_schema(conn) -> bool:
         alert_level VARCHAR(32) DEFAULT 'NORMAL',
         spearman_rho NUMERIC(10,4),
         nse_score NUMERIC(10,4),
+        error_message TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW()
     );
 
@@ -121,6 +122,7 @@ def apply_core_schema(conn) -> bool:
     ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS alert_level VARCHAR(32) DEFAULT 'NORMAL';
     ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS spearman_rho NUMERIC(10,4);
     ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS nse_score NUMERIC(10,4);
+    ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS error_message TEXT;
     DROP VIEW IF EXISTS v_historical_runs_ledger CASCADE;
     DROP VIEW IF EXISTS v_model_accuracy_summary CASCADE;
     ALTER TABLE simulation_runs ALTER COLUMN spearman_rho TYPE NUMERIC(10,4);
@@ -203,6 +205,39 @@ def apply_core_schema(conn) -> bool:
     ALTER TABLE hydrograph_results ADD COLUMN IF NOT EXISTS stage_m NUMERIC(6,2);
     ALTER TABLE hydrograph_results ADD COLUMN IF NOT EXISTS is_peak BOOLEAN DEFAULT FALSE;
 
+    -- 6b. Peak discharge events (one outlet peak per cycle)
+    CREATE TABLE IF NOT EXISTS peak_discharge_events (
+        id BIGSERIAL PRIMARY KEY,
+        run_id VARCHAR(100) NOT NULL REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
+        basin_id VARCHAR(50) NOT NULL DEFAULT 'MAIN_BASIN',
+        outlet_node VARCHAR(50) NOT NULL DEFAULT 'J_Outlet',
+        peak_discharge_m3s NUMERIC(10,2) NOT NULL,
+        time_of_peak TIMESTAMPTZ NOT NULL,
+        lead_hours_to_peak SMALLINT,
+        total_runoff_volume_m3 NUMERIC(14,1),
+        forecast_run_time TIMESTAMPTZ,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE (run_id, basin_id, outlet_node)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_pde_run ON peak_discharge_events (run_id);
+
+    -- 6c. Runoff summary (one dashboard summary row per cycle)
+    CREATE TABLE IF NOT EXISTS runoff_summary (
+        run_id VARCHAR(100) PRIMARY KEY REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
+        basin_id VARCHAR(50) NOT NULL DEFAULT 'MAIN_BASIN',
+        forecast_run_time TIMESTAMPTZ,
+        peak_discharge_m3s NUMERIC(10,2),
+        time_of_peak TIMESTAMPTZ,
+        lead_hours_to_peak SMALLINT,
+        total_runoff_volume_m3 NUMERIC(14,1),
+        alert_level VARCHAR(32) DEFAULT 'normal',
+        hours_above_watch SMALLINT DEFAULT 0,
+        hours_above_warning SMALLINT DEFAULT 0,
+        hours_above_emergency SMALLINT DEFAULT 0,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
     -- 7. (Removed redundant plural table: bridge_stage_forecasts)
 
     -- 8. Bridge stage forecast (singular)
@@ -265,6 +300,27 @@ def apply_core_schema(conn) -> bool:
     ALTER TABLE pipeline_step_log ALTER COLUMN end_time DROP NOT NULL;
     ALTER TABLE pipeline_step_log ALTER COLUMN duration_seconds DROP NOT NULL;
 
+    -- 10b. Alert events (active/historical flood alerts)
+    CREATE TABLE IF NOT EXISTS alert_events (
+        alert_id VARCHAR(200) PRIMARY KEY,
+        basin_id VARCHAR(50) NOT NULL REFERENCES bridge_sites(site_id) ON DELETE CASCADE,
+        run_id VARCHAR(100) REFERENCES simulation_runs(run_id) ON DELETE CASCADE,
+        alert_type VARCHAR(32) NOT NULL,
+        trigger_type VARCHAR(32) DEFAULT 'threshold',
+        stage_m NUMERIC(6,2),
+        time_of_peak_forecast TIMESTAMPTZ,
+        issued_at TIMESTAMPTZ DEFAULT NOW(),
+        triggered_at TIMESTAMPTZ,
+        resolved_at TIMESTAMPTZ,
+        status VARCHAR(32) NOT NULL DEFAULT 'active',
+        alert_message TEXT,
+        recommended_action TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_alert_events_active
+        ON alert_events (status, issued_at DESC);
+
 
     -- 11. (Removed unused rating_curves table)
 
@@ -303,6 +359,47 @@ def apply_core_schema(conn) -> bool:
     FROM simulation_runs r
     LEFT JOIN forecast_validation_metrics m ON m.run_id = r.run_id
     ORDER BY r.cycle_date DESC, r.start_time DESC;
+
+    DROP VIEW IF EXISTS v_latest_hydrograph CASCADE;
+    DROP VIEW IF EXISTS v_latest_peak_summary CASCADE;
+    DROP VIEW IF EXISTS v_active_alerts_enriched CASCADE;
+    DROP VIEW IF EXISTS v_cycle_performance CASCADE;
+
+    CREATE OR REPLACE VIEW v_latest_hydrograph AS
+    SELECT h.*
+    FROM hydrograph_results h
+    WHERE h.run_id = (SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1);
+
+    CREATE OR REPLACE VIEW v_latest_peak_summary AS
+    SELECT p.*
+    FROM peak_discharge_events p
+    WHERE p.run_id = (SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1);
+
+    CREATE OR REPLACE VIEW v_active_alerts_enriched AS
+    SELECT
+        a.alert_id, a.basin_id AS site_id, b.site_name, a.run_id,
+        a.alert_type, a.trigger_type, a.stage_m, a.stage_m AS peak_stage,
+        a.time_of_peak_forecast AS arrival_time, a.issued_at, a.triggered_at,
+        a.status, a.alert_message, a.recommended_action,
+        b.alert_stage_m, b.warning_stage_m, b.danger_stage_m, b.hfl_m
+    FROM alert_events a
+    JOIN bridge_sites b ON b.site_id = a.basin_id
+    WHERE a.status = 'active'
+    ORDER BY a.issued_at DESC;
+
+    CREATE OR REPLACE VIEW v_cycle_performance AS
+    SELECT
+        r.run_id AS cycle_id, r.cycle_date, r.cycle_time, r.start_time, r.end_time,
+        r.status, r.alert_level, r.peak_discharge_m3s, r.peak_stage_m,
+        EXTRACT(EPOCH FROM (COALESCE(r.end_time, NOW()) - r.start_time))::NUMERIC(10,2) AS duration_seconds,
+        COUNT(l.step_number) FILTER (WHERE l.status = 'success') AS steps_completed,
+        COUNT(l.step_number) FILTER (WHERE l.status = 'failed') AS steps_failed,
+        MAX(l.error_message) AS error_message
+    FROM simulation_runs r
+    LEFT JOIN pipeline_step_log l ON l.cycle_id = r.run_id
+    GROUP BY
+        r.run_id, r.cycle_date, r.cycle_time, r.start_time, r.end_time,
+        r.status, r.alert_level, r.peak_discharge_m3s, r.peak_stage_m;
     """
     try:
         with conn.cursor() as cur:

@@ -12,20 +12,171 @@ on:
   workflow_dispatch:
 
 env:
-  PYTHON_VERSION: "3.11"
+  # Must match the runtime image and the environment the lockfile was validated
+  # against (Dockerfile: python:3.12-slim-bookworm).
+  PYTHON_VERSION: "3.12"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   tests:
-    name: "Unit Tests & Production Entry Smoke Check"
+    name: "Unit Tests · Coverage Gate · Type Check · Smoke"
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install Python Dependencies (pinned)
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.lock
+          pip install pytest pytest-cov mypy
+
+      - name: Production Entry Import Smoke Check
+        run: python -c "import src.ecmwf.open_meteo; import src.hms.runner; import src.hydrology.ml_calibration; import src.orchestrator"
+
+      - name: Run Test Suite (coverage-gated)
+        # Ratchet: `--cov-fail-under` stops coverage regressing below the current
+        # floor (~46%). Raise the number as tests are added.
+        run: python -m pytest -q --cov=src --cov-report=term-missing --cov-fail-under=45
+
+      - name: Type Check (advisory)
+        # 119 known errors concentrated in dynamic DB/HTTP code. Reported, not
+        # blocking, until the backlog is cleared — then drop `continue-on-error`.
+        continue-on-error: true
+        run: python -m mypy src
+
+  frontend:
+    name: "Frontend · Type Check · Build · Playwright Smoke"
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install from lockfile
+        run: npm ci
+
+      - name: Type Check
+        run: npx tsc --noEmit
+
+      - name: Production Build
+        run: npm run build
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser Smoke Test
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
+          retention-days: 7
+
+  docker:
+    name: "Docker · Runtime Image · Health Smoke"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - name: Build runtime image
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          target: runner
+          tags: hydrocast-backend:ci
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Start container
+        run: |
+          docker run -d --name hydrocast-smoke \
+            -e WEB_CONCURRENCY=1 \
+            -e REQUIRE_API_KEY=false \
+            -p 18000:8000 \
+            hydrocast-backend:ci
+
+      - name: Wait for health endpoint
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:18000/api/v1/health; then
+              echo "health OK"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "health check failed; container logs:"
+          docker logs hydrocast-smoke
+          exit 1
+
+      - name: Stop container
+        if: always()
+        run: docker rm -f hydrocast-smoke
+
+  postgres:
+    name: "Postgres · Orchestrator Write Path"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hydrocast_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d hydrocast_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
+    env:
+      HYDROCAST_TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hydrocast_test
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
@@ -33,10 +184,7 @@ jobs:
       - name: Install Python Dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt pytest
+          pip install pytest psycopg2-binary numpy python-dotenv
 
-      - name: Production Entry Import Smoke Check
-        run: python -c "import src.ecmwf.open_meteo; import src.hms.runner; import src.hydrology.ml_calibration"
-
-      - name: Run Test Suite
-        run: python -m pytest -q
+      - name: Apply schema and run orchestrator write path
+        run: python -m pytest tests/test_postgres_integration.py -q

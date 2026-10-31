@@ -8,6 +8,38 @@ The cycle driver.
 
 ---
 
+## Interactive diagram consoles
+
+The consoles below provide interactive visualization of the 12-step forecast workflow and the execution waterfall timeline with step latency budgets.
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 03</span>
+      <strong>Forecast Cycle Workflow (12-Step Pipeline)</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../../diagrams/03-forecast-workflow.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../../diagrams/03-forecast-workflow.html?embed=1" title="Forecast Cycle Workflow Console" loading="lazy"></iframe>
+</div>
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console · Diagram 17</span>
+      <strong>Forecast Cycle Waterfall & Timing Latencies</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="../../diagrams/17-cycle-waterfall.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="../../diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console" loading="lazy"></iframe>
+</div>
+
+---
+
 ## The 10-step cycle
 
 
