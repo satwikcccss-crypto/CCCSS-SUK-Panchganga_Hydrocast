@@ -55,9 +55,9 @@ def _requirement_parts(raw: str) -> tuple[str, str]:
 def main() -> None:
     installed = _installed()
     lines = [
-        "# Pinned direct runtime dependencies — generated from the validated env.",
+        "# Pinned direct runtime dependencies - generated from the validated env.",
         "# Regenerate: python scripts/gen_requirements_lock.py",
-        "# CI installs this file for reproducibility.",
+        "# CI and Docker install this file; optional DSS/GRIB extras are not included.",
         "",
     ]
     missing = []
@@ -69,20 +69,29 @@ def main() -> None:
             continue
         version = installed.get(_norm(name))
         if version:
-            # Preserve extras (e.g. uvicorn[standard]) — dropping them would
+            # Preserve extras (e.g. uvicorn[standard]) - dropping them would
             # silently remove websockets/uvloop from the shipped image.
             lines.append(f"{name}{extras}=={version}")
         else:
-            # Heavy/optional or not present in the dev env: preserve the original
-            # spec so `pip install -r requirements.lock` still installs it on CI.
+            # Heavy/optional or not present in the dev env: do NOT put an
+            # unpinned spec in the lock. An unpinned optional can silently
+            # downgrade or conflict with the pinned core (for example,
+            # pydsstools currently requires numpy<2 while the core pins
+            # numpy 2.x). Keep optional packages in requirements.txt/docs.
             missing.append(name)
-            spec = raw.split("#", 1)[0].strip()
-            lines.append(f"{spec}  # spec preserved (not in validated env)")
+
+    if missing:
+        lines.extend([
+            "",
+            "# Optional extras not installed in this environment:",
+            "#   " + ", ".join(missing),
+            "# They are intentionally omitted from the tested lock.",
+        ])
 
     LOCK.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Wrote {LOCK.name} ({len(lines)} lines)")
     if missing:
-        print("WARNING — not installed locally, left unpinned: " + ", ".join(missing))
+        print("WARNING - not installed locally, omitted from lock: " + ", ".join(missing))
 
 
 if __name__ == "__main__":

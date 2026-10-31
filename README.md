@@ -222,9 +222,13 @@ python -m venv .venv
 # On Linux/macOS:
 source .venv/bin/activate
 
-# Install dependencies
-pip install -r requirements.txt
+# Install the tested runtime pins (CI and Docker use this file)
+pip install -r requirements.lock
 pip install -r requirements-dev.txt
+
+# Optional HEC-DSS/GRIB extras (cfgrib, eccodes, pydsstools) are intentionally
+# not in the lock. pydsstools currently requires numpy<2, so install those in a
+# separate virtual environment if you need HEC-DSS writing or GRIB decoding.
 ```
 
 ### 2. Configure Environment Variables

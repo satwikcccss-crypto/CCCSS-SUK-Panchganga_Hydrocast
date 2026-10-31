@@ -39,6 +39,12 @@ JRE, the shared libraries and a dedicated `hydrocast` user (uid/gid 1000), with
 | `docs` | MkDocs Material site, built with `--strict` to `/app/site` | `python:3.12-slim-bookworm` + `requirements-docs.txt` |
 | `dev` | `runner` + black, isort, mypy, pytest, JupyterLab | production runtime |
 
+> **Optional extras.** The runner image installs `requirements.lock`, which contains
+> only the tested core runtime. `cfgrib`, `eccodes`, and `pydsstools` are deliberately
+> excluded: `pydsstools` currently requires `numpy<2`, which conflicts with the pinned
+> `numpy` 2.x stack. Use a separate image or virtual environment for HEC-DSS writing or
+> GRIB decoding. The FastAPI service and Python twin do not require them.
+
 ```
 # Production image (embeds OCI labels: version, git SHA, build date)
 docker build -t hydrocast-backend:2.0.0 \

@@ -2,9 +2,13 @@
 openmeteo-requests>=0.2
 requests-cache>=1.2
 retry-requests>=2.0
-cfgrib>=0.9.12
 xarray>=2024.1
-eccodes>=2.3
+
+# Optional HEC-DSS / GRIB extras are not installed by default:
+#   cfgrib, eccodes, pydsstools
+# pydsstools currently requires numpy<2, which conflicts with the pinned
+# numpy 2.x core. Install these in a separate venv/image if you need HEC-DSS
+# writing or GRIB decoding. They are intentionally absent from requirements.lock.
 
 # Scientific
 numpy>=1.26
@@ -12,8 +16,7 @@ scipy>=1.12
 pandas>=2.2
 scikit-learn>=1.4
 
-# HEC-DSS
-pydsstools>=0.3.3   # requires Java JDK 11+ on PATH
+# HEC-DSS: optional; see the optional-extras block above.
 
 # Database
 psycopg2-binary>=2.9.9

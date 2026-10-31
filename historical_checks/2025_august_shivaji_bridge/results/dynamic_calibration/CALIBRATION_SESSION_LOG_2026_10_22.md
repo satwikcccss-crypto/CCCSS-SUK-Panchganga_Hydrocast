@@ -763,6 +763,23 @@ IDs (remove them with P0 #6).
 YAML valid; `npm run audit:gate` passes; `bandit -r src -ll` exits 0; `pip-audit` on pinned direct
 dependencies exits 0.
 
+### 13.18 CI install failure - optional DSS/GRIB extras removed from lock (2026-10-31)
+
+**Failure.** The first push run of `HydroCast Tests` failed at `pip install -r requirements.lock`;
+the Docker runner failed at the same step. Root cause: `pydsstools 3.1.0` requires `numpy<2` on
+Python 3.12, while the lock pins `numpy==2.4.3`. The lock generator had preserved unpinned optional
+specs, so CI tried to resolve `pydsstools` and hit an unsatisfiable dependency.
+
+**Fix.** Removed `cfgrib`, `eccodes`, and `pydsstools` from the core `requirements.txt` and the
+lock. The generator now omits packages that are not in the validated environment instead of writing
+unpinned specs. The lock is 26 lines and installs the FastAPI service + Python twin only. README and
+`docs/deployment-operations.md` explain that HEC-DSS/GRIB extras need a separate environment because
+`pydsstools` currently requires `numpy<2`.
+
+**Verification.** `pip install --dry-run --ignore-installed -r requirements.lock` resolves against
+Python 3.12; 284 backend tests pass; the `Security` workflow is green; the rerun of `HydroCast Tests`
+and the Docker health smoke is the gate.
+
 ---
 
 *This log was updated on 2026-10-22 during the life-safety calibration session, extended
@@ -777,7 +794,7 @@ SQL fix; security hardening of the FastAPI backend and Next.js frontend), and 20
 water-level feed + `.env` loading; P0 #3 Dependabot/audits/least-privilege CI; Open-Meteo-style
 `?key=` URL and one-step fetch script), and 2026-10-30 (P0 #1 frontend CI + Playwright smoke;
 Next.js 14.2.5 → 14.2.35 security patch; Next 16 migration tracked as P0 #6; P0 #2 Docker now
-installs the tested lock, extras preserved, pyarrow conflict resolved; P0 #4 PostGIS service
+installs the tested lock, optional DSS/GRIB extras excluded, pyarrow conflict resolved; P0 #4 PostGIS service
 container + orchestrator write-path test; schema drift fixed — write tables, `alert_events`,
 `error_message`, and the four API views; P0 #3 SHA-pinned actions, blocking `pip-audit`/`bandit`,
 npm audit gate, and PyJWT 2.13.0 → 2.15.0). Last updated: 2026-10-31.*
