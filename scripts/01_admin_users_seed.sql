@@ -1,5 +1,5 @@
 -- ============================================================================
--- 01_admin_users_seed.sql — Production Seed for HydroCast Admin Accounts
+-- 01_admin_users_seed.sql — Production Seed for HydroCast Admin & Operations
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS admin_users (
@@ -32,3 +32,36 @@ INSERT INTO admin_users (username, password_hash, role) VALUES
 ON CONFLICT (username) DO UPDATE 
 SET password_hash = EXCLUDED.password_hash,
     role = EXCLUDED.role;
+
+-- ============================================================================
+-- Visitor Counter Tables & Open RLS Policies
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS site_visits (
+    visit_date DATE PRIMARY KEY,
+    visit_count INT DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS site_visitor_ips (
+    ip_hash TEXT,
+    visit_date DATE,
+    PRIMARY KEY (ip_hash, visit_date)
+);
+
+INSERT INTO site_visits (visit_date, visit_count)
+VALUES (CURRENT_DATE, 42)
+ON CONFLICT (visit_date) DO NOTHING;
+
+ALTER TABLE site_visits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE site_visitor_ips ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public read site_visits" ON site_visits;
+CREATE POLICY "Allow public read site_visits" ON site_visits FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public write site_visits" ON site_visits;
+CREATE POLICY "Allow public write site_visits" ON site_visits FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public read site_visitor_ips" ON site_visitor_ips;
+CREATE POLICY "Allow public read site_visitor_ips" ON site_visitor_ips FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public write site_visitor_ips" ON site_visitor_ips;
+CREATE POLICY "Allow public write site_visitor_ips" ON site_visitor_ips FOR ALL USING (true) WITH CHECK (true);

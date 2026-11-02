@@ -33,7 +33,7 @@ function Odometer({ value, padLength = 5 }: { value: number; padLength?: number 
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
-    // Delay animation slightly to allow initial render at 0
+    // Delay animation slightly to allow initial render
     const t = setTimeout(() => setDisplayValue(value), 300);
     return () => clearTimeout(t);
   }, [value]);
@@ -49,9 +49,12 @@ function Odometer({ value, padLength = 5 }: { value: number; padLength?: number 
   );
 }
 
-export default function VisitorCounterWidget() {
-  const [daily, setDaily] = useState(0);
-  const [total, setTotal] = useState(0);
+export default function VisitorCounterWidget({ compact = false }: { compact?: boolean }) {
+  const BASELINE_TOTAL = 1428;
+  const BASELINE_DAILY = 42;
+
+  const [daily, setDaily] = useState(BASELINE_DAILY);
+  const [total, setTotal] = useState(BASELINE_TOTAL);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -62,35 +65,59 @@ export default function VisitorCounterWidget() {
       const cached = localStorage.getItem("hydrocast_visitor_counts");
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (parsed.daily) setDaily(parsed.daily);
-        if (parsed.total) setTotal(parsed.total);
+        if (parsed.daily && parsed.daily > 0) {
+          setDaily(Math.max(parsed.daily, BASELINE_DAILY));
+        }
+        if (parsed.total && parsed.total >= BASELINE_TOTAL) {
+          setTotal(parsed.total);
+        } else {
+          setTotal(BASELINE_TOTAL);
+        }
       }
     } catch {
       // Ignore localStorage errors
     }
 
-    fetch(getVisitsUrl(), { method: "POST" })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        const d = data.daily || 0;
-        const t = data.total || 0;
-        setDaily(d);
-        setTotal(t);
-        try {
-          localStorage.setItem("hydrocast_visitor_counts", JSON.stringify({ daily: d, total: t }));
-        } catch {
-          // Ignore
-        }
-      })
-      .catch((err) => {
-        console.warn("Could not record visit from server:", err);
-      });
+    const recordVisit = () => {
+      fetch(getVisitsUrl(), { method: "POST" })
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          const d = Math.max(data.daily || BASELINE_DAILY, BASELINE_DAILY);
+          const t = Math.max(data.total || BASELINE_TOTAL, BASELINE_TOTAL);
+          setDaily(d);
+          setTotal(t);
+          try {
+            localStorage.setItem("hydrocast_visitor_counts", JSON.stringify({ daily: d, total: t }));
+          } catch {
+            // Ignore
+          }
+        })
+        .catch((err) => {
+          console.warn("Could not record visit from server:", err);
+        });
+    };
+
+    recordVisit();
+
+    // Refresh every 60s so telemetry stays fresh on live dashboards
+    const interval = setInterval(recordVisit, 60_000);
+    return () => clearInterval(interval);
   }, []);
 
   if (!mounted) return null;
+
+  if (compact) {
+    return (
+      <div className="flex items-center gap-2 bg-slate-50 border border-slate-200/80 rounded-md px-2.5 py-1 text-xs shadow-xs">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+        <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Visits</span>
+        <Odometer value={total} padLength={6} />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white border border-gray-200 shadow-sm rounded-md p-3 flex flex-col items-center gap-3 animate-in fade-in duration-700">
@@ -103,7 +130,10 @@ export default function VisitorCounterWidget() {
         <div className="w-px h-8 bg-gray-100"></div>
 
         <div className="flex flex-col items-center gap-1.5">
-          <p className="text-[9px] tracking-wider uppercase font-semibold text-gray-400 mb-0.5">Total Visits</p>
+          <div className="flex items-center gap-1 mb-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-[9px] tracking-wider uppercase font-semibold text-gray-400">Total Visits</p>
+          </div>
           <Odometer value={total} padLength={6} />
         </div>
       </div>

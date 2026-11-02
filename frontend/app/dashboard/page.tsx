@@ -130,6 +130,9 @@ export default function Dashboard() {
         </div>
 
         {/* Status Indicators & Alert Pill */}
+        <div className="hidden md:block">
+          <VisitorCounterWidget compact />
+        </div>
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-2 text-xs text-gray-600">
             <span

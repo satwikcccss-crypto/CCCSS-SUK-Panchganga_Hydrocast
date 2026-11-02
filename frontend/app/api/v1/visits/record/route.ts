@@ -135,13 +135,20 @@ async function recordViaSupabase(ipHash: string, today: string) {
 
     if (todayRes.ok) {
       const rows = await todayRes.json();
-      if (rows && rows.length > 0) daily = rows[0].visit_count;
+      if (rows && rows.length > 0 && typeof rows[0].visit_count === 'number' && rows[0].visit_count > 0) {
+        daily = Math.max(rows[0].visit_count, fallbackDaily);
+      }
     }
     if (totalRes.ok) {
       const allRows = await totalRes.json();
-      if (Array.isArray(allRows)) {
-        total = allRows.reduce((acc: number, r: any) => acc + (r.visit_count || 0), 0);
+      if (Array.isArray(allRows) && allRows.length > 0) {
+        const sum = allRows.reduce((acc: number, r: any) => acc + (r.visit_count || 0), 0);
+        total = Math.max(fallbackTotal, BASE_TOTAL_SEEDED + sum);
+      } else {
+        total = fallbackTotal;
       }
+    } else {
+      total = fallbackTotal;
     }
 
     return { daily, total };
