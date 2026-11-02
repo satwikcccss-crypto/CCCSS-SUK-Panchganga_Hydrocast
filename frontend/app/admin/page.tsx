@@ -55,9 +55,9 @@ export default function AdminControlRoom() {
     const headers = { Authorization: `Bearer ${authToken}` };
     try {
       const [rtRes, plRes, hlRes] = await Promise.all([
-        fetch(`${apiBase}/api/v1/admin/runtime`, { headers }).then((r) => (r.ok ? r.json() : null)),
-        fetch(`${apiBase}/api/v1/admin/pipeline`, { headers }).then((r) => (r.ok ? r.json() : null)),
-        fetch(`${apiBase}/api/v1/admin/health-log`, { headers }).then((r) => (r.ok ? r.json() : null)),
+        fetch(`/api/v1/admin/runtime`, { headers }).then((r) => (r.ok ? r.json() : null)),
+        fetch(`/api/v1/admin/pipeline`, { headers }).then((r) => (r.ok ? r.json() : null)),
+        fetch(`/api/v1/admin/health-log`, { headers }).then((r) => (r.ok ? r.json() : null)),
       ]);
 
       if (rtRes) setRuntime(rtRes);
