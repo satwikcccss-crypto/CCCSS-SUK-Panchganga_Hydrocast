@@ -170,7 +170,22 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
         response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
         if request.url.path.startswith("/api/"):
-            response.headers.setdefault("Cache-Control", "no-store")
+            cache_control = "no-store"
+            # Public-by-default reads are safe to cache only when the API is in
+            # zero-key mode: every caller then receives the same public payload.
+            # Keyed responses, admin routes, health probes, errors, and writes
+            # must never be stored by a shared CDN/browser cache.
+            path = request.url.path
+            if (
+                not REQUIRE_API_KEY
+                and request.method in ("GET", "HEAD")
+                and response.status_code == 200
+                and path.startswith("/api/v1/")
+                and not path.startswith("/api/v1/admin")
+                and not path.startswith("/api/v1/health")
+            ):
+                cache_control = f"public, max-age={PUBLIC_CACHE_MAX_AGE}"
+            response.headers.setdefault("Cache-Control", cache_control)
         return response
 
 
@@ -182,6 +197,10 @@ app.include_router(admin_router)
 DB_URL = os.getenv("DATABASE_URL", "")
 API_KEY = os.getenv("API_KEY", "")
 REQUIRE_API_KEY = os.getenv("REQUIRE_API_KEY", "true").lower() == "true"
+# Shared-cache lifetime for successful public GETs in zero-key mode. Forecast
+# cycles update hourly/6-hourly, so five minutes absorbs monsoon traffic bursts
+# while keeping operational freshness. Ignored when REQUIRE_API_KEY is true.
+PUBLIC_CACHE_MAX_AGE = int(os.getenv("PUBLIC_CACHE_MAX_AGE", "300"))
 
 # ── DB pool (asyncpg) ─────────────────────────────────────────────────────────
 

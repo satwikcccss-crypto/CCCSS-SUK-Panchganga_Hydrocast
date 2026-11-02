@@ -112,10 +112,32 @@ def test_public_endpoint_requires_api_key(monkeypatch, client):
     monkeypatch.setattr(main, "REQUIRE_API_KEY", True)
     monkeypatch.setattr(main, "API_KEY", "unit-test-key")
 
-    assert client.get("/api/v1/alerts").status_code == 401
+    unauthorized = client.get("/api/v1/alerts")
+    assert unauthorized.status_code == 401
+    assert unauthorized.headers["cache-control"] == "no-store"
     assert client.get("/api/v1/alerts", headers={"X-API-Key": "wrong"}).status_code == 401
     ok = client.get("/api/v1/alerts", headers={"X-API-Key": "unit-test-key"})
     assert ok.status_code == 200
+    # A keyed response must never be stored by a shared CDN/browser cache.
+    assert ok.headers["cache-control"] == "no-store"
+
+
+def test_zero_key_public_reads_are_shared_cacheable(monkeypatch, client):
+    install_pool(monkeypatch, fetch=[])
+    monkeypatch.setattr(main, "PUBLIC_CACHE_MAX_AGE", 300)
+
+    r = client.get("/api/v1/alerts")
+
+    assert r.status_code == 200
+    assert r.headers["cache-control"] == "public, max-age=300"
+
+
+def test_zero_key_mode_keeps_admin_locked(client):
+    # REQUIRE_API_KEY=false must never open the administrative tier.
+    r = client.get("/api/v1/admin/me")
+
+    assert r.status_code in (401, 403)
+    assert r.headers["cache-control"] == "no-store"
 
 
 # ── status + visits ───────────────────────────────────────────────────────────

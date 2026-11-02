@@ -84,6 +84,21 @@ The `CONSUMER_API_KEYS` environment variable accepts a comma-separated list of a
 2. Update the downstream consumer to use the new key.
 3. Remove the retired key from `CONSUMER_API_KEYS`.
 
+### 1.4 Public Zero-Key Mode (Opt-In)
+
+`REQUIRE_API_KEY` defaults to `true`, so a missing configuration fails closed. Set it to `false` only when you intentionally want Open-Meteo-style unauthenticated public reads:
+
+```bash
+REQUIRE_API_KEY=false
+RATE_LIMIT_PUBLIC=60/minute
+RATE_LIMIT_BURST=10/second
+PUBLIC_CACHE_MAX_AGE=300
+```
+
+In this mode only `GET /api/v1/*` reads bypass the key check. `/api/v1/admin/*` and all write/trigger paths remain protected by JWT or the master `API_KEY`; `verify_admin_auth` does not consult `REQUIRE_API_KEY`. The keyed mode remains available (`X-API-Key` or `?key=`) for district deployments that require gating.
+
+Successful public GETs receive `Cache-Control: public, max-age=300` (`PUBLIC_CACHE_MAX_AGE`). Health probes, admin routes, keyed responses, error responses, and writes stay `no-store`, so a shared CDN can absorb forecast traffic without caching credentials or failures.
+
 ---
 
 ## 2. Administrative Authentication & JWT Tokens (`src/api/security.py`)
@@ -117,10 +132,10 @@ To prevent API scraping, denial of service, and brute-force password guessing, H
 
 | Target Endpoint Surface | Rate Limit Budget | Target Protection |
 | :--- | :---: | :--- |
-| **Public Read Endpoints** (`/api/v1/*`) | **`100 / minute`** | Prevents bandwidth saturation and scraping |
+| **Public Read Endpoints** (`/api/v1/*`) | **`60 / minute`** + optional `10 / second` burst | Prevents bandwidth saturation and scraping |
 | **Admin Login Endpoint** (`/api/v1/admin/auth/token`) | **`5 / minute`** | Mitigates credential brute-forcing attacks |
 
-Rate limits key off the client remote IP address (`get_remote_address`). Rate-limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`) are returned with every response.
+Rate limits key off the client remote IP address (`get_remote_address`). Rate-limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`) are returned with every response. `RATE_LIMIT_BURST` is optional; when set, SlowAPI enforces both windows.
 
 ---
 
@@ -135,7 +150,7 @@ class WSManager:
 When concurrent connections reach 200, additional connections are rejected with WebSocket close code `1013` (Try Again Later).
 
 ### 4.2 Request Body Size Guard
-A custom Starlette middleware intercepts all incoming HTTP requests, rejecting payloads exceeding **2 MB** with HTTP 413 (Payload Too Large).
+A custom Starlette middleware intercepts all incoming HTTP requests, rejecting payloads exceeding **1 MB** (`MAX_REQUEST_BYTES`, default `1_000_000`) with HTTP 413 (Payload Too Large).
 
 ### 4.3 Path Traversal Prevention
 Historical run queries enforce strict regular expression validation on `run_id`:

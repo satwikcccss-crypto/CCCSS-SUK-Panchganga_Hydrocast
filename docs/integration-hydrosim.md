@@ -38,14 +38,15 @@ GET /api/v1/integration/hydrosim/stage    (Legacy Backward-Compatible Path)
 
 | Query Parameter | Supported Values | Default | Purpose & Semantics |
 | :--- | :--- | :--- | :--- |
-| `key` | String (`hydrocast_PS_V1_...`) | None | Consumer API key passed in URL query string |
+| `key` | String (`hydrocast_PS_V1_...`) | None | Consumer API key in the URL; omit it when the deployment runs with `REQUIRE_API_KEY=false` |
 | `site_id` | `SHIVAJI_BRIDGE`, `RAJARAM_BRIDGE` | All | Optional site filter (returns both sites if omitted) |
 | `format` | `json`, `csv` | `json` | Response serialization format |
 
 ### 1.2 Rate Limiting & Response Codes
-- **Rate Limit:** Governed by `RATE_LIMIT_PUBLIC` (100 requests / minute per client IP).
+- **Rate Limit:** Governed by `RATE_LIMIT_PUBLIC` (recommended 60 requests / minute per client IP) plus the optional `RATE_LIMIT_BURST` window.
+- **Public zero-key mode:** When the operator sets `REQUIRE_API_KEY=false`, no key is required and successful GETs are shared-cacheable for `PUBLIC_CACHE_MAX_AGE` seconds (default 300). Admin and write paths remain protected.
 - **HTTP 200 OK:** Successful forecast boundary payload.
-- **HTTP 401 Unauthorized:** Missing, malformed, or invalid API key.
+- **HTTP 401 Unauthorized:** Missing, malformed, or invalid API key (keyed mode only).
 - **HTTP 404 Not Found:** No forecast cycles exist in the database (cycle in progress or uninitialized).
 - **HTTP 422 Unprocessable Entity:** Unsupported `format` or invalid `site_id`.
 
@@ -63,6 +64,10 @@ X-API-Key: hydrocast_PS_V1_abcdef123456...
 
 # Option B: Query String Authentication (Convenient for browser verification)
 GET /api/v1/hydrocast/water-levels?key=hydrocast_PS_V1_abcdef123456... HTTP/1.1
+
+# Option C: Public zero-key deployment (REQUIRE_API_KEY=false)
+GET /api/v1/hydrocast/water-levels?site_id=SHIVAJI_BRIDGE HTTP/1.1
+Host: localhost:8000
 ```
 
 ### Security Boundary Guarantees
