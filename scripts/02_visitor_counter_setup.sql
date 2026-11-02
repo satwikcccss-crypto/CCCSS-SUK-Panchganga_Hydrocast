@@ -35,3 +35,4 @@ CREATE POLICY "Allow public read site_visitor_ips" ON site_visitor_ips FOR SELEC
 
 DROP POLICY IF EXISTS "Allow public write site_visitor_ips" ON site_visitor_ips;
 CREATE POLICY "Allow public write site_visitor_ips" ON site_visitor_ips FOR ALL USING (true) WITH CHECK (true);
+
