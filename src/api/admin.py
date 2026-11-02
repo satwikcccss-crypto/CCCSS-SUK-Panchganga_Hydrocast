@@ -145,7 +145,7 @@ async def login_for_access_token(request: Request, req: TokenRequest):
     """Authenticate administrator credentials and return a signed JWT bearer token.
 
     Uses the approved‑usernames list from the ``ADMIN_APPROVED_USERNAMES`` env var
-    (comma‑separated, e.g. ``Dev@Adm1,PI@Adm1,COPI@Adm1,JRF@Adm1``).  If the
+    (comma‑separated, e.g. ``admin_user1,admin_user2``).  If the
     submitted username is not on that list the user receives a friendly message
     to contact the lead developer.
 
@@ -155,10 +155,7 @@ async def login_for_access_token(request: Request, req: TokenRequest):
     # -------------------------------------------------
     # 1️⃣  Get the list of approved usernames from the environment.
     # -------------------------------------------------
-    approved_usernames_env = os.getenv(
-        "ADMIN_APPROVED_USERNAMES",
-        "Dev@Adm1,PI@Adm1,COPI@Adm1,JRF@Adm1",
-    )
+    approved_usernames_env = os.getenv("ADMIN_APPROVED_USERNAMES", "").strip()
     approved_usernames = {name.strip() for name in approved_usernames_env.split(",") if name.strip()}
 
     # -------------------------------------------------
@@ -182,7 +179,7 @@ async def login_for_access_token(request: Request, req: TokenRequest):
     #     fall back to the classic ADMIN_USERNAME / ADMIN_PASSWORD check.
     #     If neither matches, return the “contact” message.
     # -------------------------------------------------
-    if req.username not in approved_usernames:
+    if approved_usernames and req.username not in approved_usernames:
         # Traditional fallback: allow the hard‑coded admin account
         if req.username == os.getenv("ADMIN_USERNAME", "admin") and valid:
             # allow login – continue to token creation below

@@ -11,6 +11,7 @@
     "audit:gate": "node scripts/npm-audit-gate.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "chart.js": "^4.4.3",
     "chartjs-plugin-annotation": "^3.1.0",
     "clsx": "^2.1.1",

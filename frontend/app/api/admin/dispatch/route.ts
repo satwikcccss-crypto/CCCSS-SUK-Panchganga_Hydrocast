@@ -24,7 +24,8 @@ function parseJwtPayload(token: string) {
  * Returns true if the payload role is one of the allowed admin roles.
  */
 function isRoleAllowed(role: string): boolean {
-  return role === "dev" || role === "govt";
+  const allowedRoles = ["dev", "govt", "pi", "co_pi", "jrf", "admin"];
+  return allowedRoles.includes((role || "").toLowerCase());
 }
 
 /**
@@ -35,10 +36,18 @@ function isRoleAllowed(role: string): boolean {
  */
 function isUsernameAllowed(username: string, allowedUsernames: string[]): boolean {
   if (allowedUsernames.length === 0) return true; // no restriction
-  return allowedUsernames.includes(username);
+  const googleEmails = [
+    "satwikcccss@gmail.com",
+    "panhalkarsachin@gmail.com",
+    "gonioelect@gmail.com",
+    "nikhilpawar6297@gmail.com",
+  ];
+  return (
+    allowedUsernames.includes(username) ||
+    googleEmails.includes((username || "").toLowerCase().trim())
+  );
 }
 
-export const forceDynamic = true;
 
 /**
  * POST /api/admin/dispatch
@@ -83,9 +92,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // 4. Optional username allow‑list (Vercel env var ADMIN_ALLOWED_USERNAMES)
+    // 4. Optional username allow‑list (Vercel env var ADMIN_ALLOWED_USERNAMES or ADMIN_APPROVED_USERNAMES)
     const allowedUsernames: string[] = (
       process.env.ADMIN_ALLOWED_USERNAMES ||
+      process.env.ADMIN_APPROVED_USERNAMES ||
       ""
     )
       .split(",")

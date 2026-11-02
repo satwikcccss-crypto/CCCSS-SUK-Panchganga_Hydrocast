@@ -8,9 +8,9 @@ echo "=== Vercel Build Filter ==="
 echo "Branch: ${VERCEL_GIT_COMMIT_REF:-unknown}"
 echo "Commit message: ${VERCEL_GIT_COMMIT_MESSAGE:-unknown}"
 
-# 1. Skip if on gh-pages branch (MkDocs documentation branch)
-if [ "${VERCEL_GIT_COMMIT_REF}" = "gh-pages" ]; then
-  echo "🛑 Skip build: gh-pages branch is reserved for MkDocs documentation."
+# 1. Skip if on gh-pages branch (MkDocs documentation branch) or Dependabot PR
+if [ "${VERCEL_GIT_COMMIT_REF}" = "gh-pages" ] || [[ "${VERCEL_GIT_COMMIT_REF}" =~ ^dependabot/ ]]; then
+  echo "🛑 Skip build: ${VERCEL_GIT_COMMIT_REF} branch is skipped on Vercel."
   exit 0
 fi
 
