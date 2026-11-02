@@ -144,13 +144,26 @@ class ArchiveRequest(BaseModel):
 async def login_for_access_token(request: Request, req: TokenRequest):
     """Authenticate administrator credentials and return a signed JWT bearer token.
 
-    Use the returned `access_token` in the **Authorize** dialog on the Swagger
-    page, or send it as `Authorization: Bearer <token>`.
+    Uses the approved‑usernames list from the ``ADMIN_APPROVED_USERNAMES`` env var
+    (comma‑separated, e.g. ``Dev@Adm1,PI@Adm1,COPI@Adm1,JRF@Adm1``).  If the
+    submitted username is not on that list the user receives a friendly message
+    to contact the lead developer.
 
     A successful login is cheap and idempotent — call it once per session, not
     once per request; the token is valid for a full day.
     """
-    # Attempt DB-backed auth first, falling back to environment credentials
+    # -------------------------------------------------
+    # 1️⃣  Get the list of approved usernames from the environment.
+    # -------------------------------------------------
+    approved_usernames_env = os.getenv(
+        "ADMIN_APPROVED_USERNAMES",
+        "Dev@Adm1,PI@Adm1,COPI@Adm1,JRF@Adm1",
+    )
+    approved_usernames = {name.strip() for name in approved_usernames_env.split(",") if name.strip()}
+
+    # -------------------------------------------------
+    # 2️⃣  Get a database pool (same pattern used elsewhere)
+    # -------------------------------------------------
     pool = getattr(request.app.state, "db_pool", None)
     if pool is None:
         try:
@@ -159,20 +172,48 @@ async def login_for_access_token(request: Request, req: TokenRequest):
         except Exception:
             pool = None
 
+    # -------------------------------------------------
+    # 3️⃣  Verify credentials against the Postgres table
+    # -------------------------------------------------
     valid, role = await verify_admin_credentials_db(req.username, req.password, pool)
+
+    # -------------------------------------------------
+    # 4️⃣  If the username is *not* one of the approved accounts,
+    #     fall back to the classic ADMIN_USERNAME / ADMIN_PASSWORD check.
+    #     If neither matches, return the “contact” message.
+    # -------------------------------------------------
+    if req.username not in approved_usernames:
+        # Traditional fallback: allow the hard‑coded admin account
+        if req.username == os.getenv("ADMIN_USERNAME", "admin") and valid:
+            # allow login – continue to token creation below
+            pass
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Unauthorized. Please contact satwikcccss@gmail.com for access.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+    # -------------------------------------------------
+    # 5️⃣  If the username is approved but the password is wrong,
+    #     give a generic “invalid credentials” message (no leak).
+    # -------------------------------------------------
     if not valid:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid administrative username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
+    # -------------------------------------------------
+    # 6️⃣  Successful login – create and return the JWT
+    # -------------------------------------------------
     token = create_access_token(subject=req.username, role=role or "admin")
     return TokenResponse(
         access_token=token,
         role=role or "admin",
         token_type="bearer",
-        expires_in_seconds=86400,
+        expires_in_seconds=86400,               # 24 h
     )
 
 

@@ -74,6 +74,26 @@ export default function AdminControlRoom() {
     setStatusMessage(null);
 
     try {
+      // 1. Try Next.js serverless route to GitHub Actions dispatch first (cloud execution)
+      const dispatchRes = await fetch("/api/admin/dispatch", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (dispatchRes.ok) {
+        const data = await dispatchRes.json();
+        setStatusMessage({
+          text: data.message || "GitHub Actions pipeline dispatched successfully!",
+          type: "success",
+        });
+        fetchControlRoomData(token);
+        return;
+      }
+
+      // 2. Fallback to direct Python FastAPI backend trigger (local development)
       const res = await fetch(`${apiBase}/api/v1/admin/trigger-run`, {
         method: "POST",
         headers: {
@@ -83,9 +103,9 @@ export default function AdminControlRoom() {
         body: JSON.stringify({ cycle_id: "MANUAL_DISPATCH", wait_for_completion: true }),
       });
 
-      if (!res.ok) throw new Error("Failed to trigger forecast cycle");
+      if (!res.ok) throw new Error("Failed to trigger forecast cycle on either GitHub Actions or local API");
       const data = await res.json();
-      setStatusMessage({ text: `Forecast cycle completed! Run ID: ${data.run_id || "OK"}`, type: "success" });
+      setStatusMessage({ text: `Forecast cycle completed locally! Run ID: ${data.run_id || "OK"}`, type: "success" });
       fetchControlRoomData(token);
     } catch (err: any) {
       setStatusMessage({ text: err.message || "Execution error", type: "error" });
