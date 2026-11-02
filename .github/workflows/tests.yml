@@ -44,6 +44,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.lock
           pip install pytest pytest-cov mypy
+          pip install -r requirements-docs.txt
 
       - name: Production Entry Import Smoke Check
         run: python -c "import src.ecmwf.open_meteo; import src.hms.runner; import src.hydrology.ml_calibration; import src.orchestrator"

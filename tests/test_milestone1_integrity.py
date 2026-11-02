@@ -10,19 +10,48 @@ Empirical verification harness validating:
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess
+import sys
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, List, Set
 
 import pytest
-from mkdocs.config import load_config
+
+try:
+    from mkdocs.config import load_config
+except ImportError:  # pragma: no cover - only when docs deps are not installed
+    pytest.skip(
+        "mkdocs is not installed; install requirements-docs.txt",
+        allow_module_level=True,
+    )
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCS_DIR = REPO_ROOT / "docs"
 MKDOCS_CONFIG = REPO_ROOT / "mkdocs.yml"
 SITE_DIR = REPO_ROOT / "site"
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _build_docs_site() -> None:
+    """Build the docs once so the HTML/link assertions test current sources.
+
+    CI installs ``requirements-docs.txt``; a developer running the backend suite
+    without that toolchain gets a module-level skip instead of a collection error.
+    """
+    if os.environ.get("HYDROCAST_SKIP_DOCS_BUILD") == "1":
+        return
+    result = subprocess.run(
+        [sys.executable, "-m", "mkdocs", "build", "--strict"],
+        cwd=str(REPO_ROOT),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout
 
 
 class HTMLIDCollector(HTMLParser):
