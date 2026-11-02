@@ -337,6 +337,28 @@ def apply_core_schema(conn) -> bool:
         created_at TIMESTAMPTZ DEFAULT NOW()
     );
 
+    -- 14. Administrative users & audit log tables
+    CREATE TABLE IF NOT EXISTS admin_users (
+        id            SERIAL PRIMARY KEY,
+        username      VARCHAR(64) UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        role          VARCHAR(32) NOT NULL DEFAULT 'dev',
+        created_at    TIMESTAMPTZ DEFAULT NOW(),
+        last_login    TIMESTAMPTZ
+    );
+
+    CREATE TABLE IF NOT EXISTS admin_login_log (
+        id           SERIAL PRIMARY KEY,
+        username     VARCHAR(64) NOT NULL,
+        role         VARCHAR(32),
+        ip_address   VARCHAR(64),
+        success      BOOLEAN NOT NULL,
+        attempted_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_admin_users_username ON admin_users (username);
+    CREATE INDEX IF NOT EXISTS idx_admin_login_log_username ON admin_login_log (username);
+
     -- 13. Recreate Analytical Views
     CREATE OR REPLACE VIEW v_model_accuracy_summary AS
     SELECT

@@ -31,6 +31,8 @@ if "pytest" in sys.modules:
     _APP_ENV = "test"
 _default_secret = "default_insecure_secret_for_tests" if _APP_ENV in ("test", "dev") else ""
 JWT_SECRET = os.getenv("JWT_SECRET", _default_secret)
+# Dedicated secret for administrative RBAC tokens (falls back to JWT_SECRET)
+ADMIN_JWT_SECRET = os.getenv("ADMIN_JWT_SECRET", JWT_SECRET)
 # Only HMAC algorithms are permitted: the secret is a symmetric key, and this
 # prevents algorithm-confusion / "none" from ever being configured by mistake.
 _ALLOWED_JWT_ALGORITHMS = {"HS256", "HS384", "HS512"}
@@ -87,6 +89,59 @@ def verify_admin_credentials(username: str, password: str) -> bool:
     return valid_user and valid_pass
 
 
+async def verify_admin_credentials_db(
+    username: str,
+    password: str,
+    db_pool: Any = None,
+) -> tuple[bool, str]:
+    """Verify administrator credentials against Postgres admin_users table with env fallback.
+
+    Returns:
+        (is_authenticated, role) where role is 'govt', 'dev', or 'admin'.
+    """
+    if db_pool is not None:
+        try:
+            async with db_pool.acquire() as conn:
+                row = await conn.fetchrow(
+                    "SELECT password_hash, role FROM admin_users WHERE username = $1",
+                    username.strip(),
+                )
+                if row:
+                    pwd_hash = row["password_hash"]
+                    role = row.get("role", "dev")
+                    if verify_password(password, pwd_hash):
+                        try:
+                            await conn.execute(
+                                "UPDATE admin_users SET last_login = NOW() WHERE username = $1",
+                                username.strip(),
+                            )
+                            await conn.execute(
+                                """INSERT INTO admin_login_log (username, role, success)
+                                   VALUES ($1, $2, TRUE)""",
+                                username.strip(), role
+                            )
+                        except Exception:
+                            pass
+                        return True, role
+                    else:
+                        try:
+                            await conn.execute(
+                                """INSERT INTO admin_login_log (username, role, success)
+                                   VALUES ($1, $2, FALSE)""",
+                                username.strip(), role
+                            )
+                        except Exception:
+                            pass
+        except Exception as e:
+            _sec_log.warning("Database admin authentication check failed or table missing: %s", e)
+
+    # Fallback to environment credentials (emergency break-glass / zero-db bootstrap)
+    if verify_admin_credentials(username, password):
+        return True, "admin"
+
+    return False, ""
+
+
 def create_access_token(
     subject: str,
     role: str = "admin",
@@ -108,27 +163,32 @@ def create_access_token(
 
 def decode_access_token(token: str) -> Dict[str, Any]:
     """Decode and validate a JWT access token."""
-    try:
-        payload = jwt.decode(
-            token,
-            JWT_SECRET,
-            algorithms=[JWT_ALGORITHM],
-            issuer="hydrocast-api",
-        )
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="JWT token has expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    except jwt.PyJWTError:
-        # Deliberately generic: never echo parser internals back to the caller.
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or malformed JWT token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    # Attempt decoding with ADMIN_JWT_SECRET, then fall back to JWT_SECRET
+    secrets_to_try = [s for s in (ADMIN_JWT_SECRET, JWT_SECRET) if s]
+    last_err = None
+    for secret in dict.fromkeys(secrets_to_try):
+        try:
+            payload = jwt.decode(
+                token,
+                secret,
+                algorithms=[JWT_ALGORITHM],
+                issuer="hydrocast-api",
+            )
+            return payload
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="JWT token has expired",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        except jwt.PyJWTError as err:
+            last_err = err
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid or malformed JWT token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
 
 async def verify_admin_auth(

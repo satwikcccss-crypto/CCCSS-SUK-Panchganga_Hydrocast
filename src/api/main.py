@@ -220,7 +220,7 @@ async def startup():
         pool = await get_pool()
         log.info("Database connection pool established")
         
-        # Init Visitor Counter Tables
+        # Init Visitor Counter & Admin Users RBAC Tables
         async with pool.acquire() as conn:
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS site_visits (
@@ -232,7 +232,29 @@ async def startup():
                     visit_date DATE,
                     PRIMARY KEY(ip_hash, visit_date)
                 );
+                CREATE TABLE IF NOT EXISTS admin_users (
+                    id SERIAL PRIMARY KEY,
+                    username VARCHAR(64) UNIQUE NOT NULL,
+                    password_hash TEXT NOT NULL,
+                    role VARCHAR(32) NOT NULL DEFAULT 'dev',
+                    created_at TIMESTAMPTZ DEFAULT NOW(),
+                    last_login TIMESTAMPTZ
+                );
             """)
+
+            # Optional: auto-seed admin if configured or table empty
+            init_admin = os.getenv("INIT_ADMIN_TABLE", "true").lower() == "true"
+            if init_admin:
+                admin_user = os.getenv("ADMIN_USERNAME", "admin")
+                admin_pass = os.getenv("ADMIN_PASSWORD", "")
+                if admin_pass:
+                    import bcrypt
+                    pw_hash = bcrypt.hashpw(admin_pass.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+                    await conn.execute("""
+                        INSERT INTO admin_users (username, password_hash, role)
+                        VALUES ($1, $2, 'dev')
+                        ON CONFLICT (username) DO NOTHING;
+                    """, admin_user, pw_hash)
     except Exception as e:
         log.warning("Database pool connection delayed or offline: %s", e)
 

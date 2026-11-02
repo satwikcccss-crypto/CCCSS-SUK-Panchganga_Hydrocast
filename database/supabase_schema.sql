@@ -555,3 +555,31 @@ LEFT JOIN pipeline_step_log l ON l.cycle_id = r.run_id
 GROUP BY
     r.run_id, r.cycle_date, r.cycle_time, r.start_time, r.end_time,
     r.status, r.alert_level, r.peak_discharge_m3s, r.peak_stage_m;
+
+
+-- ============================================================================
+-- 14. ADMINISTRATIVE USERS & RBAC TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS admin_users (
+    id            SERIAL PRIMARY KEY,
+    username      VARCHAR(64) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role          VARCHAR(32) NOT NULL DEFAULT 'dev', -- 'govt' or 'dev'
+    created_at    TIMESTAMPTZ DEFAULT NOW(),
+    last_login    TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_admin_users_username ON admin_users (username);
+
+
+CREATE TABLE IF NOT EXISTS admin_login_log (
+    id           SERIAL PRIMARY KEY,
+    username     VARCHAR(64) NOT NULL,
+    role         VARCHAR(32),
+    ip_address   VARCHAR(64),
+    success      BOOLEAN NOT NULL,
+    attempted_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_admin_login_log_username ON admin_login_log (username);
+CREATE INDEX IF NOT EXISTS idx_admin_login_log_attempted_at ON admin_login_log (attempted_at);

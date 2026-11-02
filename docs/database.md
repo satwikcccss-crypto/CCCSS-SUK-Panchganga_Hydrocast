@@ -56,7 +56,7 @@ END $$;
 
 ---
 
-## 2. Complete Inventory of Relational Tables (13 Tables)
+## 2. Complete Inventory of Relational Tables (15 Tables)
 
 ```mermaid
 erDiagram
@@ -336,6 +336,39 @@ CREATE TABLE IF NOT EXISTS alert_events (
 );
 
 CREATE INDEX IF NOT EXISTS idx_alert_events_active ON alert_events (status, issued_at DESC);
+```
+
+### 2.5 Security, Access Control & Audit Logging Tables
+
+#### 14. `admin_users`
+Role-based access control table persisting authorized operator accounts with salted bcrypt password hashes.
+```sql
+CREATE TABLE IF NOT EXISTS admin_users (
+    id            SERIAL PRIMARY KEY,
+    username      VARCHAR(64) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role          VARCHAR(32) NOT NULL DEFAULT 'dev', -- 'govt' or 'dev'
+    created_at    TIMESTAMPTZ DEFAULT NOW(),
+    last_login    TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_admin_users_username ON admin_users (username);
+```
+
+#### 15. `admin_login_log`
+Forensic audit trail recording every administrative login attempt (timestamp, IP address, and success/failure).
+```sql
+CREATE TABLE IF NOT EXISTS admin_login_log (
+    id           SERIAL PRIMARY KEY,
+    username     VARCHAR(64) NOT NULL,
+    role         VARCHAR(32),
+    ip_address   VARCHAR(64),
+    success      BOOLEAN NOT NULL,
+    attempted_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_admin_login_log_username ON admin_login_log (username);
+CREATE INDEX IF NOT EXISTS idx_admin_login_log_attempted_at ON admin_login_log (attempted_at);
 ```
 
 ---

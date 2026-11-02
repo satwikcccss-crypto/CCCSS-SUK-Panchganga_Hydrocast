@@ -253,7 +253,14 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="mt-auto pt-6">
+            <div className="mt-auto pt-6 space-y-3">
+              <a
+                href="/admin"
+                className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-sky-400 hover:text-sky-300 border border-slate-800 text-xs font-semibold tracking-wide transition shadow-sm"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span>Operator Control Room 🔒</span>
+              </a>
               <VisitorCounterWidget />
             </div>
           </div>
