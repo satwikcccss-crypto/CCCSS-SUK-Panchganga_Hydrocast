@@ -15,10 +15,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>HydroSim 2D Handoff & Boundary Workflow</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/07-workflow-hydrosim-handoff.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/07-workflow-hydrosim-handoff.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/07-workflow-hydrosim-handoff.html?embed=1" title="HydroSim 2D Handoff Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/07-workflow-hydrosim-handoff.html?embed=1" title="HydroSim 2D Handoff Console"></iframe>
 </div>
 
 ---

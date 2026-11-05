@@ -14,10 +14,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Hybrid OS Deployment Topology</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/06-deployment-docker-os.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/06-deployment-docker-os.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/06-deployment-docker-os.html?embed=1" title="Hybrid OS Deployment Topology Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/06-deployment-docker-os.html?embed=1" title="Hybrid OS Deployment Topology Console"></iframe>
 </div>
 
 ---
@@ -419,10 +419,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below:
       <strong>06 · Hybrid Deployment Architecture</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/06-deployment-docker-os.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/06-deployment-docker-os.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/06-deployment-docker-os.html?embed=1" title="06 · Hybrid Deployment Architecture Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/06-deployment-docker-os.html?embed=1" title="06 · Hybrid Deployment Architecture Console"></iframe>
 </div>
 
 ### 8.1 Test Inventory & Module Breakdown

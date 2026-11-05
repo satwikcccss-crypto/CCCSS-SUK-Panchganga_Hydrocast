@@ -14,10 +14,10 @@
       <strong>Rainfall to Alert Dataflow (Five Operational Stages)</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/02-dataflow.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/02-dataflow.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/02-dataflow.html?embed=1" title="Rainfall to Alert Dataflow Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/02-dataflow.html?embed=1" title="Rainfall to Alert Dataflow Console"></iframe>
 </div>
 
 ---

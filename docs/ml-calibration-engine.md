@@ -15,10 +15,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Adaptive ML Calibration Loop</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/15-ml-calibration.html?embed=1" title="Adaptive ML Calibration Loop Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/15-ml-calibration.html?embed=1" title="Adaptive ML Calibration Loop Console"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -28,10 +28,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Simulation Run Lifecycle</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/05-lifecycle-runs.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/05-lifecycle-runs.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/05-lifecycle-runs.html?embed=1" title="Simulation Run Lifecycle Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/05-lifecycle-runs.html?embed=1" title="Simulation Run Lifecycle Console"></iframe>
 </div>
 
 ---
@@ -60,10 +60,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below:
       <strong>15 · ML Calibration Loop</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/15-ml-calibration.html?embed=1" title="15 · ML Calibration Loop Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/15-ml-calibration.html?embed=1" title="15 · ML Calibration Loop Console"></iframe>
 </div>
 
 ### 2.1 Wave Timing Discrepancy ($\Delta t$)
@@ -177,10 +177,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below:
       <strong>15 · ML Calibration Loop</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/15-ml-calibration.html?embed=1" title="15 · ML Calibration Loop Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/15-ml-calibration.html?embed=1" title="15 · ML Calibration Loop Console"></iframe>
 </div>
 
 ### 5.1 Gating Implementation

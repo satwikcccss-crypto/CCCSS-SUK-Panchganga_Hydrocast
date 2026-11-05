@@ -15,10 +15,10 @@ The complete, authoritative schema definition resides in `database/supabase_sche
       <strong>Relational Schema ERD</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/13-database-schema.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/13-database-schema.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/13-database-schema.html?embed=1" title="Relational Schema ERD Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/13-database-schema.html?embed=1" title="Relational Schema ERD Console"></iframe>
 </div>
 
 ---

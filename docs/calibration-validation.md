@@ -14,10 +14,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>ML Calibration Loop</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/15-ml-calibration.html?embed=1" title="ML Calibration Loop Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/15-ml-calibration.html?embed=1" title="ML Calibration Loop Console"></iframe>
 </div>
 
 ---

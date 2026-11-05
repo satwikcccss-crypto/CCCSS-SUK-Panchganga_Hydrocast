@@ -11,10 +11,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Forecast Cycle Waterfall</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/17-cycle-waterfall.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/17-cycle-waterfall.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console"></iframe>
 </div>
 
 ---
@@ -53,10 +53,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below:
       <strong>Production Roadmap</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="Production Roadmap Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="Production Roadmap Console"></iframe>
 </div>
 
 ## 1. Orchestration integrity — highest priority
@@ -122,10 +122,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below:
       <strong>Production Roadmap</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="Production Roadmap Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="Production Roadmap Console"></iframe>
 </div>
 
 The highest-value addition is a single end-to-end cycle test that runs the

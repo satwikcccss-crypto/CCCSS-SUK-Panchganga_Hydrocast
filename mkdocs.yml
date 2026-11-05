@@ -204,6 +204,7 @@ extra_javascript:
   # figure on the site. mermaid-init.js must come after the library.
   - javascripts/mermaid.min.js
   - javascripts/mermaid-init.js
+  - javascripts/consoles-sync.js
   - https://unpkg.com/leaflet@1.9.4/dist/leaflet.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
@@ -273,23 +274,24 @@ nav:
       - "Alert Evaluator & Telegram Dispatch": alerts.md
 
   - "Interactive Consoles":
-      - "01 · Architecture Topology": diagrams/01-architecture.html
-      - "02 · Rainfall-to-Alert Dataflow": diagrams/02-dataflow.html
-      - "03 · Forecast Cycle Workflow": diagrams/03-forecast-workflow.html
-      - "04 · API Auth Sequence": diagrams/04-sequence-auth-api.html
-      - "05 · Run & Telemetry Lifecycle": diagrams/05-lifecycle-runs.html
-      - "06 · Deployment Architecture": diagrams/06-deployment-docker-os.html
-      - "07 · HydroSim 2D Handoff": diagrams/07-workflow-hydrosim-handoff.html
-      - "08 · Rating Curves & Hydraulics": diagrams/08-rating-curve-hydraulics.html
-      - "09 · Rain-Gauge Selection": diagrams/09-raingauge-selection-flowchart.html
-      - "10 · Catchment Hydrology Solver": diagrams/10-catchment-hydrology-solver.html
-      - "11 · FastAPI Gateway": diagrams/11-backend-api.html
-      - "12 · Frontend Dashboard": diagrams/12-frontend-dashboard.html
-      - "13 · Database Schema ERD": diagrams/13-database-schema.html
-      - "14 · Dual-Engine HEC-HMS": diagrams/14-hec-hms-engine.html
-      - "15 · ML Calibration Loop": diagrams/15-ml-calibration.html
-      - "16 · Repository Tree": diagrams/16-repository-tree.html
-      - "17 · Cycle Waterfall & Latencies": diagrams/17-cycle-waterfall.html
+      - "Atlas Overview & Architecture": architecture-atlas.md
+      - "01 · Architecture Topology": consoles/01-architecture.md
+      - "02 · Rainfall-to-Alert Dataflow": consoles/02-dataflow.md
+      - "03 · Forecast Cycle Workflow": consoles/03-forecast-workflow.md
+      - "04 · API Auth Sequence": consoles/04-sequence-auth-api.md
+      - "05 · Run & Telemetry Lifecycle": consoles/05-lifecycle-runs.md
+      - "06 · Deployment Architecture": consoles/06-deployment-docker-os.md
+      - "07 · HydroSim 2D Handoff": consoles/07-workflow-hydrosim-handoff.md
+      - "08 · Rating Curves & Hydraulics": consoles/08-rating-curve-hydraulics.md
+      - "09 · Rain-Gauge Selection": consoles/09-raingauge-selection-flowchart.md
+      - "10 · Catchment Hydrology Solver": consoles/10-catchment-hydrology-solver.md
+      - "11 · FastAPI Gateway": consoles/11-backend-api.md
+      - "12 · Frontend Dashboard": consoles/12-frontend-dashboard.md
+      - "13 · Database Schema ERD": consoles/13-database-schema.md
+      - "14 · Dual-Engine HEC-HMS": consoles/14-hec-hms-engine.md
+      - "15 · ML Calibration Loop": consoles/15-ml-calibration.md
+      - "16 · Repository Tree": consoles/16-repository-tree.md
+      - "17 · Cycle Waterfall & Latencies": consoles/17-cycle-waterfall.md
 
   - "Project Governance":
       - "Project Background & Monsoon Context": project-background.md

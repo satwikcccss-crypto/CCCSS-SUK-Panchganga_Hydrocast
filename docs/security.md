@@ -42,10 +42,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below:
       <strong>04 · API Authentication & Request Lifecycle</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/04-sequence-auth-api.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/04-sequence-auth-api.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/04-sequence-auth-api.html?embed=1" title="04 · API Authentication & Request Lifecycle Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/04-sequence-auth-api.html?embed=1" title="04 · API Authentication & Request Lifecycle Console"></iframe>
 </div>
 
 ### 1.1 Key Tiers and Access Scopes

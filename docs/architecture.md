@@ -15,10 +15,10 @@ Where the two disagree, this page follows the source. Several claims in the prev
       <strong>End-to-End System Architecture</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -28,10 +28,10 @@ Where the two disagree, this page follows the source. Several claims in the prev
       <strong>Rainfall-to-Alert Dataflow</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/02-dataflow.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/02-dataflow.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/02-dataflow.html?embed=1" title="Rainfall-to-Alert Dataflow Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/02-dataflow.html?embed=1" title="Rainfall-to-Alert Dataflow Console"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -41,10 +41,10 @@ Where the two disagree, this page follows the source. Several claims in the prev
       <strong>Forecast Cycle Workflow</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/03-forecast-workflow.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/03-forecast-workflow.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/03-forecast-workflow.html?embed=1" title="Forecast Cycle Workflow Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/03-forecast-workflow.html?embed=1" title="Forecast Cycle Workflow Console"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -54,10 +54,10 @@ Where the two disagree, this page follows the source. Several claims in the prev
       <strong>Repository Tree</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/16-repository-tree.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/16-repository-tree.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/16-repository-tree.html?embed=1" title="Repository Tree Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/16-repository-tree.html?embed=1" title="Repository Tree Console"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -67,10 +67,10 @@ Where the two disagree, this page follows the source. Several claims in the prev
       <strong>Forecast Cycle Waterfall</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/17-cycle-waterfall.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/17-cycle-waterfall.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console"></iframe>
 </div>
 
 ---

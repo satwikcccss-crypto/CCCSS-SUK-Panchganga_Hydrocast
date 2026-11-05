@@ -15,10 +15,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Catchment Hydrology Solver</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console"></iframe>
 </div>
 
 ---
@@ -53,10 +53,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below:
       <strong>14 · Dual-Engine HEC-HMS & Python Twin</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/14-hec-hms-engine.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/14-hec-hms-engine.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/14-hec-hms-engine.html?embed=1" title="14 · Dual-Engine HEC-HMS & Python Twin Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/14-hec-hms-engine.html?embed=1" title="14 · Dual-Engine HEC-HMS & Python Twin Console"></iframe>
 </div>
 
 ### 2.1 Stage 1: Soil Moisture Loss (SCS-CN with Dynamic AMC Tracking)

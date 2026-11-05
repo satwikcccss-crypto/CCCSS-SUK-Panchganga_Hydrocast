@@ -71,23 +71,23 @@ HydroCast features 17 explorable standalone HTML consoles visualizing every laye
 
 | Console | Scope & Functional Description | Direct Console Link |
 | :--- | :--- | :--- |
-| **01 · Topology** | 6-Layer Enterprise System Architecture & Component Mapping | [Open Console ↗](diagrams/01-architecture.html){:target="_blank"} |
-| **02 · Dataflow** | Rainfall-to-Alert End-to-End Latency Pipeline | [Open Console ↗](diagrams/02-dataflow.html){:target="_blank"} |
-| **03 · Workflow** | 12-Step Automated Forecast Cycle State Machine | [Open Console ↗](diagrams/03-forecast-workflow.html){:target="_blank"} |
-| **04 · Auth Sequence** | Bearer JWT & API Key Ingestion Security Flow | [Open Console ↗](diagrams/04-sequence-auth-api.html){:target="_blank"} |
-| **05 · Lifecycle** | Forecast Run & Telemetry Residual Lifecycle State Transitions | [Open Console ↗](diagrams/05-lifecycle-runs.html){:target="_blank"} |
-| **06 · Deployment** | Dual-Target Deployment Architecture (Docker & Windows Subsystem) | [Open Console ↗](diagrams/06-deployment-docker-os.html){:target="_blank"} |
-| **07 · HydroSim Handoff**| 2D Hydrodynamic Handoff & Boundary Influx Format | [Open Console ↗](diagrams/07-workflow-hydrosim-handoff.html){:target="_blank"} |
-| **08 · Rating Curves** | WRD Rajaram Weir & Shivaji Bridge Monotonic PCHIP Splines | [Open Console ↗](diagrams/08-rating-curve-hydraulics.html){:target="_blank"} |
-| **09 · Gauge Selection**| Dynamic Spatial Centroid Rain Gauge Assignment Engine | [Open Console ↗](diagrams/09-raingauge-selection-flowchart.html){:target="_blank"} |
-| **10 · Hydrology Solver**| Subbasin Runoff Convolution & Muskingum Numerical Solvers | [Open Console ↗](diagrams/10-catchment-hydrology-solver.html){:target="_blank"} |
-| **11 · Backend API** | FastAPI Route Ingress, Middleware & WebSocket Push Pipeline | [Open Console ↗](diagrams/11-backend-api.html){:target="_blank"} |
-| **12 · Frontend UI** | Next.js 14 App Router, Telemetry Poller & Geospatial UI Layers | [Open Console ↗](diagrams/12-frontend-dashboard.html){:target="_blank"} |
-| **13 · Database Schema**| Complete PostgreSQL + PostGIS Entity-Relationship Diagram | [Open Console ↗](diagrams/13-database-schema.html){:target="_blank"} |
-| **14 · HEC-HMS Engine** | Headless USACE Jython Runner & Vectorized Twin Fallback | [Open Console ↗](diagrams/14-hec-hms-engine.html){:target="_blank"} |
-| **15 · ML Calibration** | Bounded Levenberg-Marquardt Parameter Recalibration Loop | [Open Console ↗](diagrams/15-ml-calibration.html){:target="_blank"} |
-| **16 · Repository Tree**| Project Directory Hierarchy & Modular File Registry | [Open Console ↗](diagrams/16-repository-tree.html){:target="_blank"} |
-| **17 · Cycle Latencies**| Real-Time Execution Waterfall & Subsystem Benchmarking | [Open Console ↗](diagrams/17-cycle-waterfall.html){:target="_blank"} |
+| **01 · Topology** | 6-Layer Enterprise System Architecture & Component Mapping | [Open Console ↗](consoles/01-architecture.md){:target="_blank"} |
+| **02 · Dataflow** | Rainfall-to-Alert End-to-End Latency Pipeline | [Open Console ↗](consoles/02-dataflow.md){:target="_blank"} |
+| **03 · Workflow** | 12-Step Automated Forecast Cycle State Machine | [Open Console ↗](consoles/03-forecast-workflow.md){:target="_blank"} |
+| **04 · Auth Sequence** | Bearer JWT & API Key Ingestion Security Flow | [Open Console ↗](consoles/04-sequence-auth-api.md){:target="_blank"} |
+| **05 · Lifecycle** | Forecast Run & Telemetry Residual Lifecycle State Transitions | [Open Console ↗](consoles/05-lifecycle-runs.md){:target="_blank"} |
+| **06 · Deployment** | Dual-Target Deployment Architecture (Docker & Windows Subsystem) | [Open Console ↗](consoles/06-deployment-docker-os.md){:target="_blank"} |
+| **07 · HydroSim Handoff**| 2D Hydrodynamic Handoff & Boundary Influx Format | [Open Console ↗](consoles/07-workflow-hydrosim-handoff.md){:target="_blank"} |
+| **08 · Rating Curves** | WRD Rajaram Weir & Shivaji Bridge Monotonic PCHIP Splines | [Open Console ↗](consoles/08-rating-curve-hydraulics.md){:target="_blank"} |
+| **09 · Gauge Selection**| Dynamic Spatial Centroid Rain Gauge Assignment Engine | [Open Console ↗](consoles/09-raingauge-selection-flowchart.md){:target="_blank"} |
+| **10 · Hydrology Solver**| Subbasin Runoff Convolution & Muskingum Numerical Solvers | [Open Console ↗](consoles/10-catchment-hydrology-solver.md){:target="_blank"} |
+| **11 · Backend API** | FastAPI Route Ingress, Middleware & WebSocket Push Pipeline | [Open Console ↗](consoles/11-backend-api.md){:target="_blank"} |
+| **12 · Frontend UI** | Next.js 14 App Router, Telemetry Poller & Geospatial UI Layers | [Open Console ↗](consoles/12-frontend-dashboard.md){:target="_blank"} |
+| **13 · Database Schema**| Complete PostgreSQL + PostGIS Entity-Relationship Diagram | [Open Console ↗](consoles/13-database-schema.md){:target="_blank"} |
+| **14 · HEC-HMS Engine** | Headless USACE Jython Runner & Vectorized Twin Fallback | [Open Console ↗](consoles/14-hec-hms-engine.md){:target="_blank"} |
+| **15 · ML Calibration** | Bounded Levenberg-Marquardt Parameter Recalibration Loop | [Open Console ↗](consoles/15-ml-calibration.md){:target="_blank"} |
+| **16 · Repository Tree**| Project Directory Hierarchy & Modular File Registry | [Open Console ↗](consoles/16-repository-tree.md){:target="_blank"} |
+| **17 · Cycle Latencies**| Real-Time Execution Waterfall & Subsystem Benchmarking | [Open Console ↗](consoles/17-cycle-waterfall.md){:target="_blank"} |
 
 ---
 

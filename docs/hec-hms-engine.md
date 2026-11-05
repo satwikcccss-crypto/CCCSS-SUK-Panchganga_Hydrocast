@@ -15,10 +15,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Dual-Engine HEC-HMS & Digital Twin</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/14-hec-hms-engine.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/14-hec-hms-engine.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/14-hec-hms-engine.html?embed=1" title="Dual-Engine HEC-HMS Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/14-hec-hms-engine.html?embed=1" title="Dual-Engine HEC-HMS Console"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -28,10 +28,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>HydroSim 2D Handoff</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/07-workflow-hydrosim-handoff.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/07-workflow-hydrosim-handoff.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/07-workflow-hydrosim-handoff.html?embed=1" title="HydroSim 2D Handoff Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/07-workflow-hydrosim-handoff.html?embed=1" title="HydroSim 2D Handoff Console"></iframe>
 </div>
 
 ---

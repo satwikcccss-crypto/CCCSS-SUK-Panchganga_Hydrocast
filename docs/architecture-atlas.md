@@ -87,10 +87,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>End-to-End System Architecture Topology</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -100,10 +100,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Rainfall-to-Alert Dataflow Pipeline</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/02-dataflow.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/02-dataflow.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/02-dataflow.html?embed=1" title="Rainfall-to-Alert Dataflow Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/02-dataflow.html?embed=1" title="Rainfall-to-Alert Dataflow Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -117,10 +117,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>12-Step Forecast Cycle Execution Workflow</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/03-forecast-workflow.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/03-forecast-workflow.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/03-forecast-workflow.html?embed=1" title="Forecast Cycle Workflow Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/03-forecast-workflow.html?embed=1" title="Forecast Cycle Workflow Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -130,10 +130,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Forecast Cycle Execution Waterfall & Step Latencies</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/17-cycle-waterfall.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/17-cycle-waterfall.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -143,10 +143,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Forecast Run State Machine & Telemetry Verification Lifecycle</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/05-lifecycle-runs.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/05-lifecycle-runs.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/05-lifecycle-runs.html?embed=1" title="Forecast Run Lifecycle Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/05-lifecycle-runs.html?embed=1" title="Forecast Run Lifecycle Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -160,10 +160,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Rain-Gauge Network Governing Station Selection Flowchart</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/09-raingauge-selection-flowchart.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/09-raingauge-selection-flowchart.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/09-raingauge-selection-flowchart.html?embed=1" title="Rain-Gauge Selection Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/09-raingauge-selection-flowchart.html?embed=1" title="Rain-Gauge Selection Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -173,10 +173,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Catchment Hydrology Core Solver (9 Subbasins & Muskingum Cascade)</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/10-catchment-hydrology-solver.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/10-catchment-hydrology-solver.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -190,10 +190,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Bridge Rating Hydraulics (Surveyed Section 17 to CWC Stage)</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/08-rating-curve-hydraulics.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/08-rating-curve-hydraulics.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Hydraulics Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Hydraulics Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -203,10 +203,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>HydroSim 2D Hydraulic Handoff & Boundary Condition Feed</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/07-workflow-hydrosim-handoff.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/07-workflow-hydrosim-handoff.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/07-workflow-hydrosim-handoff.html?embed=1" title="HydroSim Handoff Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/07-workflow-hydrosim-handoff.html?embed=1" title="HydroSim Handoff Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -220,10 +220,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>HEC-HMS Native Automation & Pure-Python Twin Fallback</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/14-hec-hms-engine.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/14-hec-hms-engine.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/14-hec-hms-engine.html?embed=1" title="HEC-HMS Engine Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/14-hec-hms-engine.html?embed=1" title="HEC-HMS Engine Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -233,10 +233,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Real-Time Adaptive Parameter Recalibration Engine</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/15-ml-calibration.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/15-ml-calibration.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/15-ml-calibration.html?embed=1" title="ML Recalibration Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/15-ml-calibration.html?embed=1" title="ML Recalibration Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -250,10 +250,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>API Gateway Authentication & Data Access Sequence</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/04-sequence-auth-api.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/04-sequence-auth-api.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/04-sequence-auth-api.html?embed=1" title="API Authentication Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/04-sequence-auth-api.html?embed=1" title="API Authentication Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -263,10 +263,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>FastAPI Gateway Architecture & Endpoint Map</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/11-backend-api.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/11-backend-api.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/11-backend-api.html?embed=1" title="FastAPI Gateway Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/11-backend-api.html?embed=1" title="FastAPI Gateway Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -276,10 +276,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Next.js 14 Frontend Build & Operations Dashboard</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/12-frontend-dashboard.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/12-frontend-dashboard.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/12-frontend-dashboard.html?embed=1" title="Frontend Dashboard Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/12-frontend-dashboard.html?embed=1" title="Frontend Dashboard Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -289,10 +289,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>PostgreSQL & PostGIS Database Schema (13 Tables & 7 Views)</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/13-database-schema.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/13-database-schema.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/13-database-schema.html?embed=1" title="Database Schema Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/13-database-schema.html?embed=1" title="Database Schema Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -302,10 +302,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Hybrid Deployment: Docker Compose vs Windows Server Host</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/06-deployment-docker-os.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/06-deployment-docker-os.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/06-deployment-docker-os.html?embed=1" title="Deployment Architecture Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/06-deployment-docker-os.html?embed=1" title="Deployment Architecture Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -315,10 +315,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Repository File Tree & Module Architecture</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/16-repository-tree.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/16-repository-tree.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/16-repository-tree.html?embed=1" title="Repository Tree Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/16-repository-tree.html?embed=1" title="Repository Tree Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -347,10 +347,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below,
       <strong>01 · End-to-End System Topology</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="01 · End-to-End System Topology Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="01 · End-to-End System Topology Console"></iframe>
 </div>
 
 All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
@@ -401,10 +401,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below,
       <strong>03 · Forecast Cycle Workflow</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/03-forecast-workflow.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/03-forecast-workflow.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/03-forecast-workflow.html?embed=1" title="03 · Forecast Cycle Workflow Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/03-forecast-workflow.html?embed=1" title="03 · Forecast Cycle Workflow Console"></iframe>
 </div>
 
 All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
@@ -465,10 +465,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below,
       <strong>10 · Catchment Hydrology Solver</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/10-catchment-hydrology-solver.html?embed=1" title="10 · Catchment Hydrology Solver Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/10-catchment-hydrology-solver.html?embed=1" title="10 · Catchment Hydrology Solver Console"></iframe>
 </div>
 
 All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
@@ -504,10 +504,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below,
       <strong>10 · Catchment Hydrology Solver</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/10-catchment-hydrology-solver.html?embed=1" title="10 · Catchment Hydrology Solver Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/10-catchment-hydrology-solver.html?embed=1" title="10 · Catchment Hydrology Solver Console"></iframe>
 </div>
 
 All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
@@ -590,10 +590,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below,
       <strong>08 · Rating Curves & Hydraulics</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/08-rating-curve-hydraulics.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/08-rating-curve-hydraulics.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/08-rating-curve-hydraulics.html?embed=1" title="08 · Rating Curves & Hydraulics Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/08-rating-curve-hydraulics.html?embed=1" title="08 · Rating Curves & Hydraulics Console"></iframe>
 </div>
 
 All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
@@ -655,10 +655,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below,
       <strong>See Interactive Consoles</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="See Interactive Consoles Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="See Interactive Consoles Console"></iframe>
 </div>
 
 All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
@@ -721,10 +721,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below,
       <strong>10 · Catchment Hydrology Solver</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/10-catchment-hydrology-solver.html?embed=1" title="10 · Catchment Hydrology Solver Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/10-catchment-hydrology-solver.html?embed=1" title="10 · Catchment Hydrology Solver Console"></iframe>
 </div>
 
 All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
@@ -749,10 +749,10 @@ The Mermaid flow diagram has been replaced by the interactive SVG console below,
       <strong>03 · Forecast Cycle Workflow</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="diagrams/03-forecast-workflow.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/03-forecast-workflow.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="diagrams/03-forecast-workflow.html?embed=1" title="03 · Forecast Cycle Workflow Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/03-forecast-workflow.html?embed=1" title="03 · Forecast Cycle Workflow Console"></iframe>
 </div>
 
 All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
