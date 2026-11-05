@@ -1,107 +1,36 @@
 <p align="center">
-  <img src="docs/assets/hydrocast_main_banner.jpg" alt="HydroCast Banner" width="100%" style="border-radius: 14px; box-shadow: 0 16px 48px rgba(0,0,0,0.28);">
+  <img src="docs/assets/hydrocast_main_banner.jpg" alt="HydroCast Banner" width="100%" style="border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.22);">
+</p>
+
+<h1 align="center">🌊 HydroCast</h1>
+
+<p align="center">
+  <strong>The Operational Hydrologic Digital Twin & Real-Time Flood Intelligence Platform</strong><br>
+  <em>Engineered for the 1,837 km² Panchganga River Catchment · Kolhapur District, Maharashtra, India</em>
 </p>
 
 <p align="center">
   <a href="https://cccss-suk-panchganga-hydrocast.vercel.app">
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=21&duration=2400&pause=1100&color=0EA5E9&center=true&vcenter=true&multiline=true&width=840&height=85&lines=%F0%9F%8C%8A+HydroCast%3A+Operational+Hydrologic+Digital+Twin;%E2%9A%A1+Vectorized+Python+Engine+%2B+USACE+HEC-HMS+4.13;%F0%9F%8E%AF+90-Hour+Predictive+Warning+for+Panchganga+Basin;%F0%9F%9A%A8+Automated+DDMA+Kolhapur+%26+CWC+Disaster+Alerting;%F0%9F%9B%A1%EF%B8%8F+Dual-Auth+Operations+Control+Room+%26+Live+Telemetry" alt="HydroCast Animated Typing Header" />
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=19&duration=2400&pause=1100&color=0EA5E9&center=true&vcenter=true&multiline=true&width=800&height=75&lines=%F0%9F%8C%8A+Real-Time+Panchganga+Basin+Hydrologic+Digital+Twin;%E2%9A%A1+Vectorized+Python+Engine+%2B+USACE+HEC-HMS+4.13;%F0%9F%8E%AF+90-Hour+Predictive+Warning+for+Kolhapur+City;%F0%9F%9A%A8+Automated+DDMA+Kolhapur+%26+CWC+Disaster+Alerting" alt="HydroCast Typing Banner" />
   </a>
 </p>
 
-<!-- ======================================================================= -->
-<!-- TIER 1: LIVE OPERATIONAL & DEPLOYMENT HEALTH BADGES                     -->
-<!-- ======================================================================= -->
 <p align="center">
   <a href="https://cccss-suk-panchganga-hydrocast.vercel.app">
-    <img src="https://img.shields.io/badge/Vercel-Operational_Live-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel Live">
-  </a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/pipeline.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/pipeline.yml?branch=main&label=Forecast%20Cycle&style=for-the-badge&logo=githubactions&logoColor=white" alt="Forecast Pipeline">
-  </a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/tests.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/tests.yml?branch=main&label=Pytest%20Suite&style=for-the-badge&logo=pytest&logoColor=white" alt="Tests">
-  </a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/telemetry_validation.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/telemetry_validation.yml?branch=main&label=IoT%20Telemetry&style=for-the-badge&logo=espressif&logoColor=white" alt="IoT Telemetry">
+    <img src="https://img.shields.io/badge/Production-Live_Dashboard-0ea5e9?style=flat-square&logo=vercel&logoColor=white" alt="Live System">
   </a>
   <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/v2.0.0">
-    <img src="https://img.shields.io/github/v/release/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=github&color=0284c7" alt="Release">
+    <img src="https://img.shields.io/badge/Release-v2.0.0-6366f1?style=flat-square&logo=github&logoColor=white" alt="Version 2.0.0">
   </a>
   <a href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/">
-    <img src="https://img.shields.io/badge/Docs-MkDocs_Portal-06B6D4?style=for-the-badge&logo=googledocs&logoColor=white" alt="Docs">
+    <img src="https://img.shields.io/badge/Documentation-Portal-0284c7?style=flat-square&logo=googledocs&logoColor=white" alt="Documentation">
   </a>
-</p>
-
-<!-- ======================================================================= -->
-<!-- TIER 2: COMMUNITY, REPOSITORY & CODE QUALITY METRICS                   -->
-<!-- ======================================================================= -->
-<p align="center">
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/stargazers">
-    <img src="https://img.shields.io/github/stars/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=github&color=eab308" alt="GitHub Stars">
-  </a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/network/members">
-    <img src="https://img.shields.io/github/forks/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=github&color=3b82f6" alt="GitHub Forks">
-  </a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/issues">
-    <img src="https://img.shields.io/github/issues/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=github&color=10b981" alt="Issues">
-  </a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/issues?q=is%3Aissue+is%3Aclosed">
-    <img src="https://img.shields.io/github/issues-closed/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=github&color=8b5cf6" alt="Closed Issues">
-  </a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/pulls">
-    <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge&logo=github" alt="PRs Welcome">
-  </a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/commits/main">
-    <img src="https://img.shields.io/github/commit-activity/m/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=git&color=f43f5e" alt="Commit Activity">
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/tests.yml">
+    <img src="https://img.shields.io/badge/Tests-286%20Passed-10b981?style=flat-square&logo=pytest&logoColor=white" alt="Tests">
   </a>
   <a href="LICENSE">
-    <img src="https://img.shields.io/badge/License-Academic_&_Civil-6366f1?style=for-the-badge&logo=open-source-initiative&logoColor=white" alt="License">
+    <img src="https://img.shields.io/badge/License-Academic%20%26%20Civil-8b5cf6?style=flat-square" alt="License">
   </a>
-</p>
-
-<!-- ======================================================================= -->
-<!-- TIER 3: FULL SCIENTIFIC, HYDROLOGIC & BACKEND COMPUTING STACK           -->
-<!-- ======================================================================= -->
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11_|_3.12-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white" alt="NumPy">
-  <img src="https://img.shields.io/badge/SciPy-8CAAE6?style=for-the-badge&logo=scipy&logoColor=white" alt="SciPy">
-  <img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white" alt="Pandas">
-  <img src="https://img.shields.io/badge/GeoPandas-139C5A?style=for-the-badge&logo=geopandas&logoColor=white" alt="GeoPandas">
-  <img src="https://img.shields.io/badge/USACE-HEC--HMS_4.13-991b1b?style=for-the-badge&logo=army&logoColor=white" alt="HEC-HMS">
-  <img src="https://img.shields.io/badge/HEC--DSS-Database-475569?style=for-the-badge&logo=databricks&logoColor=white" alt="HEC-DSS">
-  <img src="https://img.shields.io/badge/ECMWF-IFS_HRES_(9km)-1E3A8A?style=for-the-badge&logo=wmo&logoColor=white" alt="ECMWF">
-  <img src="https://img.shields.io/badge/FastAPI-0.110+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
-  <img src="https://img.shields.io/badge/Pydantic-E92063?style=for-the-badge&logo=pydantic&logoColor=white" alt="Pydantic">
-  <img src="https://img.shields.io/badge/Uvicorn-499848?style=for-the-badge&logo=gunicorn&logoColor=white" alt="Uvicorn">
-  <img src="https://img.shields.io/badge/Ruff-Linter_&_Formatter-D7FF64?style=for-the-badge&logo=ruff&logoColor=black" alt="Ruff">
-</p>
-
-<!-- ======================================================================= -->
-<!-- TIER 4: FRONTEND, OPERATIONAL DASHBOARD & CONTROL ROOM STACK            -->
-<!-- ======================================================================= -->
-<p align="center">
-  <img src="https://img.shields.io/badge/Next.js-14_App_Router-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js 14">
-  <img src="https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 18">
-  <img src="https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS">
-  <img src="https://img.shields.io/badge/Lucide-Icons-F56565?style=for-the-badge&logo=feather&logoColor=white" alt="Lucide">
-  <img src="https://img.shields.io/badge/Leaflet-Interactive_GIS-199900?style=for-the-badge&logo=leaflet&logoColor=white" alt="Leaflet">
-  <img src="https://img.shields.io/badge/KaTeX-Math_Render-00d084?style=for-the-badge&logo=latex&logoColor=white" alt="KaTeX">
-</p>
-
-<!-- ======================================================================= -->
-<!-- TIER 5: DATABASE, IOT TELEMETRY, CLOUD & BROADCAST INFRASTRUCTURE       -->
-<!-- ======================================================================= -->
-<p align="center">
-  <img src="https://img.shields.io/badge/PostgreSQL-15-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/PostGIS-3.4_Spatial-268B04?style=for-the-badge&logo=postgis&logoColor=white" alt="PostGIS">
-  <img src="https://img.shields.io/badge/Supabase-Auth_&_Edge_DB-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase">
-  <img src="https://img.shields.io/badge/Docker-Multi--Stage-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
-  <img src="https://img.shields.io/badge/GitHub_Actions-CI/CD_Runners-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" alt="GitHub Actions">
-  <img src="https://img.shields.io/badge/ThingSpeak-Ultrasonic_IoT-0072C6?style=for-the-badge&logo=espressif&logoColor=white" alt="ThingSpeak">
-  <img src="https://img.shields.io/badge/Telegram-Emergency_Broadcast-26A5E4?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram">
-  <img src="https://img.shields.io/badge/MkDocs_Material-Documentation-526CFE?style=for-the-badge&logo=materialformkdocs&logoColor=white" alt="MkDocs">
 </p>
 
 ---
@@ -118,6 +47,22 @@ HydroCast achieves this by coupling:
 3. **Monotonic Hydraulic Rating Engine:** Government Water Resources Department (WRD) cross-section surveys converted into monotonic piecewise cubic Hermite (PCHIP) rating curves for Rajaram Weir and Shivaji Bridge with millimeter datum alignment.
 4. **Adaptive ML Telemetry Recalibration:** Continuous error-residual auditing against live ultrasonic water level sensors (ThingSpeak IoT channel 3424513 @ Shivaji Bridge) triggering bounded parameter optimization ($\alpha_K, \alpha_{\text{lag}}, \Delta CN, X$).
 5. **Decisive Multi-Channel Alerting:** Central Water Commission (CWC) compliant flood bulletins pushed via WebSocket to operational dashboards, and dispatched directly to the District Disaster Management Authority (DDMA) and Telegram control rooms.
+
+---
+
+## 🛠️ Complete Technology Stack
+
+| Architecture Domain | Core Technologies & Frameworks |
+| :--- | :--- |
+| **Simulation Core** | Python 3.11 / 3.12 · USACE HEC-HMS 4.13 · Vectorized Python Digital Twin · Jython · HEC-DSS |
+| **Scientific & Spatial Computing** | NumPy · SciPy (PCHIP Monotonic Splines) · Pandas · GeoPandas · Shapely |
+| **Numerical Meteorology & IoT** | ECMWF IFS HRES (0.1° / 9 km QPF) · Open-Meteo REST API · ThingSpeak Ultrasonic IoT (Ch. 3424513) |
+| **Backend & API Engine** | FastAPI 0.110+ · Pydantic v2 · Uvicorn · Starlette · asyncpg connection pool · Ruff linter |
+| **Database & Spatial Store** | PostgreSQL 15 · PostGIS 3.4 Spatial Extension · Supabase Auth & Cloud Database · Apache Parquet |
+| **Frontend & Control Room UI**| Next.js 14 (App Router) · React 18 · TypeScript 5 · Tailwind CSS · Lucide Icons · Leaflet GIS · KaTeX |
+| **Authentication & RBAC** | Supabase OAuth (Google allowlist) · bcrypt salted operational passkeys · HMAC-SHA256 JWT |
+| **DevOps & Cloud Delivery** | Vercel Edge Serverless · GitHub Actions Matrix CI/CD · Docker Multi-Stage · MkDocs Material |
+| **Disaster Alerting & Dispatch** | DDMA Kolhapur Webhook Bridge · CWC Stage Classification · Telegram Emergency Bot API |
 
 ---
 
