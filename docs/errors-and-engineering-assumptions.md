@@ -14,10 +14,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Forecast Cycle Waterfall</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/17-cycle-waterfall.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/17-cycle-waterfall.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -27,10 +27,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>End-to-End System Architecture</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
 </div>
 
 ---
@@ -96,20 +96,14 @@ sums discharge, which removes the discontinuity.
 
 At stage elevations between $535.0\text{m}$ and $536.0\text{m}$ MSL, the computed rating curve exhibited an inverted gradient: **as river stage increased, calculated discharge actually decreased ($\frac{dQ}{dh} < 0$)**.
 
-```
- Non-Physical Discharge Dip at Bankfull Spill:
- Discharge Q
-    ^
-    |             Normal Channel Rise
-    |                 . - - .
-    |               /         \   <-- CATASTROPHIC DISCHARGE COLLAPSE!
-    |              /           ` .     Wetted perimeter P explodes from 68m to 310m
-    |             /               \    Hydraulic radius R = A/P crashes from 2.6m to 1.05m
-    |            /                 ` - - - - - * True Physical Target
-    |   * - - - '
-    +--------------------------------------------------------------------> Stage h
-       532m            534m            535.5m         538m
-```
+| Stage Range | Wetted Perimeter | Hydraulic Radius | Manning $R^{2/3}$ | Physical Regime |
+|:---|:---:|:---:|:---:|:---|
+| In-bank ($h < 535.2$ m) | 68 m | 2.60 m | 1.89 | Normal channel rise |
+| Overbank ($h \ge 535.2$ m) | 310 m | 1.05 m | 1.03 | Wetted floodplain |
+
+At stage elevations between $535.0\text{m}$ and $536.0\text{m}$ MSL, treating the compound cross-section as a single wetted surface made the hydraulic radius jump discontinuously as water crossed the berm. The computed rating curve exhibited an inverted gradient: as river stage increased, calculated discharge actually decreased ($\frac{dQ}{dh} < 0$) — a non-physical discharge dip at bankfull spill.
+
+> The Divided Channel Method computes each sub-section separately and sums discharge, removing the discontinuity. See [Console 08: Rating Curves & Hydraulics](diagrams/08-rating-curve-hydraulics.html){ target="_blank" } for the interactive cross-section geometry and PCHIP spline.
 
 #### Root Cause
 
@@ -307,14 +301,14 @@ Implemented the **Divided Channel Method (DCM)** in `src/hydrology/stage_convert
 - **Main River Channel:** $n_{\text{main}} = 0.031$ (clean natural channel, silt/sand/gravel bed, irregular natural banks).
 - **Overbank Sugarcane Floodplains:** $n_{\text{flood}} = 0.070$ (dense standing sugarcane crops and paddy bunds).
 
-| ~~~~~~~~~~~~~~~~~~~~ |  |  |  |
-|:---|:---|:---|:---|
-| (Sugarcane / Paddy)          (Gravel / Silt Bed)         (Sugarcane / Crops) |   |   |   |
-| +--------------------+                                   +--------------------+ |   |   |   |
-|   |   | /                     \ |   |
-|   |   | /                         \ |   |
-|   |   | /                             \ |   |
-| /                                      528.67+-----------------------+-------- Thalweg: 528.67m MSL -----+-------------------- |   |   |   |
+| Section | Manning $n$ | Description |
+|:---|:---|:---|
+| Main River Channel | 0.031 | Clean natural channel, silt/sand/gravel bed, irregular natural banks |
+| Overbank Sugarcane Floodplains | 0.070 | Dense standing sugarcane crops and paddy bunds |
+
+**Divided Channel Method equation:**
+
+$$Q(H) = \frac{1}{n_{\text{main}}} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/2} + \sum_{\text{flood}} \frac{1}{n_{\text{flood}}} A_{\text{flood}} R_{\text{flood}}^{2/3} S_0^{1/2}$$
 
 
 $$Q(H) = \frac{1}{n_{\text{main}}} A_{\text{main}} R_{\text{main}}^{2/3} S_0^{1/2} + \sum_{\text{flood}} \frac{1}{n_{\text{flood}}} A_{\text{flood}} R_{\text{flood}}^{2/3} S_0^{1/2}$$
@@ -336,20 +330,15 @@ The IoT ultrasonic radar sensor is physically mounted on the girder of **Chhatra
 
 Rajaram Weir is located **upstream** of Shivaji Bridge (higher chainage along the river course). The surveyed thalweg bed invert at Rajaram Weir is **$529.318\text{ m}$ MSL**, whereas at Shivaji Bridge it is **$528.670\text{ m}$ MSL**—a bed elevation differential of **$+0.648\text{ m}$**. Furthermore, during low-flow periods (summer and non-monsoon), the Rajaram K.T. Weir retains water up to its solid masonry crest level (**$530.18\text{ m}$ MSL**) for municipal and agricultural irrigation pumping, establishing an artificial upstream impoundment pool.
 
-```
-   UPSTREAM                                                    DOWNSTREAM
-   Chainage 10+115                                           Chainage 6+257
-   Rajaram K.T. Weir                                         Shivaji Bridge
-   (HEC-HMS Model Sink-1)                                    (IoT Ultrasonic Sensor)
-   ======================                                    ======================
-         |                                                            |
-         |  Thalweg: 529.318 m MSL                                    |  Thalweg: 528.670 m MSL
-         |  Crest RL: 530.18 m MSL                                    |  Sensor Datum: 549.35 m MSL
-         |                                                            |
-         +------------------- Bed Distance: 3,858 m ------------------+
-                             Bed Slope: S_0 = 1:4641 (0.000215)
-                             Delta Bed RL: +0.648 m (Rajaram higher)
-```
+| Property | Rajaram K.T. Weir (Upstream) | Shivaji Bridge (Downstream) |
+|:---|:---|:---|
+| Chainage | 10+115 m | 6+257 m |
+| Role | HEC-HMS Model Sink-1 | IoT Ultrasonic Sensor |
+| Thalweg RL | 529.318 m MSL | 528.670 m MSL |
+| Crest / Sensor RL | 530.18 m MSL | 549.35 m MSL |
+| Bed Distance | \multicolumn{2}{c}{3,858 m} |
+| Bed Slope | \multicolumn{2}{c}{S₀ = 1:4641 (0.000215 m/m)} |
+| Delta Bed RL | \multicolumn{2}{c}{+0.648 m (Rajaram higher)} |
 
 #### Resolution
 
@@ -432,25 +421,21 @@ Detailed river survey data from the **Krishna Basin Flood 2019 Volume 1 Report**
 - **Prayag Chikhali to Rajaram K.T. Weir:** $1:4641$ ($S_0 = 0.000215\text{ m/m}$)
 - **Rajaram K.T. Weir to Shirol K.T. Weir:** $1:7700$ ($S_0 = 0.000130\text{ m/m}$)
 
-```
- Elevation
-  (m MSL)
-   560 +   [Radhanagari Dam: 553.90m MSL]
-       |    \
-   550 |     \  Bhogavati River Bed Slope = 1:2529 (0.000395 m/m)
-       |      \  Length: ~40 km (Radhanagari to Prayag Chikhali)
-   540 |       \
-       |        +-- [Prayag Chikhali Confluence (Sacred Sangam): ~536.0m MSL]
-   535 |            \
-       |             \  Upper Panchganga Bed Slope = 1:4641 (0.000215 m/m)
-   530 |              \  Length: ~18 km (Prayag Chikhali to Rajaram KT Weir)
-       |               +-- [Rajaram KT Weir: Crest 530.18m | Bed 529.318m MSL]
-   525 |                   \
-       |                    \  Lower Panchganga Bed Slope = 1:7700 (0.000130 m/m)
-   520 |                     \  Length: ~42 km (Rajaram KT Weir to Shirol KT Weir)
-       +----------------------+---------------------------------------------------> Distance (km)
-       0                     40                      58                          100 km
-```
+#### Longitudinal Bed Profile (L-Section)
+
+| River Reach | Bed Slope | Length | Key Feature |
+|:---|:---|:---|:---|
+| Radhanagari Dam → Prayag Chikhali | 1:2529 (S₀ = 0.000395 m/m) | ≈ 40 km | Bhogavati River, Western Ghats crest |
+| Prayag Chikhali → Rajaram K.T. Weir | 1:4641 (S₀ = 0.000215 m/m) | ≈ 18 km | Upper Panchganga, Sacred Sangam confluence |
+| Rajaram K.T. Weir → Shirol K.T. Weir | 1:7700 (S₀ = 0.000130 m/m) | ≈ 42 km | Lower Panchganga to Krishna confluence |
+
+| Point | Elevation (m MSL) | Feature |
+|:---|:---:|:---|
+| Radhanagari Dam | 553.90 | Dam crest |
+| Prayag Chikhali Confluence | ~536.0 | Sacred Sangam — five tributaries meet |
+| Rajaram K.T. Weir (Crest) | 530.18 | Weir overflow level |
+| Rajaram K.T. Weir (Bed) | 529.318 | Weir apron / channel bed |
+| Shivaji Bridge (Bed) | 528.670 | Bedrock thalweg |
 
 #### Resolution
 
@@ -577,7 +562,7 @@ which vanishes at zero imperviousness by construction.
 
 ### 7. Initial Muskingum X overwrites the basin value
 
-`src/hms/basin_model.py` defaults reach X to `0.25`, while `Basin_1.basin`
+`src/hms/runner.py` defaults reach X to `0.25`, while `Basin_1.basin`
 declares `0.20` for all five reaches. Depending on which path populates the
 model, the routing parameter differs from the configured value.
 

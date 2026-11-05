@@ -14,10 +14,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Hybrid OS Deployment Topology</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/06-deployment-docker-os.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/06-deployment-docker-os.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/06-deployment-docker-os.html?embed=1" title="Hybrid OS Deployment Topology Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/06-deployment-docker-os.html?embed=1" title="Hybrid OS Deployment Topology Console"></iframe>
 </div>
 
 ---
@@ -408,19 +408,22 @@ Autonomous physical verification runs via `.github/workflows/telemetry_validatio
 
 HydroCast enforces rigorous software and hydrological quality assurance through an automated suite of **271 total automated tests**:
 
-```mermaid
-flowchart TD
-    Suite["HydroCast Automated Verification Suite<br/>(284+ Verified Invariants)"]
+### System Architecture Map (Visual Console)
 
-    Suite --> Unit["Backend Unit & Integration Tests<br/>(256 tests, &lt;10s execution)"]
-    Suite --> PostGIS["PostgreSQL & PostGIS Tests<br/>(Database container & spatial types)"]
-    Suite --> Integrity["Documentation & Navigation Integrity<br/>(Strict MkDocs & Link Crawler)"]
+The Mermaid flow diagram has been replaced by the interactive SVG console below:
 
-    style Suite fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0f172a
-    style Unit fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#0f172a
-    style PostGIS fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#0f172a
-    style Integrity fill:#ecfdf5,stroke:#10b981,stroke-width:1px,color:#0f172a
-```
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>06 · Hybrid Deployment Architecture</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/06-deployment-docker-os.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/06-deployment-docker-os.html?embed=1" title="06 · Hybrid Deployment Architecture Console"></iframe>
+</div>
 
 ### 8.1 Test Inventory & Module Breakdown
 

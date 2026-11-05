@@ -14,10 +14,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Rainfall-to-Alert Dataflow</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/02-dataflow.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/02-dataflow.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/02-dataflow.html?embed=1" title="Rainfall-to-Alert Dataflow Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/02-dataflow.html?embed=1" title="Rainfall-to-Alert Dataflow Console"></iframe>
 </div>
 
 ---
@@ -39,17 +39,24 @@ The HydroCast system requires forward-looking meteorological forcing data to dri
 
 The Panchganga river basin originates along the high-rainfall crest of the Western Ghats (Sahyadri ridge, receiving $3,000 - 6,000\text{ mm}$ annually) and drains eastward toward Kolhapur city.
 
-```
- Catchment Bounding Box:
- 17.20° N  +-----------------------------------------------------------+ (North: Kasaba Walawe)
-           |   Gaganbawda (680m)                                       |
-           |   ~5,500 mm/yr                                            |
-           |                  Karanjphen (640m)                        |
-           |                                       Karvir (550m)       |
-           |       Radhanagari (615m)              Kolhapur City       |
- 16.20° N  +-----------------------------------------------------------+ (South: Radhanagari)
-           73.70° W (Ghats Crest)                              74.50° E (Outlet Confluence)
-```
+**Catchment Bounding Box:**
+
+| Boundary | Coordinate | Feature |
+|:---|:---|:---|
+| North (BBOX_N) | 17.20° N | Kasaba Walawe (Ghats crest) |
+| South (BBOX_S) | 16.20° N | Radhanagari (outlet confluence) |
+| East (BBOX_E) | 74.50° E | Kolhapur Plains |
+| West (BBOX_W) | 73.70° E | Sahyadri Escarpment |
+
+| Station | Elevation (m MSL) | Location |
+|:---|:---:|:---|
+| Gaganbawda | 680 | Western Ghats crest (highest rainfall zone) |
+| Karanjphen | 640 | Upper Kasari headwater |
+| Radhanagari | 615 | Upper Bhogawati catchment |
+| Karvir / Karveer | 550 | Valley floor / outlet |
+| Kolhapur City | — | Outlet confluence |
+
+The Panchganga river basin originates along the high-rainfall crest of the Western Ghats (Sahyadri ridge, receiving 3,000–6,000 mm annually) and drains eastward toward Kolhapur city.
 
 ### Catchment Bounding Coordinates
 

@@ -117,7 +117,6 @@ theme:
     - navigation.footer
     - navigation.indexes
     # Content
-    - toc.integrate
     - toc.follow
     - content.code.copy
     - content.code.annotate
@@ -226,14 +225,9 @@ copyright: >-
 #  NAVIGATION
 # ══════════════════════════════════════════════════════════════════════════════
 nav:
-  - "Overview & Context":
-      - "HydroCast System Overview": index.md
-      - "Project Background & Monsoon Context": project-background.md
-      - "System Novelty & Innovations": novelty-of-this-system.md
-      - "Production Roadmap": roadmap.md
-      - "Institutional Audit & Open Items": OPEN_ITEMS.md
+  - "Home": index.md
 
-  - "Basin Hydrology & Datums":
+  - "Catchment & Basin":
       - "Catchment Hydrology & Canonical Datums": basin-hydrology.md
       - "Rain Gauge Network Registry": raingauge-network.md
       - "GIS Spatial Boundaries & Vector Layers": gis-vector-layers.md
@@ -261,23 +255,44 @@ nav:
       - "Rainfall-to-Alert Dataflow Pipeline": dataflow.md
       - "Engineering Assumptions & Failure Autopsy": errors-and-engineering-assumptions.md
       - "PostgreSQL & PostGIS Database Schema": database.md
-      - "FastAPI Backend Architecture & Security": backend.md
-      - "Next.js Operations Dashboard": frontend.md
       - "Hybrid OS Deployment & SRE Runbook": deployment-operations.md
+      - "Next.js Operations Dashboard": frontend.md
+      - "HydroSim 2D Hydraulic Handoff": integration-hydrosim.md
 
-  - "Hydraulic Integration":
-      - "HydroSim 2D Hydraulic Handoff & Water-Level API": integration-hydrosim.md
+  - "API Reference":
+      - "FastAPI Backend Architecture & Security": backend.md
+      - "Authentication, Keys & Rate Limiting": security.md
+      - "Hydrology Solvers & Transform Core": hydrology.md
+      - "HEC-HMS Engine & Python Twin Runner": hms.md
+      - "Physics-Informed Adaptive Calibrator": calibration.md
+      - "ECMWF NWP Ingestion Client": ecmwf.md
+      - "ThingSpeak Sensor Telemetry": sensors.md
+      - "Data Quality & Ingestion Processing": processing.md
+      - "Pipeline Orchestrator & Scheduling": orchestrator.md
+      - "HEC-DSS Binary Record Management": dss.md
+      - "Alert Evaluator & Telegram Dispatch": alerts.md
 
-  - "API Reference & Development":
-      - "API Overview & Architecture": api-reference/index.md
-      - "FastAPI Endpoints & Routing": api-reference/backend.md
-      - "Authentication, Keys & Rate Limiting": api-reference/security.md
-      - "Hydrology Solvers & Transform Core": api-reference/hydrology.md
-      - "HEC-HMS Engine & Python Twin Runner": api-reference/hms.md
-      - "Physics-Informed Adaptive Calibrator": api-reference/calibration.md
-      - "ECMWF NWP Ingestion Client": api-reference/ecmwf.md
-      - "ThingSpeak Sensor Telemetry": api-reference/sensors.md
-      - "Data Quality & Ingestion Processing": api-reference/processing.md
-      - "Pipeline Orchestrator & Scheduling": api-reference/orchestrator.md
-      - "HEC-DSS Binary Record Management": api-reference/dss.md
-      - "Alert Evaluator & Telegram Dispatch": api-reference/alerts.md
+  - "Interactive Consoles":
+      - "01 · Architecture Topology": diagrams/01-architecture.html
+      - "02 · Rainfall-to-Alert Dataflow": diagrams/02-dataflow.html
+      - "03 · Forecast Cycle Workflow": diagrams/03-forecast-workflow.html
+      - "04 · API Auth Sequence": diagrams/04-sequence-auth-api.html
+      - "05 · Run & Telemetry Lifecycle": diagrams/05-lifecycle-runs.html
+      - "06 · Deployment Architecture": diagrams/06-deployment-docker-os.html
+      - "07 · HydroSim 2D Handoff": diagrams/07-workflow-hydrosim-handoff.html
+      - "08 · Rating Curves & Hydraulics": diagrams/08-rating-curve-hydraulics.html
+      - "09 · Rain-Gauge Selection": diagrams/09-raingauge-selection-flowchart.html
+      - "10 · Catchment Hydrology Solver": diagrams/10-catchment-hydrology-solver.html
+      - "11 · FastAPI Gateway": diagrams/11-backend-api.html
+      - "12 · Frontend Dashboard": diagrams/12-frontend-dashboard.html
+      - "13 · Database Schema ERD": diagrams/13-database-schema.html
+      - "14 · Dual-Engine HEC-HMS": diagrams/14-hec-hms-engine.html
+      - "15 · ML Calibration Loop": diagrams/15-ml-calibration.html
+      - "16 · Repository Tree": diagrams/16-repository-tree.html
+      - "17 · Cycle Waterfall & Latencies": diagrams/17-cycle-waterfall.html
+
+  - "Project Governance":
+      - "Project Background & Monsoon Context": project-background.md
+      - "System Novelty & Innovations": novelty-of-this-system.md
+      - "Production Roadmap": roadmap.md
+      - "Institutional Audit & Open Items": OPEN_ITEMS.md

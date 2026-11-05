@@ -15,10 +15,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Dual-Engine HEC-HMS & Digital Twin</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/14-hec-hms-engine.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/14-hec-hms-engine.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/14-hec-hms-engine.html?embed=1" title="Dual-Engine HEC-HMS Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/14-hec-hms-engine.html?embed=1" title="Dual-Engine HEC-HMS Console"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -28,10 +28,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>HydroSim 2D Handoff</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/07-workflow-hydrosim-handoff.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/07-workflow-hydrosim-handoff.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/07-workflow-hydrosim-handoff.html?embed=1" title="HydroSim 2D Handoff Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/07-workflow-hydrosim-handoff.html?embed=1" title="HydroSim 2D Handoff Console"></iframe>
 </div>
 
 ---
@@ -152,31 +152,21 @@ Input precipitation hyetographs and computed discharge hydrographs are archived 
 Implemented in `src/hms/runner.py::compute_emulator_hydrograph`, the digital twin reproduces the full hydrologic continuum across all 9 subbasins and 5 reaches in less than 20 milliseconds.
 
 ```
-           [ Subbasin S6: Gaganbawda ]    [ Subbasin S7: Garivade ]
-                         \                      /
-                          +----> Reach R5 <----+
-                                    | (K=4.619h, n=2 passes)
- [ Subbasin S9: Radhanagari ]       |
-              \                     |
-         Reach R4                   |     [ Subbasin S8: Beed ]
-      (K=1.224h, n=1)               |             /
-              \                     v            /
-               +----------------> Reach R2 <----+
-                                (K=11.827h, n=5 passes)
-                                    |
- [ Subbasin S4 ]   [ Subbasin S5 ]  |
-        \                /          |
-         +--> Reach R3 <-+          |
-         (K=3.829h, n=2 passes)     |
-                 \                  v
-                  +-------------> Reach R1 <--- [ Subbasin S3: Kotoli ]
-                                (K=2.899h, n=2)  [ Subbasin S2: Sangarul ]
-                                    |
-                                    v
-                           Basin Sink-1 (Rajaram)
-                           + Direct S1 Runoff (Karveer)
-                           + Baseflow Recession Q_bf(t)
-```
+| Subbasin | Area (km²) | CN | Lag (min) | Routes To | Reach | K (hr) | X | Passes |
+|:---|---:|---:|---:|:---|:---|---:|---:|---:|
+| S6 Gaganbawda | 227.72 | 61.78 | 3318 | R5 | R5 | 4.619 | 0.20 | 2 |
+| S7 Garivade | 195.39 | 61.28 | 3362 | R5 | R5 | 4.619 | 0.20 | 2 |
+| S9 Radhanagari | 366.97 | 64.31 | 5199 | R4 | R4 | 1.224 | 0.20 | 1 |
+| S8 Beed | 177.44 | 65.76 | 3387 | R2 | R2 | 11.827 | 0.20 | 5 |
+| S4 Karanjphen | 262.00 | 61.89 | 3116 | R3 | R3 | 3.829 | 0.20 | 2 |
+| S5 Padasali | 106.39 | 60.97 | 2117 | R3 | R3 | 3.829 | 0.20 | 2 |
+| S3 Kotoli | 261.32 | 64.82 | 3998 | R1 | R1 | 2.899 | 0.20 | 2 |
+| S2 Sangarul | 153.77 | 65.74 | 3154 | R1 | R1 | 2.899 | 0.20 | 2 |
+| S1 Karveer | 86.213 | 74.85 | 2152 | Sink-1 (direct) | — | — | — | — |
+
+**Reach cascade:** R5 → R4 → R2 → R3 → R1 → Sink-1 (Rajaram Weir), with S1 flowing directly to Sink-1.
+
+**Sink-1 outputs:** Routed surface outflow + direct S1 runoff + baseflow recession Q_bf(t).
 
 ### 3.1 Dynamic Antecedent Moisture Condition (AMC) Tracking
 

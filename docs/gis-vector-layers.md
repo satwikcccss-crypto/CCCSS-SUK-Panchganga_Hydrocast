@@ -14,10 +14,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Repository Tree</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/16-repository-tree.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/16-repository-tree.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/16-repository-tree.html?embed=1" title="Repository Tree Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/16-repository-tree.html?embed=1" title="Repository Tree Console"></iframe>
 </div>
 
 ---

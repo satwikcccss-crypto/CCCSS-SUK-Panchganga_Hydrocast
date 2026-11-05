@@ -11,10 +11,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Forecast Cycle Waterfall</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/17-cycle-waterfall.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/17-cycle-waterfall.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console"></iframe>
 </div>
 
 ---
@@ -42,28 +42,22 @@ reliably know whether that forecast was any good, and it does not reliably
 report what produced it. Those two facts are worth stating plainly, because
 everything below is a consequence of them.
 
-```mermaid
-flowchart LR
-    A["<b>Open question</b><br/>Did the last forecast<br/>predict the flood?"]
-    B["<b>Two blockers</b><br/>1. <code>pipeline_ok</code> is always false<br/>2. Telemetry never reaches<br/><code>validated</code> status"]
+### System Architecture Map (Visual Console)
 
-    C["<b>Consequence 1</b><br/><code>last_run_ok</code> reports failure<br/>on every successful cycle<br/>Health endpoint is misleading"]
-    D["<b>Consequence 2</b><br/>ML recalibration gate needs<br/>2 validated observations<br/>Count is always 0<br/>Optimiser never runs"]
-    E["<b>Consequence 3</b><br/>Provenance claims EMULATOR_PYTHON<br/>even when binary says<br/><code>COMPLETED_BINARY</code>"]
+The Mermaid flow diagram has been replaced by the interactive SVG console below:
 
-    A --> B
-    B --> C
-    B --> D
-    B --> E
-
-    classDef q     fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef block fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#4a0d0d
-    classDef cons fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#3b2500
-
-    class A q
-    class B block
-    class C,D,E cons
-```
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>Production Roadmap</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="Production Roadmap Console"></iframe>
+</div>
 
 ## 1. Orchestration integrity — highest priority
 
@@ -117,24 +111,22 @@ A production system needs checks that fail loudly rather than degrade quietly.
 Most of the hydrologic core already has them; the integration layer mostly
 does not.
 
-```mermaid
-flowchart TB
-    T["<b>What is checked today</b>"]
-    T --> A["<b>Hydrology core</b><br/>125 pytest cases<br/>PCHIP monotonicity, datum offset,<br/>surveyed cross-sections, baseflow vs level,<br/>Muskingum mass balance, subbasin areas,<br/>AMC transforms, alert thresholds"]
-    T --> B["<b>Integration layer</b><br/>No executable proof<br/>Step ordering, DB round-trip,<br/>API contract, scheduler behaviour"]
-    T --> C["<b>Consequence</b><br/>Unit-level confidence is high.<br/>Cycle-level confidence is<br/>unmeasured."]
+### System Architecture Map (Visual Console)
 
-    A --> D["<b>Needed</b><br/>Cycle smoke test that runs the<br/>orchestrator end to end and<br/>asserts step logs, file outputs,<br/>and the run JSON document"]
-    B --> D
+The Mermaid flow diagram has been replaced by the interactive SVG console below:
 
-    classDef have fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#052e16
-    classDef lack fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#4a0d0d
-    classDef need fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#3b2500
-
-    class A have
-    class B,C lack
-    class D need
-```
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>Production Roadmap</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="Production Roadmap Console"></iframe>
+</div>
 
 The highest-value addition is a single end-to-end cycle test that runs the
 orchestrator offline with fixture data and asserts on observable outputs: the
@@ -172,9 +164,9 @@ before and after.
 | :--- | :---: | :--- |
 | Replace the unconditional `+0.02·Pc` with the classical imperviousness deduction, which is zero at `Pc = 0` | Open | `src/hms/runner.py` |
 | Reconcile the 352-hour simulation with the 90-hour product horizon | Open | `src/hms/runner.py` |
-| Use the basin `X = 0.20` instead of the `0.25` initial-state default | Open | `src/hms/basin_model.py` |
+| Use the basin `X = 0.20` instead of the `0.25` initial-state default | Open | `src/hms/runner.py` |
 | Map `EXTREME` to a tier rather than degrading it to `watch` | Open | `src/hydrology/stage_converter.py` |
-| Implement `check_basin_parameters`, currently a stub | Open | `src/hms/basin_model.py` |
+| Implement `check_basin_parameters`, currently a stub | Open | `src/hms/runner.py` |
 | Drop the artificial 40 m³/s baseflow floor on the live path; convert the sensor stage once, at the gauged site | **Done** | `src/hms/runner.py` |
 | Align the 7 table and 4 view names in `database/supabase_schema.sql` with the sync script | Open | `database/supabase_schema.sql` |
 

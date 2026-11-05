@@ -27,12 +27,12 @@
 
 /* ── Typography & Global Grid ────────────────────────────────────────────── */
 .md-grid {
-  max-width: 96vw;
+  max-width: 82rem;
 }
 
 .md-typeset {
-  font-size: 0.84rem;
-  line-height: 1.68;
+  font-size: 0.92rem;
+  line-height: 1.75;
   letter-spacing: -0.01em;
 }
 

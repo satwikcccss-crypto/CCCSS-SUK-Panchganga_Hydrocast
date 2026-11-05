@@ -19,10 +19,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Rating Curves & Divided Channel Hydraulics</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/08-rating-curve-hydraulics.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/08-rating-curve-hydraulics.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Curves & Divided Channel Hydraulics Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Curves & Divided Channel Hydraulics Console"></iframe>
 </div>
 
 ---
@@ -51,20 +51,15 @@ Previous iterations used standard natural cubic splines (`scipy.interpolate.Cubi
 
 While cubic splines provide continuous second derivatives ($C^2$), they suffer from severe **Runge-type polynomial overshoot** in regions where hydraulic slope transitions rapidly (such as the bankfull spill point at $535.5\text{ m MSL}$):
 
-```
- Standard Cubic Spline vs PCHIP at Bankfull Transition:
- Discharge Q
-    ^
-    |          Standard Cubic Spline (Overshoot & Dip)
-    |                  . - - .
-    |                /         \  <-- NON-PHYSICAL DIP!
-    |               /           ` .    dQ/dh < 0 (Discharge drops as river rises!)
-    |              /                \
-    |             /                  ` - - - - - - * High Flood Target
-    |   * - - - - '
-    |   PCHIP Monotonic Curve (Strict dQ/dh > 0)
-    +--------------------------------------------------------------------> Stage h
-```
+| Property | Standard Natural Cubic Spline | PCHIP (Shape-Preserving) |
+|:---|:---|:---|
+| Second derivative | Continuous ($C^2$) | Not guaranteed |
+| Shape preservation | No — oscillates / overshoots | Yes — monotonic if data is monotonic |
+| $dQ/dh$ at bankfull spill | Can be $< 0$ (non-physical dip) | Strictly $> 0$ at all stages |
+| Flood stage vs discharge | Artificial hump and trough | Monotonic rise matching WRD sheet |
+| Physical validity | Violates conservation at transitions | Thermodynamically and hydraulically valid |
+
+A non-monotonic rating curve means that as flood stage rises, the calculated discharge drops — a catastrophic thermodynamic and hydraulic impossibility that destabilized the model and caused large volumetric errors (**30% PBIAS**). PCHIP eliminates this by guaranteeing $\frac{dQ}{dh} > 0$ throughout the gauged range.
 
 A non-monotonic rating curve means that as flood stage rises, the calculated discharge drops — a catastrophic thermodynamic and hydraulic impossibility that destabilized the model and caused large volumetric errors (**30% PBIAS**).
 

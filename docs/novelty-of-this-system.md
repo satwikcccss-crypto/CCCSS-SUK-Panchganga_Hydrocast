@@ -11,10 +11,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>End-to-End System Architecture</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
 </div>
 
 ---
@@ -181,7 +181,7 @@ than one that failed. The step-log contract requires **10** successful steps for
 ## 5. What the system scores itself on
 
 A forecast system that does not measure its own accuracy is not auditable.
-Metrics are computed every cycle in `src/processing/metrics.py`:
+Metrics are computed every cycle in `src/hydrology/validation_metrics.py`:
 
 - **Spearman rank correlation** between the forecast stage series and the
   validated observed stage series. Rank-based, so it is insensitive to the

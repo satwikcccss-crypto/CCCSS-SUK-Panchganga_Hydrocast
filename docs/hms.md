@@ -21,10 +21,10 @@ The console below provides interactive visualization of the USACE HEC-HMS 4.13 n
       <strong>HEC-HMS Native Automation & Python Twin Fallback</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../../diagrams/14-hec-hms-engine.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/14-hec-hms-engine.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../../diagrams/14-hec-hms-engine.html?embed=1" title="HEC-HMS Engine & Python Twin Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/14-hec-hms-engine.html?embed=1" title="HEC-HMS Engine & Python Twin Console" loading="lazy"></iframe>
 </div>
 
 ---

@@ -20,10 +20,10 @@ The console below provides interactive visualization of the physics-informed ada
       <strong>Real-Time Adaptive ML Recalibration</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../../diagrams/15-ml-calibration.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/15-ml-calibration.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../../diagrams/15-ml-calibration.html?embed=1" title="Real-Time Adaptive ML Recalibration Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/15-ml-calibration.html?embed=1" title="Real-Time Adaptive ML Recalibration Console" loading="lazy"></iframe>
 </div>
 
 ---

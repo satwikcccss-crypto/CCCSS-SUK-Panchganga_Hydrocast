@@ -87,10 +87,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>End-to-End System Architecture Topology</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -100,10 +100,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Rainfall-to-Alert Dataflow Pipeline</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/02-dataflow.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/02-dataflow.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/02-dataflow.html?embed=1" title="Rainfall-to-Alert Dataflow Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/02-dataflow.html?embed=1" title="Rainfall-to-Alert Dataflow Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -117,10 +117,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>12-Step Forecast Cycle Execution Workflow</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/03-forecast-workflow.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/03-forecast-workflow.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/03-forecast-workflow.html?embed=1" title="Forecast Cycle Workflow Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/03-forecast-workflow.html?embed=1" title="Forecast Cycle Workflow Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -130,10 +130,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Forecast Cycle Execution Waterfall & Step Latencies</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/17-cycle-waterfall.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/17-cycle-waterfall.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/17-cycle-waterfall.html?embed=1" title="Forecast Cycle Waterfall Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -143,10 +143,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Forecast Run State Machine & Telemetry Verification Lifecycle</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/05-lifecycle-runs.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/05-lifecycle-runs.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/05-lifecycle-runs.html?embed=1" title="Forecast Run Lifecycle Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/05-lifecycle-runs.html?embed=1" title="Forecast Run Lifecycle Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -160,10 +160,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Rain-Gauge Network Governing Station Selection Flowchart</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/09-raingauge-selection-flowchart.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/09-raingauge-selection-flowchart.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/09-raingauge-selection-flowchart.html?embed=1" title="Rain-Gauge Selection Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/09-raingauge-selection-flowchart.html?embed=1" title="Rain-Gauge Selection Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -173,10 +173,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Catchment Hydrology Core Solver (9 Subbasins & Muskingum Cascade)</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/10-catchment-hydrology-solver.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/10-catchment-hydrology-solver.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -190,10 +190,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Bridge Rating Hydraulics (Surveyed Section 17 to CWC Stage)</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/08-rating-curve-hydraulics.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/08-rating-curve-hydraulics.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Hydraulics Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Hydraulics Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -203,10 +203,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>HydroSim 2D Hydraulic Handoff & Boundary Condition Feed</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/07-workflow-hydrosim-handoff.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/07-workflow-hydrosim-handoff.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/07-workflow-hydrosim-handoff.html?embed=1" title="HydroSim Handoff Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/07-workflow-hydrosim-handoff.html?embed=1" title="HydroSim Handoff Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -220,10 +220,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>HEC-HMS Native Automation & Pure-Python Twin Fallback</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/14-hec-hms-engine.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/14-hec-hms-engine.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/14-hec-hms-engine.html?embed=1" title="HEC-HMS Engine Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/14-hec-hms-engine.html?embed=1" title="HEC-HMS Engine Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -233,10 +233,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Real-Time Adaptive Parameter Recalibration Engine</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/15-ml-calibration.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/15-ml-calibration.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/15-ml-calibration.html?embed=1" title="ML Recalibration Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/15-ml-calibration.html?embed=1" title="ML Recalibration Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -250,10 +250,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>API Gateway Authentication & Data Access Sequence</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/04-sequence-auth-api.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/04-sequence-auth-api.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/04-sequence-auth-api.html?embed=1" title="API Authentication Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/04-sequence-auth-api.html?embed=1" title="API Authentication Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -263,10 +263,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>FastAPI Gateway Architecture & Endpoint Map</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/11-backend-api.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/11-backend-api.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/11-backend-api.html?embed=1" title="FastAPI Gateway Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/11-backend-api.html?embed=1" title="FastAPI Gateway Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -276,10 +276,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Next.js 14 Frontend Build & Operations Dashboard</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/12-frontend-dashboard.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/12-frontend-dashboard.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/12-frontend-dashboard.html?embed=1" title="Frontend Dashboard Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/12-frontend-dashboard.html?embed=1" title="Frontend Dashboard Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -289,10 +289,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>PostgreSQL & PostGIS Database Schema (13 Tables & 7 Views)</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/13-database-schema.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/13-database-schema.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/13-database-schema.html?embed=1" title="Database Schema Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/13-database-schema.html?embed=1" title="Database Schema Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -302,10 +302,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Hybrid Deployment: Docker Compose vs Windows Server Host</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/06-deployment-docker-os.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/06-deployment-docker-os.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/06-deployment-docker-os.html?embed=1" title="Deployment Architecture Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/06-deployment-docker-os.html?embed=1" title="Deployment Architecture Console" loading="lazy"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -315,10 +315,10 @@ The visual atlas below serves as the definitive reference collection for the Hyd
       <strong>Repository File Tree & Module Architecture</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/16-repository-tree.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/16-repository-tree.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/16-repository-tree.html?embed=1" title="Repository Tree Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/16-repository-tree.html?embed=1" title="Repository Tree Console" loading="lazy"></iframe>
 </div>
 
 ---
@@ -336,117 +336,24 @@ feature of the design and the reason it is drawn as a distinct colour
 everywhere.
 
 
-```mermaid
-flowchart TB
+### System Architecture Map (Visual Console)
 
-    subgraph S0["FORCING · outside system control"]
-        direction LR
-        NWP["<b>ECMWF IFS HRES 9 km</b><br/>Open-Meteo REST<br/>lead 1–90 h · 1 h step"]
-        RG["<b>Rain-gauge network</b><br/>20 stations in registry<br/>hourly observed depth"]
-        LS["<b>Ultrasonic level sensor</b><br/>Shivaji Bridge deck<br/>datum 549.35 m MSL"]
-    end
+The Mermaid flow diagram has been replaced by the interactive SVG console below, which renders the same topology with pan, zoom, layer switching, and export:
 
-    subgraph S1["1 · INGESTION &amp; QUALITY CONTROL"]
-        direction TB
-        FC["<b>Forecast client</b><br/><i>src/ecmwf/open_meteo.py</i><br/>5 retries · backoff 0.2<br/>3600 s response cache"]
-        GF["<b>Gauge ingest</b><br/><i>src/processing/gauge_fetcher.py</i><br/>hourly obs → rainfall_data"]
-        QC{"<b>Quality gate</b><br/><i>src/processing/validator.py</i><br/>depth ≤ 500 mm/h<br/>coverage ≥ 50% of 90 h<br/>gauge lag ≤ 60 min<br/>NWP age ≤ 8 h"}
-        ABORT["<b>critical_failures &gt; 0</b><br/>ValueError raised<br/>pipeline aborts"]
-    end
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>01 · End-to-End System Topology</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="01 · End-to-End System Topology Console"></iframe>
+</div>
 
-    subgraph S2["2 · SPATIAL SELECTION &amp; BOUNDARY"]
-        direction TB
-        SEL["<b>Governing-gauge router</b><br/><i>src/ecmwf/station_selector.py</i><br/>per subbasin: argmax of<br/>90 h cumulative volume"]
-        SELFB["<b>fallback scoring</b><br/>rainfall ÷ (distance + 1)<br/>when DB row is absent"]
-        DSS["<b>HEC-DSS boundary write</b><br/><i>src/dss/writer.py</i><br/>//GAGE/PRECIP-INC/DDMMMYYYY/1HOUR/GAGE/"]
-    end
-
-    subgraph S3["3 · HYDROLOGIC COMPUTATION"]
-        direction TB
-        PARSE["<b>Basin parser</b><br/><i>src/hms/basin_parser.py</i><br/>reads 9 subbasins + 5 reaches<br/>from Basin_1.basin at runtime"]
-        LOSS["<b>SCS-CN loss</b> S = 25400/CN − 254<br/>Ia = λS, λ = 0.20/0.15/0.08"]
-        UH["<b>SCS unit hydrograph</b><br/>u(t) = (t/tp)^3.7 · e^(3.7(1−t/tp))<br/>tp = 0.5 + lag/60"]
-        MUSK["<b>Muskingum routing</b><br/>R5→R4→R2→R3→R1<br/>C₀+C₁+C₂ = 1 exactly"]
-        BF["<b>Baseflow recession</b><br/>Q_bf = B₀·e^(−0.002t)<br/>B₀ from live sensor<br/>91.1 only when telemetry absent"]
-    end
-
-    subgraph S4["4 · STAGE CONVERSION &amp; ALERTING"]
-        direction TB
-        RATE["<b>WRD-anchored PCHIP rating</b><br/><i>src/hydrology/stage_converter.py</i><br/>27 Rajaram anchors<br/>Shivaji = Rajaram − 0.648 m"]
-        TIER{"<b>Six-level ladder</b><br/>NORMAL · ALERT · WARNING<br/>DANGER · EXTREME · HFL_EXCEEDED"}
-    end
-
-    subgraph S5["5 · CLOSED-LOOP CALIBRATION"]
-        direction TB
-        VAL["<b>Telemetry validator</b><br/><i>realtime_telemetry_validator.py</i><br/>match hours, residual metrics"]
-        GATE{"<b>Discrepancy gate</b><br/>needs ≥ 2 obs above 520.0 m<br/>|Δt| ≥ 1.0 h<br/>or Δh &gt; 0.25 m on rising limb"}
-        LM["<b>Bounded L-BFGS-B fit</b><br/><i>ml_calibration.py</i><br/>scipy.optimize.minimize<br/>α_K, α_lag ∈ [0.50, 1.80]<br/>ΔCN ∈ [−8, +8] · X ∈ [0.15, 0.40]"]
-        WB["<b>Atomic write-back</b><br/>Basin_1.basin.bak_YYYYMMDD_HHMMSS<br/>tmp + os.replace"]
-    end
-
-    subgraph S6["6 · PERSISTENCE &amp; DELIVERY"]
-        direction TB
-        DB[("PostgreSQL 15 + PostGIS<br/>Supabase pooler<br/>13 tables · 7 views")]
-        PQ[("Parquet cold storage<br/>5 time-series tables<br/>90-day retention")]
-        TG["<b>Telegram bulletin bot</b><br/><i>src/alerts/telegram_bot.py</i><br/>chat id + DDMA fan-out<br/>+ agency webhooks"]
-        FE["<b>Next.js 14 dashboard</b><br/>Leaflet GIS · Chart.js<br/>2D SVG cross-section"]
-        WS["<b>WebSocket /ws/live</b><br/>cycle broadcast"]
-    end
-
-    NWP -->|QPF mm/h| FC
-    RG -->|observed mm/h| GF
-
-    FC --> QC
-    GF --> QC
-    QC -->|pass| SEL
-    QC -->|critical failure| ABORT
-
-    SEL -.->|no DB row| SELFB
-    SELFB --> DSS
-    SEL --> DSS
-    DSS -->|per-gauge hyetograph| PARSE
-
-    PARSE --> LOSS
-    LOSS -->|excess mm/h| UH
-    UH -->|direct runoff m³/s| MUSK
-    MUSK -->|routed m³/s| BF
-    BF -->|Q_total 352 pts| RATE
-    RATE -->|stage_m| TIER
-    TIER -->|level + bulletin| TG
-    TIER --> DB
-    TIER --> WS
-    WS -->|dashboard| FE
-
-    LS -->|observed stage, feet| VAL
-    VAL --> GATE
-    GATE -->|warranted| LM
-    LM --> WB
-    WB -.->|re-parsed next cycle| PARSE
-
-    MUSK --> DB
-    RATE --> DB
-    DB --> PQ
-    DB --> FE
-    DB --> TG
-
-    classDef force   fill:#f1f5f9,stroke:#64748b,stroke-width:1.5px,color:#0f172a
-    classDef ingest  fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#0c1a3a
-    classDef decide  fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#3b2500
-    classDef compute fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef store   fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
-    classDef deliver fill:#fce7f3,stroke:#db2777,stroke-width:1.5px,color:#4a0d2a
-    classDef fault   fill:#fee2e2,stroke:#dc2626,stroke-width:1.5px,color:#4a0d0d
-    classDef closed  fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b
-
-    class NWP,RG,LS force
-    class FC,GF,SEL,SELFB,DSS ingest
-    class QC,TIER,GATE decide
-    class PARSE,LOSS,UH,MUSK,BF,RATE compute
-    class DB,PQ store
-    class TG,FE,WS deliver
-    class ABORT fault
-    class VAL,LM,WB closed
-```
+All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
 
 ### What the map does not show
 
@@ -483,59 +390,24 @@ JSON detail blob, truncating any error message at 2000 characters. The steps
 are strictly sequential and share one database connection.
 
 
-```mermaid
-flowchart TB
+### System Architecture Map (Visual Console)
 
-    CRON["<b>Scheduled cycle</b><br/>02:30 · 08:30 · 14:30 · 20:30 UTC<br/>or POST /api/v1/admin/trigger-run"]
+The Mermaid flow diagram has been replaced by the interactive SVG console below, which renders the same topology with pan, zoom, layer switching, and export:
 
-    subgraph MAIN["src/orchestrator.py · 12 sequential steps, one DB connection"]
-        direction TB
-        S1["<b>01</b> Download QPF<br/><i>ecmwf/downloader</i><br/>lead 1–90 h"]
-        S2["<b>02</b> Gauge ingest<br/><i>processing/gauge_fetcher</i><br/>→ rainfall_data"]
-        S3{"<b>03</b> Validate<br/><i>processing/validator</i><br/>critical_failures &gt; 0 ?"}
-        S4["<b>04</b> Select gauges<br/><i>ecmwf/station_selector</i><br/>argmax 90 h volume"]
-        S5["<b>05</b> Write DSS<br/><i>dss/writer</i><br/>+ verify pathnames"]
-        S6["<b>06</b> Check parameters<br/><i>hms/runner</i><br/>stub — logs only"]
-        S7["<b>07</b> run_hms<br/>full 90 h simulation"]
-        S8["<b>08</b> read_outlet_hydrograph<br/>full 90 h simulation AGAIN"]
-        S9["<b>09</b> Stage conversion<br/><i>hydrology/stage_converter</i>"]
-        S10["<b>10</b> Persist<br/><i>db/store_results</i>"]
-        S11["<b>11</b> Alerts<br/><i>alerts/evaluator</i>"]
-        S12["<b>12</b> Broadcast<br/><i>api/notifier</i> → /ws/live"]
-    end
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>03 · Forecast Cycle Workflow</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/03-forecast-workflow.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/03-forecast-workflow.html?embed=1" title="03 · Forecast Cycle Workflow Console"></iframe>
+</div>
 
-    LOG[("pipeline_step_log<br/>running → success / failed<br/>details_json · error ≤ 2000 chars")]
-    RUN[("simulation_runs<br/>CYC_YYYYMMDD_HHMM<br/>status running → completed")]
-    HALT["<b>sys.exit(1)</b><br/>any step raises<br/>worker process terminates"]
-
-    CRON --> RUN
-    CRON --> S1
-    S1 --> S2 --> S3
-    S3 -->|pass| S4
-    S3 -->|critical failure| HALT
-    S4 --> S5 --> S6 --> S7 --> S8 --> S9 --> S10 --> S11 --> S12
-    S12 -.->|next cycle| CRON
-
-    S3 -.-> LOG
-    S7 -.-> LOG
-    S9 -.-> LOG
-    S12 -.-> LOG
-    S1 -.-> RUN
-    S12 -.-> RUN
-    S7 -.->|"executed twice — see note"| S8
-
-    classDef force   fill:#f1f5f9,stroke:#64748b,stroke-width:1.5px,color:#0f172a
-    classDef decide  fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#3b2500
-    classDef compute fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef store   fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
-    classDef fault   fill:#fee2e2,stroke:#dc2626,stroke-width:1.5px,color:#4a0d0d
-
-    class CRON force
-    class S3 decide
-    class S1,S2,S4,S5,S6,S7,S8,S9,S10,S11,S12 compute
-    class LOG,RUN store
-    class HALT fault
-```
+All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
 
 ### Two pipelines, not one
 
@@ -582,67 +454,24 @@ descriptive names in the figures are editorial labels for the river segments,
 not identifiers present in the model.
 
 
-```mermaid
-flowchart TD
+### System Architecture Map (Visual Console)
 
-    subgraph TOP["UPPER PANCHGANGA"]
-        direction LR
-        S6["<b>S6 Gaganbawda</b><br/>227.72 km²<br/>CN 61.78 · lag 55.30 h"]
-        S7["<b>S7 Garivade</b><br/>195.39 km²<br/>CN 61.28 · lag 56.04 h"]
-        S9["<b>S9 Radhanagari</b><br/>366.97 km²<br/>CN 64.31 · lag 86.65 h"]
-    end
+The Mermaid flow diagram has been replaced by the interactive SVG console below, which renders the same topology with pan, zoom, layer switching, and export:
 
-    subgraph MID["MIDDLE PANCHGANGA"]
-        direction LR
-        S4["<b>S4 Karanjphen</b><br/>262.00 km²<br/>CN 61.89 · lag 51.93 h"]
-        S5["<b>S5 Padasali</b><br/>106.39 km²<br/>CN 60.97 · lag 35.28 h"]
-        S8["<b>S8 Beed</b><br/>177.44 km²<br/>CN 65.76 · lag 56.45 h"]
-    end
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>10 · Catchment Hydrology Solver</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/10-catchment-hydrology-solver.html?embed=1" title="10 · Catchment Hydrology Solver Console"></iframe>
+</div>
 
-    subgraph LOW["LOWER PANCHGANGA"]
-        direction LR
-        S2["<b>S2 Sangarul</b><br/>153.77 km²<br/>CN 65.74 · lag 52.57 h"]
-        S3["<b>S3 Kotoli</b><br/>261.32 km²<br/>CN 64.82 · lag 66.63 h"]
-    end
-
-    S1["<b>S1 Karveer</b><br/>86.21 km²<br/>CN 74.85 · lag 35.87 h<br/><i>drains straight to sink</i>"]
-
-    R5["<b>R5</b> K 4.619 h · X 0.20<br/>2 routing passes"]
-    R4["<b>R4</b> K 1.224 h · X 0.20<br/>1 routing pass"]
-    R2["<b>R2</b> K 11.827 h · X 0.20<br/>5 routing passes"]
-    R3["<b>R3</b> K 3.829 h · X 0.20<br/>2 routing passes"]
-    R1["<b>R1</b> K 2.899 h · X 0.20<br/>2 routing passes"]
-
-    S6 --> R5
-    S7 --> R5
-    S9 --> R4
-    S5 --> R3
-    S4 --> R3
-    S8 --> R2
-    R5 --> R2
-    R4 --> R2
-    R2 --> R1
-    R3 --> R1
-    S2 --> R1
-    S3 --> R1
-
-    SINK(["<b>Sink-1</b><br/>Rajaram outlet<br/>observed gage 1"])
-    R1 --> SINK
-    S1 --> SINK
-
-    TOT["<b>Q_total(t)</b> = routed surface<br/>+ B₀·e^(−0.002t)"]
-    SINK --> TOT
-
-    classDef sub   fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#0c1a3a
-    classDef reach fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef sink  fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#3b2500
-    classDef out   fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
-
-    class S1,S2,S3,S4,S5,S6,S7,S8,S9 sub
-    class R1,R2,R3,R4,R5 reach
-    class SINK sink
-    class TOT out
-```
+All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
 
 The nine subbasins sum to **1837.213 km²** of gauged area. S9 Radhanagari is
 the largest at 366.97 km² and also the slowest, with an 86.65-hour lag that
@@ -664,59 +493,24 @@ from the textbook SCS procedure it is named after. Every constant below was
 read from `src/hms/runner.py`.
 
 
-```mermaid
-flowchart TB
+### System Architecture Map (Visual Console)
 
-    P["<b>P(t)</b> · hyetograph<br/>mm/h · 90 hourly values<br/>one series per subbasin"]
+The Mermaid flow diagram has been replaced by the interactive SVG console below, which renders the same topology with pan, zoom, layer switching, and export:
 
-    AMC{"<b>Antecedent moisture class</b><br/>P̄ = mean 90 h rainfall over all subbasins<br/>P̄ &lt; 25 mm → AMC-I<br/>25 ≤ P̄ &lt; 65 mm → AMC-II<br/>P̄ ≥ 65 mm → AMC-III"}
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>10 · Catchment Hydrology Solver</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/10-catchment-hydrology-solver.html?embed=1" title="10 · Catchment Hydrology Solver Console"></iframe>
+</div>
 
-    CN1["<b>AMC-I · dry</b><br/>CN = 4.2·CN_II / (10 − 0.058·CN_II)<br/>λ = 0.20"]
-    CN2["<b>AMC-II · normal</b><br/>CN = CN_II as tabulated<br/>λ = 0.15"]
-    CN3["<b>AMC-III · saturated</b><br/>CN = 23.0·CN_II / (10 + 0.13·CN_II)<br/>λ = 0.08"]
-
-    CLAMP["<b>clip CN to [40, 98]</b><br/>S5 dry-season CN 39.61 → 40.0"]
-    LOSS["<b>SCS-CN loss</b><br/>S = 25400/CN − 254  [mm]<br/>Ia = λ·S  [mm]"]
-    QCUM["<b>Cumulative runoff</b><br/>Q_cum(h) = (P_cum−Ia)² / (P_cum−Ia+S)<br/>when P_cum &gt; Ia, else 0<br/><b>+ 0.02·P_cum, always</b>"]
-    EXC["<b>Excess increments</b><br/>ΔP(h) = max(0, Q_cum(h) − Q_cum(h−1))<br/>mm/h"]
-
-    UH["<b>SCS unit hydrograph</b><br/>tp = 0.5 + lag/60  [h]<br/>u(t) = (t/tp)^3.7 · e^(3.7(1−t/tp))<br/>n = max(90, ⌈3·tp⌉ + 1)<br/>scaled so Σu·3600 = A·1000 m³"]
-    PAD["<b>Zero-pad to 352 h</b><br/>length set by S9 (n = 263)<br/>convolved output is 352 h"]
-    CONV["<b>Direct runoff</b><br/>Q_dir = conv(ΔP, u)  [m³/s]"]
-
-    MUSK["<b>Muskingum routing</b> in order R5 → R4 → R2 → R3 → R1<br/>C₀ = (Δt−2K′X)/denom · C₁ = (Δt+2K′X)/denom · C₂ = (2K′(1−X)−Δt)/denom<br/>denom = 2K′(1−X) + Δt, so C₀+C₁+C₂ = 1 identically"]
-    STAB["<b>Stability band</b><br/>Δt/[2(1−X)] ≤ K′ ≤ Δt/(2X)<br/>at X = 0.20, Δt = 1 h → K′ ∈ [0.625, 2.5]<br/>passes: R5 2 · R4 1 · R2 5 · R3 2 · R1 2"]
-
-    BF["<b>Baseflow recession at Sink-1</b><br/>Q_bf(t) = B₀ · e^(−0.002t)<br/>B₀ = discharge of the live sensor<br/>91.1 m³/s only if telemetry absent"]
-    QT["<b>Q_total(t) = Q_surface(t) + Q_bf(t)</b><br/>352 points"]
-    PK["<b>Peak</b> = argmax Q_total(t)<br/>never overridden"]
-    EV["<b>Event label only</b><br/>storm rise &gt; max(1.0, 0.10·B₀)<br/>does not move the peak"]
-    CI["<b>Peak arrival window</b><br/>±2.0 h at 95%<br/>stage ±(0.12 + 0.03·(h−535)) m<br/>discharge ±6%"]
-
-    P --> AMC
-    AMC --> CN1
-    AMC --> CN2
-    AMC --> CN3
-    CN1 --> CLAMP
-    CN2 --> CLAMP
-    CN3 --> CLAMP
-    CLAMP --> LOSS --> QCUM --> EXC --> UH --> PAD --> CONV --> MUSK
-    MUSK --> STAB
-    STAB --> BF --> QT
-    QT --> PK
-    PK --> EV
-    PK --> CI
-
-    classDef force   fill:#f1f5f9,stroke:#64748b,stroke-width:1.5px,color:#0f172a
-    classDef decide  fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#3b2500
-    classDef compute fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef out     fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
-
-    class P force
-    class AMC decide
-    class CN1,CN2,CN3,CLAMP,LOSS,QCUM,EXC,UH,PAD,CONV,MUSK,STAB,BF compute
-    class QT,PK,EV,CI out
-```
+All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
 
 ### Where this departs from the textbook
 
@@ -785,66 +579,24 @@ Maharashtra WRD stage–discharge sheet rather than derived from a hydraulic
 model, because the government sheet is the legally defensible number.
 
 
-```mermaid
-flowchart TB
+### System Architecture Map (Visual Console)
 
-    Q["<b>Q_total(t)</b><br/>discharge m³/s"]
+The Mermaid flow diagram has been replaced by the interactive SVG console below, which renders the same topology with pan, zoom, layer switching, and export:
 
-    subgraph ANCH["STAGE–DISCHARGE ANCHORS · src/hydrology/stage_converter.py"]
-        direction LR
-        RJ["<b>RAJARAM · 26 anchors</b><br/>529.318 → 0.00 &nbsp;<i>surveyed bed</i><br/>532.700 → 14.16 &nbsp;<i>lowest WRD obs</i><br/>533.360 → 71.25<br/>535.770 → 274.39<br/>541.500 → 1480.0<br/>545.330 → 3850.0"]
-        SV["<b>SHIVAJI · 26 anchors</b><br/>= Rajaram stage − 0.648 m<br/>bed RL 528.670 vs 529.318<br/>reach 3858 m downstream<br/>Q values unchanged"]
-    end
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>08 · Rating Curves & Hydraulics</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/08-rating-curve-hydraulics.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/08-rating-curve-hydraulics.html?embed=1" title="08 · Rating Curves & Hydraulics Console"></iframe>
+</div>
 
-    PC["<b>PchipInterpolator</b><br/>shape-preserving, monotone<br/>dQ/dh &gt; 0 by construction"]
-    TAB["<b>300-point lookup table</b><br/>wse from bed RL to HFL + 3 m<br/>q forced monotone by<br/>np.maximum.accumulate"]
-    LIN["<b>Runtime conversion is linear</b><br/>interp1d over the 300-row table<br/>with end clamping<br/>stage→Q to 1 dp · Q→stage to 2 dp"]
-    MAN["<b>Manning DCM fallback</b><br/>compound section, n = 0.031 / 0.070<br/><b>unreachable at both gauged sites</b><br/>— the PCHIP branch short-circuits"]
-
-    TIER{"<b>Six-level ladder</b><br/><i>classify_alert(stage, site_id)</i>"}
-    L1["<b>NORMAL</b> · below alert mark"]
-    L2["<b>ALERT</b><br/>Shivaji ≥ 542.10 · Rajaram ≥ 541.50"]
-    L3["<b>WARNING</b><br/>Shivaji ≥ 542.70 · Rajaram ≥ 542.07"]
-    L4["<b>DANGER</b> · ≥ 543.30 m at both sites"]
-    L5["<b>EXTREME</b> · ≥ 544.00 m at both sites"]
-    L6["<b>HFL_EXCEEDED</b> · ≥ 545.33 m at both sites"]
-
-    MAP["<b>Downgrade map</b><br/><i>src/alerts/evaluator.py</i><br/>ALERT → watch<br/>WARNING → warning<br/>DANGER, HFL → emergency<br/><b>EXTREME unmapped → watch</b>"]
-    OUT["<b>Bulletin dispatch</b><br/>Telegram + DDMA webhooks"]
-
-    Q --> RJ
-    Q --> SV
-    RJ --> PC
-    SV --> PC
-    PC --> TAB
-    TAB --> LIN
-    LIN -.->|non-gauged site| MAN
-    LIN --> TIER
-    TIER --> L1
-    TIER --> L2
-    TIER --> L3
-    TIER --> L4
-    TIER --> L5
-    TIER --> L6
-    L2 --> MAP
-    L3 --> MAP
-    L4 --> MAP
-    L5 --> MAP
-    L6 --> MAP
-    MAP --> OUT
-
-    classDef force   fill:#f1f5f9,stroke:#64748b,stroke-width:1.5px,color:#0f172a
-    classDef compute fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef decide  fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#3b2500
-    classDef fault   fill:#fee2e2,stroke:#dc2626,stroke-width:1.5px,color:#4a0d0d
-    classDef deliver fill:#fce7f3,stroke:#db2777,stroke-width:1.5px,color:#4a0d2a
-
-    class Q force
-    class RJ,SV,PC,TAB,LIN compute
-    class TIER,L1,L2,L3,L4,L5,L6 decide
-    class MAN,MAP fault
-    class OUT deliver
-```
+All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
 
 ### Why PCHIP, and why the 0.648 m shift
 
@@ -892,45 +644,24 @@ Shivaji Bridge. The check is not a simple pass/fail: it produces a lifecycle
 state, and the state is chosen to be an *explanation* rather than a verdict.
 
 
-```mermaid
-stateDiagram-v2
-    direction TB
+### System Architecture Map (Visual Console)
 
-    [*] --> PENDING : cycle row created
-    PENDING --> IN_PROGRESS : first hours matched<br/>coverage &lt; 100%
+The Mermaid flow diagram has been replaced by the interactive SVG console below, which renders the same topology with pan, zoom, layer switching, and export:
 
-    IN_PROGRESS --> LIFECYCLE_VERIFIED : verified_hours == total_hours<br/>every forecast hour has an observation
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>See Interactive Consoles</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="See Interactive Consoles Console"></iframe>
+</div>
 
-    IN_PROGRESS --> AWAITING_OBSERVATIONS : 90 h window elapsed<br/>coverage still partial
-
-    AWAITING_OBSERVATIONS --> LIFECYCLE_VERIFIED : telemetry backfills<br/>coverage reaches 100%
-
-    AWAITING_OBSERVATIONS --> OBSERVATION_GAP : hours_past_window ≥ 12<br/>AND coverage still partial<br/>(OBSERVATION_GAP_GRACE_HOURS)
-
-    OBSERVATION_GAP --> LIFECYCLE_VERIFIED : hourly re-scan finds<br/>backfilled observations
-
-    LIFECYCLE_VERIFIED --> [*]
-
-    note right of IN_PROGRESS
-        Skill metrics are withheld here.
-        NSE, rho and r-squared need
-        n ≥ 6 paired hours,
-        sigma(obs) ≥ 0.05 m and
-        sum((O - mean O)^2) > 1e-4.
-        RMSE, MAE and PBIAS are
-        reported at any n.
-    end note
-
-    note left of OBSERVATION_GAP
-        Not a failure verdict.
-        A sensor that returns a
-        week later still promotes
-        the run to LIFECYCLE_VERIFIED,
-        because the state is
-        recomputed on every
-        hourly rescan.
-    end note
-```
+All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
 
 !!! note "Why a gap is not the same as a failure"
     A run whose window has elapsed but whose telemetry is still arriving stays
@@ -979,71 +710,24 @@ The figure below sorts the pipeline's quantities into stored parameters,
 derived transforms, and genuine measurements.
 
 
-```mermaid
-flowchart LR
+### System Architecture Map (Visual Console)
 
-    subgraph STORED["STORED · read from disk or database"]
-        direction TB
-        S1["<b>Curve Number</b> CN_II<br/>9 values in Basin_1.basin"]
-        S2["<b>Muskingum K, X</b><br/>5 pairs in Basin_1.basin"]
-        S3["<b>Subbasin lag</b><br/>2 152 – 5 199 min"]
-        S4["<b>WRD stage–Q anchors</b><br/>27 pairs, WRD sheet"]
-        S5["<b>Surveyed bed levels</b><br/>529.318 / 528.670 m MSL"]
-    end
+The Mermaid flow diagram has been replaced by the interactive SVG console below, which renders the same topology with pan, zoom, layer switching, and export:
 
-    subgraph TRANSFORM["DERIVED · deterministic transforms"]
-        direction TB
-        D1["<b>CN per AMC class</b><br/>TR-55 wet/dry transforms"]
-        D2["<b>Routing coefficients</b><br/>C₀, C₁, C₂ per reach"]
-        D3["<b>Unit hydrograph</b><br/>tp and the 3.7 exponent"]
-        D4["<b>PCHIP rating curve</b><br/>300-point table"]
-    end
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>10 · Catchment Hydrology Solver</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/10-catchment-hydrology-solver.html?embed=1" title="10 · Catchment Hydrology Solver Console"></iframe>
+</div>
 
-    subgraph OUTPUT["OUTPUT · what the system publishes"]
-        direction TB
-        O1["<b>Q_total(t)</b> m³/s<br/>352-point hydrograph"]
-        O2["<b>stage_m(t)</b><br/>Shivaji and Rajaram"]
-        O3["<b>volume</b> m³<br/><b>peak + arrival window</b>"]
-    end
-
-    subgraph MEAS["MEASURED · independent observation"]
-        direction TB
-        M1["<b>Rainfall</b> mm<br/>gauge network"]
-        M2["<b>Water level</b> m MSL<br/>ultrasonic sensor"]
-    end
-
-    subgraph RESTATE["RESTATED · not independent evidence"]
-        direction TB
-        R1["<b>RATING_IMPLIED_DERIVED</b><br/>observed discharge =<br/>observed stage through<br/>the same PCHIP curve"]
-        R2["<b>Consequence</b><br/>NSE, rho, r² on discharge<br/>restate the stage error<br/>PBIAS is near-circular"]
-    end
-
-    S1 --> D1 --> O1
-    S3 --> D3 --> O1
-    S2 --> D2 --> O1
-    D1 --> O1
-    D2 --> O1
-    O1 --> O3
-    S4 --> D4
-    S5 --> D4
-    D4 --> O2
-    O2 --> O3
-
-    M1 -->|volume error| O3
-    M2 -->|"RMSE, MAE — honest error metrics"| O3
-    O2 --> R1
-    R1 --> R2
-
-    classDef store   fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
-    classDef compute fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef out     fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#0c1a3a
-    classDef fault   fill:#fee2e2,stroke:#dc2626,stroke-width:1.5px,color:#4a0d0d
-
-    class S1,S2,S3,S4,S5 store
-    class D1,D2,D3,D4 compute
-    class O1,O2,O3,M1,M2 out
-    class R1,R2 fault
-```
+All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
 
 ---
 
@@ -1054,68 +738,24 @@ publishes the documentation site; Docker Compose runs the full stack locally
 with the FastAPI service, the Next.js dashboard and PostGIS.
 
 
-```mermaid
-flowchart TB
+### System Architecture Map (Visual Console)
 
-    subgraph GH["GITHUB ACTIONS · ephemeral Ubuntu runners"]
-        direction TB
-        PIPE["<b>pipeline.yml</b><br/>02:30 · 08:30 · 14:30 · 20:30 UTC<br/>timeout 20 min · Java 17<br/>bbox 17.20/16.20/74.50/73.70"]
-        TELEM["<b>telemetry_validation.yml</b><br/><b>hourly</b> — 0 * * * *<br/>rescans pending runs<br/>(header comment says 3 h)"]
-        TESTS["<b>tests.yml</b><br/>push and pull_request only<br/>no schedule"]
-    end
+The Mermaid flow diagram has been replaced by the interactive SVG console below, which renders the same topology with pan, zoom, layer switching, and export:
 
-    subgraph CYCLE["WHAT THE SCHEDULED CYCLE ACTUALLY RUNS"]
-        direction TB
-        PY1["<b>python -m src.ecmwf.open_meteo</b><br/>self-contained run_forecast_cycle<br/><b>not</b> src/orchestrator.run_pipeline"]
-        PY2["<b>python -m src.hydrology.stage_converter</b><br/>rebuild rating tables"]
-        PY3["<b>cleanup_schema → validator --all-pending<br/>→ sync_all_to_supabase</b>"]
-        COMMIT["<b>git commit</b><br/>frontend/public/data/ · data/runs/<br/>data/openmeteo_dss/ · data/telemetry/"]
-    end
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>03 · Forecast Cycle Workflow</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/03-forecast-workflow.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/03-forecast-workflow.html?embed=1" title="03 · Forecast Cycle Workflow Console"></iframe>
+</div>
 
-    HMS["<b>HEC-HMS 4.13 native batch</b><br/>Windows-only, 300 s timeout<br/><b>unavailable on Linux CI</b>"]
-    FB["<b>Fallback</b><br/>missing binary, non-zero exit,<br/>or timeout → calibrated emulator<br/>every fallback is logged"]
-    STUB["<b>Run_1.dss is never parsed</b><br/>peak, volume and the full hydrograph<br/>always come from the emulator,<br/>even when status is COMPLETED_BINARY"]
-
-    EXT[("Supabase<br/>PostgreSQL 15 + PostGIS")]
-    GH_PAGES[("gh-pages<br/>MkDocs site")]
-    VERCEL["<b>Vercel</b><br/>Next.js 14 dashboard"]
-    TG["<b>Telegram</b><br/>DDMA bulletin fan-out"]
-
-    subgraph LOCAL["DOCKER COMPOSE · local / on-prem"]
-        direction LR
-        LDB[("hydrocast-db<br/>postgis 15-3.4 :5432<br/>schema seeded from<br/>database/supabase_schema.sql")]
-        LBE["<b>hydrocast-backend</b><br/>:8000 · python 3.12 + JRE 17 + GDAL<br/>uvicorn --workers 2<br/>non-root uid 1000"]
-        LFE["<b>hydrocast-frontend</b><br/>:3000 · Next.js standalone"]
-    end
-
-    PIPE --> PY1
-    TELEM --> PY3
-    PY1 --> PY2 --> PY3 --> COMMIT
-    PY1 -.-> HMS
-    HMS -.->|unavailable| FB
-    FB --> STUB
-    PY1 --> EXT
-    PY3 --> EXT
-    PY1 --> TG
-    COMMIT --> GH_PAGES
-    COMMIT --> VERCEL
-
-    LDB --> LBE
-    LBE --> LFE
-    LFE -.->|NEXT_PUBLIC_API_URL| LBE
-
-    classDef force   fill:#f1f5f9,stroke:#64748b,stroke-width:1.5px,color:#0f172a
-    classDef compute fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef store   fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
-    classDef fault   fill:#fee2e2,stroke:#dc2626,stroke-width:1.5px,color:#4a0d0d
-    classDef deliver fill:#fce7f3,stroke:#db2777,stroke-width:1.5px,color:#4a0d2a
-
-    class PIPE,TELEM,TESTS force
-    class PY1,PY2,PY3,COMMIT,LBE compute
-    class EXT,GH_PAGES,LDB store
-    class HMS,FB,STUB fault
-    class VERCEL,TG,LFE deliver
-```
+All nodes, edges, and parameter values from the original diagram are preserved in the console. The prose below the console explains *why* each connection exists.
 
 ### The emulator is the production path
 

@@ -14,10 +14,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Catchment Hydrology Solver</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -27,10 +27,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>End-to-End System Architecture</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/01-architecture.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/01-architecture.html?embed=1" title="End-to-End System Architecture Console"></iframe>
 </div>
 
 ---
@@ -54,46 +54,49 @@ The console below is the rendered reference for this page: it carries the same s
       Incremental Excess Rainfall: Delta_P_excess(t) [mm]
                         |
                         v
-          [ SCS Dimensionless Unit Hydrograph Transform ]
-          - Subbasin Lag Time: t_lag = lag_min / 60.0
-          - Time to Peak: t_p = 0.5 + t_lag
-          - Curvilinear Dimensionless Equation: u(t) = (t/tp)^3.7 * exp(3.7 * (1 - t/tp))
-          - Volume Conservation Scaling: Sum(UH * 3600) == Area_km2 * 1000 m3
-                        |
-                        v
-      Direct Subbasin Outflow Hydrograph: Q_dir(t) = Delta_P * UH [m3/s]
-                        |
-                        v
-          [ 5-Reach Muskingum Channel Network Cascade ]
-          - R5: Routes (S6 + S7) into Reach R2 (K=4.619h, X=0.200)
-          - R4: Routes (S9) into Reach R2 (K=1.224h, X=0.200)
-          - R2: Routes (R5 + R4 + S8) into Reach R1 (K=11.827h, X=0.200)
-          - R3: Routes (S4 + S5) into Reach R1 (K=3.829h, X=0.200)
-          - R1: Routes (R2 + R3 + S3 + S2) into Basin Sink-1 (K=2.899h, X=0.200)
-                        |
-                        v
-      Combined Surface Outflow: Q_surface(t) = Outflow(R1) + Direct(S1)
-                        |
-                        +---> [ Exponential Baseflow Recession ]
-                         |     Q_bf(t) = Q_bf0 * exp(-0.002 * t)
-                         |     Q_bf0 = discharge of the live sensor (converted once)
-                         |     no floor; 91.1 m3/s only if telemetry absent
-                        v
-      Total Hydrograph at Rajaram K.T. Weir: Q_total(t) = Q_surface(t) + Q_bf(t)
-                        |
-                        v
-          [ WRD-Anchored PCHIP Rating Curve Engine ]
-          - Both gauged sites: PCHIP interpolation through the official
-            Maharashtra WRD stage-discharge sheet (monotone, no overshoot)
-          - Shivaji stage = Rajaram stage - 0.648 m on the WRD sheet
-            control points (cross-checked against the WRD alert pair
-            at 1800 m3/s). Below ~20 m3/s the two curves are instead
-            related by the WRD 2021-23 observed register, so the
-            offset is NOT constant - see stage-discharge-conversion.md
-          - Surveyed X-section still supplies wetted area A for any stage
-          - Non-anchored sites fall back to compound-section Manning DCM
-            (main n=0.035, overbank sugarcane/paddy n=0.055)
-```
+**SCS Dimensionless Unit Hydrograph Transform:**
+
+| Parameter | Formula |
+|:---|:---|
+| Subbasin Lag Time | t_lag = lag_min / 60.0 |
+| Time to Peak | t_p = 0.5 + t_lag |
+| Dimensionless Equation | u(t) = (t/tp)^3.7 * exp(3.7 * (1 - t/tp)) |
+| Volume Conservation | Sum(UH * 3600) == Area_km2 * 1000 m3 |
+
+**Direct Subbasin Outflow Hydrograph:** Q_dir(t) = Delta_P * UH [m3/s]
+
+**5-Reach Muskingum Channel Network Cascade:**
+
+| Reach | Routes Into | Routes Out Of | K (hr) | X |
+|:---|:---|:---|:---:|:---:|
+| R5 | S6 + S7 | R2 | 4.619 | 0.200 |
+| R4 | S9 | R2 | 1.224 | 0.200 |
+| R2 | R5 + R4 + S8 | R1 | 11.827 | 0.200 |
+| R3 | S4 + S5 | R1 | 3.829 | 0.200 |
+| R1 | R2 + R3 + S3 + S2 | Sink-1 | 2.899 | 0.200 |
+| Direct (S1) | S1 | Sink-1 | — | — |
+
+**Combined Surface Outflow:** Q_surface(t) = Outflow(R1) + Direct(S1)
+
+**Exponential Baseflow Recession:**
+
+| Parameter | Value | Notes |
+|:---|:---|:---|
+| Q_bf(t) | Q_bf0 * exp(-0.002 * t) | — |
+| Q_bf0 | Discharge of live sensor (converted once) | No floor |
+| Default | 91.1 m3/s | Only if telemetry absent |
+
+**Total Hydrograph at Rajaram K.T. Weir:** Q_total(t) = Q_surface(t) + Q_bf(t)
+
+**WRD-Anchored PCHIP Rating Curve Engine:**
+
+| Property | Implementation |
+|:---|:---|
+| Both gauged sites | PCHIP interpolation through official Maharashtra WRD stage-discharge sheet (monotone, no overshoot) |
+| Shivaji stage relationship | Shivaji stage = Rajaram stage - 0.648 m on WRD sheet control points (cross-checked at 1,800 m3/s) |
+| Low-flow behavior (< ~20 m3/s) | Related by WRD 2021-23 observed register; offset is NOT constant — see stage-discharge-conversion.md |
+| Wetted area A | Supplied by surveyed cross-section for any stage |
+| Non-anchored sites | Fall back to compound-section Manning DCM (main n=0.035, overbank sugarcane/paddy n=0.055)
 
 Runoff calculation transforms an hourly depth series of atmospheric precipitation ($P$ in $mm/hr$) into a volumetric discharge rate ($Q$ in $m^3/s$) passing a river cross-section over time.
 
@@ -105,35 +108,20 @@ This involves two consecutive transformations:
 ### 1.1 The three-stage cascade at a glance
 
 
-```mermaid
-flowchart LR
-    P["<b>P(t)</b> · hyetograph<br/>mm/h · 90 hourly values"]
-    AMC{"<b>AMC class</b><br/>P̄ &lt; 25 → I<br/>25–65 → II<br/>≥ 65 → III"}
-    PE["<b>ΔP_e(t)</b> · excess<br/>mm/h<br/>S = 25400/CN − 254<br/>Ia = λS, λ = 0.20/0.15/0.08"]
-    QS["<b>Q_surf(t)</b> · direct runoff<br/>m³/s<br/>u(t) = (t/tp)^3.7 · e^(3.7(1−t/tp))<br/>tp = 0.5 + lag/60"]
-    R["<b>Q_routed(t)</b><br/>m³/s<br/>Muskingum R5→R4→R2→R3→R1<br/>C₀+C₁+C₂ ≡ 1"]
-    BF["<b>+ Q_bf(t)</b><br/>B₀·e^(−0.002t) m³/s<br/>B₀ from live sensor reading"]
-    QT["<b>Q_total(t)</b><br/>m³/s · 352 points<br/>peak = argmax Q_total"]
-    H["<b>h(t)</b> · stage<br/>m MSL<br/>PCHIP over 27 WRD anchors<br/>Shivaji = Rajaram − 0.648 m on the sheet<br/>low-flow points use the WRD register"]
+**The three-stage runoff cascade:**
 
-    P --> AMC
-    AMC --> PE
-    PE -->|convolution with u| QS
-    QS -->|cascade, mass-conserving| R
-    R --> BF
-    BF --> QT
-    QT -->|monotone, invertible| H
+| Stage | Process | Formula / Parameter |
+|:---|:---|:---|
+| P(t) | Hyetograph (precipitation input) | mm/h · 90 hourly values |
+| AMC class | Antecedent moisture classification | P̄ < 25 → AMC-I; 25–65 → AMC-II; ≥ 65 → AMC-III |
+| ΔP_e(t) | Rainfall excess | S = 25400/CN − 254; Ia = λS, λ = 0.20/0.15/0.08 |
+| Q_surf(t) | Direct surface runoff | u(t) = (t/tp)^3.7 · e^(3.7(1−t/tp)); t_p = 0.5 + lag/60 |
+| Q_routed(t) | Muskingum reach cascade | R5→R4→R2→R3→R1; C₀+C₁+C₂ ≡ 1 (mass-conserving) |
+| Q_bf(t) | Baseflow recession | B₀·e^(−0.002t); B₀ from live sensor reading |
+| Q_total(t) | Total hydrograph | m³/s · 352 points; peak = argmax Q_total |
+| h(t) | Stage at gauges | PCHIP over 27 WRD anchors; Shivaji = Rajaram − 0.648 m on sheet; low-flow points use WRD register |
 
-    classDef force   fill:#f1f5f9,stroke:#64748b,stroke-width:1.5px,color:#0f172a
-    classDef decide  fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#3b2500
-    classDef compute fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef out     fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
-
-    class P force
-    class AMC decide
-    class PE,QS,R,BF compute
-    class QT,H out
-```
+> **Runoff cascade console** — see [Console 10: Catchment Hydrology Solver](diagrams/10-catchment-hydrology-solver.html){ target="_blank" } for the interactive transformation chain with equations at every stage.
 
 !!! note "Why PCHIP and not a straight line between anchors"
     Linear interpolation between government rating anchors can *overshoot*: it
@@ -232,34 +220,31 @@ the emulator, so the topology below is a property of the model file rather than
 of the code. Authoritative subbasin parameters and Muskingum reach matrices are canonically defined in [Catchment Hydrology: Subbasin Parameters](basin-hydrology.md#subbasin-parameters) and [Catchment Hydrology: Muskingum Reaches](basin-hydrology.md#muskingum-reaches).
 
 
-```mermaid
-flowchart TD
-    S6["<b>S6 Gaganbawda</b><br/>227.72 km² · CN 61.78<br/>lag 3318 min"] --> R5["<b>R5</b> K 4.619 h · X 0.20<br/>2 routing passes"]
-    S7["<b>S7 Garivade</b><br/>195.39 km² · CN 61.28<br/>lag 3362 min"] --> R5
-    S9["<b>S9 Radhanagari</b><br/>366.97 km² · CN 64.31<br/>lag 5199 min"] --> R4["<b>R4</b> K 1.224 h · X 0.20<br/>1 routing pass"]
-    R5 --> R2["<b>R2</b> K 11.827 h · X 0.20<br/>5 routing passes"]
-    R4 --> R2
-    S8["<b>S8 Beed</b><br/>177.44 km² · CN 65.76<br/>lag 3387 min"] --> R2
-    R2 --> R1["<b>R1</b> K 2.899 h · X 0.20<br/>2 routing passes"]
-    S4["<b>S4 Karanjphen</b><br/>262.00 km² · CN 61.89<br/>lag 3116 min"] --> R3["<b>R3</b> K 3.829 h · X 0.20<br/>2 routing passes"]
-    S5["<b>S5 Padasali</b><br/>106.39 km² · CN 60.97<br/>lag 2117 min"] --> R3
-    R3 --> R1
-    S2["<b>S2 Sangarul</b><br/>153.77 km² · CN 65.74<br/>lag 3154 min"] --> R1
-    S3["<b>S3 Kotoli</b><br/>261.32 km² · CN 64.82<br/>lag 3998 min"] --> R1
-    R1 --> SINK(["<b>Sink-1</b><br/>Rajaram outlet<br/>+ observed gage 1"])
-    S1["<b>S1 Karveer</b><br/>86.21 km² · CN 74.85<br/>lag 2152 min"] --> SINK
-    SINK --> QT["<b>Q_total(t)</b> = routed surface<br/>+ B₀·e^(−0.002t)<br/>Σ area 1837.21 km²"]
+**RJKT reach cascade topology:**
 
-    classDef sub   fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#0c1a3a
-    classDef reach fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef sink  fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#3b2500
-    classDef out   fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
+| Subbasin | Area (km²) | CN | Lag (min) | Routes To |
+|:---|:---:|:---:|:---:|:---|
+| S6 Gaganbawda | 227.72 | 61.78 | 3318 | R5 |
+| S7 Garivade | 195.39 | 61.28 | 3362 | R5 |
+| S9 Radhanagari | 366.97 | 64.31 | 5199 | R4 |
+| S8 Beed | 177.44 | 65.76 | 3387 | R2 |
+| S4 Karanjphen | 262.00 | 61.89 | 3116 | R3 |
+| S5 Padasali | 106.39 | 60.97 | 2117 | R3 |
+| S2 Sangarul | 153.77 | 65.74 | 3154 | R1 |
+| S3 Kotoli | 261.32 | 64.82 | 3998 | R1 |
+| S1 Karveer | 86.21 | 74.85 | 2152 | Sink-1 (direct) |
 
-    class S1,S2,S3,S4,S5,S6,S7,S8,S9 sub
-    class R1,R2,R3,R4,R5 reach
-    class SINK sink
-    class QT out
-```
+| Reach | K (hr) | X | Routing Passes | Inputs | Output |
+|:---|:---:|:---:|:---:|:---|:---|
+| R5 | 4.619 | 0.20 | 2 | S6 + S7 | R2 |
+| R4 | 1.224 | 0.20 | 1 | S9 | R2 |
+| R2 | 11.827 | 0.20 | 5 | R5 + R4 + S8 | R1 |
+| R3 | 3.829 | 0.20 | 2 | S4 + S5 | R1 |
+| R1 | 2.899 | 0.20 | 2 | R2 + R3 + S2 + S3 | Sink-1 |
+
+**Sink-1 (Rajaram outlet):** Q_total(t) = routed surface + B₀·e^(−0.002t); basin area 1,837.21 km².
+
+> **Cascade console** — see [Console 10: Catchment Hydrology Solver](diagrams/10-catchment-hydrology-solver.html){ target="_blank" } for the interactive subbasin-to-reach network.
 
 ---
 
@@ -295,7 +280,7 @@ hard-code thresholds:
 
 ## 6. Vectorized Python Implementation (`runner.py`)
 
-In [`runner.py`](api-reference/hms.md) (`src/hms/runner.py`), the entire runoff continuum executes in $< 15\text{ milliseconds}$ via vectorized NumPy operations:
+In [`runner.py`](hms.md) (`src/hms/runner.py`), the entire runoff continuum executes in $< 15\text{ milliseconds}$ via vectorized NumPy operations:
 
 ```
 # 1. Potential soil retention

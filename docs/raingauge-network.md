@@ -26,10 +26,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Rain Gauge Selection</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/09-raingauge-selection-flowchart.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/09-raingauge-selection-flowchart.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/09-raingauge-selection-flowchart.html?embed=1" title="Rain Gauge Selection Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/09-raingauge-selection-flowchart.html?embed=1" title="Rain Gauge Selection Console"></iframe>
 </div>
 
 ---
@@ -82,18 +82,18 @@ choose between, and the primary station governs by default.
 ```
 ========================================================================================================================
                  PANCHGANGA BASIN RAIN GAUGE NETWORK & SUBBASIN ROUTING TOPOLOGY
-========================================================================================================================
+**Elevation & Orographic Rainfall Gradient (West to East):**
 
-  Elevation & Orographic Rainfall Gradient (West to East):
-  Altitude (m MSL)
-   700 +   [ GAGANBAWDA (680m) ]  <-- Crest of Western Ghats (Highest Rainfall Zone ~5,000 mm/year)
-       |   [ KARANJPHEN (640m) ]  [ PADASALI (620m) ]
-   600 +   [ RADHANAGARI (615m) ] [ GARIVADE (610m) ] [ KOTOLI (585m) ]
-       |   [ SANGARUL (572m) ]    [ BEED (565m) ]     [ KASABA TARALE (595m) ]
-   550 +---------------------------------------------- [ KARVEER (550m) ] <-- Valley Floor / Outlet
-       +----------------------------------------------------------------------------------------->
-       West (Sahyadri Escarpment)                                          East (Kolhapur Plains)
-```
+| Altitude Band | Stations | Rainfall Character |
+|:---|:---|:---|
+| ~680–700 m MSL | GAGANBAWDA (680m) | Crest of Western Ghats — highest rainfall zone (~5,000 mm/year) |
+| ~615–640 m MSL | KARANJPHEN (640m), PADASALI (620m), RADHANAGARI (615m) | Upper catchment — heavy orographic rainfall |
+| ~565–610 m MSL | GARIVADE (610m), KOTOLI (585m), KASABA TARALE (595m), SANGARUL (572m), BEED (565m) | Mid-catchment — moderate monsoon rainfall |
+| ~550 m MSL | KARVEER (550m) | Valley floor / outlet — driest subbasin |
+
+**Gradient:** West (Sahyadri Escarpment) → East (Kolhapur Plains)
+
+The subbasin layout is not arbitrary. S6 Gaganbawda, on the crest, is the wettest subbasin in the basin and drains through R5; S1 Karveer, on the valley floor at the outlet, is the driest and drains straight to the sink with no reach routing at all. Between them the rainfall field varies by more than an order of magnitude in annual totals, which is why the router is allowed to choose a different governing station for the same subbasin on consecutive cycles.
 
 The subbasin layout is not arbitrary. S6 Gaganbawda, on the crest, is the
 wettest subbasin in the basin and drains through R5; S1 Karveer, on the valley
@@ -116,43 +116,22 @@ produces a hydrograph that arrives early and peaks high, which produces a
 warning that was not needed. Of those two outcomes, one is a near-miss and the
 other is a disaster, so the router is biased hard toward the first.
 
-```mermaid
-flowchart TB
-    NWP["<b>ECMWF IFS grid</b><br/>90 h · 1 h step"]
-    OBS["<b>WRD gauge observations</b><br/>hourly depth, 20 stations"]
-    CUM["<b>90 h cumulative volume</b><br/>per station, mm<br/><i>gauge_fetcher → station_selector</i>"]
-    GRP["<b>Group by subbasin</b><br/>candidates = registry rows<br/>where subbasin_id matches"]
-    SORTS{"<b>Sort candidates</b><br/>by cumulative rainfall,<br/>descending"}
-    PICK["<b>Take index 0</b><br/>method = MAX_RAIN_VOLUME"]
-    FB{"<b>Row present in DB?</b>"}
-    FALL["<b>Distance fallback</b><br/>score = rainfall ÷ distance + 1<br/>NEAREST_HIGH_RAIN_FALLBACK"]
-    ZERO["<b>No data</b><br/>90 zero-valued hours substituted"]
-    OUT["<b>Governing gauge per subbasin</b><br/>{station_id, lat, lon,<br/>cumulative_mm, method}"]
-    DSS["<b>Drives the HEC-DSS write</b><br/>//STATION/PRECIP-INC/DDMMMYYYY/1HOUR/GAGE/"]
+### System Architecture Map (Visual Console)
 
-    NWP --> CUM
-    OBS --> CUM
-    CUM --> GRP --> SORTS --> PICK
-    PICK --> FB
-    FB -->|yes| OUT
-    FB -->|no| FALL
-    FALL --> OUT
-    FB -.->|station_id absent from registry| ZERO
-    ZERO --> DSS
-    OUT --> DSS
+The Mermaid flow diagram has been replaced by the interactive SVG console below:
 
-    classDef force   fill:#f1f5f9,stroke:#64748b,stroke-width:1.5px,color:#0f172a
-    classDef compute fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#1e1b4b
-    classDef decide  fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#3b2500
-    classDef out     fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5px,color:#04302b
-    classDef fault   fill:#fee2e2,stroke:#dc2626,stroke-width:1.5px,color:#4a0d0d
-
-    class NWP,OBS force
-    class CUM,GRP,SORTS,PICK compute
-    class FB decide
-    class OUT,DSS out
-    class FALL,ZERO fault
-```
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>09 · Rain-Gauge Selection</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/09-raingauge-selection-flowchart.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/09-raingauge-selection-flowchart.html?embed=1" title="09 · Rain-Gauge Selection Console"></iframe>
+</div>
 
 The implementation in `select_active_subbasin_gages()` records, for each
 subbasin, the selected station's identity, coordinates, the cumulative depth

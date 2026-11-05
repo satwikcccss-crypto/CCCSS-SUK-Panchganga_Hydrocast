@@ -15,10 +15,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Adaptive ML Calibration Loop</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/15-ml-calibration.html?embed=1" title="Adaptive ML Calibration Loop Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/15-ml-calibration.html?embed=1" title="Adaptive ML Calibration Loop Console"></iframe>
 </div>
 
 <div class="hydrocast-diagram-card">
@@ -28,10 +28,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Simulation Run Lifecycle</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/05-lifecycle-runs.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/05-lifecycle-runs.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/05-lifecycle-runs.html?embed=1" title="Simulation Run Lifecycle Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/05-lifecycle-runs.html?embed=1" title="Simulation Run Lifecycle Console"></iframe>
 </div>
 
 ---
@@ -49,21 +49,22 @@ The console below is the rendered reference for this page: it carries the same s
 
 The calibrator continuously tracks live water level telemetry from ThingSpeak Channel #3424513 (ultrasonic radar on Shivaji Bridge deck, datum 549.35 m MSL) against the forward forecast from the prior cycle.
 
-```mermaid
-flowchart TD
-    T[Live ThingSpeak Telemetry #3424513] --> Eval[Hourly Mean Aligned Evaluation T-24h to T-0h]
-    F[Prior Cycle Forecast] --> Eval
+### System Architecture Map (Visual Console)
 
-    Eval --> Cond{"Timing error |Δt| ≥ 1.0 h<br/>OR<br/>Max stage error |Δh| > 0.25 m on rising limb?"}
+The Mermaid flow diagram has been replaced by the interactive SVG console below:
 
-    Cond -- YES --> Trigger["Trigger Recalibration<br/>Solve Levenberg-Marquardt refit"]
-    Cond -- NO --> Baseline["Retain Baseline Physics<br/>Log 'Baseline Stable' (confidence=98.5%)"]
-
-    style Cond fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#0f172a
-    style Trigger fill:#fee2e2,stroke:#ef4444,stroke-width:2px,color:#0f172a
-    style Baseline fill:#dcfce7,stroke:#22c55e,stroke-width:2px,color:#0f172a
-    style Eval fill:#e0f2fe,stroke:#0284c7,stroke-width:1px,color:#0f172a
-```
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>15 · ML Calibration Loop</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/15-ml-calibration.html?embed=1" title="15 · ML Calibration Loop Console"></iframe>
+</div>
 
 ### 2.1 Wave Timing Discrepancy ($\Delta t$)
 
@@ -165,27 +166,22 @@ This ensures **100% fail-safe execution**; the forecast pipeline never aborts du
 
 In `src/hydrology/ml_parameter_predictor.py`, the `HydrologicParameterPredictor` incorporates an explicit four-state lifecycle gate to prevent unvalidated ML weights from entering the life-safety path:
 
-```mermaid
-stateDiagram-v2
-    [*] --> UNTRAINED : System Cold Boot
-    UNTRAINED --> TRAINED_UNVALIDATED : Fitted on ≥ 3 historical cycles
-    TRAINED_UNVALIDATED --> VALIDATED : Explicit backtest passed (NSE ≥ 0.70)
+### System Architecture Map (Visual Console)
 
-    note right of UNTRAINED
-      predict() returns None
-      100% physics prior
-    end note
+The Mermaid flow diagram has been replaced by the interactive SVG console below:
 
-    note right of TRAINED_UNVALIDATED
-      predict() returns None
-      Gated; zero operational weight
-    end note
-
-    note right of VALIDATED
-      Blends 30% ML + 70% Physics:
-      θ_init = 0.70 θ_phys + 0.30 θ_ML
-    end note
-```
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>15 · ML Calibration Loop</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/15-ml-calibration.html?embed=1" title="15 · ML Calibration Loop Console"></iframe>
+</div>
 
 ### 5.1 Gating Implementation
 If state is not `VALIDATED`, `predict()` returns `None`. The calibrator initializes the Levenberg-Marquardt solver with 100% analytical physics priors. When `VALIDATED`, the ML prediction acts solely as a **warm-start initial guess** ($\boldsymbol{\theta}_{init} = 0.70 \boldsymbol{\theta}_{physics} + 0.30 \boldsymbol{\theta}_{ML}$), which is then rigorously verified by the bounded optimizer.

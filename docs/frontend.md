@@ -14,10 +14,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Frontend Build & Dashboard</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/12-frontend-dashboard.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/12-frontend-dashboard.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/12-frontend-dashboard.html?embed=1" title="Frontend Build & Dashboard Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/12-frontend-dashboard.html?embed=1" title="Frontend Build & Dashboard Console"></iframe>
 </div>
 
 ---

@@ -11,10 +11,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Rating Curves & Divided Channel Hydraulics</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/08-rating-curve-hydraulics.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/08-rating-curve-hydraulics.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Curves & Divided Channel Hydraulics Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/08-rating-curve-hydraulics.html?embed=1" title="Rating Curves & Divided Channel Hydraulics Console"></iframe>
 </div>
 
 ---
@@ -102,26 +102,23 @@ separated only by the datum offset.
 ## Benchmark Cross-Verification Script & Ground Truth Table
 
 ```
-====================================================================================================
-           HYDROCAST WRD-ANCHORED RATING CURVE vs MAHARASHTRA WRD HISTORICAL BENCHMARKS
-====================================================================================================
+**WRD-Anchored Rating Curve vs Historical Benchmarks:**
 
- Stage (m MSL)     (Rajaram sheet stages shown; Shivaji = stage − 0.648 m)
-   546.0 +                                                               * (49.8 ft / 3,850 m3/s)
-         |                                                      [2019 HFL Benchmark]
-   544.0 |                                                * (43.0 ft / 2,675 m3/s) [DANGER]
-         |                                          * (41.1 ft / 2,200 m3/s) [WARNING]
-   542.0 |                                    * (39.1 ft / 1,800 m3/s) [SHIVAJI ALERT]
-         |                              * (37.1 ft / 1,480 m3/s) [RAJARAM ALERT]
-   540.0 |                        * (29.0 ft / 800.5 m3/s)
-         |                  * (26.2 ft / 613.1 m3/s)
-   536.0 |            * (20.5 ft / 370.6 m3/s)
-         |      * (18.4 ft / 274.4 m3/s)
-   534.0 |  * (16.6 ft / 217.6 m3/s)
-         |* (11.0 ft / 80.0 m3/s)
-   532.0 +----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----> Discharge (m3/s)
-         0   400   800  1200  1600  2000  2400  2800  3200  3600  4000 m3/s
-```
+| Stage (m MSL) | Imperial Gauge | Discharge (m³/s) | Benchmark Flag |
+|:---:|:---|:---:|:---|
+| 545.33 | 49′ 8″ | 3,850 | 2019 HFL |
+| 543.30 | 43′ 0″ | 2,675 | DANGER |
+| 542.70 | 41′ 1″ | 2,200 | WARNING |
+| 542.10 | 39′ 1″ | 1,800 | SHIVAJI ALERT |
+| 541.50 | 37′ 1″ | 1,480 | RAJARAM ALERT |
+| 540.00 | 29.0 ft | 800.5 | — |
+| 538.00 | 26.2 ft | 613.1 | — |
+| 536.00 | 20.5 ft | 370.6 | — |
+| 534.00 | 18.4 ft | 274.4 | — |
+| 533.36 | 16.6 ft | 217.6 | WRD observed anchor |
+| 532.88 | 11.0 ft | 80.0 | Lowest WRD rating sheet anchor |
+
+Rajaram sheet stages shown; Shivaji = stage − 0.648 m on the same WRD control points.
 
 The following ground-truth flood observations were sourced from official Maharashtra WRD records
 (जास्तीत जास्त पूर पातळी / विसर्ग) and are embedded as anchor coordinates:

@@ -19,10 +19,10 @@ The consoles below provide interactive visualization of the API authentication f
       <strong>API Gateway & Authentication Sequence</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../../diagrams/04-sequence-auth-api.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/04-sequence-auth-api.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../../diagrams/04-sequence-auth-api.html?embed=1" title="API Gateway & Authentication Sequence Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/04-sequence-auth-api.html?embed=1" title="API Gateway & Authentication Sequence Console"></iframe>
 </div>
 
 ---
@@ -31,29 +31,22 @@ The consoles below provide interactive visualization of the API authentication f
 
 HydroCast isolates operational consumers from administrative functions by enforcing two distinct API key classes:
 
-```mermaid
-flowchart TD
-    Req[Incoming HTTP Request] --> PathCheck{Target Path?}
+### System Architecture Map (Visual Console)
 
-    PathCheck -->|/api/v1/health| Public[No Auth - Liveness Probe]
-    PathCheck -->|/api/v1/admin/*| AdminAuth[verify_admin_auth]
-    PathCheck -->|/api/v1/* Read| PublicAuth[verify_public_or_key]
+The Mermaid flow diagram has been replaced by the interactive SVG console below:
 
-    AdminAuth --> AdminGate{"Valid Bearer JWT?<br/>OR<br/>X-API-Key == Master API_KEY?"}
-    AdminGate -->|YES| AllowAdmin[Allow Admin Access]
-    AdminGate -->|NO| DenyAdmin[401 / 403 Forbidden]
-
-    PublicAuth --> KeyCheck{"Valid Consumer Key<br/>OR Master Key?"}
-    KeyCheck -->|YES| AllowRead[Allow Public Read]
-    KeyCheck -->|NO| DenyRead[401 / 403 Forbidden]
-
-    style Req fill:#e0f2fe,stroke:#0284c7,stroke-width:1px,color:#0f172a
-    style Public fill:#dcfce7,stroke:#22c55e,stroke-width:1px,color:#0f172a
-    style AllowAdmin fill:#dcfce7,stroke:#22c55e,stroke-width:1px,color:#0f172a
-    style AllowRead fill:#dcfce7,stroke:#22c55e,stroke-width:1px,color:#0f172a
-    style DenyAdmin fill:#fee2e2,stroke:#ef4444,stroke-width:1px,color:#0f172a
-    style DenyRead fill:#fee2e2,stroke:#ef4444,stroke-width:1px,color:#0f172a
-```
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>04 · API Authentication & Request Lifecycle</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/04-sequence-auth-api.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/04-sequence-auth-api.html?embed=1" title="04 · API Authentication & Request Lifecycle Console"></iframe>
+</div>
 
 ### 1.1 Key Tiers and Access Scopes
 

@@ -14,10 +14,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>ML Calibration Loop</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/15-ml-calibration.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/15-ml-calibration.html?embed=1" title="ML Calibration Loop Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/15-ml-calibration.html?embed=1" title="ML Calibration Loop Console"></iframe>
 </div>
 
 ---
@@ -37,11 +37,11 @@ The console below is the rendered reference for this page: it carries the same s
 | - Pearson Linear Correlation (r, R^2) |   | - Stage RMSE <= +-0.025 m |
 | - Nash-Sutcliffe Model Efficiency (NSE) |   | - Stage MAE  <= +-0.018 m |
 | - Root Mean Square Error (RMSE_stage, RMSE_q) |   | - Suppress undefined NSE/Spearman |
-| - Percent Volume Bias (PBIAS %) | +-----------------------------------+ |   |
+| - Percent Volume Bias (PBIAS %) |   |   |
 | 90-Hour Lifecycle Progression & Verification Tracker |   |   |
 | - Hourly Verification Progress: verified_h / 90h (%) |   |   |
 | - Lead-Time Error Decay Analysis: [0-12, 12-24, ...] |   |   |
-| - 18-Station Rainfall Volume Verification |   |   |
+| - 20-Station Rainfall Volume Verification |   |   |
 
 
 Hydrological flood early warning systems must not be evaluated on single-point errors alone. A model might predict water levels with low mean error while failing to capture the timing, peak magnitude, or rank order of the flood wave.
@@ -53,7 +53,7 @@ HydroCast employs a **multi-dimensional validation matrix** that assesses:
 3. **Linear Correspondence:** Pearson Correlation ($r$ and $R^2$).
 4. **Volumetric Runoff Conservation:** Percent Bias (PBIAS %).
 5. **Absolute Dispersion:** Root Mean Square Error (RMSE) and Mean Absolute Error (MAE).
-6. **Spatial Precipitation Fidelity:** Station-by-station 90-hour rainfall volume accuracy across 18 catchment rain gauges.
+6. **Spatial Precipitation Fidelity:** Station-by-station 90-hour rainfall volume accuracy across 20 catchment rain gauges.
 
 ---
 
@@ -123,9 +123,9 @@ $$\text{MAE} = \frac{1}{n} \sum_{t=1}^{n} |h_{sim}(t) - h_{obs}(t)|$$
 
 ---
 
-## 3. Station-Wise Rainfall Volume Accuracy (18 Stations)
+## 3. Station-Wise Rainfall Volume Accuracy (20 Stations)
 
-For each of the 18 catchment rain gauges, HydroCast tracks the total accumulated 90-hour precipitation volume ($V_{sim}$ vs $V_{obs}$):
+For each of the 20 catchment rain gauges (9 primary + 11 alternate), HydroCast tracks the total accumulated 90-hour precipitation volume ($V_{sim}$ vs $V_{obs}$):
 
 $$\text{Error}_{mm} = V_{sim} - V_{obs}$$
 

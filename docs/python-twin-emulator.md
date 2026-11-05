@@ -15,10 +15,10 @@ The console below is the rendered reference for this page: it carries the same s
       <strong>Catchment Hydrology Solver</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="diagrams/10-catchment-hydrology-solver.html" target="_blank">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console"></iframe>
 </div>
 
 ---
@@ -42,21 +42,22 @@ HydroCast Python Twin:      [< 0.02s] (750x speedup)
 
 The digital twin implements five sequentially coupled mathematical stages for every forecast cycle:
 
-```mermaid
-flowchart TD
-    Rain["Catchment Hyetograph P(t)"] --> S1["Stage 1: AMC Classification & TR-55 CN Loss"]
-    S1 -->|Excess Rain ΔP_excess| S2["Stage 2: Dimensionless Unit Hydrograph Transform"]
-    S2 -->|Subbasin Outflow Q_direct| S3["Stage 3: Sub-Stepped Muskingum Routing"]
-    S3 -->|Mainstem Surface Flow Q_surface| S4["Stage 4: Exponential Baseflow Recession"]
-    S4 -->|Total Hydrograph Q_total| S5["Stage 5: Physical Peak & Strike Detection"]
+### System Architecture Map (Visual Console)
 
-    style Rain fill:#e0f2fe,stroke:#0284c7,stroke-width:1px,color:#0f172a
-    style S1 fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#0f172a
-    style S2 fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#0f172a
-    style S3 fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#0f172a
-    style S4 fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#0f172a
-    style S5 fill:#ecfdf5,stroke:#10b981,stroke-width:2px,color:#0f172a
-```
+The Mermaid flow diagram has been replaced by the interactive SVG console below:
+
+<div class="hydrocast-diagram-card">
+  <div class="hydrocast-diagram-header">
+    <div class="hydrocast-diagram-title">
+      <span class="hydrocast-diagram-badge">Interactive Console</span>
+      <strong>14 · Dual-Engine HEC-HMS & Python Twin</strong>
+    </div>
+    <div class="hydrocast-diagram-actions">
+      <a class="hydrocast-diagram-btn" href="diagrams/14-hec-hms-engine.html" target="_blank">Open Fullscreen ↗</a>
+    </div>
+  </div>
+  <iframe class="hydrocast-diagram-frame" src="diagrams/14-hec-hms-engine.html?embed=1" title="14 · Dual-Engine HEC-HMS & Python Twin Console"></iframe>
+</div>
 
 ### 2.1 Stage 1: Soil Moisture Loss (SCS-CN with Dynamic AMC Tracking)
 

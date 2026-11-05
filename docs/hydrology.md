@@ -19,10 +19,10 @@ The console below provides interactive visualization of the catchment hydrology 
       <strong>Catchment Hydrology Solver (Runoff & Muskingum Routing)</strong>
     </div>
     <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../../diagrams/10-catchment-hydrology-solver.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
+      <a class="hydrocast-diagram-btn" href="../diagrams/10-catchment-hydrology-solver.html" target="_blank" rel="noopener">Open Fullscreen ↗</a>
     </div>
   </div>
-  <iframe class="hydrocast-diagram-frame" src="../../diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console" loading="lazy"></iframe>
+  <iframe class="hydrocast-diagram-frame" src="../diagrams/10-catchment-hydrology-solver.html?embed=1" title="Catchment Hydrology Solver Console" loading="lazy"></iframe>
 </div>
 
 ---
