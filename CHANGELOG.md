@@ -6,6 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Fixed
+* **Visitor counter no longer freezes at placeholder values.** The Supabase
+  existence check used `select=1`, which PostgREST rejects with HTTP 400, so
+  every visit fell through to the seeded `1428 / 42` memory fallback. The route
+  now uses a valid projection, records visits atomically (optional RPC) or via
+  the REST fallback, and returns only persisted counts.
+* Removed hardcoded baselines and `localStorage` snapshots from the odometer.
+  The widget records once per session, polls a read-only GET every 60 seconds,
+  and ignores degraded in-memory responses once a persisted value is known.
+* Added `GET /api/v1/visits` so dashboards can read counts without incrementing
+  them, with explicit `no-store` caching.
+
+---
+
 ## [2.0.0] - 2026-11-02 — Production Release: Operations Control & Digital Twin
 
 ### 🚀 Highlights & Architectural Milestones

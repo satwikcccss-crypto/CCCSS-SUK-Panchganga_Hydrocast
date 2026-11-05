@@ -252,7 +252,11 @@ The **Model Accuracy & Validation** workspace features an interactive **Adaptive
 
 ## 10. Animated Visitor Odometer Counter (`OdometerCounter.tsx`)
 
-The dashboard header incorporates an animated odometer counter rendering smooth mechanical digit transitions using CSS transform perspective, displaying total platform forecast hours and user access sessions.
+The dashboard header and sidebar render an animated odometer with smooth mechanical digit transitions. It shows **unique visits today** and **all-time visits** from the persisted visitor ledger (Supabase, Upstash/KV, or the FastAPI backend).
+
+* A visit is recorded once per browser session per UTC day via `POST /api/v1/visits/record`.
+* Counts refresh every 60 seconds (and when the tab becomes visible) via `GET /api/v1/visits/record`, which never records a visit.
+* Responses are explicitly uncacheable, and the widget never uses hardcoded baselines or `localStorage` snapshots — so the displayed values cannot go stale.
 
 ---
 

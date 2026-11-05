@@ -75,8 +75,8 @@ Browser ──► Next.js (server routes) ──► FastAPI ──► PostgreSQL
 ### Availability
 * Per-IP rate limiting on public routes.
 * WebSocket connections are capped (`MAX_WS_CONNECTIONS`, default 200).
-* Visitor-counter route is throttled and returns cached counts instead of
-  fanning out to Supabase/Upstash on every call.
+* Visitor-counter writes are throttled per IP; throttled requests still return
+  fresh ledger counts, but do not fan out a second write to Supabase/Upstash.
 
 ---
 
