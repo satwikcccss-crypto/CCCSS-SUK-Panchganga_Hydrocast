@@ -65,3 +65,43 @@ CREATE POLICY "Allow public read site_visitor_ips" ON site_visitor_ips FOR SELEC
 
 DROP POLICY IF EXISTS "Allow public write site_visitor_ips" ON site_visitor_ips;
 CREATE POLICY "Allow public write site_visitor_ips" ON site_visitor_ips FOR ALL USING (true) WITH CHECK (true);
+
+-- ----------------------------------------------------------------------------
+-- Atomic visit recording
+-- ----------------------------------------------------------------------------
+-- Keep this in sync with scripts/02_visitor_counter_setup.sql. The Next.js
+-- route uses this RPC for an atomic de-duplicate + increment + read.
+CREATE OR REPLACE FUNCTION record_site_visit(p_ip_hash TEXT, p_visit_date DATE)
+RETURNS TABLE (daily INTEGER, total INTEGER)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_inserted INTEGER := 0;
+BEGIN
+    INSERT INTO site_visitor_ips (ip_hash, visit_date)
+    VALUES (p_ip_hash, p_visit_date)
+    ON CONFLICT (ip_hash, visit_date) DO NOTHING;
+
+    GET DIAGNOSTICS v_inserted = ROW_COUNT;
+
+    IF v_inserted > 0 THEN
+        INSERT INTO site_visits (visit_date, visit_count)
+        VALUES (p_visit_date, 1)
+        ON CONFLICT (visit_date) DO UPDATE
+            SET visit_count = site_visits.visit_count + 1;
+    END IF;
+
+    RETURN QUERY
+        SELECT
+            COALESCE(
+                (SELECT sv.visit_count FROM site_visits sv WHERE sv.visit_date = p_visit_date),
+                0
+            )::INTEGER AS daily,
+            COALESCE((SELECT SUM(sv.visit_count) FROM site_visits sv), 0)::INTEGER AS total;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION record_site_visit(TEXT, DATE) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION record_site_visit(TEXT, DATE) TO anon, authenticated, service_role;

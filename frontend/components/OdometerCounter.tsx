@@ -1,14 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// Use relative API route in browser to hit Next.js serverless route, avoiding mixed-content on Vercel
-const getVisitsUrl = () => {
+// Use the relative same-origin route in the browser; this keeps the widget
+// working on Vercel without mixed-content or localhost fallbacks.
+function getVisitsUrl() {
   if (typeof window !== "undefined") {
     return "/api/v1/visits/record";
   }
   const api = process.env.NEXT_PUBLIC_API_URL;
-  return api && api.startsWith("https://") ? `${api}/api/v1/visits/record` : "/api/v1/visits/record";
+  return api && api.startsWith("https://")
+    ? `${api}/api/v1/visits/record`
+    : "/api/v1/visits/record";
+}
+
+type VisitCounts = {
+  daily: number;
+  total: number;
+  persisted?: boolean;
 };
 
 function DigitRoll({ digit }: { digit: string }) {
@@ -20,7 +29,10 @@ function DigitRoll({ digit }: { digit: string }) {
         style={{ transform: `translateY(-${parseInt(digit) * 22}px)` }}
       >
         {Array.from({ length: 10 }).map((_, i) => (
-          <span key={i} className="flex items-center justify-center h-[22px] w-full bg-gradient-to-b from-gray-100 via-white to-gray-100">
+          <span
+            key={i}
+            className="flex items-center justify-center h-[22px] w-full bg-gradient-to-b from-gray-100 via-white to-gray-100"
+          >
             {i}
           </span>
         ))}
@@ -50,68 +62,100 @@ function Odometer({ value, padLength = 5 }: { value: number; padLength?: number 
 }
 
 export default function VisitorCounterWidget({ compact = false }: { compact?: boolean }) {
-  const BASELINE_TOTAL = 1428;
-  const BASELINE_DAILY = 42;
-
-  const [daily, setDaily] = useState(BASELINE_DAILY);
-  const [total, setTotal] = useState(BASELINE_TOTAL);
+  const [daily, setDaily] = useState(0);
+  const [total, setTotal] = useState(0);
   const [mounted, setMounted] = useState(false);
+
+  // Tracks whether we have ever received a value from a persistent ledger.
+  // A process-memory fallback must not overwrite a real count with 0/stale data.
+  const hasPersistedValue = useRef(false);
 
   useEffect(() => {
     setMounted(true);
 
-    // Initial load from localStorage cache for instant display
+    const controller = new AbortController();
+    let cancelled = false;
+
+    const today = new Date().toISOString().slice(0, 10);
+    const recordedKey = `hydrocast_visit_recorded_${today}`;
+
+    // Record at most one visit per browser session per UTC day. Subsequent
+    // reads use GET so the widget can refresh without inflating the counter.
+    let needRecord = true;
     try {
-      const cached = localStorage.getItem("hydrocast_visitor_counts");
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (parsed.daily && parsed.daily > 0) {
-          setDaily(Math.max(parsed.daily, BASELINE_DAILY));
-        }
-        if (parsed.total && parsed.total >= BASELINE_TOTAL) {
-          setTotal(parsed.total);
-        } else {
-          setTotal(BASELINE_TOTAL);
-        }
-      }
+      needRecord = sessionStorage.getItem(recordedKey) !== "1";
     } catch {
-      // Ignore localStorage errors
+      // sessionStorage can be unavailable in strict privacy modes.
     }
 
-    const recordVisit = () => {
-      fetch(getVisitsUrl(), { method: "POST" })
-        .then((res) => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.json();
-        })
-        .then((data) => {
-          const d = Math.max(data.daily || BASELINE_DAILY, BASELINE_DAILY);
-          const t = Math.max(data.total || BASELINE_TOTAL, BASELINE_TOTAL);
-          setDaily(d);
-          setTotal(t);
-          try {
-            localStorage.setItem("hydrocast_visitor_counts", JSON.stringify({ daily: d, total: t }));
-          } catch {
-            // Ignore
-          }
-        })
-        .catch((err) => {
-          console.warn("Could not record visit from server:", err);
-        });
+    const applyCounts = (data: VisitCounts) => {
+      if (cancelled) return;
+      if (typeof data?.daily !== "number" || typeof data?.total !== "number") return;
+
+      // Ignore a degraded in-memory response once we have a real ledger value.
+      if (data.persisted === false && hasPersistedValue.current) return;
+
+      setDaily(data.daily);
+      setTotal(data.total);
+      if (data.persisted !== false) hasPersistedValue.current = true;
     };
 
-    recordVisit();
+    const refresh = async () => {
+      const record = needRecord;
+      try {
+        const res = await fetch(getVisitsUrl(), {
+          method: record ? "POST" : "GET",
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    // Refresh every 60s so telemetry stays fresh on live dashboards
-    const interval = setInterval(recordVisit, 60_000);
-    return () => clearInterval(interval);
+        const data: VisitCounts = await res.json();
+        applyCounts(data);
+
+        if (record && data.persisted !== false) {
+          needRecord = false;
+          try {
+            sessionStorage.setItem(recordedKey, "1");
+          } catch {
+            // Ignore storage failures.
+          }
+        }
+      } catch (err) {
+        if (!cancelled && (err as Error)?.name !== "AbortError") {
+          console.warn("Could not refresh visitor counter:", err);
+        }
+      }
+    };
+
+    void refresh();
+
+    // Poll the read-only endpoint so all open dashboards converge on the same
+    // persisted value without creating extra visits.
+    const interval = setInterval(() => void refresh(), 60_000);
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, []);
 
   if (!mounted) return null;
 
   if (compact) {
     return (
-      <div className="flex items-center gap-2 bg-slate-50 border border-slate-200/80 rounded-md px-2.5 py-1 text-xs shadow-xs">
+      <div
+        className="flex items-center gap-2 bg-slate-50 border border-slate-200/80 rounded-md px-2.5 py-1 text-xs shadow-xs"
+        title={`Total visits: ${total.toLocaleString("en-IN")}`}
+      >
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
         <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Visits</span>
         <Odometer value={total} padLength={6} />
@@ -126,7 +170,7 @@ export default function VisitorCounterWidget({ compact = false }: { compact?: bo
           <p className="text-[9px] tracking-wider uppercase font-semibold text-gray-400 mb-0.5">Today</p>
           <Odometer value={daily} padLength={4} />
         </div>
-        
+
         <div className="w-px h-8 bg-gray-100"></div>
 
         <div className="flex flex-col items-center gap-1.5">

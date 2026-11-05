@@ -159,6 +159,7 @@ credential model.
 |:---|:---|:---|
 | GET | /api/v1/health | Docker container & system liveness health probe |
 | GET | /api/v1/status | System status, server time & latest cycle ID |
+| GET | /api/v1/visits | Read daily & total visitor counts (never records) |
 | POST | /api/v1/visits/record | Record a unique visit; returns daily & total counts |
 | GET | /api/v1/rainfall/ecmwf | 90-hr ECMWF precipitation hyetographs per subbasin |
 | GET | /api/v1/rainfall/stations | Station selection decisions for latest cycle |

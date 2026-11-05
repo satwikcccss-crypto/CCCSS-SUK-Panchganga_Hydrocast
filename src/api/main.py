@@ -12,6 +12,7 @@ Endpoints
 ---------
 GET /api/v1/health                  health check for Docker & probes
 GET /api/v1/status                  system health + current cycle info
+GET /api/v1/visits                  persisted daily & total visitor counts
 GET /api/v1/rainfall/ecmwf          90-hr ECMWF hyetograph per subbasin
 GET /api/v1/rainfall/stations       station selection log for latest cycle
 GET /api/v1/rainfall/gauges         all raw gauge hyetographs (last cycle)
@@ -474,6 +475,31 @@ async def record_visit(request: Request):
         daily = await conn.fetchval("SELECT visit_count FROM site_visits WHERE visit_date=CURRENT_DATE")
         total = await conn.fetchval("SELECT SUM(visit_count) FROM site_visits")
         
+    return {"daily": daily or 0, "total": total or 0}
+
+
+@app.get(
+    "/api/v1/visits",
+    dependencies=[PublicDep],
+    tags=["System"],
+    summary="Read visitor counts",
+    response_description="Unique-visitor counts for today and for all time.",
+)
+@limiter.limit(RATE_LIMIT_PUBLIC)
+async def read_visits(request: Request, response: Response):
+    """Return the persisted visitor counts without recording a new visit.
+
+    Kept separate from ``POST /api/v1/visits/record`` so dashboards can poll
+    for fresh counts (every 60 s) without inflating the daily total. The
+    response is explicitly uncacheable so a CDN cannot serve a stale odometer.
+    """
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        daily = await conn.fetchval(
+            "SELECT visit_count FROM site_visits WHERE visit_date=CURRENT_DATE"
+        )
+        total = await conn.fetchval("SELECT SUM(visit_count) FROM site_visits")
     return {"daily": daily or 0, "total": total or 0}
 
 

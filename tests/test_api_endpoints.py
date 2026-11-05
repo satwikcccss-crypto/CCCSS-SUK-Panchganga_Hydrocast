@@ -172,6 +172,16 @@ def test_record_visit_counts(monkeypatch, client):
     assert len(conn.executed) == 2  # visitor row + daily counter
 
 
+def test_read_visits_does_not_record(monkeypatch, client):
+    conn = install_pool(monkeypatch, fetchval=[5, 10])
+    r = client.get("/api/v1/visits")
+
+    assert r.status_code == 200
+    assert r.json() == {"daily": 5, "total": 10}
+    assert conn.executed == []  # read-only
+    assert r.headers["cache-control"].startswith("no-store")
+
+
 # ── rainfall ──────────────────────────────────────────────────────────────────
 
 def test_ecmwf_hyetograph_groups_by_subbasin(monkeypatch, client):
