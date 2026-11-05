@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/hydrocast_main_banner.jpg" alt="HydroCast Banner" width="100%" style="border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.22);">
+  <img src="docs/assets/hydrocast_main_banner.jpg" alt="HydroCast Banner" width="100%" style="border-radius: 14px; box-shadow: 0 16px 48px rgba(0,0,0,0.28);">
 </p>
 
 <h1 align="center">🌊 HydroCast</h1>
@@ -9,27 +9,66 @@
   <em>Engineered for the 1,837 km² Panchganga River Catchment · Kolhapur District, Maharashtra, India</em>
 </p>
 
+<!-- ======================================================================= -->
+<!-- ANIMATED TYPING HEADER                                                  -->
+<!-- ======================================================================= -->
 <p align="center">
   <a href="https://cccss-suk-panchganga-hydrocast.vercel.app">
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=19&duration=2400&pause=1100&color=0EA5E9&center=true&vcenter=true&multiline=true&width=800&height=75&lines=%F0%9F%8C%8A+Real-Time+Panchganga+Basin+Hydrologic+Digital+Twin;%E2%9A%A1+Vectorized+Python+Engine+%2B+USACE+HEC-HMS+4.13;%F0%9F%8E%AF+90-Hour+Predictive+Warning+for+Kolhapur+City;%F0%9F%9A%A8+Automated+DDMA+Kolhapur+%26+CWC+Disaster+Alerting" alt="HydroCast Typing Banner" />
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=20&duration=2400&pause=1100&color=0EA5E9&center=true&vcenter=true&multiline=true&width=820&height=80&lines=%F0%9F%8C%8A+Real-Time+Panchganga+Basin+Hydrologic+Digital+Twin;%E2%9A%A1+Vectorized+Python+Engine+%2B+USACE+HEC-HMS+4.13;%F0%9F%8E%AF+90-Hour+Predictive+Warning+for+Kolhapur+City;%F0%9F%9A%A8+Automated+DDMA+Kolhapur+%26+CWC+Disaster+Alerting" alt="HydroCast Animated Typing Header" />
   </a>
 </p>
 
+<!-- ======================================================================= -->
+<!-- TIER 1: LIVE STATUS & DEPLOYMENT BADGES (UNIFIED FOR-THE-BADGE)         -->
+<!-- ======================================================================= -->
 <p align="center">
   <a href="https://cccss-suk-panchganga-hydrocast.vercel.app">
-    <img src="https://img.shields.io/badge/Production-Live_Dashboard-0ea5e9?style=flat-square&logo=vercel&logoColor=white" alt="Live System">
+    <img src="https://img.shields.io/badge/Vercel-Live_Production-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel Live">
   </a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/v2.0.0">
-    <img src="https://img.shields.io/badge/Release-v2.0.0-6366f1?style=flat-square&logo=github&logoColor=white" alt="Version 2.0.0">
-  </a>
-  <a href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/">
-    <img src="https://img.shields.io/badge/Documentation-Portal-0284c7?style=flat-square&logo=googledocs&logoColor=white" alt="Documentation">
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/pipeline.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/pipeline.yml?branch=main&label=Forecast%20Pipeline&style=for-the-badge&logo=githubactions&logoColor=white" alt="Forecast Pipeline">
   </a>
   <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/tests.yml">
-    <img src="https://img.shields.io/badge/Tests-286%20Passed-10b981?style=flat-square&logo=pytest&logoColor=white" alt="Tests">
+    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/tests.yml?branch=main&label=Test%20Suite&style=for-the-badge&logo=pytest&logoColor=white" alt="Tests">
+  </a>
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/v2.0.0">
+    <img src="https://img.shields.io/github/v/release/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=github&color=0284c7" alt="Release">
+  </a>
+  <a href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/">
+    <img src="https://img.shields.io/badge/Docs-MkDocs_Portal-06B6D4?style=for-the-badge&logo=googledocs&logoColor=white" alt="Documentation">
+  </a>
+</p>
+
+<!-- ======================================================================= -->
+<!-- TIER 2: REPOSITORY & COMMUNITY HEALTH BADGES                            -->
+<!-- ======================================================================= -->
+<p align="center">
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/stargazers">
+    <img src="https://img.shields.io/github/stars/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=github&color=eab308" alt="GitHub Stars">
+  </a>
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/network/members">
+    <img src="https://img.shields.io/github/forks/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=github&color=3b82f6" alt="GitHub Forks">
+  </a>
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/issues">
+    <img src="https://img.shields.io/github/issues/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=github&color=10b981" alt="Issues">
+  </a>
+  <a href="CONTRIBUTING.md">
+    <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge&logo=github" alt="PRs Welcome">
+  </a>
+  <a href="CODE_OF_CONDUCT.md">
+    <img src="https://img.shields.io/badge/Contributor-Covenant_2.1-4c1?style=for-the-badge" alt="Code of Conduct">
   </a>
   <a href="LICENSE">
-    <img src="https://img.shields.io/badge/License-Academic%20%26%20Civil-8b5cf6?style=flat-square" alt="License">
+    <img src="https://img.shields.io/badge/License-Academic_&_Civil-8B5CF6?style=for-the-badge&logo=open-source-initiative&logoColor=white" alt="License">
+  </a>
+</p>
+
+<!-- ======================================================================= -->
+<!-- TIER 3: BEAUTIFUL SKILL ICONS STRIP                                     -->
+<!-- ======================================================================= -->
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=py,fastapi,nextjs,ts,react,tailwind,postgres,docker,githubactions,supabase,postman,git&theme=dark" alt="Technology Stack Icons" />
   </a>
 </p>
 
@@ -300,47 +339,50 @@ docker compose up -d --build
 
 ---
 
-## 🧪 Testing & Verification Suite
+## 🤝 Contributing & Community Standards
 
-HydroCast enforces 100% test passing across physical calculations and edge routes:
+We actively welcome contributions to HydroCast! Whether you are improving hydrologic algorithms, optimizing data pipelines, or enhancing the control room UI:
 
-```bash
-# Run complete test suite (286+ tests)
-pytest tests -v
-
-# Run MkDocs documentation validation under strict mode
-python -m mkdocs build --strict
-
-# Run Next.js production build check
-cd frontend && npm run build
-```
+* Read our [**Contributing Guide**](CONTRIBUTING.md) for branch policies, PR standards, and local testing workflows.
+* Review our [**Code of Conduct**](CODE_OF_CONDUCT.md) for community pledges and standards.
+* Report bugs or request features via [GitHub Issues](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/issues).
 
 ---
 
-## 🔬 Research Attribution & Governance
+## 📖 Citation & Research Attribution
 
-HydroCast was developed at the **Centre for Climate Change and Sustainability Studies (CCCSS)**, **Shivaji University, Kolhapur (SUK)**.
+If you use HydroCast in your academic research, hydrologic studies, disaster resilience operations, or governmental flood planning, please cite the platform as:
 
-* **Principal Investigator & Lead System Architect:** Er. Satwik Udupi (`satwikcccss@gmail.com`)
-* **Project Director:** Prof. (Dr.) Sachin Panhalkar
-* **Research Grant & Funding:** Supported by the **Department of Science & Technology (DST-SERB)**, Government of India.
-* **Institutional Partner:** Water Resources Department (WRD), Government of Maharashtra.
+> **Satwik K. Udupi, Dr. Sachin S. Panhalkar, Dr. Ganesh S. Nhivekar, Nikhil D. Pawar, Center for Climate Change and Sustainability Studies, Shivaji University, Kolhapur (2026).**  
+> *HydroCast: Operational Hydrologic Digital Twin & Real-Time Flood Intelligence Platform for the Panchganga River Catchment.*  
+> GitHub Repository: [https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast)
 
-### BibTeX Citation
+### BibTeX Format
 ```bibtex
 @software{hydrocast2026,
-  author = {Udupi, Satwik and Panhalkar, Sachin and CCCSS Research Team},
-  title = {HydroCast: Operational Hydrologic Digital Twin and Flood Early-Warning Platform for the Panchganga Basin},
-  year = {2026},
+  author    = {Udupi, Satwik K. and Panhalkar, Sachin S. and Nhivekar, Ganesh S. and Pawar, Nikhil D.},
+  title     = {HydroCast: Operational Hydrologic Digital Twin & Real-Time Flood Intelligence Platform for the Panchganga River Catchment},
+  institution = {Center for Climate Change and Sustainability Studies, Shivaji University, Kolhapur},
+  year      = {2026},
   publisher = {GitHub},
-  version = {2.0.0},
-  url = {https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast}
+  version   = {2.0.0},
+  url       = {https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast}
 }
 ```
 
 ---
 
+## 🏛️ Institutional Partners & Funding
+
+HydroCast is developed at the **Centre for Climate Change and Sustainability Studies (CCCSS)**, **Shivaji University, Kolhapur (SUK)**.
+
+* **Research Grant & Funding:** Supported by the **Department of Science & Technology (DST-SERB)**, Government of India.
+* **Institutional Partner:** Water Resources Department (WRD), Government of Maharashtra.
+* **Disaster Coordination Partner:** District Disaster Management Authority (DDMA), Kolhapur.
+
+---
+
 <p align="center">
   Released under the <strong>Academic & Civil Disaster Resilience License</strong>.<br>
-  Built with ❤️ for the safety, resilience, and flood defense of Kolhapur District.
+  Built with ❤️ by CCCSS, Shivaji University for the safety, resilience, and flood defense of Kolhapur District.
 </p>
