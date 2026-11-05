@@ -1,196 +1,341 @@
 <p align="center">
-  <img src="docs/assets/hydrocast_main_banner.jpg" alt="HydroCast Banner" width="100%" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.15);">
-</p>
-
-<h1 align="center">🌊 HydroCast</h1>
-
-<p align="center">
-  <strong>The Open-Source Hydrologic Digital Twin & Real-Time Operational Flood Intelligence Platform</strong><br>
-  <em>Engineered for the 1,837 km² Panchganga River Basin · Kolhapur, Maharashtra, India</em>
+  <img src="docs/assets/hydrocast_main_banner.jpg" alt="HydroCast Banner" width="100%" style="border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.25);">
 </p>
 
 <p align="center">
-  <a href="https://cccss-suk-panchganga-hydrocast.vercel.app"><img src="https://img.shields.io/badge/Live_Dashboard-Vercel_Production-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Dashboard"></a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/v2.0.0"><img src="https://img.shields.io/badge/Release-v2.0.0-0ea5e9?style=for-the-badge&logo=github&logoColor=white" alt="Release v2.0.0"></a>
-  <a href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/"><img src="https://img.shields.io/badge/Docs-MkDocs_Material-06B6D4?style=for-the-badge&logo=googledocs&logoColor=white" alt="Documentation"></a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/tests.yml"><img src="https://img.shields.io/badge/Tests-286_Passed-10b981?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Academic_&_Civil-8b5cf6?style=for-the-badge" alt="License"></a>
+  <a href="https://cccss-suk-panchganga-hydrocast.vercel.app">
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&duration=2500&pause=1000&color=0EA5E9&center=true&vcenter=true&multiline=true&width=820&height=80&lines=%F0%9F%8C%8A+HydroCast%3A+Operational+Hydrologic+Digital+Twin;%E2%9A%A1+Vectorized+Python+Engine+%2B+USACE+HEC-HMS+4.13;%F0%9F%8E%AF+90-Hour+Predictive+Warning+for+Panchganga+Basin;%F0%9F%9A%A8+Automated+DDMA+Kolhapur+%26+CWC+Disaster+Alerting" alt="HydroCast Animated Typing Header" />
+  </a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11_|_3.12-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/Next.js-14_App_Router-black?style=flat-square&logo=next.js&logoColor=white" alt="Next.js">
+  <!-- Live Operational CI/CD Badges -->
+  <a href="https://cccss-suk-panchganga-hydrocast.vercel.app">
+    <img src="https://img.shields.io/badge/Vercel-Live_Production-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel Production">
+  </a>
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/pipeline.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/pipeline.yml?branch=main&label=Forecast%20Pipeline&style=for-the-badge&logo=githubactions&logoColor=white" alt="Pipeline Status">
+  </a>
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/tests.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/tests.yml?branch=main&label=Test%20Suite&style=for-the-badge&logo=pytest&logoColor=white" alt="Tests Status">
+  </a>
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/telemetry_validation.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/telemetry_validation.yml?branch=main&label=IoT%20Telemetry&style=for-the-badge&logo=espressif&logoColor=white" alt="Telemetry Status">
+  </a>
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/v2.0.0">
+    <img src="https://img.shields.io/github/v/release/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=for-the-badge&logo=github&color=0284c7" alt="Release Version">
+  </a>
+  <a href="https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/">
+    <img src="https://img.shields.io/badge/Documentation-MkDocs_Portal-06B6D4?style=for-the-badge&logo=googledocs&logoColor=white" alt="Documentation">
+  </a>
+</p>
+
+<p align="center">
+  <!-- Live Repository Metrics & Stats -->
+  <img src="https://img.shields.io/github/stars/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=flat-square&logo=github&color=eab308" alt="GitHub Stars">
+  <img src="https://img.shields.io/github/forks/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=flat-square&logo=github&color=3b82f6" alt="GitHub Forks">
+  <img src="https://img.shields.io/github/last-commit/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=flat-square&logo=git&color=10b981" alt="Last Commit">
+  <img src="https://img.shields.io/github/repo-size/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast?style=flat-square&logo=buffer&color=8b5cf6" alt="Repo Size">
+  <img src="https://img.shields.io/badge/Tests-286%20Passed-10b981?style=flat-square&logo=pytest&logoColor=white" alt="Tests Passed">
+  <img src="https://img.shields.io/badge/License-Academic%20%26%20Civil-indigo?style=flat-square" alt="License">
+</p>
+
+<p align="center">
+  <!-- Full Technology Stack Badges -->
+  <img src="https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/FastAPI-0.110+-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI">
-  <img src="https://img.shields.io/badge/PostgreSQL-15_+_PostGIS_3.4-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/Supabase-Auth_&_Edge-3ECF8E?style=flat-square&logo=supabase&logoColor=white" alt="Supabase">
-  <img src="https://img.shields.io/badge/ECMWF-IFS_HRES_(9km)-1E3A8A?style=flat-square" alt="ECMWF">
-  <img src="https://img.shields.io/badge/USACE-HEC--HMS_4.13-C53030?style=flat-square" alt="HEC-HMS">
-  <img src="https://img.shields.io/badge/IoT-ThingSpeak_Ultrasonic-FF6B6B?style=flat-square" alt="ThingSpeak">
+  <img src="https://img.shields.io/badge/Next.js-14%20App%20Router-black?style=flat-square&logo=next.js&logoColor=white" alt="Next.js">
+  <img src="https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/PostgreSQL-15%20%2B%20PostGIS-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Supabase-Auth%20%26%20Storage-3ECF8E?style=flat-square&logo=supabase&logoColor=white" alt="Supabase">
+  <img src="https://img.shields.io/badge/ECMWF-IFS%20HRES%20(9km)-1E3A8A?style=flat-square" alt="ECMWF">
+  <img src="https://img.shields.io/badge/USACE-HEC--HMS%204.13-C53030?style=flat-square" alt="HEC-HMS">
+  <img src="https://img.shields.io/badge/IoT-ThingSpeak%20Ultrasonic-FF6B6B?style=flat-square" alt="ThingSpeak">
   <img src="https://img.shields.io/badge/Docker-Multi--Stage-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker">
+  <img src="https://img.shields.io/badge/Tailwind-CSS%203.4-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind">
 </p>
 
 ---
 
-## ⚡ Why HydroCast?
+## ⚡ Executive Overview
 
-Every monsoon, torrential orographic rainfall over the Western Ghats (**100–250+ mm/day**) funnels through nine steep subcatchments into the urban bottleneck of **Kolhapur City**. Catastrophic floods in **2005, 2019, and 2021** proved that emergency responders and dam operators need **48 to 72 hours of validated predictive lead time**—not retrospective post-mortems.
+**HydroCast** is a mission-critical, operational hydrologic digital twin and flood early-warning platform engineered specifically for the **1,837.21 km² Panchganga River Catchment** in Kolhapur District, Maharashtra, India.
 
-Most academic flood models are slow, fragile desktop GUI scripts that run once a week. **HydroCast is built differently:** a production-grade, distributed digital twin that marries heavy hydrodynamic physics with cloud-native edge reliability.
+During the Southwest Monsoon (June–September), torrential orographic precipitation along the Sahyadri ridge crest (**100–250+ mm/day**) funnels through nine steep basaltic headwater subcatchments directly into the urban river corridor of **Kolhapur City**. Catastrophic inundations in **July 2005**, **August 2019**, and **July 2021** submerged critical transit bridges, paralyzed civic infrastructure, and proved that disaster management agencies require **48 to 72 hours of validated predictive lead time**—not retrospective observations.
+
+HydroCast achieves this by coupling:
+1. **High-Resolution NWP Forcing:** 90-hour Quantitative Precipitation Forecasts (QPF) from ECMWF IFS HRES (0.1° / ~9 km) with automated spatial centroid mapping and exponential backoff retry policies.
+2. **Dual-Core Hydrologic Simulation:** Continuous basin-wide runoff routing using SCS-CN infiltration loss, SCS Dimensionless Unit Hydrograph transforms, and Muskingum-Cunge channel routing ($R1 \rightarrow R5$). Powered by an official USACE HEC-HMS 4.13 headless runner with an automated, zero-dependency pure-Python vectorized digital twin fallback.
+3. **Monotonic Hydraulic Rating Engine:** Government Water Resources Department (WRD) cross-section surveys converted into monotonic piecewise cubic Hermite (PCHIP) rating curves for Rajaram Weir and Shivaji Bridge with millimeter datum alignment.
+4. **Adaptive ML Telemetry Recalibration:** Continuous error-residual auditing against live ultrasonic water level sensors (ThingSpeak IoT channel 3424513 @ Shivaji Bridge) triggering bounded parameter optimization ($\alpha_K, \alpha_{\text{lag}}, \Delta CN, X$).
+5. **Decisive Multi-Channel Alerting:** Central Water Commission (CWC) compliant flood bulletins pushed via WebSocket to operational dashboards, and dispatched directly to the District Disaster Management Authority (DDMA) and Telegram control rooms.
+
+---
+
+## 🏛️ System Architecture Continuum
+
+HydroCast follows a **6-Layer Decoupled Cloud-Edge Architecture**, ensuring that computational simulations, persistence, and real-time dashboard delivery scale independently and remain fault-tolerant:
 
 ```
-                  ┌──────────────────────────────────────────────┐
-                  │          HYDROCAST CLOUD ARCHITECTURE        │
-                  └──────────────────────────────────────────────┘
-                                          │
-       ┌──────────────────────────────────┴──────────────────────────────────┐
-       ▼                                                                     ▼
-[ EDGE DASHBOARD / VERCEL ]                                     [ COMPUTE CORE / RUNNERS ]
- • Next.js 14 App Router UI                                      • 12-Stage Automated Pipeline
- • Global CDN Sub-Second Delivery                                • Vectorized Pure-Python Digital Twin
- • Operations Control Room (/admin)                              • Official USACE HEC-HMS 4.13 Engine
- • Live Mechanical Odometer Counter                              • ECMWF IFS 0.1° High-Res NWP Ingestion
- • Supabase Google OAuth Allowlist                               • ThingSpeak IoT Stage Calibration
- • Serverless Real-Time Telemetry                                • DDMA / CWC Telegram Emergency Alerts
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                   HYDROCAST OPERATIONAL SYSTEM CONTINUUM                              │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+
+  [ LAYER 0: EXTERNAL FORCINGS & SENSORS ]
+    │  • ECMWF IFS HRES 90-hr QPF (Open-Meteo REST API, 0.1° spatial resolution)
+    │  • IoT Ultrasonic Stage Telemetry (ThingSpeak Ch. 3424513 @ Shivaji Bridge)
+    ▼
+  [ LAYER 1: INGESTION, SPATIAL MAPPING & QC ]
+    │  • Spatial centroid station mapping (Argmax volume & Thiessen polygon weighting)
+    │  • Missing data imputation, physical sanity gates & HEC-DSS rainfall tables
+    ▼
+  [ LAYER 2: HYDROLOGIC CONTINUUM & CHANNEL ROUTING ]
+    │  • SCS-CN Infiltration Loss Engine (S = 25.4 × [1000/CN - 10])
+    │  • SCS Dimensionless Unit Hydrograph runoff transforms across 9 subbasins
+    │  • Muskingum-Cunge Reach Routing (R1 → R5) to Rajaram & Shivaji sinks
+    │  • Dual-Engine Execution: USACE HEC-HMS 4.13 ⟷ Vectorized Python Digital Twin
+    ▼
+  [ LAYER 3: HYDRAULIC RATING & WRD DATUM ALIGNMENT ]
+    │  • Strictly Monotonic PCHIP Spline Interpolation (dQ/dh > 0)
+    │  • Exact WRD survey cross-sections (Rajaram Weir datum vs Shivaji Bridge -0.648 m shift)
+    │  • CWC Alert Categorization: NORMAL · ALERT (542.7m) · WARNING (543.3m) · DANGER (545.3m)
+    ▼
+  [ LAYER 4: IOT SENSOR QC & ADAPTIVE ML RECALIBRATION ]
+    │  • Real-time timing (Δt) & stage (Δh) discrepancy detector
+    │  • Bounded L-BFGS-B parameter optimization (α_K, α_lag, ΔCN, X)
+    │  • Atomic parameter update to Basin_1.basin with baseline snapshot protection
+    ▼
+  [ LAYER 5: ENTERPRISE PERSISTENCE & COLD STORAGE ]
+    │  • Relational Store: PostgreSQL 15 + PostGIS 3.4 (Supabase cloud synchronization)
+    │  • Atomic visit recording RPC (record_site_visit) preventing stale/zero counters
+    │  • 90-day cold-storage pruning into Snappy-compressed Apache Parquet archives
+    ▼
+  [ LAYER 6: EDGE PRESENTATION, CONTROL ROOM & ALERTS ]
+    │  • Vercel Edge Serverless Engine with Next.js 14 App Router
+    │  • Operations Control Room (/admin) with live 12-step pipeline monitoring
+    │  • Cloud Dispatch Bridge into GitHub Actions matrix runners
+    │  • Live Mechanical Odometer Counter with continuous 60s background refresh
+    │  • Multi-channel alerting: DDMA Kolhapur, CWC & Telegram emergency broadcasts
 ```
 
 ---
 
-## ✨ Features at a Glance
+## 🗺️ Panchganga Basin Catchment & Subbasin Parameters
 
-| Feature | Description |
-| :--- | :--- |
-| **⚡ Vectorized Digital Twin** | Pure-Python kinematic wave & Muskingum-Cunge solver (`src/models/vectorized_engine.py`) providing instantaneous, zero-dependency hydrologic modeling on Linux, Mac, or Windows. |
-| **🎯 USACE HEC-HMS 4.13 Automation** | Headless boundary scripting with automated DSS (Data Storage System) binary reading, seamlessly falling back to the vectorized digital twin when HEC-HMS binaries are absent. |
-| **📈 Calibrated Rating Curves** | Monotonic piecewise cubic Hermite (PCHIP) rating curves for **Shivaji Bridge** & **Rajaram K.T. Weir** guaranteeing $dQ/dh > 0$, calibrated against 2005, 2019, and 2021 flood stages. |
-| **🛰️ 90-Hour Predictive Forcing** | Automated ECMWF IFS 0.1° (~9 km) + Open-Meteo Quantitative Precipitation Forecasts (QPF) mapped spatially to subcatchment centroids every 6 hours. |
-| **🎛️ Operations Control Room (`/admin`)** | Real-time administrative cockpit providing 12-step pipeline inspection, telemetry health logs, and one-click cloud pipeline dispatch via GitHub Actions. |
-| **🔒 Enterprise Dual-Path Auth** | Role-Based Access Control via Supabase Google OAuth (strictly allowlisting authorized research/civil emails) + salted bcrypt operational passkeys for field operators. |
-| **📟 Mechanical Odometer Telemetry** | Live, mechanical-style visitor counter backed by atomic PostgreSQL / Supabase synchronization and in-memory serverless ledgers. |
-| **🚨 Multi-Channel Alerting** | Automated CWC-standard flood bulletins dispatched directly to **DDMA Kolhapur** and emergency Telegram control channels. |
+The Panchganga basin is segmented into **nine primary hydrologic subbasins** draining through five interconnected reaches:
 
----
+| Subbasin Code | Subbasin Name | Drainage Area ($km^2$) | Initial $CN$ | Lag Time ($min$) | Primary Rain Gauge | Centroid Coordinates |
+| :---: | :--- | :---: | :---: | :---: | :--- | :---: |
+| **S1** | Karveer | 86.21 | 74.85 | 2,151.96 | Karveer | `16.68°N, 74.22°E` |
+| **S2** | Sangarul | 153.77 | 65.74 | 3,154.25 | Sangarul | `16.63°N, 74.13°E` |
+| **S3** | Kotoli | 261.32 | 64.82 | 3,997.70 | Kotoli | `16.78°N, 74.05°E` |
+| **S4** | Karanjphen | 262.00 | 61.89 | 3,115.51 | Karanjphen | `16.83°N, 73.91°E` |
+| **S5** | Padasali | 106.39 | 60.97 | 2,117.09 | Gaganbawda | `16.59°N, 73.88°E` |
+| **S6** | Gaganbawda | 227.72 | 61.78 | 3,318.07 | Gaganbawda | `16.54°N, 73.83°E` |
+| **S7** | Garivade | 195.39 | 61.28 | 3,362.27 | Radhanagari | `16.42°N, 73.97°E` |
+| **S8** | Beed | 177.44 | 65.76 | 3,387.15 | Beed | `16.55°N, 74.06°E` |
+| **S9** | Radhanagari | 366.97 | 64.31 | 5,199.04 | Radhanagari | `16.38°N, 74.01°E` |
+| **TOTAL** | **Full Catchment** | **1,837.21 $km^2$** | *Weighted Avg* | — | **5 Core Gauges** | **Sahyadri Ridge Crest** |
 
-## 🗺️ Panchganga Basin Hydrologic Catchment
-
-The platform models **1,837.21 km²** of the Upper Krishna River Basin draining through 9 primary subcatchments and 5 major routing reaches:
-
-```
-  [ Sahyadri Crest (Rainfall 150-250mm/day) ]
-      │
-      ├── S6 Gaganbawda (227.7 km²) ──┐
-      ├── S5 Padasali   (106.4 km²) ──┴─► [ Reach R1: Kasari Upper (K=2.9h) ]
-      ├── S4 Karanjphen (262.0 km²) ────► [ Reach R2: Kasari Lower (K=11.8h) ] ──┐
-      ├── S3 Kotoli     (261.3 km²) ─────────────────────────────────────────────┤
-      ├── S2 Sangarul   (153.8 km²) ────► [ Reach R3: Kumbhi Trunk (K=3.8h) ] ───┼─► 🌉 CHHATRAPATI SHIVAJI BRIDGE
-      ├── S9 Radhanagari(367.0 km²) ────► [ Reach R4: Bhogawati    (K=1.2h) ] ───┤     (Warning 542.7m · Danger 544.7m)
-      ├── S8 Beed       (177.4 km²) ─────────────────────────────────────────────┘                 │
-      ├── S7 Garivade   (195.4 km²) ─────────────────────────────────────────────┐                 ▼
-      └── S1 Karveer    (86.2 km²)  ─────────────────────────────────────────────┴─► [ Reach R5: Trunk (K=4.6h) ]
-                                                                                                   │
-                                                                                                   ▼
-                                                                                     🌊 RAJARAM K.T. WEIR (Outlet)
-                                                                                       (Warning 539.0m · Danger 541.0m)
-```
+### Reach Routing Network (Muskingum-Cunge)
+* **Reach R1** (Kasari Upper): $K = 2.899\text{ h},\; X = 0.20$
+* **Reach R2** (Kasari Lower $\rightarrow$ Shivaji Bridge): $K = 11.827\text{ h},\; X = 0.20$
+* **Reach R3** (Kumbhi Reach): $K = 3.829\text{ h},\; X = 0.20$
+* **Reach R4** (Bhogawati Reach): $K = 1.224\text{ h},\; X = 0.20$
+* **Reach R5** (Panchganga Trunk $\rightarrow$ Rajaram Weir Outlet): $K = 4.619\text{ h},\; X = 0.20$
 
 ---
 
-## 🚀 Quickstart in 3 Minutes
+## 🌊 Hydraulic Rating & Monotonic PCHIP Conversions
 
-### Option A: Local Development
+HydroCast eliminates non-physical rating curve oscillations by computing monotonic piecewise cubic Hermite interpolating polynomials (PCHIP) directly from official Government Water Resources Department (WRD) cross-sectional survey tables:
 
+$$\frac{dQ}{dh} > 0 \quad \forall \; h \in [h_{\min}, h_{\max}]$$
+
+```
+          CHHATRAPATI SHIVAJI MAHARAJ BRIDGE                     RAJARAM K.T. WEIR (BASIN SINK)
+  ▲ 545.30m ──────────────────────── DANGER LEVEL         ▲ 541.00m ──────────────────────── DANGER LEVEL
+  │ 543.30m ------------------------ WARNING LEVEL        │ 539.00m ------------------------ WARNING LEVEL
+  │ 542.70m ........................ ALERT LEVEL          │ 535.95m ........................ TOP OF WEIR CREST
+  │ 531.54m ~~~~~~~~~~~~~~~~~~~~~~~~ Monsoon Baseflow     │ 532.19m ~~~~~~~~~~~~~~~~~~~~~~~~ Dry Bed Level
+  └──────────────────────────────────────────────────     └──────────────────────────────────────────────────
+          Datum Shift: -0.648m (WRD Benchmark)                    Primary Downstream Dynamic Rating Station
+```
+
+---
+
+## 🔄 12-Step Automated Forecast State Machine
+
+Every 6 hours (`00Z`, `06Z`, `12Z`, `18Z`), HydroCast executes a deterministic 12-step forecast cycle:
+
+| Step | State Identifier | Subsystem | Action & Quality Verification | Output Artifact |
+| :---: | :--- | :--- | :--- | :--- |
+| **01** | `FETCH_ECMWF` | NWP Ingestion | Ingest 90-hr ECMWF IFS QPF via Open-Meteo REST API | `ecmwf_90h_raw.json` |
+| **02** | `SELECT_STATIONS` | Spatial QC | Map rainfall volume to subbasin centroids | `selected_stations.json` |
+| **03** | `INGEST_THINGSPEAK` | IoT Sensors | Pull ultrasonic stage data from ThingSpeak Ch. 3424513 | `thingspeak_stage.json` |
+| **04** | `QC_SENSOR_DATA` | Telemetry QC | Range validation, spike rejection & noise filtering | `sensor_qc_report.json` |
+| **05** | `BUILD_HYETOGRAPHS` | Processing | Generate hourly subbasin hyetographs for HEC-HMS | `hyetographs.csv` |
+| **06** | `POPULATE_DSS` | Boundary Prep | Format boundary time-series into HEC-DSS records | `boundary_forcing.dss` |
+| **07** | `EXECUTE_HMS` | Simulation | Execute USACE HEC-HMS 4.13 or Vectorized Twin | `hms_runoff_out.dss` |
+| **08** | `APPLY_RATING_CURVE` | Hydraulics | Convert $Q(t) \rightarrow h(t)$ via monotonic PCHIP splines | `stage_hydrographs.json` |
+| **09** | `DETECT_DISCREPANCIES`| ML Auditor | Compute timing lag $\Delta t$ and stage error $\Delta h$ | `discrepancy_log.json` |
+| **10** | `CALIBRATE_PARAMS` | ML Calibration | Bounded L-BFGS-B optimization ($\alpha_K, \alpha_{\text{lag}}, \Delta CN$) | `calibrated_params.json` |
+| **11** | `CHECK_ALERTS` | Risk Assessment| Evaluate stages against CWC Warning & Danger thresholds | `cwc_bulletin.json` |
+| **12** | `DISPATCH_NOTIFICATIONS`| Broadcast | Transmit bulletins to DDMA, Telegram & Next.js dashboard | `dispatch_receipt.json` |
+
+---
+
+## 🎛️ Operations Control Room & Dual Authentication
+
+HydroCast features an enterprise-grade administrative cockpit located at **`/admin`**:
+
+```
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │ 🔒 HYDROCAST OPERATIONS CONTROL ROOM                                      [ADMIN: DEV] │
+ ├────────────────────────────────────────────────────────────────────────────────────────┤
+ │                                                                                        │
+ │  [ RUNTIME LATENCY ]             [ PIPELINE INTEGRITY ]          [ HEALTH TELEMETRY ]  │
+ │  0.018s (Vectorized Twin)        12/12 Steps Nominal (100%)       3 Active Nodes Online│
+ │                                                                                        │
+ ├────────────────────────────────────────────────────────────────────────────────────────┤
+ │  ⚡ CLOUD WORKFLOW DISPATCH                                                            │
+ │  [ ▶ Trigger 90-Hour Forecast Run ]       [ 🔄 Resync Supabase Database Ledger ]      │
+ │  (Dispatches asynchronous GitHub Actions runner matrix with JWT bearer authorization)   │
+ └────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Security & Governance
+* **Supabase Google OAuth Allowlist:** Only approved project leadership and researchers may authenticate via Google (`satwikcccss@gmail.com`, `panhalkarsachin@gmail.com`, `gonioelect@gmail.com`, `nikhilpawar6297@gmail.com`). All unauthorized Gmail accounts are rejected with an explicit contact message.
+* **Operational Passkeys:** Offline and field operator accounts (`Dev@Adm1`, `PI@Adm1`, `COPI@Adm1`, `JRF@Adm1`) authenticated via bcrypt-salted hashes.
+* **Cryptographic IP Hashing:** Visitor IPs are salted via `VISIT_HASH_SALT` to ensure full compliance with public privacy standards while preventing spam.
+
+---
+
+## 🏛️ Interactive Archify Architecture Consoles
+
+HydroCast ships with **17 self-contained, standalone interactive HTML simulators** developed with **Archify**. Each console supports dark/light themes, smooth pan/zoom, node inspection, and vector SVG/image export:
+
+| # | Console Name | Focus Area | Live Online Console | Local Source |
+| :---: | :--- | :---: | :---: | :---: |
+| **01** | **End-to-End System Architecture** | Topology | [Launch Console 01 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/01-architecture.html) | [`01-architecture.html`](docs/diagrams/01-architecture.html) |
+| **02** | **Precipitation & Telemetry Flow** | Dataflow | [Launch Console 02 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/02-dataflow.html) | [`02-dataflow.html`](docs/diagrams/02-dataflow.html) |
+| **03** | **12-Step Forecast State Machine** | Workflow | [Launch Console 03 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/03-forecast-workflow.html) | [`03-forecast-workflow.html`](docs/diagrams/03-forecast-workflow.html) |
+| **04** | **API Gateway & Auth Sequence** | Security | [Launch Console 04 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/04-sequence-auth-api.html) | [`04-sequence-auth-api.html`](docs/diagrams/04-sequence-auth-api.html) |
+| **05** | **Simulation Run Lifecycle** | State Machine | [Launch Console 05 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/05-lifecycle-runs.html) | [`05-lifecycle-runs.html`](docs/diagrams/05-lifecycle-runs.html) |
+| **06** | **Hybrid Cloud Deployment (Docker/OS)** | Infrastructure | [Launch Console 06 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/06-deployment-docker-os.html) | [`06-deployment-docker-os.html`](docs/diagrams/06-deployment-docker-os.html) |
+| **07** | **HydroSim 2D Handoff & Boundary Inflow**| Hydrodynamics | [Launch Console 07 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/07-workflow-hydrosim-handoff.html) | [`07-workflow-hydrosim-handoff.html`](docs/diagrams/07-workflow-hydrosim-handoff.html) |
+| **08** | **Hydraulic Rating & PCHIP Splines** | Hydraulics | [Launch Console 08 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/08-rating-curve-hydraulics.html) | [`08-rating-curve-hydraulics.html`](docs/diagrams/08-rating-curve-hydraulics.html) |
+| **09** | **Rain Gauge Network Flowchart** | Spatial QC | [Launch Console 09 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/09-raingauge-selection-flowchart.html) | [`09-raingauge-selection-flowchart.html`](docs/diagrams/09-raingauge-selection-flowchart.html) |
+| **10** | **Catchment Hydrology Solver** | Hydrology | [Launch Console 10 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/10-catchment-hydrology-solver.html) | [`10-catchment-hydrology-solver.html`](docs/diagrams/10-catchment-hydrology-solver.html) |
+| **11** | **Backend API Architecture & Routes** | Backend | [Launch Console 11 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/11-backend-api.html) | [`11-backend-api.html`](docs/diagrams/11-backend-api.html) |
+| **12** | **Frontend Emergency Dashboard UI** | Frontend | [Launch Console 12 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/12-frontend-dashboard.html) | [`12-frontend-dashboard.html`](docs/diagrams/12-frontend-dashboard.html) |
+| **13** | **Relational Schema & Database ERD** | Database | [Launch Console 13 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/13-database-schema.html) | [`13-database-schema.html`](docs/diagrams/13-database-schema.html) |
+| **14** | **HEC-HMS Engine & Python Digital Twin** | Hydrology | [Launch Console 14 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/14-hec-hms-engine.html) | [`14-hec-hms-engine.html`](docs/diagrams/14-hec-hms-engine.html) |
+| **15** | **Adaptive ML Recalibration Loop** | Machine Learning| [Launch Console 15 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/15-ml-calibration.html) | [`15-ml-calibration.html`](docs/diagrams/15-ml-calibration.html) |
+| **16** | **Navigable Repository Tree & Assets** | Codebase | [Launch Console 16 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/16-repository-tree.html) | [`16-repository-tree.html`](docs/diagrams/16-repository-tree.html) |
+| **17** | **90-Hour Cycle Waterfall Timeline** | Telemetry | [Launch Console 17 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/17-cycle-waterfall.html) | [`17-cycle-waterfall.html`](docs/diagrams/17-cycle-waterfall.html) |
+
+---
+
+## ⚡ API Gateway Route Matrix
+
+FastAPI provides an asynchronous REST API running on port `8000` with interactive OpenAPI documentation at `/docs`:
+
+| Method | Endpoint | Auth Tier | Description |
+| :---: | :--- | :---: | :--- |
+| `GET` | `/api/v1/health` | Public | Container and probe liveness verification |
+| `GET` | `/api/v1/status` | Public | System status, cycle timestamp & engine state |
+| `GET` | `/api/v1/visits` | Public | Reads persisted visitor counts without incrementing |
+| `POST`| `/api/v1/visits/record` | Public (Throttled) | Records unique daily visit via atomic Supabase RPC |
+| `GET` | `/api/v1/rainfall/ecmwf` | Public | 90-hr precipitation hyetographs across 9 subbasins |
+| `GET` | `/api/v1/rainfall/stations` | Public | Station selection logic and volume ranking |
+| `GET` | `/api/v1/hydrograph` | Public | Basin outlet and bridge runoff hydrographs |
+| `GET` | `/api/v1/alerts/cwc` | Public | Central Water Commission stage thresholds & alerts |
+| `GET` | `/api/v1/admin/runtime` | Admin / Token | Active engine telemetry and runtime execution latency |
+| `GET` | `/api/v1/admin/pipeline` | Admin / Token | 12-step automated pipeline verification state |
+| `GET` | `/api/v1/admin/health-log` | Admin / Token | Historical system health and error events |
+| `POST`| `/api/admin/dispatch` | Admin / Token | Webhook bridge dispatching GitHub Actions workflows |
+| `WS`  | `/ws/live` | Public | Real-time WebSocket streaming live stage updates |
+
+---
+
+## 💻 Quickstart & Deployment
+
+### 1. Local Python Development Setup
 ```bash
-# 1. Clone repository
+# Clone repository
 git clone https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast.git
 cd CCCSS-SUK-Panchganga_Hydrocast
 
-# 2. Setup Python environment
+# Create virtual environment
 python -m venv .venv
 # Windows:
 .venv\Scripts\activate
 # Linux / macOS:
 source .venv/bin/activate
 
+# Install locked dependencies
 pip install -r requirements.lock
 pip install -r requirements-dev.txt
 
-# 3. Configure environment
+# Configure secrets
 cp .env.example .env
 
-# 4. Run full forecast simulation cycle
+# Run full forecast pipeline cycle
 python -m src.orchestrator
 
-# 5. Launch FastAPI backend
+# Launch FastAPI backend
 uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Option B: Frontend Dashboard
-
+### 2. Frontend Development Setup
 ```bash
 cd frontend
 npm install
 npm run dev
-# Open http://localhost:3000 in your browser
+# Dashboard live at: http://localhost:3000
 ```
 
-### Option C: Docker Multi-Container Stack
-
+### 3. Docker Multi-Container Compose
 ```bash
 docker compose up -d --build
 # Backend API: http://localhost:8000
 # Frontend:    http://localhost:3000
-# Docs:        http://localhost:8001
+# MkDocs:      http://localhost:8001
 ```
 
 ---
 
-## 🧪 Rigorous Testing & Quality Gates
+## 🧪 Testing & Verification Suite
 
-HydroCast enforces strict CI/CD validation on every commit:
+HydroCast enforces 100% test passing across physical calculations and edge routes:
 
 ```bash
-# Run complete unit, physics, and security test suite
+# Run complete test suite (286+ tests)
 pytest tests -v
 
-# Run MkDocs documentation build with strict warning gating
+# Run MkDocs documentation validation under strict mode
 python -m mkdocs build --strict
 
 # Run Next.js production build check
 cd frontend && npm run build
 ```
 
-* **286+ Passing Tests:** Comprehensive coverage across hydrologic routing, rating conversions, JWT & passkey auth, rate limiting, and IP hashing.
-* **Strict Documentation Gate:** Zero broken links, syntax warnings, or missing schemas permitted.
-
 ---
 
-## 🏛️ Interactive Architecture Consoles
+## 🔬 Research Attribution & Governance
 
-HydroCast includes **17 self-contained interactive architecture simulators** built with **Archify** (supporting dark/light themes, zoom, and SVG export):
+HydroCast was developed at the **Centre for Climate Change and Sustainability Studies (CCCSS)**, **Shivaji University, Kolhapur (SUK)**.
 
-| Console | Topic | Live Web Link |
-| :---: | :--- | :---: |
-| **01** | End-to-End System Topology | [Launch Console 01 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/01-architecture.html) |
-| **03** | 12-Step Forecast State Machine | [Launch Console 03 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/03-forecast-workflow.html) |
-| **08** | Hydraulic Rating & PCHIP Splines | [Launch Console 08 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/08-rating-curve-hydraulics.html) |
-| **12** | Frontend Emergency Dashboard UI | [Launch Console 12 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/12-frontend-dashboard.html) |
-| **14** | HEC-HMS Engine & Python Digital Twin | [Launch Console 14 ↗](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/diagrams/14-hec-hms-engine.html) |
-
-👉 *Explore all 17 consoles in [`docs/diagrams/`](docs/diagrams/) or on the [Documentation Portal](https://satwikcccss-crypto.github.io/CCCSS-SUK-Panchganga_Hydrocast/).*
-
----
-
-## 🔬 Research Attribution & Sponsorship
-
-HydroCast was conceived and engineered at the **Centre for Climate Change and Sustainability Studies (CCCSS)**, **Shivaji University, Kolhapur (SUK)**.
-
-* **Principal Investigator & Lead Engineer:** Er. Satwik Udupi (`satwikcccss@gmail.com`)
-* **Research Grant / Sponsorship:** Supported by the **Department of Science & Technology (DST-SERB)**, Government of India.
+* **Principal Investigator & Lead System Architect:** Er. Satwik Udupi (`satwikcccss@gmail.com`)
+* **Project Director:** Prof. (Dr.) Sachin Panhalkar
+* **Research Grant & Funding:** Supported by the **Department of Science & Technology (DST-SERB)**, Government of India.
 * **Institutional Partner:** Water Resources Department (WRD), Government of Maharashtra.
 
 ### BibTeX Citation
 ```bibtex
 @software{hydrocast2026,
-  author = {Udupi, Satwik and CCCSS Research Team},
+  author = {Udupi, Satwik and Panhalkar, Sachin and CCCSS Research Team},
   title = {HydroCast: Operational Hydrologic Digital Twin and Flood Early-Warning Platform for the Panchganga Basin},
   year = {2026},
   publisher = {GitHub},
@@ -203,5 +348,5 @@ HydroCast was conceived and engineered at the **Centre for Climate Change and Su
 
 <p align="center">
   Released under the <strong>Academic & Civil Disaster Resilience License</strong>.<br>
-  Built with ❤️ for the safety and resilience of Kolhapur District.
+  Built with ❤️ for the safety, resilience, and flood defense of Kolhapur District.
 </p>
