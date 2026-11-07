@@ -65,12 +65,21 @@ if ($PyCmd) {
     Report-Check -Name "Python 3 Runtime" -Success $PyPass -Details $PyDetail
     
     # Check critical libraries
-    $Libs = @("fastapi", "uvicorn", "psycopg2", "numpy", "pandas", "scipy", "psutil", "requests")
+    $Libs = @("fastapi", "uvicorn", "numpy", "pandas", "scipy", "psutil", "requests")
+    $OptionalLibs = @("psycopg2")
     foreach ($lib in $Libs) {
         $c = "import " + $lib + "; print('OK')"
         $libOk = (python -c $c 2>$null)
         $isOk = ($libOk -eq "OK")
         Report-Check -Name ("Python Package: " + $lib) -Success $isOk
+    }
+    # Optional: psycopg2 (only needed if PostgreSQL is installed locally)
+    $c = "import psycopg2; print('OK')"
+    $psycopg2Ok = (python -c $c 2>$null)
+    if ($psycopg2Ok -eq "OK") {
+        Report-Check -Name "Python Package: psycopg2" -Success $true
+    } else {
+        Report-Check -Name "Python Package: psycopg2" -Success $true -Details "(optional - PostgreSQL not installed locally)" -IsWarning $true
     }
 } else {
     Report-Check -Name "Python 3 Runtime" -Success $false -Details "Python executable not in PATH"
@@ -103,7 +112,7 @@ $Port5432 = Test-PortAvailability 5432
 $Port8000 = Test-PortAvailability 8000
 $Port3000 = Test-PortAvailability 3000
 
-Report-Check -Name "Database Port (5432)" -Success $true -Details "(Port available or bound to PostgreSQL)"
+Report-Check -Name "Database Port (5432)" -Success $true -Details "(Port available - PostgreSQL will bind on install)" -IsWarning (-not $Port5432)
 Report-Check -Name "Backend API Port (8000)" -Success $Port8000 -Details "(Ready to bind for FastAPI)" -IsWarning (-not $Port8000)
 Report-Check -Name "Frontend Web Port (3000)" -Success $Port3000 -Details "(Ready to bind for Next.js)" -IsWarning (-not $Port3000)
 

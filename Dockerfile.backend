@@ -1,0 +1,58 @@
+# =============================================================================
+# HydroCast Panchganga — Dockerfile for Containerized Testing
+# Target: Windows Server Standard @ Shivaji University Kolhapur (SUK)
+#
+# Build:  docker build -t hydrocast-backend .
+# Run:    docker run -p 8000:8000 --env-file .env hydrocast-backend
+#
+# NOTE: PostgreSQL is NOT included in this image. The backend degrades
+# gracefully to disk-backed staging when PostgreSQL is unavailable.
+# For full persistence, link a PostgreSQL container:
+#   docker run -d --name hydrocast-db -e POSTGRES_DB=rainfall_runoff \
+#     -e POSTGRES_USER=hms_app -e POSTGRES_PASSWORD=hms_secret_2026 \
+#     postgres:16-alpine
+#   docker run -p 8000:8000 --env-file .env --link hydrocast-db:db hydrocast-backend
+# =============================================================================
+
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    DATABASE_URL=postgresql://hms_app:hms_secret_2026@db:5432/rainfall_runoff \
+    API_KEY=change-me-in-production \
+    JWT_SECRET=change-me-in-production \
+    ADMIN_PASSWORD=change-me-in-production \
+    REQUIRE_API_KEY=false
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt requirements.lock ./
+RUN pip install --no-cache-dir -r requirements.lock
+
+# Copy application code
+COPY backend/ ./backend/
+COPY data/ ./data/
+COPY database/ ./database/
+COPY windows/ ./windows/
+COPY .env.example .env
+
+# Create data directories
+RUN mkdir -p /app/data/logs /app/data/staging/pending_commits /app/data/telemetry /app/data/runs
+
+# Expose ports
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/api/v1/health || exit 1
+
+# Run the backend
+CMD ["uvicorn", "backend.api.public:app", "--host", "0.0.0.0", "--port", "8000"]

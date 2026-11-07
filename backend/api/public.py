@@ -146,13 +146,27 @@ REQUIRE_API_KEY = os.getenv("REQUIRE_API_KEY", "true").lower() == "true"
 PUBLIC_CACHE_MAX_AGE = int(os.getenv("PUBLIC_CACHE_MAX_AGE", "300"))
 
 _pool: asyncpg.Pool | None = None
+_POOL_UNAVAILABLE = False
 
 
-async def get_pool() -> asyncpg.Pool:
-    global _pool
-    if _pool is None:
-        _pool = await asyncpg.create_pool(DB_URL, min_size=2, max_size=10)
-    return _pool
+async def get_pool() -> Optional[asyncpg.Pool]:
+    """Get PostgreSQL pool. Returns None if unavailable (graceful degradation)."""
+    global _pool, _POOL_UNAVAILABLE
+    if _POOL_UNAVAILABLE:
+        return None
+    if _pool is not None:
+        return _pool
+    try:
+        _pool = await asyncpg.create_pool(DB_URL, min_size=2, max_size=10, command_timeout=3)
+        log.info("PostgreSQL async pool established")
+        return _pool
+    except Exception as exc:
+        _POOL_UNAVAILABLE = True
+        log.warning(
+            "PostgreSQL async pool unavailable (%s). All DB-backed endpoints will degrade to stubs.",
+            exc,
+        )
+        return None
 
 
 # ── Auth Dependency ────────────────────────────────────────────────────────────
@@ -244,6 +258,15 @@ async def health_check():
 async def system_status(request: Request):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {
+                "system": "degraded",
+                "last_cycle": None,
+                "active_alerts": 0,
+                "pipeline_ok": False,
+                "server_time": datetime.now(timezone.utc).isoformat(),
+                "note": "PostgreSQL unavailable on this PC. Install on university server for full persistence.",
+            }
         async with pool.acquire() as conn:
             last_cycle = await conn.fetchrow("""
                 SELECT run_id, status, start_time, end_time, duration_seconds
@@ -291,6 +314,30 @@ async def dashboard_aggregated(request: Request, run_id: Optional[str] = None):
     """
     try:
         pool = await get_pool()
+        if pool is None:
+            return {
+                "fetched_at": datetime.now(timezone.utc).isoformat(),
+                "status": {
+                    "system": "degraded",
+                    "last_cycle": None,
+                    "active_alerts": 0,
+                    "pipeline_ok": False,
+                    "server_time": datetime.now(timezone.utc).isoformat(),
+                    "note": "PostgreSQL unavailable on this PC. Install on university server for full persistence.",
+                },
+                "alerts": [],
+                "pipeline": {"steps_completed": [], "steps": [], "status": "idle"},
+                "runs_history": [],
+                "bridge_sites": [],
+                "ecmwf": {},
+                "stations": {},
+                "gauges": {},
+                "hydrograph": [],
+                "validation": None,
+                "bridgeShivaji": None,
+                "bridgeRajaram": None,
+                "summary": {},
+            }
         async with pool.acquire() as conn:
             # ── Last cycle / status ─────────────────────────────────────────
             last_cycle = await conn.fetchrow("""
@@ -425,6 +472,8 @@ async def record_visit(request: Request):
     today = datetime.now(timezone.utc).date()
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"today": 0, "total": 0, "ip_hash": ip_hash[:8] + "...", "note": "DB pending"}
         async with pool.acquire() as conn:
             await conn.execute("""
                 INSERT INTO site_visitor_ips (ip_hash, visit_date)
@@ -455,6 +504,8 @@ async def record_visit(request: Request):
 async def read_visits(request: Request):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"today": 0, "total": 0}
         async with pool.acquire() as conn:
             today = datetime.now(timezone.utc).date()
             row = await conn.fetchrow("SELECT visit_count FROM site_visits WHERE visit_date=$1", today)
@@ -510,6 +561,8 @@ async def rainfall_stations(request: Request):
 async def runoff_hydrograph(request: Request):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"peak_q_m3s": 0.0, "points": 0, "hydrograph": [], "note": "DB unavailable"}
         async with pool.acquire() as conn:
             last_run = await conn.fetchrow("""
                 SELECT run_id FROM simulation_runs
@@ -546,6 +599,9 @@ async def runoff_hydrograph(request: Request):
 async def runoff_summary(request: Request):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"peak_q_m3s": 0.0, "total_volume_mcm": 0.0,
+                    "lead_hours_to_peak": 0, "alert_level": "NORMAL", "note": "DB unavailable"}
         async with pool.acquire() as conn:
             last_cycle = await conn.fetchrow("""
                 SELECT run_id, peak_discharge_m3s, lead_hours_to_peak,
@@ -597,6 +653,9 @@ async def runoff_summary(request: Request):
 async def runoff_stage(site_id: str, request: Request):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"site_id": site_id, "stage_m": 0.0, "alert_level": "NORMAL",
+                    "forecast_time": None, "lead_hours": 0, "note": "DB unavailable"}
         async with pool.acquire() as conn:
             row = await conn.fetchrow("""
                 SELECT stage_m, alert_level, forecast_time, lead_hours,
@@ -635,6 +694,8 @@ async def runoff_stage(site_id: str, request: Request):
 async def alerts_active(request: Request):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"alerts_issued": 0, "status": "normal", "sites": {}, "note": "DB unavailable"}
         async with pool.acquire() as conn:
             rows = await conn.fetch("""
                 SELECT site_id, classification, stage_m, alert_level,
@@ -677,6 +738,9 @@ async def alerts_active(request: Request):
 async def alerts_bulletin(request: Request):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"bulletin": "NORMAL", "sites": {},
+                    "issued_at": datetime.now(timezone.utc).isoformat(), "note": "DB unavailable"}
         async with pool.acquire() as conn:
             rows = await conn.fetch("""
                 SELECT site_id, classification, stage_m, alert_level
@@ -720,6 +784,8 @@ async def alerts_bulletin(request: Request):
 async def pipeline_status(request: Request):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"steps_completed": [], "status": "idle", "note": "DB unavailable"}
         async with pool.acquire() as conn:
             last_run = await conn.fetchrow("""
                 SELECT run_id FROM simulation_runs
@@ -757,6 +823,8 @@ async def pipeline_status(request: Request):
 async def pipeline_history(request: Request):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"cycles": [], "note": "DB unavailable"}
         async with pool.acquire() as conn:
             rows = await conn.fetch("""
                 SELECT run_id, status, start_time, end_time, duration_seconds
@@ -781,6 +849,8 @@ async def pipeline_history(request: Request):
 async def runs_list(request: Request):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"runs": [], "note": "DB unavailable"}
         async with pool.acquire() as conn:
             rows = await conn.fetch("""
                 SELECT run_id, cycle_date, cycle_time, status,
@@ -805,6 +875,8 @@ async def runs_list(request: Request):
 async def runs_detail(run_id: str, request: Request):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"run_id": run_id, "status": "error", "note": "DB unavailable"}
         async with pool.acquire() as conn:
             row = await conn.fetchrow("""
                 SELECT * FROM simulation_runs WHERE run_id=$1
@@ -829,6 +901,8 @@ async def runs_detail(run_id: str, request: Request):
 async def accuracy(request: Request, run_id: Optional[str] = None):
     try:
         pool = await get_pool()
+        if pool is None:
+            return {"cycle_id": run_id or "unknown", "validation": None, "note": "DB unavailable"}
         async with pool.acquire() as conn:
             if run_id:
                 row = await conn.fetchrow("""

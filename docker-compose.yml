@@ -1,207 +1,71 @@
-# ==============================================================================
-# HydroCast Unified Production Docker Compose Specification
-# PostgreSQL 15 + PostGIS · Python/Java Backend · Next.js 14 Dashboard
+# =============================================================================
+# HydroCast Panchganga — Docker Compose for Containerized Testing
+# Target: Shivaji University Kolhapur (SUK)
 #
-#   docker compose up -d --build          database + backend + dashboard
-#   docker compose --profile docs up docs local docs preview on :8001
-#   docker compose --profile dev  up dev  backend + linters/testers
-#
-# Note: the obsolete top-level `version` key is intentionally absent — Compose
-# v2 selects the current schema automatically and warns when it is present.
-# ==============================================================================
-
-x-hydrocast-env: &hydrocast-env
-  DATABASE_URL: postgresql://hms_app:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@hydrocast-db:5432/rainfall_runoff
-  API_KEY: ${API_KEY:?Set API_KEY in .env}
-  INTERNAL_KEY: ${INTERNAL_KEY:?Set INTERNAL_KEY in .env}
-  API_BASE_URL: http://hydrocast-backend:8000
-  CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
-  RATE_LIMIT_PUBLIC: 100/minute
-  JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
-  ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
-  ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
-  TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-  ARCHIVE_RETENTION_DAYS: 90
-  ARCHIVE_DIR: /app/data/archives
-  RAW_DIR: /app/data/raw
+# Usage:
+#   docker compose up -d          # Start backend + PostgreSQL
+#   docker compose up -d backend  # Start backend only (degrades gracefully)
+# =============================================================================
 
 services:
-  # ── 1. Database (PostgreSQL 15 + PostGIS) ──────────────────────────────────
-  hydrocast-db:
-    image: postgis/postgis:15-3.4
+  # ── PostgreSQL 16 + PostGIS (optional; backend degrades without it) ──
+  db:
+    image: postgis/postgis:16-3.4
     container_name: hydrocast-db
-    restart: unless-stopped
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_DB: rainfall_runoff
       POSTGRES_USER: hms_app
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_PASSWORD: hms_secret_2026
+    ports:
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/supabase_schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - hydrocast_db_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seeds.sql:/docker-entrypoint-initdb.d/02-seeds.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U hms_app -d rainfall_runoff"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 15s
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - hydrocast-net
+    restart: unless-stopped
 
-  # ── 2. Backend (FastAPI + HEC-DSS runtime + rate limiter) ───────────────────
-  hydrocast-backend:
+  # ── Backend FastAPI (Port 8000) ──
+  backend:
     build:
       context: .
-      dockerfile: Dockerfile
-      target: runner
-      args:
-        APP_VERSION: "2.0.0"
-    image: hydrocast-backend:2.0.0
+      dockerfile: Dockerfile.backend
     container_name: hydrocast-backend
-    restart: unless-stopped
     ports:
       - "8000:8000"
-    depends_on:
-      hydrocast-db:
-        condition: service_healthy
+    env_file:
+      - .env
     environment:
-      <<: *hydrocast-env
-      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
-      # Leave at 127.0.0.1 unless a trusted reverse proxy fronts this service,
-      # otherwise X-Forwarded-For can be spoofed to defeat rate limiting.
-      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-127.0.0.1}
-    # Per-directory volumes instead of a single /app/data mount: a mount over
-    # /app/data hides the HEC-HMS basin project, the GIS layers and the historical
-    # run ledger that are baked into the image. Named volumes are seeded from
-    # the image contents on first creation, so /api/v1/runs is populated on a
-    # clean `docker compose up` and keeps accumulating cycles afterwards.
-    volumes:
-      - hydrocast_runs:/app/data/runs
-      - hydrocast_telemetry:/app/data/telemetry
-      - hydrocast_forecast:/app/data/openmeteo_dss
-      - hydrocast_raw:/app/data/raw
-      - hydrocast_archives:/app/data/archives
-      - hydrocast_logs:/app/data/logs
-    # Must outlive uvicorn's --timeout-graceful-shutdown (30s) so in-flight
-    # forecast requests are answered before SIGKILL.
-    stop_grace_period: 45s
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "--max-time", "4", "http://localhost:8000/api/v1/health"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - hydrocast-net
+      DATABASE_URL: postgresql://hms_app:hms_secret_2026@db:5432/rainfall_runoff
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
 
-  # ── 3. Frontend (Next.js 14 executive dashboard) ───────────────────────────
-  hydrocast-frontend:
+  # ── Frontend Next.js Public Portal (Port 3000) ──
+  frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_API_URL: http://localhost:8000
-        NEXT_PUBLIC_WS_URL: ws://localhost:8000/ws/live
     container_name: hydrocast-frontend
-    restart: unless-stopped
     ports:
       - "3000:3000"
-    depends_on:
-      hydrocast-backend:
-        condition: service_healthy
+    env_file:
+      - .env
     environment:
-      NODE_ENV: production
-      NEXT_PUBLIC_API_URL: http://localhost:8000
-      NEXT_PUBLIC_WS_URL: ws://localhost:8000/ws/live
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
-      interval: 20s
-      timeout: 5s
-      retries: 3
-      start_period: 20s
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - hydrocast-net
-
-  # ── 4. Docs (opt-in) — MkDocs Material preview with live reload ────────────
-  hydrocast-docs:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: docs
-    profiles: ["docs"]
-    container_name: hydrocast-docs
-    ports:
-      - "8001:8001"
-    # Read-only bind mounts give live reload without rebuilding; the image was
-    # already validated with `mkdocs build --strict` at build time.
-    volumes:
-      - ./docs:/app/docs:ro
-      - ./src:/app/src:ro
-      - ./mkdocs.yml:/app/mkdocs.yml:ro
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - hydrocast-net
-
-  # ── 5. Dev (opt-in) — backend + linters, type checker, tests, JupyterLab ────
-  hydrocast-dev:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: dev
-    profiles: ["dev"]
-    container_name: hydrocast-dev
+      NEXT_PUBLIC_API_URL: http://backend:8000
+      NEXT_PUBLIC_WS_URL: ws://backend:8000/ws/live
     depends_on:
-      hydrocast-db:
-        condition: service_healthy
-    environment:
-      <<: *hydrocast-env
-      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-hydrocast-dev}
-    ports:
-      - "8000:8000"
-      - "8888:8888"
-    volumes:
-      - ./src:/app/src:ro
-      - ./tests:/app/tests:ro
-      - ./notebooks:/app/notebooks:ro
-      - hydrocast_dev_logs:/app/data/logs
-    command: ["bash"]
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - hydrocast-net
+      - backend
+    restart: unless-stopped
 
 volumes:
-  postgres_data:
-    driver: local
-  hydrocast_runs:
-    driver: local
-  hydrocast_telemetry:
-    driver: local
-  hydrocast_forecast:
-    driver: local
-  hydrocast_raw:
-    driver: local
-  hydrocast_archives:
-    driver: local
-  hydrocast_logs:
-    driver: local
-  hydrocast_dev_logs:
-    driver: local
+  hydrocast_db_data:
 
 networks:
-  hydrocast-net:
-    driver: bridge
+  default:
+    name: hydrocast-net

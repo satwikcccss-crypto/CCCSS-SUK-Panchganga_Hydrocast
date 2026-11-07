@@ -1,6 +1,6 @@
 """
-src/db/resilient_pool.py
-========================
+backend/db/resilient_pool.py
+============================
 Enterprise resilient database pool and offline staging buffer for HydroCast Windows Server.
 
 Features:
@@ -10,6 +10,9 @@ Features:
   is restarting or undergoing maintenance, writes are safely queued to disk
   as structured JSON and replayed atomically upon reconnection.
 - Zero-loss guarantee for real-time forecast cycles and telemetry.
+- GRACEFUL DEGRADATION: When PostgreSQL is not installed/unavailable, the
+  pool returns None and all API endpoints degrade to disk-backed staging
+  so the system still starts and serves stub responses.
 """
 
 import json
@@ -38,6 +41,7 @@ STAGING_DIR.mkdir(parents=True, exist_ok=True)
 
 _POOL_LOCK = threading.Lock()
 _POOL: Optional[pool.ThreadedConnectionPool] = None
+_POOL_UNAVAILABLE = False  # Set True once we know PostgreSQL can't be reached
 
 
 def get_default_db_url() -> str:
@@ -56,10 +60,15 @@ def init_pool(
     minconn: int = 2,
     maxconn: int = 15,
     db_url: Optional[str] = None,
-) -> pool.ThreadedConnectionPool:
-    """Initialize the global thread-safe connection pool."""
-    global _POOL
+) -> Optional[pool.ThreadedConnectionPool]:
+    """Initialize the global thread-safe connection pool.
+
+    Returns None if PostgreSQL is unavailable (graceful degradation).
+    """
+    global _POOL, _POOL_UNAVAILABLE
     with _POOL_LOCK:
+        if _POOL_UNAVAILABLE:
+            return None
         if _POOL is not None and not _POOL.closed:
             return _POOL
 
@@ -70,13 +79,18 @@ def init_pool(
                 minconn=minconn,
                 maxconn=maxconn,
                 dsn=target_url,
-                connect_timeout=10,
+                connect_timeout=3,  # short timeout for fast fail
             )
             log.info("PostgreSQL pool established (min=%d, max=%d)", minconn, maxconn)
             return _POOL
         except Exception as exc:
-            log.error("Failed to initialize database connection pool: %s", exc)
-            raise
+            _POOL_UNAVAILABLE = True
+            log.warning(
+                "PostgreSQL unavailable (%s). System will degrade to disk-backed staging. "
+                "Install PostgreSQL 16 on the university server for full persistence.",
+                exc,
+            )
+            return None
 
 
 def close_pool() -> None:
@@ -90,7 +104,10 @@ def close_pool() -> None:
 
 
 def check_db_health(db_url: Optional[str] = None, timeout: int = 3) -> Dict[str, Any]:
-    """Check connectivity and latency to PostgreSQL."""
+    """Check connectivity and latency to PostgreSQL.
+
+    Returns "unreachable" (not an exception) when PostgreSQL is not installed.
+    """
     target_url = db_url or get_default_db_url()
     t0 = time.perf_counter()
     try:
@@ -119,10 +136,12 @@ def check_db_health(db_url: Optional[str] = None, timeout: int = 3) -> Dict[str,
 
 
 @contextmanager
-def get_resilient_connection(max_retries: int = 3, retry_delay: float = 1.0):
+def get_resilient_connection(max_retries: int = 2, retry_delay: float = 0.5):
     """
     Context manager providing a pooled PostgreSQL connection.
-    Attempts reconnect with exponential backoff on transient connection failures.
+
+    Yields None when PostgreSQL is unavailable (graceful degradation).
+    Callers must check `conn is not None` before using it.
     """
     global _POOL
     conn = None
@@ -130,10 +149,15 @@ def get_resilient_connection(max_retries: int = 3, retry_delay: float = 1.0):
 
     for attempt in range(1, max_retries + 1):
         try:
+            if _POOL_UNAVAILABLE:
+                yield None
+                return
             if _POOL is None or _POOL.closed:
-                init_pool()
+                _POOL = init_pool()
+                if _POOL is None:
+                    yield None
+                    return
             conn = _POOL.getconn()
-            # Validate connection health
             if conn.closed != 0:
                 _POOL.putconn(conn, close=True)
                 conn = _POOL.getconn()
@@ -151,7 +175,13 @@ def get_resilient_connection(max_retries: int = 3, retry_delay: float = 1.0):
             retry_delay *= 2.0
 
     if conn is None:
-        raise ConnectionError(f"Could not acquire DB connection after {max_retries} attempts: {last_err}")
+        _POOL_UNAVAILABLE = True
+        log.warning(
+            "PostgreSQL unavailable after %d attempts. Yielding None (graceful degradation).",
+            max_retries,
+        )
+        yield None
+        return
 
     try:
         yield conn
@@ -264,5 +294,3 @@ def replay_staged_transactions(conn=None) -> Dict[str, int]:
 
     log.info("Replay finished: %d succeeded, %d failed", replayed, failed)
     return {"replayed": replayed, "failed": failed, "pending": len(list(STAGING_DIR.glob("staged_*.json")))}
-
-
