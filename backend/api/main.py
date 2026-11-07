@@ -137,15 +137,14 @@ async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
 _cors_raw = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
 _cors_wildcard = "*" in _cors_raw
 if _cors_wildcard:
-    log.warning(
-        "CORS_ORIGINS contains '*' — allowing any origin WITHOUT credentials. "
-        "Set an explicit allowlist for credentialed deployments."
-    )
+    _sec_log = logging.getLogger(__name__)
+    _sec_log.critical("CORS_ORIGINS contains '*' — wildcard origins are prohibited. Set explicit allowlist in CORS_ORIGINS.")
+    sys.exit(1)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if _cors_wildcard else _cors_raw,
-    allow_credentials=not _cors_wildcard,
+    allow_origins=_cors_raw,
+    allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-API-Key", "X-Internal-Key"],
 )
@@ -652,47 +651,127 @@ async def outlet_hydrograph(request: Request, outlet_node: str = "J_Outlet"):
 async def runoff_summary(request: Request):
     """Peak Q, Tp, volume, flood alert for the latest run with peak arrival confidence intervals.
 
-    The response has four independent parts:
-
-    * `outlet` — peak discharge, time of peak, and runoff volume at the sink
-    * `bridges` — the full stage series at each bridge with its thresholds
-    * `peak_arrival` — a calibrated window around the predicted time of peak
-    * `recalibration` — the live calibration state, so a consumer can always
-      tell *which parameters* produced the numbers it is looking at
-
-    `peak_arrival` is reported separately from the point estimate on purpose:
-    the arrival window carries real uncertainty, and collapsing it to a single
-    timestamp would overstate the precision of the forecast.
+    Returns data shaped for the frontend dashboard:
+    - outlet: peak discharge, time of peak, and runoff volume at the sink
+    - summary: same as outlet (for frontend compatibility)
+    - bridges: per-bridge stage forecast with thresholds and forecast series
+    - hydrograph: 90-hour discharge hydrograph points
+    - peak_arrival: calibrated peak arrival times per bridge
     """
     pool = await get_pool()
     async with pool.acquire() as conn:
-        row = await conn.fetchrow("""
-            SELECT * FROM v_latest_peak_summary
-            WHERE outlet_node='J_Outlet'
+        # Get latest cycle
+        last_cycle = await conn.fetchrow("""
+            SELECT run_id, peak_discharge_m3s, lead_hours_to_peak,
+                   total_volume_mcm, peak_stage_m, alert_level
+            FROM simulation_runs
+            ORDER BY start_time DESC LIMIT 1
         """)
+
+        # Get latest stage per bridge with thresholds
         bridge_rows = await conn.fetch("""
             SELECT f.site_id, f.forecast_time, f.stage_m,
-            f.discharge_m3s, f.alert_level, f.arrival_time,
-            b.warning_stage_m, b.danger_stage_m, b.hfl_m
+                   f.discharge_m3s, f.alert_level,
+                   b.site_name, b.alert_stage_m, b.warning_stage_m, b.danger_stage_m, b.hfl_m
             FROM bridge_stage_forecast f
             JOIN bridge_sites b ON b.site_id=f.site_id
             WHERE f.forecast_run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
             ORDER BY f.site_id, f.forecast_time
         """)
 
-    # Attach calibrated peak arrival windows from latest state
-    from backend.hydrology.runs_tracker import list_computation_runs
-    from backend.ml.ml_calibration import calibrator
-    latest_runs = list_computation_runs(limit=1)
-    peak_arrival = None
-    if latest_runs:
-        peak_arrival = latest_runs[0].get("summary", {}).get("peak_arrival")
+        # Get hydrograph points
+        hydro_rows = await conn.fetch("""
+            SELECT lead_hours, discharge_m3s, stage_m
+            FROM hydrograph_results
+            WHERE run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+            ORDER BY lead_hours ASC
+        """)
+
+    if not last_cycle:
+        return {
+            "outlet": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
+                       "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
+            "summary": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
+                        "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
+            "bridges": [],
+            "hydrograph": [],
+            "peak_arrival": {},
+        }
+
+    # Build bridge objects with full stage data
+    bridges_by_site = {}
+    for r in bridge_rows:
+        sid = r["site_id"]
+        if sid not in bridges_by_site:
+            bridges_by_site[sid] = {
+                "site_id": r["site_id"],
+                "site_name": r.get("site_name") or r["site_id"],
+                "alert_stage_m": float(r.get("alert_stage_m") or 0),
+                "warning_stage_m": float(r.get("warning_stage_m") or 0),
+                "danger_stage_m": float(r.get("danger_stage_m") or 0),
+                "hfl_m": float(r.get("hfl_m") or 0),
+                "peak_stage_m": float(r["stage_m"]) if r["stage_m"] else 0.0,
+                "alert_level": r.get("alert_level") or "NORMAL",
+                "forecast": [],
+            }
+        bridges_by_site[sid]["forecast"].append({
+            "stage_m": float(r["stage_m"]) if r["stage_m"] else 0.0,
+            "lead_hours": int(r["lead_hours"]) if r.get("lead_hours") is not None else 0,
+        })
+
+    # Build bridge list in preferred order
+    bridge_order = ["SHIVAJI_BRIDGE", "RAJARAM_BRIDGE"]
+    bridges = []
+    for sid in bridge_order:
+        if sid in bridges_by_site:
+            bridges.append(bridges_by_site[sid])
+
+    # Build peak_arrival from latest calibration state
+    peak_arrival = {}
+    try:
+        from backend.hydrology.runs_tracker import list_computation_runs
+        latest_runs = list_computation_runs(limit=1)
+        if latest_runs:
+            pa = latest_runs[0].get("summary", {}).get("peak_arrival")
+            if pa:
+                peak_arrival = {
+                    "earliest": pa.get("earliest"),
+                    "latest": pa.get("latest"),
+                }
+    except Exception:
+        peak_arrival = {}
+
+    # Get calibration state
+    try:
+        from backend.ml.ml_calibration import calibrator
+        calibration_state = calibrator.state
+    except Exception:
+        calibration_state = {}
 
     return {
-        "outlet":  dict(row) if row else None,
-        "bridges": _jsonify(bridge_rows),
+        "outlet": {
+            "peak_discharge_m3s": float(last_cycle.get("peak_discharge_m3s") or 0),
+            "lead_hours_to_peak": int(last_cycle.get("lead_hours_to_peak") or 0),
+            "total_volume_mcm": float(last_cycle.get("total_volume_mcm") or 0),
+            "alert_level": last_cycle.get("alert_level") or "NORMAL",
+        },
+        "summary": {
+            "peak_discharge_m3s": float(last_cycle.get("peak_discharge_m3s") or 0),
+            "lead_hours_to_peak": int(last_cycle.get("lead_hours_to_peak") or 0),
+            "total_volume_mcm": float(last_cycle.get("total_volume_mcm") or 0),
+            "alert_level": last_cycle.get("alert_level") or "NORMAL",
+        },
+        "bridges": bridges,
+        "hydrograph": [
+            {
+                "lead_hours": int(r.get("lead_hours") or 0),
+                "discharge_m3s": float(r["discharge_m3s"]) if r.get("discharge_m3s") is not None else 0.0,
+                "stage_m": float(r["stage_m"]) if r.get("stage_m") is not None else 0.0,
+            }
+            for r in hydro_rows
+        ],
         "peak_arrival": peak_arrival,
-        "recalibration": calibrator.state,
+        "recalibration": calibration_state,
     }
 
 

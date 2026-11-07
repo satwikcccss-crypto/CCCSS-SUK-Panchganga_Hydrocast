@@ -50,6 +50,10 @@ API_KEY = os.getenv("API_KEY", _default_api_key)
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
 
+# Fail fast if JWT_SECRET is not set in production (not test/dev)
+if _APP_ENV == "production" and not JWT_SECRET:
+    _sec_log.critical("JWT_SECRET is required in production but not set. Aborting startup.")
+    sys.exit(1)
 if not JWT_SECRET:
     _sec_log.warning("JWT_SECRET is not set — JWT authentication will reject all tokens. Set JWT_SECRET env var.")
 if not API_KEY:
@@ -201,14 +205,6 @@ async def verify_admin_auth(
       1. Valid JWT in Authorization: Bearer <token>
       2. Valid master key in X-API-Key: <key>
     """
-    # 0. Windows Server Standard Local Operator Bypass
-    # When deployed on the internal Shivaji University Windows Server, direct operator access
-    # is permitted without forced login lock.
-    if credentials and credentials.credentials in ("windows_server_internal_operator", "mock_dev_token"):
-        return {"sub": "windows_operator", "role": "admin"}
-    if x_api_key in ("windows_server_internal", "internal_operator"):
-        return {"sub": "windows_operator", "role": "admin"}
-
     # 1. Check Bearer token
     if credentials and credentials.credentials:
         token = credentials.credentials
