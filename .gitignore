@@ -1,9 +1,7 @@
-# Frontend
+# Frontend - Public Portal (port 3000)
 frontend/node_modules/
 frontend/.next/
 frontend/out/
-frontend-admin/
-frontend-public/
 frontend/build/
 frontend/test-results/
 frontend/playwright-report/
@@ -12,7 +10,36 @@ frontend/playwright/.cache/
 frontend/.env
 frontend/.env.local
 *.tsbuildinfo
-!frontend/lib/
+!frontend/package.json
+!frontend/package-lock.json
+
+# Frontend-Admin - Operator Console (port 3001)
+frontend-admin/node_modules/
+frontend-admin/.next/
+frontend-admin/out/
+frontend-admin/build/
+frontend-admin/test-results/
+frontend-admin/playwright-report/
+frontend-admin/blob-report/
+frontend-admin/playwright/.cache/
+frontend-admin/.env
+frontend-admin/.env.local
+!frontend-admin/package.json
+!frontend-admin/package-lock.json
+
+# Frontend-Public - Public Dashboard (port 3000)
+frontend-public/node_modules/
+frontend-public/.next/
+frontend-public/out/
+frontend-public/build/
+frontend-public/test-results/
+frontend-public/playwright-report/
+frontend-public/blob-report/
+frontend-public/playwright/.cache/
+frontend-public/.env
+frontend-public/.env.local
+!frontend-public/package.json
+!frontend-public/package-lock.json
 
 # Python
 __pycache__/
@@ -91,5 +118,5 @@ OPENCODE_HANDOVER_CONTEXT.md
 # Python test / coverage artifacts
 .coverage
 .coverage.*
-htmlcov/
+.htmlcov/
 .pytest_cache/

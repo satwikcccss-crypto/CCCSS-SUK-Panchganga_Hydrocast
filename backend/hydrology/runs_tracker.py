@@ -53,13 +53,60 @@ def save_computation_run(run_id: str, data: dict[str, Any]) -> None:
     p.write_text(__import__("json").dumps(data, indent=2, default=str), encoding="utf-8")
 
 
-def list_computation_runs() -> list[str]:
-    """List all stored computation run IDs."""
+def list_computation_runs(limit: Optional[int] = None) -> list[dict[str, Any]]:
+    """List all stored computation runs from data/runs ledger.
+    
+    Returns newest-first list of run records with KPIs and summary metadata.
+    """
     if not RUNS_DIR.exists():
         return []
-    return sorted(
-        p.stem for p in RUNS_DIR.glob("CYC_*.json") if _RUN_ID_RE.match(p.stem)
-    )
+    
+    index_file = RUNS_DIR / "runs_index.json"
+    if index_file.exists():
+        try:
+            import json
+            raw = json.loads(index_file.read_text(encoding="utf-8"))
+            if isinstance(raw, list):
+                # Ensure each record has summary and cycle_id
+                for r in raw:
+                    if isinstance(r, dict):
+                        r.setdefault("summary", {
+                            "peak_arrival": r.get("lead_hours_to_peak", 0),
+                            "peak_discharge_m3s": r.get("peak_discharge_m3s", 0),
+                            "total_volume_mcm": r.get("total_volume_mcm", 0),
+                            "alert_level": r.get("alert_level", "NORMAL"),
+                        })
+                return raw[:limit] if limit is not None else raw
+        except Exception as e:
+            log.warning("Failed to parse runs_index.json: %s", e)
+
+    # Fallback to scanning individual CYC_*.json files
+    runs = []
+    cyc_files = sorted(RUNS_DIR.glob("CYC_*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+    if limit is not None:
+        cyc_files = cyc_files[:limit]
+
+    import json
+    for p in cyc_files:
+        if _RUN_ID_RE.match(p.stem):
+            try:
+                run_data = json.loads(p.read_text(encoding="utf-8"))
+                runs.append({
+                    "cycle_id": p.stem,
+                    "run_date": run_data.get("summary", {}).get("run_date", ""),
+                    "start_time": run_data.get("summary", {}).get("start_time", ""),
+                    "duration_seconds": run_data.get("summary", {}).get("duration_seconds", 0),
+                    "peak_discharge_m3s": run_data.get("summary", {}).get("peak_discharge_m3s", 0),
+                    "lead_hours_to_peak": run_data.get("summary", {}).get("peak_arrival", 0),
+                    "total_volume_mcm": run_data.get("summary", {}).get("total_volume_mcm", 0),
+                    "alert_level": run_data.get("summary", {}).get("alert_level", "NORMAL"),
+                    "status": run_data.get("status", "completed"),
+                    "summary": run_data.get("summary", {}),
+                    "validation": run_data.get("validation", {}),
+                })
+            except Exception:
+                continue
+    return runs
 
 
 __all__ = ["RUNS_DIR", "_run_path", "get_computation_run", "save_computation_run", "list_computation_runs"]

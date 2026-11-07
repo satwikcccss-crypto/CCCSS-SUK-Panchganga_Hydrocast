@@ -970,6 +970,49 @@ async def cycle_history(request: Request, limit: int = Query(48, ge=1, le=500)):
 # ── Historical Runs & Accuracy Validation Endpoints ───────────────────────────
 
 @app.get(
+    "/api/v1/dashboard",
+    dependencies=[PublicDep],
+    tags=["Dashboard"],
+    summary="Unified dashboard payload",
+    response_description="Live simulation state, ECMWF hyetographs, bridge stages, and historical runs ledger.",
+)
+@limiter.limit(RATE_LIMIT_PUBLIC)
+async def get_dashboard_payload(request: Request, run_id: Optional[str] = None):
+    """Serve the complete unified forecast and telemetry payload directly from data/runs or latest pipeline state."""
+    from pathlib import Path
+    import json
+    project_root = Path(__file__).resolve().parents[2]
+    
+    if run_id:
+        from backend.hydrology.runs_tracker import get_computation_run, list_computation_runs
+        run_data = get_computation_run(run_id)
+        if run_data:
+            run_data["runs_history"] = list_computation_runs(limit=100)
+            return run_data
+        raise HTTPException(status_code=404, detail=f"Run '{run_id}' not found")
+        
+    latest_state = project_root / "data" / "openmeteo_dss" / "latest_pipeline_state.json"
+    if latest_state.exists():
+        try:
+            data = json.loads(latest_state.read_text(encoding="utf-8"))
+            from backend.hydrology.runs_tracker import list_computation_runs
+            data["runs_history"] = list_computation_runs(limit=100)
+            return data
+        except Exception as e:
+            log.warning("Failed to parse latest_pipeline_state: %s", e)
+            
+    from backend.hydrology.runs_tracker import list_computation_runs, get_computation_run
+    runs = list_computation_runs(limit=1)
+    if runs:
+        latest = get_computation_run(runs[0]["cycle_id"])
+        if latest:
+            latest["runs_history"] = list_computation_runs(limit=100)
+            return latest
+            
+    return {"status": {"system": "awaiting_first_run"}, "runs_history": []}
+
+
+@app.get(
     "/api/v1/runs",
     dependencies=[PublicDep],
     tags=["Historical Runs"],
