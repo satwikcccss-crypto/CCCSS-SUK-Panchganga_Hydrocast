@@ -17,9 +17,9 @@ from types import SimpleNamespace
 import pytest
 from fastapi.testclient import TestClient
 
-import src.api.main as main
-from src.api.main import app
-from src.hydrology import ml_calibration, runs_tracker
+import backend.api.main as main
+from backend.api.main import app
+from backend.hydrology import ml_calibration, runs_tracker
 
 
 # ── asyncpg double ────────────────────────────────────────────────────────────
@@ -344,7 +344,7 @@ def test_accuracy_computes_when_validation_missing(monkeypatch, client):
         lambda run_id: {"cycle_id": "C1", "summary": {"forecast_date": "2026-08-01"}},
     )
     monkeypatch.setattr(
-        "src.hydrology.validation_metrics.evaluate_forecast_accuracy",
+        "backend.validation.validation_metrics.evaluate_forecast_accuracy",
         lambda run: {"metrics": {"rmse": 0.12}},
     )
     body = client.get("/api/v1/accuracy?run_id=C1").json()
@@ -364,3 +364,5 @@ def test_internal_broadcast_fails_closed(monkeypatch, client):
     assert client.post(
         "/internal/broadcast", json={}, headers={"X-Internal-Key": "0123456789abcdef"}
     ).status_code == 200
+
+

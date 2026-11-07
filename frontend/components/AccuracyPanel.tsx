@@ -2,7 +2,7 @@
 // frontend/components/AccuracyPanel.tsx
 // Model Accuracy, Historical Runs Ledger & Spearman Correlation Validation Dashboard
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import { api, fetchDashboardData } from "@/lib/api";
 import {
@@ -58,9 +58,19 @@ const GOV_RECORDS = [
   { stage_m: 545.33, stage_ft: "49'.8''", cusecs: 135961, q_m3s: 3850.00, regime: "Highest Flood Level (HFL)", alert: "EMERGENCY" },
 ];
 
-export default function AccuracyPanel() {
+interface AccuracyPanelProps {
+  defaultTab?: "charts" | "table" | "gov_records" | "runs" | "calibration";
+}
+
+export default function AccuracyPanel({ defaultTab = "charts" }: AccuracyPanelProps = {}) {
   const [selectedRunId, setSelectedRunId] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"charts" | "table" | "gov_records" | "runs" | "calibration">("charts");
+  const [activeTab, setActiveTab] = useState<"charts" | "table" | "gov_records" | "runs" | "calibration">(defaultTab);
+
+  useEffect(() => {
+    if (defaultTab) {
+      setActiveTab(defaultTab);
+    }
+  }, [defaultTab]);
   const [stationFilter, setStationFilter] = useState<string>("");
   const [hourlySearch, setHourlySearch] = useState<string>("");
   const [govSearch, setGovSearch] = useState<string>("");

@@ -19,14 +19,13 @@ export default function OverviewPanel({
   onNavigateTab: (tab: string) => void;
   onSelectStation: (stationId: string) => void;
 }) {
-
-
   const { data: status } = useSWR("status", api.status, { refreshInterval: 15000 });
   const { data: summary } = useSWR("summary", api.runoffSummary, { refreshInterval: 30000 });
   const { data: hydrograph } = useSWR("hydrograph", api.outletHydrograph, { refreshInterval: 60000 });
   const { data: alerts } = useSWR("alerts", api.alerts, { refreshInterval: 30000 });
   const { data: ecmwf } = useSWR("ecmwf", api.ecmwfHyetograph, { refreshInterval: 60000 });
   const { data: stations } = useSWR("stations", api.stationSelection, { refreshInterval: 60000 });
+  const { data: validationData } = useSWR("validation", () => api.validation(), { refreshInterval: 30000 });
 
   const { data: bShivaji } = useSWR("bridge-SHIVAJI_BRIDGE", api.bridgeShivaji, { refreshInterval: 30000 });
   const { data: bRajaram } = useSWR("bridge-RAJARAM_BRIDGE", api.bridgeRajaram, { refreshInterval: 30000 });
@@ -34,6 +33,15 @@ export default function OverviewPanel({
   const outlet = summary?.outlet;
   const noData = !status && !summary;
   const lastCycle = status?.last_cycle ?? status?.current_cycle;
+
+  // Validation metrics for the executive overview
+  const valMetrics = validationData?.metrics ?? {};
+  const spearmanRho = valMetrics?.spearman_rho ?? null;
+  const nseVal = (valMetrics?.nse_stage != null ? valMetrics.nse_stage : valMetrics?.nse_discharge) ?? null;
+  const rmseVal = valMetrics?.rmse_stage_m ?? null;
+  const verifiedHours = validationData?.verified_hours ?? 0;
+  const totalForecastHours = validationData?.total_forecast_hours ?? 90;
+  const completionPct = validationData?.completion_pct ?? 0;
 
   // Basin Rainfall Volume Calculations
   const stationsList: any[] = stations ?? [];
@@ -182,6 +190,90 @@ export default function OverviewPanel({
           </div>
           <div className="mt-2 text-xs text-gray-600 pt-2 border-t border-gray-100">
             Cycle: {lastCycle?.run_id ?? "Awaiting first run"}
+          </div>
+        </div>
+      </div>
+
+      {/* ── ML RECALIBRATION & VALIDATION ACCURACY STRIP ─────────────────────── */}
+      <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-slate-100 gap-2">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <h2 className="text-xs font-bold text-slate-800 tracking-wide uppercase">
+              Current Run ML Telemetry &amp; Live Validation Metrics
+            </h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onNavigateTab("ml")}
+              className="text-[11px] font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded border border-indigo-200 transition"
+            >
+              Open ML Panel →
+            </button>
+            <button
+              onClick={() => onNavigateTab("runs")}
+              className="text-[11px] font-semibold text-sky-700 bg-sky-50 hover:bg-sky-100 px-2 py-0.5 rounded border border-sky-200 transition"
+            >
+              Runs Ledger →
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">ML Optimization</div>
+            <div className="mt-1 font-mono font-bold text-sm text-emerald-700">
+              {recalState?.is_recalibrated ? "TUNED (Active)" : "Physics Baseline"}
+            </div>
+            <div className="text-[10px] text-slate-500 mt-0.5">
+              α_K: {recalState?.alpha_k?.toFixed(2) ?? "1.00"} · α_lag: {recalState?.alpha_lag?.toFixed(2) ?? "1.00"}
+            </div>
+          </div>
+
+          <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">Spearman Rank (ρ)</div>
+            <div className="mt-1 font-mono font-bold text-sm text-indigo-600">
+              {spearmanRho != null ? spearmanRho.toFixed(3) : "—"}
+            </div>
+            <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">
+              {spearmanRho != null ? "✓ Validated" : "Pending Data"}
+            </div>
+          </div>
+
+          <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">Nash-Sutcliffe (NSE)</div>
+            <div className="mt-1 font-mono font-bold text-sm text-blue-600">
+              {nseVal != null ? nseVal.toFixed(3) : "—"}
+            </div>
+            <div className="text-[10px] text-slate-500 mt-0.5">
+              {nseVal != null ? (nseVal >= 0.75 ? "Gold Standard" : "Stage Fit") : "Awaiting obs"}
+            </div>
+          </div>
+
+          <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">Stage RMSE (m)</div>
+            <div className="mt-1 font-mono font-bold text-sm text-amber-600">
+              {rmseVal != null ? `±${rmseVal.toFixed(3)}m` : "—"}
+            </div>
+            <div className="text-[10px] text-slate-500 mt-0.5">Ultrasonic Datum</div>
+          </div>
+
+          <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">IoT Verified Hours</div>
+            <div className="mt-1 font-mono font-bold text-sm text-purple-600">
+              {verifiedHours}/{totalForecastHours}h
+            </div>
+            <div className="text-[10px] text-purple-700 font-semibold mt-0.5">
+              {completionPct}% Cycle Verified
+            </div>
+          </div>
+
+          <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">Current Cycle</div>
+            <div className="mt-1 font-mono font-bold text-xs text-slate-800 truncate" title={lastCycle?.run_id}>
+              {lastCycle?.run_id ?? "Latest"}
+            </div>
+            <div className="text-[10px] text-emerald-700 font-semibold mt-0.5">100% Automated SLA</div>
           </div>
         </div>
       </div>

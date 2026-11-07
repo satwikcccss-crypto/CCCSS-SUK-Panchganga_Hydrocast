@@ -25,7 +25,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from src.hydrology import stage_converter as sc
+from backend.hydrology import stage_converter as sc
 
 SURVEY_DIR = Path(__file__).resolve().parents[1] / "data" / "wrd_cross_sections"
 

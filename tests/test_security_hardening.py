@@ -13,8 +13,8 @@ from unittest.mock import patch
 import pytest
 from fastapi import HTTPException
 
-import src.api.security as sec
-from src.hydrology import runs_tracker
+import backend.api.security as sec
+from backend.hydrology import runs_tracker
 
 
 # ── admin authentication ─────────────────────────────────────────────────────
@@ -79,3 +79,4 @@ def test_run_path_accepts_normal_cycle_ids():
 
 def test_get_computation_run_rejects_traversal():
     assert runs_tracker.get_computation_run("../../etc/passwd") is None
+

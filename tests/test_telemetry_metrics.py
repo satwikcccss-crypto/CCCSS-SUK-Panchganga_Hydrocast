@@ -9,8 +9,8 @@ from datetime import datetime, timezone
 
 import numpy as np
 
-from src.hydrology import realtime_telemetry_validator as v
-from src.hydrology import telemetry_metrics as t
+from backend.hydrology import realtime_telemetry_validator as v
+from backend.hydrology import telemetry_metrics as t
 
 
 def test_reexports_are_the_same_objects():
@@ -63,3 +63,4 @@ def test_resample_feeds_filters_outliers_and_bins_hourly():
     row = out["2026-08-22T06:00:00Z"]
     assert row["sample_count"] == 2
     assert row["observed_distance_ft"] == 41.0
+

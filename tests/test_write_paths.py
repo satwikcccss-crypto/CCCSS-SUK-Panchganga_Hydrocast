@@ -4,7 +4,7 @@ tests/test_write_paths.py
 Coverage for the three persistence / output modules that were previously at 0%:
 
   * ``src.dss.writer``          — HEC-DSS hyetograph writer (pydsstools optional)
-  * ``src.db.store_results``    — hydrograph / peak / runoff persistence
+  * ``backend.db.store_results``    — hydrograph / peak / runoff persistence
   * ``src.hydrology.post_process`` — Q→H bridge forecasts + DB persistence
 
 No database and no pydsstools are required: connection and DSS objects are
@@ -18,9 +18,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.db import store_results
-from src.dss import writer
-from src.hydrology import post_process as pp
+from backend.db import store_results
+from backend.dss import writer
+from backend.hydrology import post_process as pp
 
 
 # ─────────────────────────── shared DB doubles ─────────────────────────────
@@ -174,7 +174,7 @@ def test_verify_dss_false_without_pydsstools(monkeypatch):
     assert writer.verify_dss(writer.DSS_FILE, ["S1"]) is False
 
 
-# ═══════════════════════ src.db.store_results ═════════════════════════════
+# ═══════════════════════ backend.db.store_results ═════════════════════════════
 
 def _hydrograph(peaks=(120.0, 950.0, 400.0), base=_utc()):
     rows = [(base + timedelta(hours=i), q) for i, q in enumerate(peaks)]
@@ -358,3 +358,5 @@ def test_convert_and_store_falls_back_to_csv_when_db_empty(monkeypatch):
 
     assert out["SHIVAJI_BRIDGE"]["peak_stage"] == pytest.approx(536.0)
     assert out["SHIVAJI_BRIDGE"]["peak_level"] == "DANGER"
+
+

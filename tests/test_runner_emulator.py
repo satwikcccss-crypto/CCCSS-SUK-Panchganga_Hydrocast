@@ -15,15 +15,15 @@ from datetime import datetime, timezone
 import numpy as np
 import pytest
 
-from src.hms.runner import (
+from backend.hms.runner import (
     execute_hec_hms,
     route_muskingum,
     compute_emulator_hydrograph,
     classify_amc,
     CONTROL_FILE,
 )
-from src.hms.basin_parser import load_basin_parameters
-from src.hydrology.ml_calibration import AdaptiveHydrologicCalibrator, BASE_SUB_MODELS, BASE_REACHES
+from backend.hms.basin_parser import load_basin_parameters
+from backend.ml.ml_calibration import AdaptiveHydrologicCalibrator, BASE_SUB_MODELS, BASE_REACHES
 
 
 def _storm_hyetographs(n_sub: int = 9, hours: int = 90):
@@ -191,7 +191,7 @@ def test_baseflow_only_basin_naturally_peaks_at_t0():
 
 
 def test_true_peak_survives_in_execute_hec_hms(monkeypatch):
-    monkeypatch.setattr("src.hms.runner.find_hec_hms", lambda: (None, "Not Found"))
+    monkeypatch.setattr("backend.hms.runner.find_hec_hms", lambda: (None, "Not Found"))
     dt = datetime(2026, 9, 10, 6, 0, 0, tzinfo=timezone.utc)
     out = execute_hec_hms(dt, _storm_hyetographs(n_sub=9))
     assert out["lead_hours_to_peak"] > 0
@@ -202,7 +202,7 @@ def test_true_peak_survives_in_execute_hec_hms(monkeypatch):
 # ──────────────────── execute_hec_hms integration ─────────────────────────
 
 def test_execute_hec_hms_with_hyetographs_restores_control(tmp_path, monkeypatch):
-    monkeypatch.setattr("src.hms.runner.find_hec_hms", lambda: (None, "Not Found"))
+    monkeypatch.setattr("backend.hms.runner.find_hec_hms", lambda: (None, "Not Found"))
     if CONTROL_FILE.exists():
         pristine = CONTROL_FILE.read_text(encoding="utf-8", errors="ignore")
     else:
@@ -242,3 +242,5 @@ def test_recalibrate_with_hyetographs_physical_signals():
     assert res["delta_cn"] > 0.0
     all_k = [reaches["k_hr"] for reaches in res["reaches"].values()]
     assert all(k > 0 for k in all_k)
+
+

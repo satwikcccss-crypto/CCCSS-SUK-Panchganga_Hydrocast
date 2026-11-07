@@ -12,13 +12,13 @@ from unittest.mock import patch, MagicMock
 import numpy as np
 import pandas as pd
 
-from src.ecmwf.open_meteo import fetch_point_forecast, MAX_PHYSICAL_PRECIP_MM_HR
-from src.alerts.evaluator import _get_bridge_metadata, evaluate_and_notify
+from backend.rainfall.open_meteo import fetch_point_forecast, MAX_PHYSICAL_PRECIP_MM_HR
+from backend.alerts.evaluator import _get_bridge_metadata, evaluate_and_notify
 
 
 class TestQualityControlPipeline(unittest.TestCase):
 
-    @patch("src.ecmwf.open_meteo._call_openmeteo_api")
+    @patch("backend.rainfall.open_meteo._call_openmeteo_api")
     def test_precip_nan_and_inf_sanitization(self, mock_api):
         """Verify NaNs, Infs, and negative rainfall are sanitized into valid physical bounds."""
         mock_response = MagicMock()
@@ -47,7 +47,7 @@ class TestQualityControlPipeline(unittest.TestCase):
         # The inf should have been capped to MAX_PHYSICAL_PRECIP_MM_HR
         self.assertEqual(arr[3], MAX_PHYSICAL_PRECIP_MM_HR)
 
-    @patch("src.ecmwf.open_meteo._call_openmeteo_api")
+    @patch("backend.rainfall.open_meteo._call_openmeteo_api")
     def test_precip_anomaly_ceiling_capping(self, mock_api):
         """Verify unphysical sensor spikes (> 250 mm/hr) are safely capped."""
         mock_response = MagicMock()
@@ -67,7 +67,7 @@ class TestQualityControlPipeline(unittest.TestCase):
         self.assertTrue((arr <= MAX_PHYSICAL_PRECIP_MM_HR).all())
         self.assertEqual(arr[0], MAX_PHYSICAL_PRECIP_MM_HR)
 
-    @patch("src.ecmwf.open_meteo._call_openmeteo_api", side_effect=Exception("Connection reset"))
+    @patch("backend.rainfall.open_meteo._call_openmeteo_api", side_effect=Exception("Connection reset"))
     def test_automated_physical_fallback_on_failure(self, mock_api):
         """Verify fetch_point_forecast raises RuntimeError when fallback is disabled."""
         start_dt = datetime(2026, 9, 10, 6, 0, 0, tzinfo=timezone.utc)
@@ -93,3 +93,6 @@ class TestQualityControlPipeline(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+

@@ -27,7 +27,7 @@ import psycopg2
 import psycopg2.extras
 import pytest
 
-import src.orchestrator as orch
+import backend.service.pipeline_worker as orch
 
 TEST_DB_URL = os.getenv("HYDROCAST_TEST_DATABASE_URL", "")
 SCHEMA_PATH = Path(__file__).resolve().parents[1] / "database" / "supabase_schema.sql"
@@ -236,3 +236,5 @@ def test_failed_step_persists_error_message(monkeypatch):
             cur.execute("DELETE FROM simulation_runs WHERE run_id=%s", (cycle_id,))
         conn.commit()
         conn.close()
+
+

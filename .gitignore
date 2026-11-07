@@ -2,6 +2,8 @@
 frontend/node_modules/
 frontend/.next/
 frontend/out/
+frontend-admin/
+frontend-public/
 frontend/build/
 frontend/test-results/
 frontend/playwright-report/
@@ -49,6 +51,7 @@ data/raw/
 data/openmeteo_dss/csv/
 data/openmeteo_dss/dss/
 data/openmeteo_dss_centroids/
+data/staging/pending_commits/
 *.zip
 *.xlsx
 .om_cache*

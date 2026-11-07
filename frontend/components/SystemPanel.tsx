@@ -146,7 +146,7 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
       qc: 100,
     },
     {
-      name: "PostgreSQL / Supabase State Store",
+      name: "PostgreSQL 16 Local State Store",
       type: "Runs History & Continuous Validation",
       status: isDbConnected ? "online" : "offline",
       lag: "<1s",

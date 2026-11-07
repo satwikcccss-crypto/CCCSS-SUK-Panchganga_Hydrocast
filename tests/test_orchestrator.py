@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-import src.orchestrator as orch
+import backend.service.pipeline_worker as orch
 
 
 class _FakeCursor:
@@ -187,3 +187,5 @@ def test_run_pipeline_failure_exits_nonzero_and_closes(monkeypatch):
 
     assert exc.value.code == 1
     assert conn.closed is True
+
+

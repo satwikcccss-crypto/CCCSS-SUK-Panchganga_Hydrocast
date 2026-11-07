@@ -5,8 +5,8 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get("admin_token")?.value;
   const path = request.nextUrl.pathname;
 
-  // Protect /admin routes — redirect unauthenticated visitors to /login
-  if (path.startsWith("/admin")) {
+  // Protect /admin and /console routes — redirect unauthenticated visitors to /login
+  if (path.startsWith("/admin") || path.startsWith("/console")) {
     if (!token) {
       const loginUrl = new URL("/login", request.url);
       return NextResponse.redirect(loginUrl);
@@ -23,6 +23,6 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/login"],
+  matcher: ["/admin/:path*", "/console/:path*", "/login"],
 };
 

@@ -18,7 +18,7 @@ The dry-season bias was two stacked defects:
 Discharge is conserved along a reach; stage is not. The fix reads the observed
 stage at the site where it was measured and converts once.
 
-The baseflow rule itself is ``src.hms.runner.derive_baseflow_m3s``, so these
+The baseflow rule itself is ``backend.hms.runner.derive_baseflow_m3s``, so these
 tests exercise the production function rather than a copy of it. The surveyed
 cross-section geometry is pinned separately in
 ``tests/test_cross_section_survey.py``.
@@ -27,8 +27,8 @@ cross-section geometry is pinned separately in
 import numpy as np
 import pytest
 
-from src.hydrology import stage_converter as sc
-from src.hms.runner import derive_baseflow_m3s
+from backend.hydrology import stage_converter as sc
+from backend.hms.runner import derive_baseflow_m3s
 
 
 def _observed_baseflow(live_stage_m: float) -> float:
@@ -274,7 +274,7 @@ class TestTelemetryObservationFallback:
     """Never fabricate a stage: fall back to cached observations or unverified."""
 
     def test_latest_cached_observation_reads_cache(self, monkeypatch):
-        from src.ecmwf import open_meteo as om
+        from backend.rainfall import open_meteo as om
         mock_cache = {
             "2026-09-29T17:00:00Z": {"observed_stage_m": 530.41, "observed_distance_ft": 62.14},
             "2026-09-29T18:00:00Z": {"observed_stage_m": 530.44, "observed_distance_ft": 62.05},
@@ -286,7 +286,9 @@ class TestTelemetryObservationFallback:
         assert latest["timestamp"] == "2026-09-29T18:00:00Z"
 
     def test_latest_cached_observation_handles_empty(self, monkeypatch):
-        from src.ecmwf import open_meteo as om
+        from backend.rainfall import open_meteo as om
         monkeypatch.setattr(om, "load_telemetry_cache", lambda: {})
         assert om._latest_cached_observation() is None
         
+
+

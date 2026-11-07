@@ -12,7 +12,7 @@ import math
 import unittest
 import numpy as np
 
-from src.hydrology.realtime_telemetry_validator import (
+from backend.validation.realtime_telemetry_validator import (
     resample_feeds_hourly,
     compute_pure_metrics,
     SHIVAJI_DATUM_MSL,
@@ -89,7 +89,7 @@ class TestRealtimeTelemetryValidator(unittest.TestCase):
         Spearman/NSE, even when the error itself is tiny. Ranking a handful of
         points is not statistically meaningful.
         """
-        from src.hydrology.realtime_telemetry_validator import MIN_CORRELATION_SAMPLES
+        from backend.validation.realtime_telemetry_validator import MIN_CORRELATION_SAMPLES
         obs = np.array([533.24, 533.27])
         pred = np.array([533.20, 533.25])
 
@@ -151,7 +151,7 @@ class TestRealtimeTelemetryValidator(unittest.TestCase):
 
     def test_lifecycle_verification_completion(self):
         """Verify that 90-hour complete match transitions to LIFECYCLE_VERIFIED."""
-        from src.hydrology.realtime_telemetry_validator import validate_run_with_observations
+        from backend.validation.realtime_telemetry_validator import validate_run_with_observations
         forecast = [
             {"forecast_time": f"2026-09-01T{h:02d}:00:00Z", "stage_m": 533.20 + 0.01 * h, "discharge_m3s": 100.0 + 2.0 * h}
             for h in range(90)
@@ -178,7 +178,7 @@ class TestRealtimeTelemetryValidator(unittest.TestCase):
         explain the zero instead of showing an indefinite pending state.
         """
         from datetime import datetime, timedelta, timezone
-        from src.hydrology.realtime_telemetry_validator import (
+        from backend.validation.realtime_telemetry_validator import (
             OBSERVATION_GAP_GRACE_HOURS,
             validate_run_with_observations,
         )
@@ -206,7 +206,7 @@ class TestRealtimeTelemetryValidator(unittest.TestCase):
         many hours are unverified.
         """
         from datetime import datetime, timedelta, timezone
-        from src.hydrology.realtime_telemetry_validator import validate_run_with_observations
+        from backend.validation.realtime_telemetry_validator import validate_run_with_observations
 
         start = datetime.now(timezone.utc) - timedelta(days=5)
         forecast = [
@@ -236,7 +236,7 @@ class TestRealtimeTelemetryValidator(unittest.TestCase):
         OBSERVATION_GAP - the missing hours have simply not happened yet.
         """
         from datetime import datetime, timedelta, timezone
-        from src.hydrology.realtime_telemetry_validator import validate_run_with_observations
+        from backend.validation.realtime_telemetry_validator import validate_run_with_observations
 
         start = datetime.now(timezone.utc) - timedelta(hours=2)
         forecast = [
@@ -259,7 +259,7 @@ class TestRealtimeTelemetryValidator(unittest.TestCase):
         rather than being prematurely declared a permanent gap.
         """
         from datetime import datetime, timedelta, timezone
-        from src.hydrology.realtime_telemetry_validator import validate_run_with_observations
+        from backend.validation.realtime_telemetry_validator import validate_run_with_observations
 
         # Window elapsed only 1 hour ago; the 90-hour forecast ends 89h from now,
         # so the window has NOT elapsed and the run is still in flight.
@@ -280,3 +280,5 @@ class TestRealtimeTelemetryValidator(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+

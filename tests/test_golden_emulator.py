@@ -22,8 +22,8 @@ from datetime import datetime, timezone
 import numpy as np
 import pytest
 
-from src.hms.basin_parser import load_immutable_baseline
-from src.hms.runner import compute_emulator_hydrograph
+from backend.hms.basin_parser import load_immutable_baseline
+from backend.hms.runner import compute_emulator_hydrograph
 
 # Frozen baseline captured from the validated promoted digital-twin config.
 _GOLDEN = {
@@ -81,3 +81,4 @@ def test_emulator_is_deterministic():
     b = _run()
     assert np.array_equal(a["q_total"], b["q_total"])
     assert np.array_equal(a["q_surface"], b["q_surface"])
+

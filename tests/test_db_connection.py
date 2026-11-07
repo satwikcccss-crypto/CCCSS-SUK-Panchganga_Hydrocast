@@ -7,7 +7,7 @@ Unit tests for the enterprise database connection manager and Supabase IPv6/IPv4
 import os
 import unittest
 from unittest.mock import patch
-from src.db.connection import parse_supabase_ref, build_pooler_url, get_db_connection
+from backend.db.connection import parse_supabase_ref, build_pooler_url, get_db_connection
 
 
 class TestDatabaseConnection(unittest.TestCase):
@@ -62,3 +62,4 @@ class TestDatabaseConnection(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -14,7 +14,7 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 import pyarrow.parquet as pq
 
-from src.db.archive_runs import get_cutoff_date, archive_table_to_parquet
+from backend.db.archive_runs import get_cutoff_date, archive_table_to_parquet
 
 
 class TestArchival(unittest.TestCase):
@@ -98,3 +98,4 @@ class TestArchival(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -9,7 +9,7 @@ Validates:
 """
 
 import unittest
-from src.ecmwf.station_selector import (
+from backend.rainfall.station_selector import (
     STATION_REGISTRY,
     SUBBASIN_AREAS_KM2,
     haversine_km,
@@ -66,3 +66,5 @@ class TestStationSelector(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+

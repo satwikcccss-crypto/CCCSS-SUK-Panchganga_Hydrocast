@@ -14,7 +14,7 @@ profile = "black"
 line_length = 100
 
 [tool.coverage.run]
-source = ["src"]
+source = ["backend"]
 omit = ["*/__init__.py"]
 
 [tool.coverage.report]

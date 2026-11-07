@@ -1,193 +1,160 @@
 // frontend/lib/api.ts
-// All data is sourced EXCLUSIVELY from the pipeline JSON — no hardcoded fallbacks
+// All data is sourced EXCLUSIVELY from the backend PostgreSQL via FastAPI API.
+// No hardcoded fallbacks, no Supabase, no stale data.
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "";
 
-// ── Response cache (30s TTL) to avoid N+1 API calls across dashboard panels ──
-let _cache: { data: any; ts: number; runId?: string } | null = null;
-const CACHE_TTL_MS = 30_000;
+// ── Stale-data guard ──────────────────────────────────────────────────────────
+// Data is considered stale if older than STALE_THRESHOLD_MS. The UI shows a
+// "stale data" warning so operators never act on outdated forecasts.
+const STALE_THRESHOLD_MS = 60_000; // 60 seconds
+const CACHE_BUST_TTL_MS = 5_000;   // bust client cache every 5s
 
-async function _cachedFetch(runId?: string): Promise<any> {
-  const now = Date.now();
-  if (_cache && (now - _cache.ts < CACHE_TTL_MS) && _cache.runId === runId) {
-    return _cache.data;
+interface FetchOptions extends RequestInit {
+  skipAuth?: boolean;
+}
+
+// Response cache keyed by URL with TTL to avoid N+1 calls across panels
+let _cache: Map<string, { data: any; ts: number }> = new Map();
+
+function _headers(skipAuth: boolean = false): HeadersInit {
+  const h: HeadersInit = {
+    "Content-Type": "application/json",
+    "Cache-Control": "no-store, no-cache, must-revalidate",
+    "Pragma": "no-cache",
+  };
+  if (!skipAuth && API_KEY) {
+    (h as Record<string, string>)["X-API-Key"] = API_KEY;
   }
-  const query = runId ? `?run_id=${encodeURIComponent(runId)}` : "";
-  const url = typeof window !== "undefined"
-    ? `/api/v1/dashboard${query}`
-    : `${BASE}/api/v1/dashboard${query}`;
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error("API route response not ok");
+  return h;
+}
+
+async function _fetchWithCache(url: string, opts: FetchOptions = {}): Promise<any> {
+  const now = Date.now();
+  const cached = _cache.get(url);
+  if (cached && now - cached.ts < CACHE_BUST_TTL_MS) {
+    return cached.data;
+  }
+
+  const cacheBustUrl = url + (url.includes("?") ? "&" : "?") + `_cb=${now}`;
+  const res = await fetch(cacheBustUrl, {
+    ...opts,
+    headers: { ..._headers(opts.skipAuth), ...(opts.headers || {}) },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const detail = await res.text();
+    throw new Error(`API ${res.status}: ${detail}`);
+  }
+
   const data = await res.json();
-  _cache = { data, ts: now, runId };
+  _cache.set(url, { data, ts: now });
   return data;
 }
 
-export async function fetchDashboardData(runId?: string) {
-  return _cachedFetch(runId);
+function _isStale(ts?: number | string): boolean {
+  if (!ts) return true;
+  const t = typeof ts === "string" ? new Date(ts).getTime() : ts;
+  return Date.now() - t > STALE_THRESHOLD_MS;
 }
 
+// ── Individual backend endpoints (each queries PostgreSQL directly) ─────────
+
+export async function fetchStatus(): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/status`);
+}
+
+export async function fetchRainfall(): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/rainfall/ecmwf`);
+}
+
+export async function fetchStations(): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/rainfall/stations`);
+}
+
+export async function fetchRunoffSummary(): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/runoff/summary`);
+}
+
+export async function fetchRunoffHydrograph(): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/runoff/hydrograph`);
+}
+
+export async function fetchAlerts(): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/alerts`);
+}
+
+export async function fetchAlertsBulletin(): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/alerts/bulletin`);
+}
+
+export async function fetchPipeline(): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/pipeline`);
+}
+
+export async function fetchPipelineHistory(limit = 48): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/pipeline/history?limit=${limit}`);
+}
+
+export async function fetchRuns(): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/runs`);
+}
+
+export async function fetchRunDetails(runId: string): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/runs/${encodeURIComponent(runId)}`);
+}
+
+export async function fetchAccuracy(runId?: string): Promise<any> {
+  const url = runId
+    ? `${BASE}/api/v1/accuracy?run_id=${encodeURIComponent(runId)}`
+    : `${BASE}/api/v1/accuracy`;
+  return _fetchWithCache(url);
+}
+
+export async function fetchBridgeStage(siteId: string): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/runoff/stage/${encodeURIComponent(siteId)}`);
+}
+
+// ── Aggregated dashboard (single call, queries PostgreSQL) ──────────────────
+
+export async function fetchDashboardData(runId?: string): Promise<any> {
+  const url = runId
+    ? `${BASE}/api/v1/dashboard?run_id=${encodeURIComponent(runId)}`
+    : `${BASE}/api/v1/dashboard`;
+  return _fetchWithCache(url);
+}
+
+// ── Convenience wrappers (match existing dashboard usage) ───────────────────
+
 export const api = {
-  status: async () => (await fetchDashboardData()).status,
-  cycleStatus: async () => (await fetchDashboardData()).status,
-  ecmwfHyetograph: async () => (await fetchDashboardData()).ecmwf,
-  stationSelection: async () => (await fetchDashboardData()).stations,
-  gaugeHyetographs: async () => (await fetchDashboardData()).gauges,
-  runoffHydrograph: async () => (await fetchDashboardData()).hydrograph,
-  outletHydrograph: async () => (await fetchDashboardData()).hydrograph,
-  pipeline: async () => (await fetchDashboardData()).pipeline,
-  logs: async () => (await fetchDashboardData()).logs ?? [],
-  runsHistory: async () => (await fetchDashboardData()).runs_history ?? [],
+  status: async () => (await fetchStatus()).status ?? (await fetchStatus()),
+  cycleStatus: async () => (await fetchStatus()).status ?? (await fetchStatus()),
+  ecmwfHyetograph: async () => (await fetchRainfall()),
+  stationSelection: async () => (await fetchStations()),
+  gaugeHyetographs: async () => (await fetchStations()),
+  runoffHydrograph: async () => (await fetchRunoffHydrograph()),
+  outletHydrograph: async () => (await fetchRunoffHydrograph()),
+  pipeline: async () => (await fetchPipeline()),
+  logs: async () => (await fetchPipeline()).logs ?? [],
+  runsHistory: async () => (await fetchRuns()).runs ?? [],
   pipelineHistory: async (limit = 48) => {
-    const data = await fetchDashboardData();
-    const hist = data.runs_history ?? [];
-    return hist.slice(0, limit);
+    const data = await fetchPipelineHistory(limit);
+    return data.runs ?? data.cycles ?? [];
   },
-  runDetails: async (runId: string) => await fetchDashboardData(runId),
-  validation: async (runId?: string) => (await fetchDashboardData(runId)).validation ?? null,
-  runoffSummary: async () => {
-    const data = await fetchDashboardData();
-    if (!data || !data.status?.last_cycle) return null;
-
-    const lastCycle = data.status?.last_cycle ?? {};
-    const sumObj = data.summary ?? {};
-    const peakQ = sumObj.peak_discharge_m3s ?? (data.hydrograph?.length ? Math.max(...data.hydrograph.map((h: any) => h.discharge_m3s ?? 0)) : (lastCycle.peak_discharge_m3s ?? 0));
-
-    const shivajiSite = data.bridgeShivaji?.site;
-    const rajaramSite = data.bridgeRajaram?.site;
-
-    // Compute peaks from actual forecast arrays
-    const peakStageShivaji = data.bridgeShivaji?.forecast?.length
-      ? data.bridgeShivaji.forecast.reduce((max: number, f: any) => Math.max(max, f.stage_m), 0)
-      : (sumObj.bridges?.shivaji?.peak_stage_m ?? 0);
-    const peakStageRajaram = data.bridgeRajaram?.forecast?.length
-      ? data.bridgeRajaram.forecast.reduce((max: number, f: any) => Math.max(max, f.stage_m), 0)
-      : (sumObj.bridges?.rajaram?.peak_stage_m ?? 0);
-
-    const findPeakHour = (hydrograph: any[]) => {
-      if (!hydrograph || hydrograph.length === 0) return sumObj.lead_hours_to_peak ?? 0;
-      let maxQ = -1;
-      let hr = 0;
-      hydrograph.forEach((h: any) => {
-        if ((h.discharge_m3s ?? 0) > maxQ) {
-          maxQ = h.discharge_m3s;
-          hr = h.lead_hours ?? h.hour ?? 0;
-        }
-      });
-      return hr;
-    };
-
-    const peakHour = findPeakHour(data.hydrograph);
-
-    // Compute total volume from actual hydrograph (MCM)
-    const totalVolumeMcm = sumObj.total_volume_mcm ?? (data.hydrograph?.length
-      ? data.hydrograph.reduce((sum: number, h: any) => sum + ((h.discharge_m3s ?? 0) * 3600), 0) / 1e6
-      : 0);
-
-    // Determine alert levels from actual site thresholds
-    const shivajiAlert = !shivajiSite ? "NORMAL"
-      : peakStageShivaji >= (shivajiSite.hfl_m ?? Infinity) ? "HFL_EXCEEDED"
-      : peakStageShivaji >= (shivajiSite.danger_stage_m ?? Infinity) ? "DANGER"
-      : peakStageShivaji >= (shivajiSite.warning_stage_m ?? Infinity) ? "WARNING"
-      : peakStageShivaji >= (shivajiSite.alert_stage_m ?? Infinity) ? "ALERT"
-      : "NORMAL";
-
-    const rajaramAlert = !rajaramSite ? "NORMAL"
-      : peakStageRajaram >= (rajaramSite.hfl_m ?? Infinity) ? "HFL_EXCEEDED"
-      : peakStageRajaram >= (rajaramSite.danger_stage_m ?? Infinity) ? "DANGER"
-      : peakStageRajaram >= (rajaramSite.warning_stage_m ?? Infinity) ? "WARNING"
-      : peakStageRajaram >= (rajaramSite.alert_stage_m ?? Infinity) ? "ALERT"
-      : "NORMAL";
-
-    return {
-      outlet: {
-        peak_discharge_m3s: peakQ,
-        lead_hours_to_peak: peakHour,
-        total_volume_mcm: totalVolumeMcm,
-        time_to_peak_hours: peakHour,
-        alert_level: lastCycle.alert_level ?? "NORMAL",
-      },
-      peak_arrival: data.summary?.peak_arrival ?? {
-        shivaji: data.bridgeShivaji?.peak_arrival,
-        rajaram: data.bridgeRajaram?.peak_arrival,
-      },
-      recalibration: data.recalibration,
-      subbasins: data.stations,
-      bridges: [
-        {
-          site_id: shivajiSite?.site_id ?? "SHIVAJI_BRIDGE",
-          site_name: shivajiSite?.site_name ?? "Shivaji Bridge",
-          district: shivajiSite?.district ?? "Kolhapur",
-          authority: shivajiSite?.authority ?? "",
-          description: shivajiSite?.description ?? "",
-          stage_m: data.bridgeShivaji?.forecast?.[0]?.stage_m ?? 0,
-          current_stage_m: data.bridgeShivaji?.forecast?.[0]?.stage_m ?? 0,
-          peak_stage_m: peakStageShivaji,
-          alert_stage_m: shivajiSite?.alert_stage_m ?? 0,
-          warning_stage_m: shivajiSite?.warning_stage_m ?? 0,
-          danger_stage_m: shivajiSite?.danger_stage_m ?? 0,
-          extreme_stage_m: shivajiSite?.extreme_stage_m ?? shivajiSite?.hfl_m ?? 0,
-          hfl_m: shivajiSite?.hfl_m ?? 0,
-          alert_level: shivajiAlert,
-          is_above_danger: peakStageShivaji >= (shivajiSite?.danger_stage_m ?? Infinity),
-          markerColor: shivajiSite?.markerColor ?? "#0f4c81",
-          peak_arrival: data.bridgeShivaji?.peak_arrival ?? data.summary?.peak_arrival?.shivaji,
-        },
-        {
-          site_id: rajaramSite?.site_id ?? "RAJARAM_BRIDGE",
-          site_name: rajaramSite?.site_name ?? "Rajaram K.T. Weir",
-          district: rajaramSite?.district ?? "Kolhapur",
-          authority: rajaramSite?.authority ?? "",
-          stage_m: data.bridgeRajaram?.forecast?.[0]?.stage_m ?? 0,
-          current_stage_m: data.bridgeRajaram?.forecast?.[0]?.stage_m ?? 0,
-          peak_stage_m: peakStageRajaram,
-          alert_stage_m: rajaramSite?.alert_stage_m ?? 0,
-          warning_stage_m: rajaramSite?.warning_stage_m ?? 0,
-          danger_stage_m: rajaramSite?.danger_stage_m ?? 0,
-          hfl_m: rajaramSite?.hfl_m ?? 0,
-          alert_level: rajaramAlert,
-          is_above_danger: peakStageRajaram >= (rajaramSite?.danger_stage_m ?? Infinity),
-          markerColor: rajaramSite?.markerColor ?? "#0284c7",
-          peak_arrival: data.bridgeRajaram?.peak_arrival ?? data.summary?.peak_arrival?.rajaram,
-        },
-      ],
-    };
+  runDetails: async (runId: string) => await fetchRunDetails(runId),
+  validation: async (runId?: string) => (await fetchAccuracy(runId)) ?? null,
+  runoffSummary: async () => await fetchRunoffSummary(),
+  alerts: async () => await fetchAlerts(),
+  bridgeShivaji: async () => await fetchBridgeStage("SHIVAJI_BRIDGE"),
+  bridgeRajaram: async () => await fetchBridgeStage("RAJARAM_BRIDGE"),
+  bridgeStage: async (siteId: string) => await fetchBridgeStage(siteId),
+  calibration: async () => (await fetchAccuracy()) ?? null,
+  peakArrival: async () => {
+    const data = await fetchRunoffSummary();
+    return data?.peak_arrival ?? null;
   },
-  alerts: async () => {
-    const data = await fetchDashboardData();
-    const alertsList: any[] = [];
-    if (!data || !data.bridgeShivaji?.site) return alertsList;
-
-    const shivajiSite = data.bridgeShivaji.site;
-    const shivajiPeak = data.bridgeShivaji.forecast?.reduce(
-      (max: number, f: any) => Math.max(max, f.stage_m), 0
-    ) ?? 0;
-
-    if (shivajiPeak >= (shivajiSite.warning_stage_m ?? Infinity)) {
-      alertsList.push({
-        id: "ALT-SHIVAJI-01",
-        site_id: "SHIVAJI_BRIDGE",
-        site_name: shivajiSite.site_name,
-        alert_type: shivajiPeak >= (shivajiSite.danger_stage_m ?? Infinity) ? "DANGER" : "WARNING",
-        current_stage_m: data.bridgeShivaji.forecast?.[0]?.stage_m ?? 0,
-        warning_stage_m: shivajiSite.warning_stage_m,
-        danger_stage_m: shivajiSite.danger_stage_m,
-        extreme_stage_m: shivajiSite.extreme_stage_m ?? shivajiSite.hfl_m,
-        hfl_m: shivajiSite.hfl_m,
-        lead_hours: data.bridgeShivaji.forecast?.find((f: any) => f.stage_m === shivajiPeak)?.lead_hours ?? 0,
-        message: `Projected peak stage ${shivajiPeak.toFixed(2)}m MSL reaches ${shivajiPeak >= (shivajiSite.danger_stage_m ?? Infinity) ? "DANGER" : "WARNING"} threshold`,
-      });
-    }
-    return alertsList;
-  },
-  bridgeShivaji: async () => (await fetchDashboardData()).bridgeShivaji,
-  bridgeRajaram: async () => (await fetchDashboardData()).bridgeRajaram,
-  bridgeStage: async (siteId: string) => {
-    const data = await fetchDashboardData();
-    return siteId.toUpperCase().includes("SHIVAJI") ? data.bridgeShivaji : data.bridgeRajaram;
-  },
-  calibration: async () => (await fetchDashboardData()).recalibration ?? null,
-  peakArrival: async () => (await fetchDashboardData()).summary?.peak_arrival ?? null,
   ratingCurves: async () => {
     const data = await fetchDashboardData();
     return data.ratingCurves ?? {
@@ -196,3 +163,15 @@ export const api = {
     };
   },
 };
+
+// ── Cache control ─────────────────────────────────────────────────────────────
+
+export function clearApiCache() {
+  _cache.clear();
+}
+
+export function isStale(ts?: number | string): boolean {
+  return _isStale(ts);
+}
+
+export { STALE_THRESHOLD_MS };

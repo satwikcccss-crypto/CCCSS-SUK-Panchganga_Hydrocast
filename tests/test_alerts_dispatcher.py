@@ -8,8 +8,8 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch, MagicMock
 
-from src.alerts import telegram_bot
-from src.alerts.telegram_bot import (
+from backend.alerts import telegram_bot
+from backend.alerts.telegram_bot import (
     esc,
     format_telegram_alert,
     get_severity_badge,
@@ -58,20 +58,20 @@ class TestAlertsDispatcher(unittest.TestCase):
         self.assertIn("Exceeds Danger by:", card)
         self.assertIn("Evacuate low-lying", card)
 
-    @patch("src.alerts.telegram_bot.PRIMARY_CHAT_ID", "-100111")
-    @patch("src.alerts.telegram_bot.DDMA_CHATS_ENV", "-100222,-100333")
+    @patch("backend.alerts.telegram_bot.PRIMARY_CHAT_ID", "-100111")
+    @patch("backend.alerts.telegram_bot.DDMA_CHATS_ENV", "-100222,-100333")
     def test_get_target_chat_ids(self):
         chats = get_target_chat_ids()
         self.assertEqual(chats, ["-100111", "-100222", "-100333"])
 
-    @patch("src.alerts.telegram_bot.WEBHOOKS_ENV", "https://hook1.gov.in, https://hook2.gov.in")
+    @patch("backend.alerts.telegram_bot.WEBHOOKS_ENV", "https://hook1.gov.in, https://hook2.gov.in")
     def test_get_webhook_urls(self):
         urls = get_webhook_urls()
         self.assertEqual(urls, ["https://hook1.gov.in", "https://hook2.gov.in"])
 
     @patch("requests.post")
-    @patch("src.alerts.telegram_bot.get_target_chat_ids", return_value=["-100111", "-100222"])
-    @patch("src.alerts.telegram_bot.TELEGRAM_TOKEN", "mock_bot_token")
+    @patch("backend.alerts.telegram_bot.get_target_chat_ids", return_value=["-100111", "-100222"])
+    @patch("backend.alerts.telegram_bot.TELEGRAM_TOKEN", "mock_bot_token")
     def test_send_telegram_broadcast(self, mock_get_chats, mock_post):
         mock_resp = MagicMock()
         mock_resp.status_code = 200
@@ -82,7 +82,7 @@ class TestAlertsDispatcher(unittest.TestCase):
         self.assertEqual(mock_post.call_count, 2)
 
     @patch("requests.post")
-    @patch("src.alerts.telegram_bot.get_webhook_urls", return_value=["https://agency.gov.in/alert"])
+    @patch("backend.alerts.telegram_bot.get_webhook_urls", return_value=["https://agency.gov.in/alert"])
     def test_dispatch_agency_webhooks(self, mock_get_urls, mock_post):
         mock_resp = MagicMock()
         mock_resp.status_code = 200
@@ -161,4 +161,6 @@ class TestTelegramSecurity(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
 

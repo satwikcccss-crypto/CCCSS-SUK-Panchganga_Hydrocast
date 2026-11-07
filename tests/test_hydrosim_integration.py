@@ -16,9 +16,9 @@ from datetime import datetime, timezone
 import pytest
 from fastapi.testclient import TestClient
 
-import src.api.keys as keys
-import src.api.main as main
-import src.api.security as security
+import backend.api.keys as keys
+import backend.api.main as main
+import backend.api.security as security
 
 
 class _Acquire:
@@ -248,3 +248,4 @@ def test_invalid_format_is_422(monkeypatch, client):
         headers={"X-API-Key": "hydrosim-key"},
     )
     assert r.status_code == 422
+

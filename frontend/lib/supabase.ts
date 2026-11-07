@@ -1,18 +1,16 @@
-import { createClient } from "@supabase/supabase-js";
+// frontend/lib/supabase.ts
+// Supabase (cloud) has been removed from this on-premises Windows Server deployment.
+// All data now comes from the local FastAPI backend (Port 8000) which queries
+// PostgreSQL 16 directly. This module is kept as a compatibility shim that
+// always returns null so existing imports don't break.
 
-const supabaseUrl =
-  process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  process.env.NEXT_PUBLIC_CCCSSSUK_SUPABASE_URL ||
-  process.env.CCCSSSUK_SUPABASE_URL ||
-  "";
+export const supabase = null;
 
-const supabaseAnonKey =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  process.env.NEXT_PUBLIC_CCCSSSUK_SUPABASE_ANON_KEY ||
-  process.env.CCCSSSUK_SUPABASE_ANON_KEY ||
-  "";
+export async function supabaseAuth() {
+  // Local auth is handled by backend JWT via /api/v1/admin/auth/token
+  return { data: null, error: { message: "Use backend JWT auth instead" } };
+}
 
-export const supabase = (supabaseUrl && supabaseAnonKey)
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
-
+export async function supabaseSignOut() {
+  return { error: null };
+}

@@ -14,14 +14,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from src.hydrology.ml_calibration import (
+from backend.ml.ml_calibration import (
     calculate_peak_arrival_window,
     AdaptiveHydrologicCalibrator,
     calibrator,
     BASE_SUB_MODELS,
     BASE_REACHES,
 )
-from src.hms.runner import execute_hec_hms
+from backend.hms.runner import execute_hec_hms
 
 
 def test_calculate_peak_arrival_window():
@@ -149,7 +149,7 @@ End:
 """, encoding="utf-8")
 
     # Patch BASIN_FILE in module temporarily
-    import src.hydrology.ml_calibration as ml_mod
+    import backend.ml.ml_calibration as ml_mod
     orig_basin = ml_mod.BASIN_FILE
     ml_mod.BASIN_FILE = dummy_basin
 
@@ -253,3 +253,5 @@ def test_runner_accepts_parameter_overrides():
     assert out["calibration"]["is_recalibrated"] is True
     assert out["calibration"]["alpha_k"] == 0.85
     assert out["calibration"]["alpha_lag"] == 0.90
+
+

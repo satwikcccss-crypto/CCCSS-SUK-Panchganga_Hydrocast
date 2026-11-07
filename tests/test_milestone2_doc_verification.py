@@ -30,7 +30,7 @@ class TestSystem1DualEngineDocumentation:
     """Validate System 1 (HEC-HMS Engine & Python Twin Emulator)."""
 
     def test_runner_symbols_exist(self) -> None:
-        import src.hms.runner as runner
+        import backend.hms.runner as runner
 
         expected_funcs = [
             "find_hec_hms",
@@ -68,8 +68,8 @@ class TestSystem2AdaptiveCalibratorDocumentation:
     """Validate System 2 (Physics-Informed Adaptive Calibrator & ML Predictor)."""
 
     def test_calibrator_classes_and_methods_exist(self) -> None:
-        from src.hydrology.ml_calibration import AdaptiveHydrologicCalibrator
-        from src.hydrology.ml_parameter_predictor import HydrologicParameterPredictor
+        from backend.ml.ml_calibration import AdaptiveHydrologicCalibrator
+        from backend.hydrology.ml_parameter_predictor import HydrologicParameterPredictor
 
         calib_methods = [
             "detect_timing_and_stage_discrepancy",
@@ -176,9 +176,9 @@ class TestSystem4SecurityAndRateLimitingDocumentation:
     """Validate System 4 (API Security, Dual-Tier Keys & Rate Limiting)."""
 
     def test_security_and_keys_symbols_exist(self) -> None:
-        import src.api.security as security
-        import src.api.keys as keys
-        import src.api.limits as limits
+        import backend.api.security as security
+        import backend.api.keys as keys
+        import backend.api.limits as limits
 
         for fn in ["hash_password", "verify_password", "verify_admin_credentials", "create_access_token", "decode_access_token", "verify_admin_auth"]:
             assert hasattr(security, fn), f"Symbol {fn} missing from src/api/security.py"
@@ -205,8 +205,8 @@ class TestSystem5RealTimeTelemetryDocumentation:
     """Validate System 5 (ThingSpeak Ingestion & Telemetry Metrics)."""
 
     def test_validator_and_metrics_functions_exist(self) -> None:
-        import src.hydrology.realtime_telemetry_validator as validator
-        import src.hydrology.telemetry_metrics as metrics
+        import backend.validation.realtime_telemetry_validator as validator
+        import backend.hydrology.telemetry_metrics as metrics
 
         for fn in ["fetch_thingspeak_feeds", "load_telemetry_cache", "save_telemetry_cache", "validate_run_with_observations", "sync_validation_to_storage_and_db"]:
             assert hasattr(validator, fn), f"Function {fn} missing from realtime_telemetry_validator.py"
@@ -252,8 +252,8 @@ class TestSystem7RatingPhysicsDocumentation:
     """Validate System 7 (Rating Physics & Monotone PCHIP Spline)."""
 
     def test_rating_physics_and_stage_converter_symbols(self) -> None:
-        import src.hydrology.rating_physics as physics
-        import src.hydrology.stage_converter as sc
+        import backend.hydraulics.rating_physics as physics
+        import backend.stage_conversion.stage_converter as sc
 
         assert hasattr(physics, "wetted_properties"), "wetted_properties missing from rating_physics.py"
         assert hasattr(physics, "station_from_points"), "station_from_points missing from rating_physics.py"
@@ -289,3 +289,5 @@ class TestSystem8TestSuiteDocumentation:
         for tf in set(documented_test_files):
             test_path = REPO_ROOT / tf
             assert test_path.is_file(), f"Documented test file {tf} does not physically exist at {test_path}"
+
+

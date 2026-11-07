@@ -13,8 +13,8 @@ from datetime import datetime, timezone
 import numpy as np
 import pytest
 
-from src.ecmwf import open_meteo
-from src.ecmwf.open_meteo import (
+from backend.rainfall import open_meteo
+from backend.rainfall.open_meteo import (
     SOIL_MOISTURE_LAYERS,
     fetch_soil_moisture_snapshot,
     fetch_antecedent_soil_moisture,
@@ -139,8 +139,9 @@ def test_antecedent_covers_five_days_and_is_json_safe(monkeypatch):
 def test_integration_fields_exist_but_do_not_touch_decisions():
     # The pipeline exposes soil moisture under a clearly-labelled observability
     # namespace; AMC/CN/K routing keys are structurally separate from it.
-    from src.hms.runner import classify_amc
+    from backend.hms.runner import classify_amc
 
     wet = classify_amc(120.0)
     dry = classify_amc(5.0)
     assert wet == "AMC-III" and dry == "AMC-I"  # classification driven only by rain signal
+

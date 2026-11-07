@@ -8,7 +8,7 @@ geometry extracted from the ``stage_converter`` monolith. No I/O, no DB.
 import numpy as np
 import pytest
 
-from src.hydrology.rating_physics import station_from_points, wetted_properties
+from backend.hydraulics.rating_physics import station_from_points, wetted_properties
 
 
 def test_empty_or_dry_section_returns_zero():
@@ -51,3 +51,5 @@ def test_station_from_points_chainage():
 
 def test_station_from_single_point_is_zero():
     assert np.allclose(station_from_points(np.array([[1.0, 2.0]])), [0.0])
+
+

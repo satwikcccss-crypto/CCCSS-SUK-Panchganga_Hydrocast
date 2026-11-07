@@ -7,8 +7,8 @@ Unit tests for API rate limiting, healthcheck probe, and JWT administrative auth
 import unittest
 from fastapi.testclient import TestClient
 
-from src.api.main import app
-from src.api.security import (
+from backend.api.main import app
+from backend.api.security import (
     create_access_token,
     decode_access_token,
     hash_password,
@@ -49,7 +49,7 @@ class TestRateLimitingAndAuth(unittest.TestCase):
         # Security regression guard: an unset ADMIN_PASSWORD must NOT authorize
         # a blank password (previously compare_digest("", "") was True).
         from unittest.mock import patch
-        with patch("src.api.security.ADMIN_PASSWORD", ""):
+        with patch("backend.api.security.ADMIN_PASSWORD", ""):
             resp = self.client.post("/api/v1/admin/auth/token", json={
                 "username": ADMIN_USERNAME,
                 "password": "",
@@ -59,7 +59,7 @@ class TestRateLimitingAndAuth(unittest.TestCase):
     def test_admin_auth_success_and_protected_me(self):
         from unittest.mock import patch
         password = "correct horse battery staple"
-        with patch("src.api.security.ADMIN_PASSWORD", password):
+        with patch("backend.api.security.ADMIN_PASSWORD", password):
             # 1. Login
             resp = self.client.post("/api/v1/admin/auth/token", json={
                 "username": ADMIN_USERNAME,
@@ -111,3 +111,5 @@ class TestRateLimitingAndAuth(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
