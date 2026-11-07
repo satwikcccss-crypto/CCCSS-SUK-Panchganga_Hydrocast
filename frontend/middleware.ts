@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
 
   // Route operator traffic on port 3000 to the dedicated Windows Settings Console on port 3001
   if (path.startsWith("/admin") || path.startsWith("/console")) {
-    return NextResponse.redirect(new URL("http://localhost:3001"));
+    return NextResponse.redirect(new URL("http://localhost:3001/admin"));
   }
 
   return NextResponse.next();

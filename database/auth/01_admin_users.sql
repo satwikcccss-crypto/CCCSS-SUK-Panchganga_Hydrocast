@@ -1,7 +1,7 @@
--- ============================================================================
--- database/admin_users.sql — HydroCast Administrative RBAC & Audit Log
--- Shivaji University Kolhapur (SUK) Server Standard
--- ============================================================================
+-- ===========================================================================
+-- HydroCast Panchganga - Admin Users & Authentication
+-- Target: PostgreSQL 16 + PostGIS on Windows Server Standard (SUK)
+-- ===========================================================================
 
 -- Table 1: Administrator Accounts & Roles
 CREATE TABLE IF NOT EXISTS admin_users (
@@ -35,4 +35,3 @@ INSERT INTO admin_users (username, password_hash, role) VALUES
     ('gonioelect@gmail.com', '$2b$12$03ioLRLwrnZPNOewfMSXduX6e4zh78LCeLn4QD8BBLPe5Nz5rqUUi', 'co_pi'),
     ('nikhilpawar6297@gmail.com', '$2b$12$JBzCM.wyS45SlSr78Jg2wuPj7vea7zJDtqEDNshbnQkgTQyYFfl1W', 'jrf')
 ON CONFLICT (username) DO NOTHING;
-

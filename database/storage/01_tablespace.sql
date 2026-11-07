@@ -1,22 +1,23 @@
 -- ===========================================================================
--- HydroCast Panchganga — Dedicated Tablespace Storage Setup
+-- HydroCast Panchganga - Database Storage Setup
+-- Part 01: Dedicated Tablespace
 -- Target: PostgreSQL 16 + PostGIS on Windows Server Standard (SUK)
 -- Drive: E:\ (3512 GB dedicated tablespace for simulation data)
 -- ===========================================================================
 
--- 1. Create the dedicated tablespace on E:\ drive
---    3512 GB allocation for simulation runs, hydrographs, metrics, and logs
+-- Create the dedicated tablespace on E:\ drive
+-- 3512 GB allocation for simulation runs, hydrographs, metrics, and logs
 CREATE TABLESPACE hydrocast_ts
     OWNER = hms_app
     LOCATION 'E:/pg_tablespace/hydrocast_ts';
 
--- 2. Set the default tablespace for the rainfall_runoff database
+-- Set the default tablespace for the rainfall_runoff database
 ALTER DATABASE rainfall_runoff SET default_tablespace = hydrocast_ts;
 
--- 3. Set default tablespace for current session
+-- Set default tablespace for current session
 SET default_tablespace = hydrocast_ts;
 
--- 4. Verify tablespace creation
+-- Verify tablespace creation
 SELECT spcname, pg_location_spcpath(spcname) AS path, pg_size_pretty(pg_tablespace_size(spcname)) AS size
 FROM pg_tablespace
 WHERE spcname = 'hydrocast_ts';

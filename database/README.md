@@ -1,74 +1,136 @@
-# Database Architecture & Migration Guide
+# HydroCast Panchganga - Database Schema & Seeds
 
-<p align="center">
-  <img src="../docs/assets/hydrocast_main_banner.jpg" alt="HydroCast Database Operations Command Center" width="100%">
-</p>
+## Overview
 
-## Relational Schema Specifications
+This directory contains the complete database schema, seed data, storage configuration, and authentication setup for the HydroCast Panchganga flood forecasting system.
 
-HydroCast relies on PostgreSQL (local production, Docker PostGIS, or Supabase managed cloud) for operational time-series storage, audit logs, and analytical accuracy tracking.
+## Directory Structure
 
-## Database & Infrastructure Stack
-
-| Area | Tool |
-| :--- | :--- |
-| **Databases** | ![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL_15-4169E1?style=flat&logo=postgresql&logoColor=white) ![Supabase](https://img.shields.io/badge/DB-Supabase-3ECF8E?style=flat&logo=supabase&logoColor=black) ![SQLite](https://img.shields.io/badge/DB-SQLite-003B57?style=flat&logo=sqlite&logoColor=white) ![PostGIS](https://img.shields.io/badge/DB-PostGIS-336791?style=flat&logo=postgresql&logoColor=white) |
-| **Languages & Query** | ![SQL](https://img.shields.io/badge/Code-SQL_PL%2FpgSQL-CC292B?style=flat&logo=postgresql&logoColor=white) ![Python](https://img.shields.io/badge/Code-Python_asyncpg-3776AB?style=flat&logo=python&logoColor=white) ![Bash](https://img.shields.io/badge/Code-Bash-4EAA25?style=flat&logo=gnubash&logoColor=white) |
-| **Infrastructure & Archival** | ![Supavisor](https://img.shields.io/badge/Infra-Supavisor_Pooler-3ECF8E?style=flat&logo=supabase&logoColor=black) ![Apache Parquet](https://img.shields.io/badge/Storage-Apache_Parquet-4B67A1?style=flat&logo=apache&logoColor=white) ![Docker](https://img.shields.io/badge/Containers-Docker-2496ED?style=flat&logo=docker&logoColor=white) |
-
----
-
-### Schema Inventory
-
-| Schema File | Target Environment | Description |
-| :--- | :--- | :--- |
-| `supabase_schema.sql` | PostgreSQL & Supabase (Cloud Production) | The "Single-Tree" relational schema. Includes tables for `simulation_runs`, `hydrograph_results`, `bridge_stage_forecast`, `observed_rainfall_qc`, and `pipeline_step_log` with strict `ON DELETE CASCADE` foreign keys enforcing perfect data lineage. Also includes analytical views (`v_model_accuracy_summary`, `v_bridge_alert_summary`, `v_historical_runs_ledger`). |
-
----
-
-## Migration & Deployment Instructions
-
-### 1. Cloud Deployment (Supabase)
-1. Open the **SQL Editor** in your Supabase project dashboard.
-2. Execute `supabase_schema.sql`.
-3. The script executes idempotently with `IF NOT EXISTS` and migration safety guards.
-
-### 2. Local Production PostgreSQL / Docker PostGIS
-To run an offline or air-gapped PostgreSQL instance with PostGIS enabled:
-```bash
-docker compose up -d hydrocast-db
 ```
-The container initializes automatically with `database/supabase_schema.sql` mounted into `/docker-entrypoint-initdb.d/`.
+database/
+├── README.md                     # This file
+├── schema/                       # Canonical table definitions (DDL)
+│   ├── 01_core_tables.sql        # subbasins, gauge_stations, bridge_sites
+│   ├── 02_simulation_runs.sql    # simulation_runs
+│   ├── 03_forecast_validation_metrics.sql
+│   ├── 04_hydrograph_results.sql
+│   ├── 05_bridge_stage_forecast.sql
+│   ├── 06_wrd_field_benchmarks.sql
+│   ├── 07_pipeline_step_log.sql
+│   └── 08_visitor_counts.sql
+├── seeds/                        # Reference/seed data
+│   ├── 01_subbasins.sql          # S1-S9 subbasin definitions
+│   ├── 02_gauge_stations.sql     # 20 rain gauge stations
+│   ├── 03_bridge_sites.sql       # Shivaji Bridge & Rajaram Weir
+│   └── 04_wrd_field_benchmarks.sql  # WRD official rating benchmarks
+├── storage/                      # Storage configuration
+│   ├── 01_tablespace.sql         # Dedicated tablespace on E:\ drive
+│   └── 02_retention_policies.sql # TimescaleDB compression & retention
+├── auth/                         # Authentication & authorization
+│   └── 01_admin_users.sql        # Admin users & login audit trail
+├── migrations/                   # Alembic migration files
+│   └── versions/
+│       └── 001_initial_schema.py
+└── README.md                     # This documentation
+```
 
-### 3. CI/CD & GitHub Actions Configuration (Critical IPv4/IPv6 Notice)
-> [!IMPORTANT]
-> **GitHub Actions runners operate in IPv4-only environments.**
-> Supabase direct connections (`db.[project-ref].supabase.co`) resolve exclusively to **IPv6** addresses. Connecting directly from a GitHub Actions workflow will result in:
-> `ERROR: connection to server at "db.[project-ref].supabase.co", port 5432 failed: Network is unreachable`
+## Loading Order
 
-To resolve this, you **must use the Supabase Connection Pooler (Supavisor)** which provides public IPv4 routing:
-1. In your **Supabase Dashboard**, navigate to **Project Settings** > **Database** > **Connection Pooling**.
-2. Select **Transaction mode** (Port `6543`) or **Session mode** (Port `5432`).
-3. Note the connection URI format:
-   ```ini
-   DATABASE_URL="postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?sslmode=require"
-   ```
-   *(Notice that the username must include your project reference: `postgres.[PROJECT_REF]`)*
-4. Set this URI as your repository secret `DATABASE_URL` under **GitHub Repo > Settings > Secrets and variables > Actions**.
+Apply files in this order on a fresh PostgreSQL 16 + PostGIS database:
 
----
+```sql
+-- 1. Create extensions and tablespace
+\i database/storage/01_tablespace.sql
 
-## 4. Cold Storage & Parquet Archival Strategy (`src/db/archive_runs.py`)
+-- 2. Create core schema
+\i database/schema/01_core_tables.sql
+\i database/schema/02_simulation_runs.sql
+\i database/schema/03_forecast_validation_metrics.sql
+\i database/schema/04_hydrograph_results.sql
+\i database/schema/05_bridge_stage_forecast.sql
+\i database/schema/06_wrd_field_benchmarks.sql
+\i database/schema/07_pipeline_step_log.sql
+\i database/schema/08_visitor_counts.sql
 
-To prevent database disk bloat while retaining complete historical auditability:
-- Operational runs older than 90 days have their granular 15-minute `hydrograph_results` and `rainfall_data` extracted and compressed into Snappy-compressed Apache Parquet format.
-- Run summaries, KPI metrics, and validation scores remain permanently in PostgreSQL `simulation_runs`.
-- Archival execution:
-  ```bash
-  python src/db/archive_runs.py --days 90 --output-dir data/archives/
-  ```
-- Can also be triggered securely via the authenticated admin REST endpoint:
-  ```bash
-  POST /api/v1/admin/archive?retention_days=90
-  ```
+-- 3. Seed reference data
+\i database/seeds/01_subbasins.sql
+\i database/seeds/02_gauge_stations.sql
+\i database/seeds/03_bridge_sites.sql
+\i database/seeds/04_wrd_field_benchmarks.sql
 
+-- 4. Create admin users
+\i database/auth/01_admin_users.sql
+
+-- 5. Apply storage policies (compression, retention)
+\i database/storage/02_retention_policies.sql
+```
+
+## Table Reference
+
+| Table | Description | Rows (approx) |
+|-------|-------------|---------------|
+| `subbasins` | 9 Panchganga subbasin definitions | 9 |
+| `gauge_stations` | 20 rain gauge stations | 20 |
+| `bridge_sites` | Shivaji Bridge & Rajaram Weir | 2 |
+| `simulation_runs` | Forecast cycle ledger | Grows per cycle |
+| `forecast_validation_metrics` | Accuracy metrics per run | 1 per run |
+| `hydrograph_results` | 90-hour discharge hydrographs | ~90 per run |
+| `bridge_stage_forecast` | Stage forecasts per bridge | ~180 per run |
+| `wrd_field_benchmarks` | WRD official rating benchmarks | ~20 |
+| `pipeline_step_log` | 12-step pipeline execution log | ~12 per cycle |
+| `visitor_counts` | Daily visitor statistics | 1 per day |
+
+## Environment Variables
+
+Set these environment variables before running the database setup:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://hms_app:hms_secret_2026@127.0.0.1:5432/rainfall_runoff` |
+| `POSTGRES_USER` | Database username | `hms_app` |
+| `POSTGRES_PASSWORD` | Database password | `hms_secret_2026` |
+| `POSTGRES_DB` | Database name | `rainfall_runoff` |
+
+## Tablespace
+
+The `hydrocast_ts` tablespace is created on the `E:\` drive (3512 GB dedicated storage for simulation data). The `E:\` drive must be pre-formatted and accessible by the PostgreSQL service account before running `01_tablespace.sql`.
+
+## Migration Management
+
+Schema changes are tracked via Alembic migrations in the `alembic/` directory at the project root:
+
+```
+alembic/
+├── alembic.ini
+├── env.py
+└── versions/
+    └── 001_initial_schema.py
+```
+
+To create a new migration:
+```bash
+alembic revision --autogenerate -m "description"
+alembic upgrade head
+```
+
+## Reset Database
+
+To drop all tables and recreate from scratch:
+
+```sql
+DROP TABLE IF EXISTS visitor_counts CASCADE;
+DROP TABLE IF EXISTS pipeline_step_log CASCADE;
+DROP TABLE IF EXISTS wrd_field_benchmarks CASCADE;
+DROP TABLE IF EXISTS bridge_stage_forecast CASCADE;
+DROP TABLE IF EXISTS hydrograph_results CASCADE;
+DROP TABLE IF EXISTS forecast_validation_metrics CASCADE;
+DROP TABLE IF EXISTS simulation_runs CASCADE;
+DROP TABLE IF EXISTS bridge_sites CASCADE;
+DROP TABLE IF EXISTS gauge_stations CASCADE;
+DROP TABLE IF EXISTS subbasins CASCADE;
+DROP TABLE IF EXISTS admin_login_log CASCADE;
+DROP TABLE IF EXISTS admin_users CASCADE;
+DROP EXTENSION IF EXISTS postgis;
+```
+
+Then re-run the schema and seeds in order.

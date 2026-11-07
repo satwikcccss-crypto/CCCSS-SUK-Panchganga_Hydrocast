@@ -20,11 +20,9 @@ const BasinMap = dynamic(() => import("@/components/map/BasinMap"), { ssr: false
 
 type PanelType =
   | "dashboard"
-  | "stage-gauges"
+  | "river-stages"
   | "cross-section"
-  | "hydrograph"
   | "rainfall"
-  | "map"
   | "info";
 
 const NAV = [
@@ -32,50 +30,31 @@ const NAV = [
     id: "dashboard",
     label: "Executive Dashboard",
     icon: "Dashboard",
-    desc: "Basin Overview, Gauges & Summary",
-    badge: "LIVE",
+    desc: "Basin Overview, Flood Status & Catchment Map",
   },
   {
-    id: "stage-gauges",
-    label: "Stage Gauges",
-    icon: "Gauges",
-    desc: "Shivaji Bridge & Rajaram K.T. Weir Level",
-    badge: "2 Gages",
+    id: "river-stages",
+    label: "River Stages & Hydrograph",
+    icon: "Hydrograph",
+    desc: "Bridge Staff Levels & Dual-Axis Discharge Hydrograph",
   },
   {
     id: "cross-section",
     label: "Cross Section View",
     icon: "CrossSection",
-    desc: "2D Surveyed River Channel Geometry",
-    badge: "2D Rating",
-  },
-  {
-    id: "hydrograph",
-    label: "Hydrograph & Stage",
-    icon: "Hydrograph",
-    desc: "Dual-Axis Sink Discharge & Flood Stage",
-    badge: "864 m³/s",
+    desc: "2D Surveyed River Channel Geometry & Rating",
   },
   {
     id: "rainfall",
     label: "Rainfall & Rain Gauges",
     icon: "Rainfall",
-    desc: "Selected Rain Gauges & Hyetograph",
-    badge: "90h",
-  },
-  {
-    id: "map",
-    label: "Gauge Location & Map",
-    icon: "Map",
-    desc: "Basin Map & Active Station Controls",
-    badge: "GIS",
+    desc: "20 Gauging Stations & 90-Hour Forward Hyetographs",
   },
   {
     id: "info",
     label: "Project Information",
     icon: "Project Info",
-    desc: "DST-SERB, Shivaji University & Team",
-    badge: "DST-SERB",
+    desc: "DST-SERB, Shivaji University & Research Team",
   },
 ];
 
@@ -282,11 +261,6 @@ export default function Dashboard() {
                       <div className="flex items-center gap-2 truncate">
                         <span className="text-xs font-medium truncate">{n.label}</span>
                       </div>
-                      {n.badge && (
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold tracking-wider shrink-0 ${isActive ? "bg-sky-200/70 text-sky-900" : "bg-gray-100 text-gray-500"}`}>
-                          {n.badge}
-                        </span>
-                      )}
                     </button>
                   );
                 })}
@@ -336,56 +310,148 @@ export default function Dashboard() {
           {/* 1. EXECUTIVE DASHBOARD OVERVIEW */}
           {panel === "dashboard" && (
             <OverviewPanel
-              onNavigateTab={(tab) => setPanel(tab as PanelType)}
+              onNavigateTab={(tab) => {
+                if (tab === "stage-gauges" || tab === "hydrograph" || tab === "runoff") {
+                  setPanel("river-stages");
+                } else if (tab === "cross-section" || tab === "rainfall" || tab === "info") {
+                  setPanel(tab);
+                }
+              }}
               onSelectStation={(id) => setSelectedStationId(id)}
             />
           )}
 
-          {/* 2. STAGE GAUGES PANEL */}
-          {panel === "stage-gauges" && (
+          {/* 2. COMBINED RIVER STAGES & HYDROGRAPH PANEL */}
+          {panel === "river-stages" && (
             <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
+              {/* Header Banner */}
               <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-sky-600" />
                     <h1 className="text-base font-bold text-gray-900">
-                      River Bridge Water Level & Flood Stage Gauges
+                      River Bridge Water Levels &amp; Outlet Discharge Hydrograph
                     </h1>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 font-medium">
-                    Chhatrapati Shivaji Maharaj Bridge & Rajaram K.T. Weir · Real-time hydraulic stage monitoring & WRD threshold lines
+                    Chhatrapati Shivaji Maharaj Bridge &amp; Rajaram K.T. Weir · Dual-axis discharge forecast &amp; threshold warning bands
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs">
                   <span className="px-3 py-1 bg-sky-50 text-sky-700 font-bold rounded-md border border-sky-200">
                     2 Active River Gauges
                   </span>
+                  <span className="px-3 py-1 bg-amber-50 text-amber-800 font-bold rounded-md border border-amber-200">
+                    Peak: {peakQ.toFixed(0)} m³/s (T+{peakAt}h)
+                  </span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs">
-                  <div className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-4 flex items-center justify-between">
-                    <span>Shivaji Bridge (Panchganga Ghat)</span>
-                    <span className="text-[10px] font-mono text-sky-700 font-bold bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
-                      {shivajiBridge?.alert_level ?? "NORMAL"}
-                    </span>
+              {/* 4 Summary Metric Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
+                  <div className="text-[10px] font-bold text-gray-500 uppercase">Shivaji Bridge Stage</div>
+                  <div className="mt-1 font-mono font-bold text-xl text-sky-700">
+                    {shivajiBridge?.peak_stage_m ? `${shivajiBridge.peak_stage_m.toFixed(2)}m` : `${shivajiLvl.toFixed(2)}m`}
                   </div>
-                  <EngineeringGauge sensor={shivajiSensor} data={shivajiData} />
+                  <div className="text-[10px] text-gray-500 mt-0.5">
+                    Warning: {shivajiSensor.dangerLevels.warning.toFixed(2)}m
+                  </div>
                 </div>
 
-                <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs">
-                  <div className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-4 flex items-center justify-between">
-                    <span>Rajaram K.T. Weir (Kasba Bawada)</span>
-                    <span className="text-[10px] font-mono text-sky-700 font-bold bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
-                      {rajaramBridge?.alert_level ?? "NORMAL"}
-                    </span>
+                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
+                  <div className="text-[10px] font-bold text-gray-500 uppercase">Rajaram Weir Stage</div>
+                  <div className="mt-1 font-mono font-bold text-xl text-sky-700">
+                    {rajaramBridge?.peak_stage_m ? `${rajaramBridge.peak_stage_m.toFixed(2)}m` : `${rajaramLvl.toFixed(2)}m`}
                   </div>
-                  <EngineeringGauge sensor={rajaramSensor} data={rajaramData} />
+                  <div className="text-[10px] text-gray-500 mt-0.5">
+                    Solid Crest: 535.77m MSL
+                  </div>
+                </div>
+
+                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
+                  <div className="text-[10px] font-bold text-gray-500 uppercase">Peak Outflow (Q)</div>
+                  <div className="mt-1 font-mono font-bold text-xl text-amber-600">
+                    {peakQ.toFixed(0)} <span className="text-xs text-gray-400">m³/s</span>
+                  </div>
+                  <div className="text-[10px] text-gray-500 mt-0.5">
+                    Time of Peak: T+{peakAt}h
+                  </div>
+                </div>
+
+                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
+                  <div className="text-[10px] font-bold text-gray-500 uppercase">90h Runoff Volume</div>
+                  <div className="mt-1 font-mono font-bold text-xl text-emerald-600">
+                    {summary?.outlet?.total_volume_mcm?.toFixed(1) ?? "0.0"} <span className="text-xs text-gray-400">MCM</span>
+                  </div>
+                  <div className="text-[10px] text-gray-500 mt-0.5">
+                    Total Basin Yield
+                  </div>
                 </div>
               </div>
 
-              <DischargeDetailsCard siteId="RAJARAM_BRIDGE" />
+              {/* Main Split: Hydrograph & Discharge (Left) + Optimal Sized Bridge Gauges (Right) */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                {/* Left 8 Cols: Dual-Axis Chart & Discharge Card */}
+                <div className="lg:col-span-8 flex flex-col gap-6">
+                  <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <span className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
+                          Sink Node (J_Outlet) Discharge &amp; Flood Stage Hydrograph
+                        </span>
+                        <span className="text-[11px] text-gray-400">
+                          Dual Axis Q (m³/s) + Stage (m MSL) with Regulatory CWC Alert &amp; Danger Lines
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold border border-blue-200 text-[11px]">
+                          Discharge
+                        </span>
+                        <span className="px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-semibold border border-purple-200 text-[11px]">
+                          Stage
+                        </span>
+                      </div>
+                    </div>
+
+                    <HydrographChart
+                      data={hydrographChartData}
+                      thresholds={{ alert: 1800, warning: 2200, danger: 2675, hfl: 3850 }}
+                      showStage
+                      height={340}
+                    />
+                  </div>
+
+                  <DischargeDetailsCard siteId="RAJARAM_BRIDGE" />
+                </div>
+
+                {/* Right 4 Cols: Compact, Optimal-Shape River Staff Gauges */}
+                <div className="lg:col-span-4 flex flex-col gap-5">
+                  <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
+                    <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center justify-between">
+                      <span className="truncate">Shivaji Bridge</span>
+                      <span className="text-[10px] font-mono text-sky-700 font-bold bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+                        {shivajiBridge?.alert_level ?? "NORMAL"}
+                      </span>
+                    </div>
+                    <div className="max-w-[210px] mx-auto">
+                      <EngineeringGauge sensor={shivajiSensor} data={shivajiData} noHeader />
+                    </div>
+                  </div>
+
+                  <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
+                    <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center justify-between">
+                      <span className="truncate">Rajaram K.T. Weir</span>
+                      <span className="text-[10px] font-mono text-sky-700 font-bold bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+                        {rajaramBridge?.alert_level ?? "NORMAL"}
+                      </span>
+                    </div>
+                    <div className="max-w-[210px] mx-auto">
+                      <EngineeringGauge sensor={rajaramSensor} data={rajaramData} noHeader />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -397,11 +463,11 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-indigo-600" />
                     <h1 className="text-base font-bold text-gray-900">
-                      2D River Channel Cross-Section & Hydraulic Simulation
+                      2D River Channel Cross-Section &amp; Hydraulic Simulation
                     </h1>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 font-medium">
-                    Surveyed cross-section geometry · Manning's roughness rating curve · Dynamic water stage fill & discharge computation
+                    Surveyed cross-section geometry · Manning&apos;s roughness rating curve · Dynamic water stage fill &amp; discharge computation
                   </p>
                 </div>
                 <span className="text-[11px] font-semibold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
@@ -413,107 +479,10 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* 4. HYDROGRAPH & STAGE PANEL */}
-          {panel === "hydrograph" && (
-            <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
-              <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <h1 className="text-base font-bold text-gray-900">
-                      Sink Node (J_Outlet) Discharge & Flood Stage Hydrograph
-                    </h1>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1 font-medium">
-                    HEC-HMS 4.13 Simulation · SCS-CN Loss Method & Muskingum Routing · Dual Axis Q (m³/s) + Stage (m MSL)
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="px-3 py-1 bg-amber-50 text-amber-800 font-semibold rounded-md border border-amber-200">
-                    Peak: {peakQ.toFixed(0)} m³/s (T+{peakAt}h)
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
-                  <div className="text-[10px] font-bold text-gray-500 uppercase">Current Outflow</div>
-                  <div className="mt-1 font-mono font-bold text-2xl text-blue-600">
-                    {hydrographChartData[0]?.q?.toFixed(0) ?? "—"} <span className="text-xs text-gray-400">m³/s</span>
-                  </div>
-                </div>
-                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
-                  <div className="text-[10px] font-bold text-gray-500 uppercase">Peak Outflow</div>
-                  <div className="mt-1 font-mono font-bold text-2xl text-amber-600">
-                    {peakQ.toFixed(0)} <span className="text-xs text-gray-400">m³/s</span>
-                  </div>
-                </div>
-                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
-                  <div className="text-[10px] font-bold text-gray-500 uppercase">Time to Peak</div>
-                  <div className="mt-1 font-mono font-bold text-2xl text-purple-600">
-                    T+{peakAt} <span className="text-xs text-gray-400">hrs</span>
-                  </div>
-                </div>
-                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
-                  <div className="text-[10px] font-bold text-gray-500 uppercase">90h Runoff Volume</div>
-                  <div className="mt-1 font-mono font-bold text-2xl text-emerald-600">
-                    {summary?.outlet?.total_volume_mcm?.toFixed(1) ?? "0.0"} <span className="text-xs text-gray-400">MCM</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Outlet Hydrograph with Flood Threshold Bands
-                  </span>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold border border-blue-200">
-                      Discharge (Blue)
-                    </span>
-                    <span className="px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-semibold border border-purple-200">
-                      Stage (Purple)
-                    </span>
-                  </div>
-                </div>
-
-                <HydrographChart data={hydrographChartData} thresholds={{ alert: 1800, warning: 2200, danger: 2675, hfl: 3850 }} showStage height={320} />
-              </div>
-            </div>
-          )}
-
-          {/* 5. RAINFALL & RAIN GAUGES PANEL */}
+          {/* 4. RAINFALL & RAIN GAUGES PANEL */}
           {panel === "rainfall" && <RainfallPanel />}
 
-          {/* 6. GAUGE LOCATION & MAP PANEL */}
-          {panel === "map" && (
-            <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
-              <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-sky-500" />
-                    <h1 className="text-base font-bold text-gray-900">
-                      Panchganga Basin Map & Raingauge Station Network
-                    </h1>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1 font-medium">
-                    Subbasin delineations (S1–S9) · River reaches · Active and alternate rain gauge coordinates
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 text-xs font-medium">
-                  <span className="px-3 py-1 bg-emerald-50 text-emerald-800 font-bold rounded-md border border-emerald-200">
-                    {(stations ?? []).length} Active Stations
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
-                <BasinMap subbasins={Object.keys(ecmwf ?? {})} ecmwf={ecmwf ?? {}} stations={stations ?? []} selectedStationId={selectedStationId} onSelectStation={(id) => { setSelectedStationId(id); setPanel("rainfall"); }} />
-              </div>
-            </div>
-          )}
-
-          {/* 7. PROJECT INFO PANEL */}
+          {/* 5. PROJECT INFO PANEL */}
           {panel === "info" && <ProjectInfoPanel />}
         </main>
       </div>

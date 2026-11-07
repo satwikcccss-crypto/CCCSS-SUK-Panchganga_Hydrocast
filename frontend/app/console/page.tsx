@@ -1,7 +1,5 @@
-// frontend/app/console/page.tsx
-import OperatorMissionControl from "../admin/page";
+import { redirect } from "next/navigation";
 
-export default function ConsolePage() {
-  return <OperatorMissionControl />;
+export default function ConsoleRedirect() {
+  redirect("http://localhost:3001/admin");
 }
-

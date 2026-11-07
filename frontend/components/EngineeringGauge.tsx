@@ -159,8 +159,8 @@ export const EngineeringGauge: React.FC<{
         </div>
       )}
 
-      <div className="relative flex-grow min-h-[300px] w-full flex justify-center items-center">
-        <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%" style={{ display: 'block', overflow: 'visible', maxHeight: '100%' }}>
+      <div className="relative flex-grow min-h-[260px] max-h-[320px] max-w-[200px] mx-auto w-full flex justify-center items-center py-1">
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%" style={{ display: 'block', overflow: 'visible', maxHeight: '100%', maxWidth: '100%' }}>
           <defs>
             <clipPath id={`cpTube_${sensor.id}`}><rect x={TX} y={PADT} width={TW} height={UH} /></clipPath>
             <linearGradient id={`wgTube_${sensor.id}`} x1="0" y1="0" x2="0" y2="1">
