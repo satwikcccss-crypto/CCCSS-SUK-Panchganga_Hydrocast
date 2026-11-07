@@ -8,8 +8,6 @@ import { api } from "@/lib/api";
 import OverviewPanel from "@/components/OverviewPanel";
 import RainfallPanel from "@/components/RainfallPanel";
 import RunoffPanel from "@/components/RunoffPanel";
-import SystemPanel from "@/components/SystemPanel";
-import AccuracyPanel from "@/components/AccuracyPanel";
 import ProjectInfoPanel from "@/components/ProjectInfoPanel";
 import FloodBanner from "@/components/FloodBanner";
 import VisitorCounterWidget from "@/components/OdometerCounter";
@@ -27,9 +25,6 @@ type PanelType =
   | "hydrograph"
   | "rainfall"
   | "map"
-  | "ml"
-  | "runs"
-  | "system"
   | "info";
 
 const NAV = [
@@ -76,27 +71,6 @@ const NAV = [
     badge: "GIS",
   },
   {
-    id: "ml",
-    label: "ML Recalibration",
-    icon: "ML",
-    desc: "Adaptive Loss Minimization & Tuning",
-    badge: "TUNED",
-  },
-  {
-    id: "runs",
-    label: "Run Ledger & Validation",
-    icon: "Ledger",
-    desc: "Spearman Rho, NSE & Computation Ledger",
-    badge: "VERIFIED",
-  },
-  {
-    id: "system",
-    label: "System Health",
-    icon: "System",
-    desc: "Operational Status & Telemetry Sync",
-    badge: "OK",
-  },
-  {
     id: "info",
     label: "Project Information",
     icon: "Project Info",
@@ -117,17 +91,14 @@ export default function Dashboard() {
   const [panel, setPanel] = useState<PanelType>("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedStationId, setSelectedStationId] = useState<string>("KARANJPHEN");
-  const [adminStatus, setAdminStatus] = useState<{ text: string; type: "success" | "error" } | null>(null);
-  const [adminLoading, setAdminLoading] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   const { connected, lastEvent } = useWebSocket();
-  const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const { data: status, mutate: refreshAll } = useSWR("status", api.status, { refreshInterval: 30000 });
+  const { data: status } = useSWR("status", api.status, { refreshInterval: 30000 });
   const { data: summary } = useSWR("summary", api.runoffSummary, { refreshInterval: 60000 });
   const { data: alerts } = useSWR("alerts", api.alerts, { refreshInterval: 30000 });
-  const { data: pipeline } = useSWR("pipeline", api.pipeline, { refreshInterval: 20000 });
   const { data: ecmwf } = useSWR("ecmwf", api.ecmwfHyetograph, { refreshInterval: 60000 });
   const { data: stations } = useSWR("stations", api.stationSelection, { refreshInterval: 60000 });
   const { data: hgData } = useSWR("hydrograph", api.outletHydrograph, { refreshInterval: 60000 });
@@ -151,28 +122,6 @@ export default function Dashboard() {
 
   const isOnline = connected || !!status;
 
-  // Handle Quick Admin Commands
-  const handleAdminDispatch = async (path: string, actionName: string, body: any = {}) => {
-    setAdminLoading(actionName);
-    setAdminStatus(null);
-    try {
-      const res = await fetch(`/api/admin/dispatch?path=${encodeURIComponent(path)}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || data.error || "Action failed");
-      setAdminStatus({ text: data.message || `Dispatched: ${actionName} successfully`, type: "success" });
-      refreshAll();
-    } catch (err: any) {
-      setAdminStatus({ text: `Signal sent: ${err.message}`, type: "success" });
-    } finally {
-      setAdminLoading(null);
-    }
-  };
-
-  // Sensor definitions for Stage Gauges Panel
   const bridgesAny: any = summary?.bridges;
   const b0: any = bridgesAny?.shivaji ?? bridgesAny?.[0];
   const b1: any = bridgesAny?.rajaram ?? bridgesAny?.[1];
@@ -227,7 +176,6 @@ export default function Dashboard() {
     history: bRajaram?.forecast ? bRajaram.forecast.slice(0, 8).map((f: any) => f.stage_m) : [rajaramLvl],
   };
 
-  // Chart data for Hydrograph Panel
   const hydrographChartData = (hgData ?? []).map((r: any, i: number) => ({
     hour: i,
     q: r.discharge_m3s ?? 0,
@@ -235,13 +183,12 @@ export default function Dashboard() {
   }));
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
+    <div className="flex flex-col h-screen overflow-hidden bg-slate-50">
       {/* ── TOP FLOOD ALERT BANNER ───────────────────────────────────── */}
       {activeAlerts.length > 0 && <FloodBanner alerts={activeAlerts} />}
 
       {/* ── EXECUTIVE HEADER ─────────────────────────────────────────── */}
       <header className="bg-white border-b border-gray-200 px-6 h-14 shrink-0 flex items-center justify-between">
-        {/* Brand & Basin Identity */}
         <div className="flex items-center gap-4">
           <button 
             className="md:hidden p-1 text-gray-500 hover:bg-gray-100 rounded"
@@ -257,27 +204,17 @@ export default function Dashboard() {
               <span className="text-xs text-gray-500 hidden md:inline">
                 / Panchganga Basin
               </span>
-              <button
-                onClick={() => setPanel("info")}
-                className="ml-2 text-[11px] font-semibold text-sky-700 bg-sky-50 hover:bg-sky-100 px-2 py-0.5 rounded border border-sky-200 transition-colors hidden sm:inline-flex items-center gap-1 cursor-pointer"
-                title="Project Information, DST-SERB & Shivaji University"
-              >
-                <span>DST-SERB / SUK Info</span>
-              </button>
             </div>
           </div>
         </div>
 
-        {/* Status Indicators & Alert Pill */}
         <div className="hidden md:block">
           <VisitorCounterWidget compact />
         </div>
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-2 text-xs text-gray-600">
             <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                isOnline ? "bg-green-500" : "bg-gray-400"
-              }`}
+              className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-green-500" : "bg-gray-400"}`}
             />
             {isOnline ? "Live" : "Offline"}
           </div>
@@ -312,11 +249,10 @@ export default function Dashboard() {
       {/* ── MAIN WORKSPACE & SEGREGATED SIDEBAR ──────────────────────── */}
       <div className="flex flex-1 overflow-hidden relative">
         {/* ── SIDEBAR NAVIGATION ─────────────────────────────────────── */}
-        {/* Mobile Backdrop */}
         {isSidebarOpen && (
           <div 
             className="fixed inset-0 z-40 bg-gray-900/50 md:hidden" 
-            onClick={() => setIsSidebarOpen(false)} 
+            onClick={() => setIsSidebarOpen(false)}
           />
         )}
         <aside className={`fixed md:relative inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col shrink-0 overflow-y-auto p-4 transition-transform transform md:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:flex`}>
@@ -341,19 +277,13 @@ export default function Dashboard() {
                         setPanel(n.id as any);
                         setIsSidebarOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between p-2.5 rounded text-left transition-colors ${
-                        isActive
-                          ? "bg-sky-50 text-sky-950 font-semibold border-l-2 border-sky-600 shadow-xs"
-                          : "text-gray-600 hover:bg-gray-50"
-                      }`}
+                      className={`w-full flex items-center justify-between p-2.5 rounded text-left transition-colors ${isActive ? "bg-sky-50 text-sky-950 font-semibold border-l-2 border-sky-600 shadow-xs" : "text-gray-600 hover:bg-gray-50"}`}
                     >
                       <div className="flex items-center gap-2 truncate">
                         <span className="text-xs font-medium truncate">{n.label}</span>
                       </div>
                       {n.badge && (
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold tracking-wider shrink-0 ${
-                          isActive ? "bg-sky-200/70 text-sky-900" : "bg-gray-100 text-gray-500"
-                        }`}>
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold tracking-wider shrink-0 ${isActive ? "bg-sky-200/70 text-sky-900" : "bg-gray-100 text-gray-500"}`}>
                           {n.badge}
                         </span>
                       )}
@@ -396,81 +326,13 @@ export default function Dashboard() {
             </div>
 
             <div className="mt-auto pt-6 space-y-3">
-              <a
-                href="/login"
-                className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-semibold tracking-wide transition shadow-sm"
-              >
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>SUK Operator Console 🔒</span>
-              </a>
               <VisitorCounterWidget />
             </div>
           </div>
         </aside>
 
         {/* ── MAIN CONTENT AREA ─────────────────────────────────────── */}
-        <main className="flex-1 overflow-y-auto p-6 lg:p-8 bg-gray-50 flex flex-col gap-6">
-          {/* Quick Operator Control Strip */}
-          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
-              <div>
-                <span className="text-xs font-bold text-gray-900 uppercase tracking-wide">
-                  Operator Quick Controls
-                </span>
-                <span className="text-[11px] text-gray-500 ml-2 hidden sm:inline">
-                  Trigger manual simulation, test DB connectivity & dispatch telemetry
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => handleAdminDispatch("/pipeline/trigger", "Forecast Run")}
-                disabled={adminLoading === "Forecast Run"}
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold rounded-lg shadow-xs transition flex items-center gap-1.5 cursor-pointer"
-                title="Execute full 12-stage HEC-HMS & meteorological pipeline"
-              >
-                <span>⚡</span>
-                <span>{adminLoading === "Forecast Run" ? "Running..." : "Trigger Forecast Run"}</span>
-              </button>
-
-              <button
-                onClick={() => handleAdminDispatch("/backup/trigger", "DB Test & Backup")}
-                disabled={adminLoading === "DB Test & Backup"}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-700 border border-slate-200 text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer"
-                title="Test PostgreSQL database and trigger backup"
-              >
-                <span>🗄️</span>
-                <span>{adminLoading === "DB Test & Backup" ? "Checking..." : "DB Test / Backup"}</span>
-              </button>
-
-              <button
-                onClick={() => handleAdminDispatch("/pipeline/trigger", "Message Dispatch", { dry_run: false, notify: true })}
-                disabled={adminLoading === "Message Dispatch"}
-                className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer"
-                title="Broadcast CWC and DDMA flood alerts"
-              >
-                <span>📢</span>
-                <span>{adminLoading === "Message Dispatch" ? "Dispatching..." : "Message Dispatch"}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Operator Toast Notification */}
-          {adminStatus && (
-            <div
-              className={`p-3 rounded-lg text-xs font-semibold flex items-center justify-between border ${
-                adminStatus.type === "success"
-                  ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                  : "bg-red-50 text-red-800 border-red-200"
-              }`}
-            >
-              <span>{adminStatus.text}</span>
-              <button onClick={() => setAdminStatus(null)} className="text-xs hover:opacity-75">✕</button>
-            </div>
-          )}
-
+        <main className="flex-1 overflow-y-auto p-6 lg:p-8 bg-slate-50 flex flex-col gap-6">
           {/* 1. EXECUTIVE DASHBOARD OVERVIEW */}
           {panel === "dashboard" && (
             <OverviewPanel
@@ -487,11 +349,11 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-sky-600" />
                     <h1 className="text-base font-bold text-gray-900">
-                      River Bridge Water Level &amp; Flood Stage Gauges
+                      River Bridge Water Level & Flood Stage Gauges
                     </h1>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 font-medium">
-                    Chhatrapati Shivaji Maharaj Bridge &amp; Rajaram K.T. Weir · Real-time hydraulic stage monitoring &amp; WRD threshold lines
+                    Chhatrapati Shivaji Maharaj Bridge & Rajaram K.T. Weir · Real-time hydraulic stage monitoring & WRD threshold lines
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs">
@@ -535,11 +397,11 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-indigo-600" />
                     <h1 className="text-base font-bold text-gray-900">
-                      2D River Channel Cross-Section &amp; Hydraulic Simulation
+                      2D River Channel Cross-Section & Hydraulic Simulation
                     </h1>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 font-medium">
-                    Surveyed cross-section geometry · Manning&apos;s roughness rating curve · Dynamic water stage fill &amp; discharge computation
+                    Surveyed cross-section geometry · Manning's roughness rating curve · Dynamic water stage fill & discharge computation
                   </p>
                 </div>
                 <span className="text-[11px] font-semibold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
@@ -547,11 +409,7 @@ export default function Dashboard() {
                 </span>
               </div>
 
-              <CrossSectionViewer
-                bridgeShivaji={bShivaji}
-                bridgeRajaram={bRajaram}
-                defaultSite="SHIVAJI_BRIDGE"
-              />
+              <CrossSectionViewer bridgeShivaji={bShivaji} bridgeRajaram={bRajaram} defaultSite="SHIVAJI_BRIDGE" />
             </div>
           )}
 
@@ -563,11 +421,11 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                     <h1 className="text-base font-bold text-gray-900">
-                      Sink Node (J_Outlet) Discharge &amp; Flood Stage Hydrograph
+                      Sink Node (J_Outlet) Discharge & Flood Stage Hydrograph
                     </h1>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 font-medium">
-                    HEC-HMS 4.13 Simulation · SCS-CN Loss Method &amp; Muskingum Routing · Dual Axis Q (m³/s) + Stage (m MSL)
+                    HEC-HMS 4.13 Simulation · SCS-CN Loss Method & Muskingum Routing · Dual Axis Q (m³/s) + Stage (m MSL)
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs">
@@ -619,12 +477,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <HydrographChart
-                  data={hydrographChartData}
-                  thresholds={{ alert: 1800, warning: 2200, danger: 2675, hfl: 3850 }}
-                  showStage
-                  height={320}
-                />
+                <HydrographChart data={hydrographChartData} thresholds={{ alert: 1800, warning: 2200, danger: 2675, hfl: 3850 }} showStage height={320} />
               </div>
             </div>
           )}
@@ -640,7 +493,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-sky-500" />
                     <h1 className="text-base font-bold text-gray-900">
-                      Panchganga Basin Map &amp; Raingauge Station Network
+                      Panchganga Basin Map & Raingauge Station Network
                     </h1>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 font-medium">
@@ -655,38 +508,12 @@ export default function Dashboard() {
               </div>
 
               <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
-                <BasinMap
-                  subbasins={Object.keys(ecmwf ?? {})}
-                  ecmwf={ecmwf ?? {}}
-                  stations={stations ?? []}
-                  selectedStationId={selectedStationId}
-                  onSelectStation={(id) => {
-                    setSelectedStationId(id);
-                    setPanel("rainfall");
-                  }}
-                />
+                <BasinMap subbasins={Object.keys(ecmwf ?? {})} ecmwf={ecmwf ?? {}} stations={stations ?? []} selectedStationId={selectedStationId} onSelectStation={(id) => { setSelectedStationId(id); setPanel("rainfall"); }} />
               </div>
             </div>
           )}
 
-          {/* 7. ML RECALIBRATION PANEL */}
-          {panel === "ml" && (
-            <div className="max-w-7xl mx-auto w-full">
-              <AccuracyPanel defaultTab="calibration" />
-            </div>
-          )}
-
-          {/* 8. RUN LEDGER & VALIDATION PANEL */}
-          {panel === "runs" && (
-            <div className="max-w-7xl mx-auto w-full">
-              <AccuracyPanel defaultTab="runs" />
-            </div>
-          )}
-
-          {/* 9. SYSTEM HEALTH PANEL */}
-          {panel === "system" && <SystemPanel pipeline={pipeline} />}
-
-          {/* 10. PROJECT INFO PANEL */}
+          {/* 7. PROJECT INFO PANEL */}
           {panel === "info" && <ProjectInfoPanel />}
         </main>
       </div>

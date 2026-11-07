@@ -572,7 +572,7 @@ async def runoff_hydrograph(request: Request):
                 return {"peak_q_m3s": 0.0, "points": 0, "hydrograph": []}
             rows = await conn.fetch("""
                 SELECT lead_hours, discharge_m3s, surface_runoff_m3s, baseflow_m3s,
-                       timestamp, is_peak
+                       timestamp, is_peak, stage_m
                 FROM hydrograph_results
                 WHERE run_id=$1
                 ORDER BY lead_hours ASC
@@ -600,8 +600,10 @@ async def runoff_summary(request: Request):
     try:
         pool = await get_pool()
         if pool is None:
-            return {"peak_q_m3s": 0.0, "total_volume_mcm": 0.0,
-                    "lead_hours_to_peak": 0, "alert_level": "NORMAL", "note": "DB unavailable"}
+            return {"outlet": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
+                               "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
+                    "bridges": [], "peak_arrival": {"shivaji": None, "rajaram": None},
+                    "note": "DB unavailable"}
         async with pool.acquire() as conn:
             last_cycle = await conn.fetchrow("""
                 SELECT run_id, peak_discharge_m3s, lead_hours_to_peak,
@@ -610,8 +612,9 @@ async def runoff_summary(request: Request):
                 ORDER BY start_time DESC LIMIT 1
             """)
             if not last_cycle:
-                return {"peak_q_m3s": 0.0, "total_volume_mcm": 0.0,
-                        "lead_hours_to_peak": 0, "alert_level": "NORMAL"}
+                return {"outlet": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
+                                   "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
+                        "bridges": [], "peak_arrival": {"shivaji": None, "rajaram": None}}
             # Get latest stage per bridge
             shivaji = await conn.fetchrow("""
                 SELECT stage_m, alert_level
@@ -628,19 +631,37 @@ async def runoff_summary(request: Request):
                 ORDER BY forecast_time DESC LIMIT 1
             """, last_cycle["run_id"])
             return {
-                "peak_q_m3s": float(last_cycle["peak_discharge_m3s"] or 0),
-                "total_volume_mcm": float(last_cycle["total_volume_mcm"] or 0),
-                "lead_hours_to_peak": int(last_cycle["lead_hours_to_peak"] or 0),
-                "alert_level": last_cycle["alert_level"] or "NORMAL",
-                "stage_shivaji_m": float(shivaji["stage_m"]) if shivaji else 0.0,
-                "stage_rajaram_m": float(rajaram["stage_m"]) if rajaram else 0.0,
-                "shivaji_alert": shivaji["alert_level"] if shivaji else "NORMAL",
-                "rajaram_alert": rajaram["alert_level"] if rajaram else "NORMAL",
+                "outlet": {
+                    "peak_discharge_m3s": float(last_cycle["peak_discharge_m3s"] or 0),
+                    "lead_hours_to_peak": int(last_cycle["lead_hours_to_peak"] or 0),
+                    "total_volume_mcm": float(last_cycle["total_volume_mcm"] or 0),
+                    "alert_level": last_cycle["alert_level"] or "NORMAL",
+                },
+                "bridges": [
+                    {
+                        "site_id": "SHIVAJI_BRIDGE",
+                        "site_name": "Shivaji Bridge (Panchganga Ghat)",
+                        "peak_stage_m": float(shivaji["stage_m"]) if shivaji else 0.0,
+                        "alert_level": shivaji["alert_level"] if shivaji else "NORMAL",
+                    },
+                    {
+                        "site_id": "RAJARAM_BRIDGE",
+                        "site_name": "Rajaram K.T. Weir (Kasba Bawada)",
+                        "peak_stage_m": float(rajaram["stage_m"]) if rajaram else 0.0,
+                        "alert_level": rajaram["alert_level"] if rajaram else "NORMAL",
+                    },
+                ],
+                "peak_arrival": {
+                    "shivaji": {"peak_lead_hours": int(last_cycle["lead_hours_to_peak"] or 0)},
+                    "rajaram": {"peak_lead_hours": int(last_cycle["lead_hours_to_peak"] or 0)},
+                },
             }
     except Exception as e:
         log.warning("Runoff summary fallback: %s", e)
-        return {"peak_q_m3s": 0.0, "total_volume_mcm": 0.0,
-                "lead_hours_to_peak": 0, "alert_level": "NORMAL", "error": str(e)}
+        return {"outlet": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
+                           "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
+                "bridges": [], "peak_arrival": {"shivaji": None, "rajaram": None},
+                "error": str(e)}
 
 
 @app.get(
@@ -657,6 +678,14 @@ async def runoff_stage(site_id: str, request: Request):
             return {"site_id": site_id, "stage_m": 0.0, "alert_level": "NORMAL",
                     "forecast_time": None, "lead_hours": 0, "note": "DB unavailable"}
         async with pool.acquire() as conn:
+            # Get bridge site thresholds
+            bridge = await conn.fetchrow("""
+                SELECT site_id, site_name, alert_stage_m, warning_stage_m,
+                       danger_stage_m, hfl_m
+                FROM bridge_sites
+                WHERE site_id=$1
+            """, site_id)
+            # Get latest stage forecast
             row = await conn.fetchrow("""
                 SELECT stage_m, alert_level, forecast_time, lead_hours,
                        discharge_m3s, is_above_danger
@@ -664,17 +693,52 @@ async def runoff_stage(site_id: str, request: Request):
                 WHERE site_id=$1
                 ORDER BY forecast_time DESC LIMIT 1
             """, site_id)
-            if not row:
+            # Get forecast series (last 24 hours)
+            forecast_rows = await conn.fetch("""
+                SELECT stage_m, lead_hours
+                FROM bridge_stage_forecast
+                WHERE site_id=$1
+                ORDER BY forecast_time DESC
+                LIMIT 24
+            """, site_id)
+            if not bridge:
                 return {"site_id": site_id, "stage_m": 0.0, "alert_level": "NORMAL",
-                        "forecast_time": None, "lead_hours": 0}
+                        "forecast_time": None, "lead_hours": 0, "note": "Bridge not found"}
+            if not row:
+                return {
+                    "site": {
+                        "site_id": site_id,
+                        "site_name": bridge["site_name"],
+                        "alert_stage_m": float(bridge["alert_stage_m"]),
+                        "warning_stage_m": float(bridge["warning_stage_m"]),
+                        "danger_stage_m": float(bridge["danger_stage_m"]),
+                        "hfl_m": float(bridge["hfl_m"]),
+                    },
+                    "stage_m": 0.0,
+                    "alert_level": "NORMAL",
+                    "forecast_time": None,
+                    "lead_hours": 0,
+                    "forecast": [],
+                }
             return {
-                "site_id": site_id,
+                "site": {
+                    "site_id": bridge["site_id"],
+                    "site_name": bridge["site_name"],
+                    "alert_stage_m": float(bridge["alert_stage_m"]),
+                    "warning_stage_m": float(bridge["warning_stage_m"]),
+                    "danger_stage_m": float(bridge["danger_stage_m"]),
+                    "hfl_m": float(bridge["hfl_m"]),
+                },
                 "stage_m": float(row["stage_m"]),
                 "alert_level": row["alert_level"],
                 "forecast_time": row["forecast_time"].isoformat() if row["forecast_time"] else None,
                 "lead_hours": int(row["lead_hours"] or 0),
                 "discharge_m3s": float(row["discharge_m3s"] or 0),
                 "is_above_danger": bool(row["is_above_danger"]),
+                "forecast": [
+                    {"stage_m": float(f["stage_m"]), "lead_hours": int(f["lead_hours"] or 0)}
+                    for f in forecast_rows
+                ],
             }
     except Exception as e:
         log.warning("Stage fallback for %s: %s", site_id, e)
@@ -695,7 +759,7 @@ async def alerts_active(request: Request):
     try:
         pool = await get_pool()
         if pool is None:
-            return {"alerts_issued": 0, "status": "normal", "sites": {}, "note": "DB unavailable"}
+            return {"alerts_issued": 0, "status": "normal", "sites": {}, "alerts": [], "note": "DB unavailable"}
         async with pool.acquire() as conn:
             rows = await conn.fetch("""
                 SELECT site_id, classification, stage_m, alert_level,
@@ -708,7 +772,13 @@ async def alerts_active(request: Request):
             max_severity = "NORMAL"
             severity_order = ["NORMAL", "ALERT", "WARNING", "DANGER", "HFL_EXCEEDED"]
             alerts_issued = 0
+            alert_list = []
             for r in rows:
+                bridge = await conn.fetchrow("""
+                    SELECT alert_stage_m, warning_stage_m, danger_stage_m, hfl_m
+                    FROM bridge_sites
+                    WHERE site_id=$1
+                """, r["site_id"])
                 sites[r["site_id"]] = {
                     "stage_m": float(r["stage_m"] or 0),
                     "classification": r["classification"],
@@ -718,14 +788,24 @@ async def alerts_active(request: Request):
                 alerts_issued += 1
                 if severity_order.index(r["alert_level"]) > severity_order.index(max_severity):
                     max_severity = r["alert_level"]
+                alert_list.append({
+                    "alert_type": r["alert_level"],
+                    "stage_m": float(r["stage_m"] or 0),
+                    "site_id": r["site_id"],
+                    "warning_stage_m": float(bridge["warning_stage_m"]) if bridge else None,
+                    "danger_stage_m": float(bridge["danger_stage_m"]) if bridge else None,
+                    "hfl_m": float(bridge["hfl_m"]) if bridge else None,
+                    "lead_hours": None,
+                })
             return {
                 "alerts_issued": alerts_issued,
                 "status": max_severity.lower(),
                 "sites": sites,
+                "alerts": alert_list,
             }
     except Exception as e:
         log.warning("Alerts fallback: %s", e)
-        return {"alerts_issued": 0, "status": "normal", "sites": {}, "error": str(e)}
+        return {"alerts_issued": 0, "status": "normal", "sites": {}, "alerts": [], "error": str(e)}
 
 
 @app.get(
