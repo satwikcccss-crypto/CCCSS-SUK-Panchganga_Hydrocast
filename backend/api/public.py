@@ -532,10 +532,16 @@ async def rainfall_ecmwf(request: Request):
         h6 = (now.hour // 6) * 6
         run_dt = now.replace(hour=h6, minute=0, second=0, microsecond=0)
         data = get_weather_failsafe(run_dt)
-        return {"tier": data.get("tier"), "stations": data.get("stations"), "lead_hours": 90}
+        stations_data = data.get("stations", {})
+        # Build subbasin-keyed hyetograph object expected by frontend
+        subbasin_data = {}
+        for station_id, hyetograph in stations_data.items():
+            # Map station_id to subbasin if possible, otherwise use station_id as key
+            subbasin_data[station_id] = hyetograph if isinstance(hyetograph, list) else []
+        return subbasin_data
     except Exception as e:
         log.warning("Rainfall fallback: %s", e)
-        return {"tier": "fallback", "stations": {}, "lead_hours": 90, "error": str(e)}
+        return {}
 
 
 @app.get(
@@ -546,7 +552,21 @@ async def rainfall_ecmwf(request: Request):
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def rainfall_stations(request: Request):
-    return {"subbasins_selected": 9, "method": "MAX_RAIN_VOLUME"}
+    try:
+        pool = await get_pool()
+        if pool is None:
+            return []
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT station_id, station_name, subbasin_id, is_active,
+                       latitude, longitude, elevation_m
+                FROM gauge_stations
+                ORDER BY station_id
+            """)
+            return [dict(r) for r in rows]
+    except Exception as e:
+        log.warning("Station selection fallback: %s", e)
+        return []
 
 
 # ── Runoff / Stage ─────────────────────────────────────────────────────────────
@@ -562,14 +582,14 @@ async def runoff_hydrograph(request: Request):
     try:
         pool = await get_pool()
         if pool is None:
-            return {"peak_q_m3s": 0.0, "points": 0, "hydrograph": [], "note": "DB unavailable"}
+            return []
         async with pool.acquire() as conn:
             last_run = await conn.fetchrow("""
                 SELECT run_id FROM simulation_runs
                 ORDER BY start_time DESC LIMIT 1
             """)
             if not last_run:
-                return {"peak_q_m3s": 0.0, "points": 0, "hydrograph": []}
+                return []
             rows = await conn.fetch("""
                 SELECT lead_hours, discharge_m3s, surface_runoff_m3s, baseflow_m3s,
                        timestamp, is_peak, stage_m
@@ -579,14 +599,10 @@ async def runoff_hydrograph(request: Request):
             """, last_run["run_id"])
             hydrograph = [dict(r) for r in rows]
             peak_q = max((r["discharge_m3s"] or 0) for r in hydrograph) if hydrograph else 0.0
-            return {
-                "peak_q_m3s": round(peak_q, 2),
-                "points": len(hydrograph),
-                "hydrograph": hydrograph,
-            }
+            return hydrograph
     except Exception as e:
         log.warning("Hydrograph fallback: %s", e)
-        return {"peak_q_m3s": 0.0, "points": 0, "hydrograph": [], "error": str(e)}
+        return []
 
 
 @app.get(
@@ -759,7 +775,7 @@ async def alerts_active(request: Request):
     try:
         pool = await get_pool()
         if pool is None:
-            return {"alerts_issued": 0, "status": "normal", "sites": {}, "alerts": [], "note": "DB unavailable"}
+            return []
         async with pool.acquire() as conn:
             rows = await conn.fetch("""
                 SELECT site_id, classification, stage_m, alert_level,
@@ -768,10 +784,6 @@ async def alerts_active(request: Request):
                 WHERE status='active'
                 ORDER BY created_at DESC LIMIT 20
             """)
-            sites = {}
-            max_severity = "NORMAL"
-            severity_order = ["NORMAL", "ALERT", "WARNING", "DANGER", "HFL_EXCEEDED"]
-            alerts_issued = 0
             alert_list = []
             for r in rows:
                 bridge = await conn.fetchrow("""
@@ -779,15 +791,6 @@ async def alerts_active(request: Request):
                     FROM bridge_sites
                     WHERE site_id=$1
                 """, r["site_id"])
-                sites[r["site_id"]] = {
-                    "stage_m": float(r["stage_m"] or 0),
-                    "classification": r["classification"],
-                    "alert_level": r["alert_level"],
-                    "is_above_danger": bool(r["is_above_danger"]),
-                }
-                alerts_issued += 1
-                if severity_order.index(r["alert_level"]) > severity_order.index(max_severity):
-                    max_severity = r["alert_level"]
                 alert_list.append({
                     "alert_type": r["alert_level"],
                     "stage_m": float(r["stage_m"] or 0),
@@ -797,15 +800,10 @@ async def alerts_active(request: Request):
                     "hfl_m": float(bridge["hfl_m"]) if bridge else None,
                     "lead_hours": None,
                 })
-            return {
-                "alerts_issued": alerts_issued,
-                "status": max_severity.lower(),
-                "sites": sites,
-                "alerts": alert_list,
-            }
+            return alert_list
     except Exception as e:
         log.warning("Alerts fallback: %s", e)
-        return {"alerts_issued": 0, "status": "normal", "sites": {}, "alerts": [], "error": str(e)}
+        return []
 
 
 @app.get(
@@ -885,6 +883,7 @@ async def pipeline_status(request: Request):
             return {
                 "steps_completed": steps_completed,
                 "steps": [dict(r) for r in rows],
+                "logs": [dict(r) for r in rows],  # for frontend logs endpoint
                 "status": "completed" if all_success else "running",
                 "cycle_id": last_run["run_id"],
             }
