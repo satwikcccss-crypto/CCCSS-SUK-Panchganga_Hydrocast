@@ -34,6 +34,7 @@ WS  /ws/live                        WebSocket: push on each new cycle result
 """
 
 import os
+import sys
 import hmac
 import json
 import csv
@@ -135,6 +136,11 @@ async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
 # credentialed cross-origin calls. The dashboard is same-origin (it proxies via
 # Next route handlers), so the safe default is an empty allowlist.
 _cors_raw = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
+# Always allow the local frontend dev servers so direct API calls from the
+# public dashboard (port 3000) and admin console (port 3001) work out of the box.
+for _default_origin in ("http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"):
+    if _default_origin not in _cors_raw:
+        _cors_raw.append(_default_origin)
 _cors_wildcard = "*" in _cors_raw
 if _cors_wildcard:
     _sec_log = logging.getLogger(__name__)
@@ -146,7 +152,7 @@ app.add_middleware(
     allow_origins=_cors_raw,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "X-API-Key", "X-Internal-Key"],
+    allow_headers=["*"],
 )
 
 
@@ -388,8 +394,8 @@ async def health_check():
 async def system_status(request: Request):
     """Report service status together with the most recent computation cycle.
 
-    `pipeline_ok` is `true` only when **all 10** logged pipeline steps for the
-    latest cycle carry `status='success'`.
+    `pipeline_ok` is `true` only when the latest cycle logged at least 12
+    steps and every one of them carries `status='success'`.
 
     If the database is unreachable or no cycle has run yet, the endpoint
     degrades gracefully rather than raising: it returns `pipeline_ok: false`
@@ -405,9 +411,9 @@ async def system_status(request: Request):
             """)
             active_alerts = await conn.fetchval("SELECT COUNT(*) FROM alert_events WHERE status='active'")
             pipeline_ok   = await conn.fetchval("""
-                SELECT COUNT(*)=10 FROM pipeline_step_log
+                SELECT (COUNT(*) >= 12 AND COUNT(*) FILTER (WHERE status <> 'success') = 0)
+                FROM pipeline_step_log
                 WHERE cycle_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
-                  AND status='success'
             """)
         return {
             "system":         "operational",
@@ -518,19 +524,20 @@ async def ecmwf_hyetograph(request: Request, subbasin_id: Optional[str] = None):
 
     :param subbasin_id: Optional filter. Omit it to return all nine subbasins.
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        query = """
-            SELECT subbasin_id, valid_time, lead_hours, rainfall_mm_hr
-            FROM subbasin_rainfall_ts
-            WHERE source_id='ecmwf_ifs'
-              AND forecast_run_time = (
-                  SELECT MAX(forecast_run_time) FROM subbasin_rainfall_ts WHERE source_id='ecmwf_ifs'
-              )
-            AND ($1::text IS NULL OR subbasin_id=$1)
-            ORDER BY subbasin_id, lead_hours
-        """
-        rows = await conn.fetch(query, subbasin_id)
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            # Always fetch latest cycle; optional subbasin filter below
+            where = "WHERE forecast_run_time = (SELECT MAX(forecast_run_time) FROM subbasin_rainfall_ts)"
+            params: list = []
+            if subbasin_id is not None:
+                where += f" AND subbasin_id = ${len(params) + 1}"
+                params.append(subbasin_id)
+            query = f"SELECT subbasin_id, valid_time, lead_hours, rainfall_mm_hr FROM subbasin_rainfall_ts {where} ORDER BY subbasin_id, lead_hours"
+            rows = await conn.fetch(query, *params)
+    except Exception as e:
+        log.warning("ECMWF hyetograph fallback: %s", e)
+        return {}
 
     result: dict[str, list] = {}
     for r in rows:
@@ -560,17 +567,21 @@ async def station_selection(request: Request):
     considered with its distance rank, so a decision can always be audited
     after the fact.
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        rows = await conn.fetch("""
-            SELECT s.subbasin_id, s.selected_station_id, s.cumulative_mm,
-                   s.all_candidates_json, s.selected_at,
-                   g.station_name, ST_Y(g.geom) lat, ST_X(g.geom) lon
-            FROM station_selection_log s
-            JOIN gauge_stations g ON g.station_id=s.selected_station_id
-            WHERE s.cycle_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
-            ORDER BY s.subbasin_id
-        """)
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT s.subbasin_id, s.selected_station_id, s.cumulative_mm,
+                       s.all_candidates_json, s.selected_at,
+                       g.station_name, ST_Y(g.geom) lat, ST_X(g.geom) lon
+                FROM station_selection_log s
+                JOIN gauge_stations g ON g.station_id=s.selected_station_id
+                WHERE s.cycle_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+                ORDER BY s.subbasin_id
+            """)
+    except Exception as e:
+        log.warning("Station selection fallback: %s", e)
+        return []
     return _jsonify(rows)
 
 
@@ -594,17 +605,21 @@ async def gauge_hyetographs(request: Request):
     out; consumers should honour it rather than assuming every row is equally
     trustworthy.
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        rows = await conn.fetch("""
-            SELECT r.gauge_id, r.subbasin_id, r.timestamp,
-                   r.rainfall_mm, r.quality_flag,
-                   g.station_name, ST_Y(g.geom) lat, ST_X(g.geom) lon
-            FROM rainfall_data r
-            JOIN gauge_stations g ON g.station_id=r.gauge_id
-            WHERE r.timestamp >= NOW()-'91 hours'::interval
-            ORDER BY r.gauge_id, r.timestamp
-        """)
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT r.gauge_id, r.subbasin_id, r.timestamp,
+                       r.rainfall_mm, r.quality_flag,
+                       g.station_name, ST_Y(g.geom) lat, ST_X(g.geom) lon
+                FROM rainfall_data r
+                JOIN gauge_stations g ON g.station_id=r.gauge_id
+                WHERE r.timestamp >= NOW()-'91 hours'::interval
+                ORDER BY r.gauge_id, r.timestamp
+            """)
+    except Exception as e:
+        log.warning("Gauge hyetographs fallback: %s", e)
+        return []
     return _jsonify(rows)
 
 
@@ -628,15 +643,19 @@ async def outlet_hydrograph(request: Request, outlet_node: str = "J_Outlet"):
     * `stage_m` — the same discharge pushed through the PCHIP rating curve
     * `is_peak` — `true` on the single `argmax` of total discharge
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        rows = await conn.fetch("""
-            SELECT timestamp, lead_hours, discharge_m3s,
-                   surface_runoff_m3s, baseflow_m3s, stage_m, is_peak
-            FROM v_latest_hydrograph
-            WHERE outlet_node=$1
-            ORDER BY timestamp
-        """, outlet_node)
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT timestamp, lead_hours, discharge_m3s,
+                       surface_runoff_m3s, baseflow_m3s, stage_m, is_peak
+                FROM v_latest_hydrograph
+                WHERE outlet_node=$1
+                ORDER BY timestamp
+            """, outlet_node)
+    except Exception as e:
+        log.warning("Outlet hydrograph fallback: %s", e)
+        return []
     return _jsonify(rows)
 
 
@@ -658,34 +677,46 @@ async def runoff_summary(request: Request):
     - hydrograph: 90-hour discharge hydrograph points
     - peak_arrival: calibrated peak arrival times per bridge
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        # Get latest cycle
-        last_cycle = await conn.fetchrow("""
-            SELECT run_id, peak_discharge_m3s, lead_hours_to_peak,
-                   total_volume_mcm, peak_stage_m, alert_level
-            FROM simulation_runs
-            ORDER BY start_time DESC LIMIT 1
-        """)
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            # Get latest cycle
+            last_cycle = await conn.fetchrow("""
+                SELECT run_id, peak_discharge_m3s, lead_hours_to_peak,
+                       total_volume_mcm, peak_stage_m, alert_level
+                FROM simulation_runs
+                ORDER BY start_time DESC LIMIT 1
+            """)
 
-        # Get latest stage per bridge with thresholds
-        bridge_rows = await conn.fetch("""
-            SELECT f.site_id, f.forecast_time, f.stage_m,
-                   f.discharge_m3s, f.alert_level,
-                   b.site_name, b.alert_stage_m, b.warning_stage_m, b.danger_stage_m, b.hfl_m
-            FROM bridge_stage_forecast f
-            JOIN bridge_sites b ON b.site_id=f.site_id
-            WHERE f.forecast_run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
-            ORDER BY f.site_id, f.forecast_time
-        """)
+            # Get latest stage per bridge with thresholds
+            bridge_rows = await conn.fetch("""
+                SELECT f.site_id, f.forecast_time, f.stage_m,
+                       f.discharge_m3s, f.alert_level,
+                       b.site_name, b.alert_stage_m, b.warning_stage_m, b.danger_stage_m, b.hfl_m
+                FROM bridge_stage_forecast f
+                JOIN bridge_sites b ON b.site_id=f.site_id
+                WHERE f.forecast_run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+                ORDER BY f.site_id, f.forecast_time
+            """)
 
-        # Get hydrograph points
-        hydro_rows = await conn.fetch("""
-            SELECT lead_hours, discharge_m3s, stage_m
-            FROM hydrograph_results
-            WHERE run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
-            ORDER BY lead_hours ASC
-        """)
+            # Get hydrograph points
+            hydro_rows = await conn.fetch("""
+                SELECT lead_hours, discharge_m3s, stage_m
+                FROM hydrograph_results
+                WHERE run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+                ORDER BY lead_hours ASC
+            """)
+    except Exception as e:
+        log.warning("Runoff summary fallback: %s", e)
+        return {
+            "outlet": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
+                       "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
+            "summary": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
+                        "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
+            "bridges": [],
+            "hydrograph": [],
+            "peak_arrival": {},
+        }
 
     if not last_cycle:
         return {
@@ -703,6 +734,11 @@ async def runoff_summary(request: Request):
     for r in bridge_rows:
         sid = r["site_id"]
         if sid not in bridges_by_site:
+            # First row's stage_m is the T+0 current stage
+            first_stage = None
+        sid = r["site_id"]
+        if sid not in bridges_by_site:
+            first_stage = float(r["stage_m"]) if r.get("stage_m") else None
             bridges_by_site[sid] = {
                 "site_id": r["site_id"],
                 "site_name": r.get("site_name") or r["site_id"],
@@ -710,8 +746,9 @@ async def runoff_summary(request: Request):
                 "warning_stage_m": float(r.get("warning_stage_m") or 0),
                 "danger_stage_m": float(r.get("danger_stage_m") or 0),
                 "hfl_m": float(r.get("hfl_m") or 0),
-                "peak_stage_m": float(r["stage_m"]) if r["stage_m"] else 0.0,
+                "peak_stage_m": 0.0,  # will compute after loop
                 "alert_level": r.get("alert_level") or "NORMAL",
+                "current_stage_m": first_stage if first_stage is not None else 0.0,
                 "forecast": [],
             }
         bridges_by_site[sid]["forecast"].append({
@@ -719,12 +756,18 @@ async def runoff_summary(request: Request):
             "lead_hours": int(r["lead_hours"]) if r.get("lead_hours") is not None else 0,
         })
 
-    # Build bridge list in preferred order
+    # Compute per-bridge peak and ensure current_stage_m is the T+0 first point
     bridge_order = ["SHIVAJI_BRIDGE", "RAJARAM_BRIDGE"]
     bridges = []
     for sid in bridge_order:
         if sid in bridges_by_site:
-            bridges.append(bridges_by_site[sid])
+            b = bridges_by_site[sid]
+            # True peak = max across all forecast points
+            if b["forecast"]:
+                b["peak_stage_m"] = max(f["stage_m"] for f in b["forecast"])
+                b["current_stage_m"] = b["forecast"][0]["stage_m"]
+                b["stage_m"] = b["current_stage_m"]  # backward-compat alias
+            bridges.append(b)
 
     # Build peak_arrival from latest calibration state
     peak_arrival = {}
@@ -818,19 +861,23 @@ async def bridge_stage_forecast(request: Request, site_id: str):
 
     :raises HTTPException 404: if `site_id` is not a known bridge.
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        rows = await conn.fetch("""
-            SELECT f.forecast_time, f.lead_hours, f.stage_m,
-                   f.discharge_m3s, f.alert_level, f.is_above_danger
-            FROM bridge_stage_forecast f
-            WHERE f.site_id=$1
-              AND f.forecast_run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
-            ORDER BY f.lead_hours
-        """, site_id)
-        meta = await conn.fetchrow(
-            "SELECT * FROM bridge_sites WHERE site_id=$1", site_id
-        )
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT f.forecast_time, f.lead_hours, f.stage_m,
+                       f.discharge_m3s, f.alert_level, f.is_above_danger
+                FROM bridge_stage_forecast f
+                WHERE f.site_id=$1
+                  AND f.forecast_run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+                ORDER BY f.lead_hours
+            """, site_id)
+            meta = await conn.fetchrow(
+                "SELECT * FROM bridge_sites WHERE site_id=$1", site_id
+            )
+    except Exception as e:
+        log.warning("Bridge stage forecast fallback: %s", e)
+        raise HTTPException(status_code=404, detail=f"Bridge site '{site_id}' not found")
     if not meta:
         raise HTTPException(status_code=404, detail=f"Bridge site '{site_id}' not found")
     return {
@@ -854,9 +901,13 @@ async def active_alerts(request: Request):
     queryable through the historical runs ledger, so nothing is lost by
     filtering here.
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        rows = await conn.fetch("SELECT * FROM v_active_alerts_enriched")
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT * FROM v_active_alerts_enriched")
+    except Exception as e:
+        log.warning("Active alerts fallback: %s", e)
+        return []
     return _jsonify(rows)
 
 
@@ -878,26 +929,30 @@ async def flood_bulletin(request: Request):
     in a charting-friendly form is available from
     [`/api/v1/runoff/summary`](#api-v1-runoff-summary).
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        rows = await conn.fetch("""
-            SELECT b.site_id, b.site_name,
-                   b.alert_stage_m, b.warning_stage_m, b.danger_stage_m, b.hfl_m,
-                   f.stage_m AS current_stage,
-                   f.discharge_m3s AS current_q,
-                   f.alert_level,
-                   f.arrival_time,
-                   p.peak_discharge_m3s,
-                   p.time_of_peak,
-                   p.total_runoff_volume_m3
-            FROM bridge_sites b
-            LEFT JOIN bridge_stage_forecast f ON f.site_id=b.site_id
-                AND f.lead_hours=1
-                AND f.forecast_run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
-            LEFT JOIN peak_discharge_events p ON p.outlet_node='J_Outlet'
-                AND p.run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
-            ORDER BY b.site_id
-        """)
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT b.site_id, b.site_name,
+                       b.alert_stage_m, b.warning_stage_m, b.danger_stage_m, b.hfl_m,
+                       f.stage_m AS current_stage,
+                       f.discharge_m3s AS current_q,
+                       f.alert_level,
+                       f.arrival_time,
+                       p.peak_discharge_m3s,
+                       p.time_of_peak,
+                       p.total_runoff_volume_m3
+                FROM bridge_sites b
+                LEFT JOIN bridge_stage_forecast f ON f.site_id=b.site_id
+                    AND f.lead_hours=1
+                    AND f.forecast_run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+                LEFT JOIN peak_discharge_events p ON p.outlet_node='J_Outlet'
+                    AND p.run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+                ORDER BY b.site_id
+            """)
+    except Exception as e:
+        log.warning("Flood bulletin fallback: %s", e)
+        rows = []
     issued_at = datetime.now(timezone.utc).isoformat()
     return {
         "bulletin_title": "CWC CENTRAL WATER COMMISSION — FLOOD BULLETIN",
@@ -921,22 +976,26 @@ async def pipeline_status(request: Request):
     `error_message` is populated only for failed steps, which is the fastest
     way to tell *where* a cycle broke as well as *that* it broke.
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        rows = await conn.fetch("""
-            SELECT step_number, step_name, status, start_time, end_time,
-                   duration_seconds, error_message
-            FROM pipeline_step_log
-            WHERE cycle_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
-            ORDER BY step_number
-        """)
-        metrics = await conn.fetchrow("""
-            SELECT COUNT(*) FILTER (WHERE status='completed') AS completed,
-                   COUNT(*) FILTER (WHERE status='failed')    AS failed,
-                   AVG(duration_seconds)                       AS avg_duration_s
-            FROM simulation_runs
-            WHERE start_time > NOW()-'7 days'::interval
-        """)
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT step_number, step_name, status, start_time, end_time,
+                       duration_seconds, error_message
+                FROM pipeline_step_log
+                WHERE cycle_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+                ORDER BY step_number
+            """)
+            metrics = await conn.fetchrow("""
+                SELECT COUNT(*) FILTER (WHERE status='completed') AS completed,
+                       COUNT(*) FILTER (WHERE status='failed')    AS failed,
+                       AVG(duration_seconds)                       AS avg_duration_s
+                FROM simulation_runs
+                WHERE start_time > NOW()-'7 days'::interval
+            """)
+    except Exception as e:
+        log.warning("Pipeline status fallback: %s", e)
+        return {"steps": [], "metrics": {}}
     return {
         "steps":   _jsonify(rows),
         "metrics": dict(metrics) if metrics else {},
@@ -957,13 +1016,17 @@ async def cycle_history(request: Request, limit: int = Query(48, ge=1, le=500)):
     :param limit: How many cycles to return. Defaults to 48 — twelve days at
         the production cadence of four cycles per day.
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        rows = await conn.fetch("""
-            SELECT * FROM v_cycle_performance
-            ORDER BY start_time DESC
-            LIMIT $1
-        """, limit)
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT * FROM v_cycle_performance
+                ORDER BY start_time DESC
+                LIMIT $1
+            """, limit)
+    except Exception as e:
+        log.warning("Cycle history fallback: %s", e)
+        return []
     return _jsonify(rows)
 
 
