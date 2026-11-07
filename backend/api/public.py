@@ -504,33 +504,123 @@ async def rainfall_stations(request: Request):
     "/api/v1/runoff/hydrograph",
     dependencies=[PublicDep],
     tags=["Runoff"],
-    summary="Outlet discharge hydrograph (90 pts)",
+    summary="Outlet discharge hydrograph (90 pts) from latest cycle",
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def runoff_hydrograph(request: Request):
-    return {"peak_q_m3s": 0.0, "points": 90, "hydrograph": []}
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            last_run = await conn.fetchrow("""
+                SELECT run_id FROM simulation_runs
+                ORDER BY start_time DESC LIMIT 1
+            """)
+            if not last_run:
+                return {"peak_q_m3s": 0.0, "points": 0, "hydrograph": []}
+            rows = await conn.fetch("""
+                SELECT lead_hours, discharge_m3s, surface_runoff_m3s, baseflow_m3s,
+                       timestamp, is_peak
+                FROM hydrograph_results
+                WHERE run_id=$1
+                ORDER BY lead_hours ASC
+            """, last_run["run_id"])
+            hydrograph = [dict(r) for r in rows]
+            peak_q = max((r["discharge_m3s"] or 0) for r in hydrograph) if hydrograph else 0.0
+            return {
+                "peak_q_m3s": round(peak_q, 2),
+                "points": len(hydrograph),
+                "hydrograph": hydrograph,
+            }
+    except Exception as e:
+        log.warning("Hydrograph fallback: %s", e)
+        return {"peak_q_m3s": 0.0, "points": 0, "hydrograph": [], "error": str(e)}
 
 
 @app.get(
     "/api/v1/runoff/summary",
     dependencies=[PublicDep],
     tags=["Runoff"],
-    summary="Peak Q, Tp, volume, stage per bridge",
+    summary="Peak Q, Tp, volume, stage per bridge from latest cycle",
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def runoff_summary(request: Request):
-    return {"peak_q_m3s": 0.0, "total_volume_mcm": 0.0, "stage_shivaji_m": 0.0, "stage_rajaram_m": 0.0}
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            last_cycle = await conn.fetchrow("""
+                SELECT run_id, peak_discharge_m3s, lead_hours_to_peak,
+                       total_volume_mcm, peak_stage_m, alert_level
+                FROM simulation_runs
+                ORDER BY start_time DESC LIMIT 1
+            """)
+            if not last_cycle:
+                return {"peak_q_m3s": 0.0, "total_volume_mcm": 0.0,
+                        "lead_hours_to_peak": 0, "alert_level": "NORMAL"}
+            # Get latest stage per bridge
+            shivaji = await conn.fetchrow("""
+                SELECT stage_m, alert_level
+                FROM bridge_stage_forecast
+                WHERE site_id='SHIVAJI_BRIDGE'
+                  AND forecast_run_id=$1
+                ORDER BY forecast_time DESC LIMIT 1
+            """, last_cycle["run_id"])
+            rajaram = await conn.fetchrow("""
+                SELECT stage_m, alert_level
+                FROM bridge_stage_forecast
+                WHERE site_id='RAJARAM_BRIDGE'
+                  AND forecast_run_id=$1
+                ORDER BY forecast_time DESC LIMIT 1
+            """, last_cycle["run_id"])
+            return {
+                "peak_q_m3s": float(last_cycle["peak_discharge_m3s"] or 0),
+                "total_volume_mcm": float(last_cycle["total_volume_mcm"] or 0),
+                "lead_hours_to_peak": int(last_cycle["lead_hours_to_peak"] or 0),
+                "alert_level": last_cycle["alert_level"] or "NORMAL",
+                "stage_shivaji_m": float(shivaji["stage_m"]) if shivaji else 0.0,
+                "stage_rajaram_m": float(rajaram["stage_m"]) if rajaram else 0.0,
+                "shivaji_alert": shivaji["alert_level"] if shivaji else "NORMAL",
+                "rajaram_alert": rajaram["alert_level"] if rajaram else "NORMAL",
+            }
+    except Exception as e:
+        log.warning("Runoff summary fallback: %s", e)
+        return {"peak_q_m3s": 0.0, "total_volume_mcm": 0.0,
+                "lead_hours_to_peak": 0, "alert_level": "NORMAL", "error": str(e)}
 
 
 @app.get(
     "/api/v1/runoff/stage/{site_id}",
     dependencies=[PublicDep],
     tags=["Runoff"],
-    summary="90-hr stage forecast at bridge",
+    summary="Latest stage forecast for a bridge site",
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def runoff_stage(site_id: str, request: Request):
-    return {"site_id": site_id, "stage_m": 0.0, "alert_level": "NORMAL"}
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow("""
+                SELECT stage_m, alert_level, forecast_time, lead_hours,
+                       discharge_m3s, is_above_danger
+                FROM bridge_stage_forecast
+                WHERE site_id=$1
+                ORDER BY forecast_time DESC LIMIT 1
+            """, site_id)
+            if not row:
+                return {"site_id": site_id, "stage_m": 0.0, "alert_level": "NORMAL",
+                        "forecast_time": None, "lead_hours": 0}
+            return {
+                "site_id": site_id,
+                "stage_m": float(row["stage_m"]),
+                "alert_level": row["alert_level"],
+                "forecast_time": row["forecast_time"].isoformat() if row["forecast_time"] else None,
+                "lead_hours": int(row["lead_hours"] or 0),
+                "discharge_m3s": float(row["discharge_m3s"] or 0),
+                "is_above_danger": bool(row["is_above_danger"]),
+            }
+    except Exception as e:
+        log.warning("Stage fallback for %s: %s", site_id, e)
+        return {"site_id": site_id, "stage_m": 0.0, "alert_level": "NORMAL",
+                "error": str(e)}
 
 
 # ── Alerts ─────────────────────────────────────────────────────────────────────
@@ -539,22 +629,83 @@ async def runoff_stage(site_id: str, request: Request):
     "/api/v1/alerts",
     dependencies=[PublicDep],
     tags=["Alerts"],
-    summary="Active CWC alerts",
+    summary="Active CWC alerts from latest cycle",
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def alerts_active(request: Request):
-    return {"alerts_issued": 0, "status": "normal", "sites": {}}
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT site_id, classification, stage_m, alert_level,
+                       is_above_danger, forecast_time, created_at
+                FROM alert_events
+                WHERE status='active'
+                ORDER BY created_at DESC LIMIT 20
+            """)
+            sites = {}
+            max_severity = "NORMAL"
+            severity_order = ["NORMAL", "ALERT", "WARNING", "DANGER", "HFL_EXCEEDED"]
+            alerts_issued = 0
+            for r in rows:
+                sites[r["site_id"]] = {
+                    "stage_m": float(r["stage_m"] or 0),
+                    "classification": r["classification"],
+                    "alert_level": r["alert_level"],
+                    "is_above_danger": bool(r["is_above_danger"]),
+                }
+                alerts_issued += 1
+                if severity_order.index(r["alert_level"]) > severity_order.index(max_severity):
+                    max_severity = r["alert_level"]
+            return {
+                "alerts_issued": alerts_issued,
+                "status": max_severity.lower(),
+                "sites": sites,
+            }
+    except Exception as e:
+        log.warning("Alerts fallback: %s", e)
+        return {"alerts_issued": 0, "status": "normal", "sites": {}, "error": str(e)}
 
 
 @app.get(
     "/api/v1/alerts/bulletin",
     dependencies=[PublicDep],
     tags=["Alerts"],
-    summary="Formatted flood bulletin",
+    summary="Formatted CWC flood bulletin",
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def alerts_bulletin(request: Request):
-    return {"bulletin": "NORMAL", "sites": {}, "issued_at": datetime.now(timezone.utc).isoformat()}
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT site_id, classification, stage_m, alert_level
+                FROM alert_events
+                WHERE status='active'
+                ORDER BY created_at DESC LIMIT 10
+            """)
+            if not rows:
+                return {"bulletin": "NORMAL", "sites": {},
+                        "issued_at": datetime.now(timezone.utc).isoformat()}
+            severity_order = ["NORMAL", "ALERT", "WARNING", "DANGER", "HFL_EXCEEDED"]
+            worst = max(rows, key=lambda r: severity_order.index(r["alert_level"])
+                        if r["alert_level"] in severity_order else 0)
+            lines = ["HYDROCAST FLOOD BULLETIN",
+                     f"Issued: {datetime.now(timezone.utc).isoformat()}Z",
+                     f"Status: {worst['alert_level']}"]
+            for r in rows:
+                lines.append(f"  {r['site_id']}: {r['stage_m']}m -> {r['alert_level']}")
+            return {
+                "bulletin": worst["alert_level"],
+                "sites": {r["site_id"]: {"stage_m": float(r["stage_m"] or 0),
+                                         "alert_level": r["alert_level"]} for r in rows},
+                "issued_at": datetime.now(timezone.utc).isoformat(),
+                "text": "\n".join(lines),
+            }
+    except Exception as e:
+        log.warning("Bulletin fallback: %s", e)
+        return {"bulletin": "NORMAL", "sites": {},
+                "issued_at": datetime.now(timezone.utc).isoformat(), "error": str(e)}
 
 
 # ── Pipeline ───────────────────────────────────────────────────────────────────
@@ -567,7 +718,33 @@ async def alerts_bulletin(request: Request):
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def pipeline_status(request: Request):
-    return {"steps_completed": [], "status": "idle"}
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            last_run = await conn.fetchrow("""
+                SELECT run_id FROM simulation_runs
+                ORDER BY start_time DESC LIMIT 1
+            """)
+            if not last_run:
+                return {"steps_completed": [], "status": "idle"}
+            rows = await conn.fetch("""
+                SELECT step_number, step_name, status, duration_seconds,
+                       details_json, error_message
+                FROM pipeline_step_log
+                WHERE cycle_id=$1
+                ORDER BY step_number
+            """, last_run["run_id"])
+            steps_completed = [r["step_number"] for r in rows if r["status"] == "success"]
+            all_success = all(r["status"] == "success" for r in rows) if rows else False
+            return {
+                "steps_completed": steps_completed,
+                "steps": [dict(r) for r in rows],
+                "status": "completed" if all_success else "running",
+                "cycle_id": last_run["run_id"],
+            }
+    except Exception as e:
+        log.warning("Pipeline fallback: %s", e)
+        return {"steps_completed": [], "status": "idle", "error": str(e)}
 
 
 @app.get(
@@ -578,7 +755,18 @@ async def pipeline_status(request: Request):
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def pipeline_history(request: Request):
-    return {"cycles": []}
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT run_id, status, start_time, end_time, duration_seconds
+                FROM simulation_runs
+                ORDER BY start_time DESC LIMIT 48
+            """)
+            return {"cycles": [dict(r) for r in rows]}
+    except Exception as e:
+        log.warning("Pipeline history fallback: %s", e)
+        return {"cycles": [], "error": str(e)}
 
 
 # ── Historical Runs ─────────────────────────────────────────────────────────────
@@ -591,7 +779,20 @@ async def pipeline_history(request: Request):
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def runs_list(request: Request):
-    return {"runs": []}
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT run_id, cycle_date, cycle_time, status,
+                       peak_discharge_m3s, peak_stage_m, lead_hours_to_peak,
+                       total_volume_mcm, alert_level, start_time, end_time
+                FROM simulation_runs
+                ORDER BY start_time DESC LIMIT 100
+            """)
+            return {"runs": [dict(r) for r in rows]}
+    except Exception as e:
+        log.warning("Runs list fallback: %s", e)
+        return {"runs": [], "error": str(e)}
 
 
 @app.get(
@@ -602,7 +803,18 @@ async def runs_list(request: Request):
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def runs_detail(run_id: str, request: Request):
-    return {"run_id": run_id, "status": "unknown"}
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow("""
+                SELECT * FROM simulation_runs WHERE run_id=$1
+            """, run_id)
+            if not row:
+                return {"run_id": run_id, "status": "not_found"}
+            return dict(row)
+    except Exception as e:
+        log.warning("Run detail fallback: %s", e)
+        return {"run_id": run_id, "status": "error", "error": str(e)}
 
 
 # ── Accuracy ───────────────────────────────────────────────────────────────────
@@ -611,11 +823,42 @@ async def runs_detail(run_id: str, request: Request):
     "/api/v1/accuracy",
     dependencies=[PublicDep],
     tags=["Accuracy Validation"],
-    summary="Validation metrics (NSE, RMSE, Spearman rho)",
+    summary="Validation metrics (NSE, RMSE, Spearman rho) from latest cycle",
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
-async def accuracy(request: Request):
-    return {"nse": None, "rmse": None, "mae": None, "pbias": None, "spearman_rho": None}
+async def accuracy(request: Request, run_id: Optional[str] = None):
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            if run_id:
+                row = await conn.fetchrow("""
+                    SELECT * FROM forecast_validation_metrics WHERE run_id=$1
+                """, run_id)
+            else:
+                row = await conn.fetchrow("""
+                    SELECT * FROM forecast_validation_metrics
+                    ORDER BY created_at DESC LIMIT 1
+                """)
+            if not row:
+                return {"cycle_id": run_id or "unknown",
+                        "validation": {"metrics": None, "status": "no_data"}}
+            return {
+                "cycle_id": row["run_id"],
+                "validation": {
+                    "metrics": {
+                        "nse": float(row["nse_discharge"]) if row["nse_discharge"] else None,
+                        "rmse": float(row["rmse_q_m3s"]) if row["rmse_q_m3s"] else None,
+                        "mae": float(row["mae_q_m3s"]) if row["mae_q_m3s"] else None,
+                        "pbias": float(row["pbias_discharge_pct"]) if row["pbias_discharge_pct"] else None,
+                        "spearman_rho": float(row["spearman_rho"]) if row["spearman_rho"] else None,
+                        "performance_grade": row["performance_grade"],
+                    },
+                    "status": "available",
+                },
+            }
+    except Exception as e:
+        log.warning("Accuracy fallback: %s", e)
+        return {"cycle_id": run_id or "unknown", "validation": None, "error": str(e)}
 
 
 # ── WebSocket ──────────────────────────────────────────────────────────────────
