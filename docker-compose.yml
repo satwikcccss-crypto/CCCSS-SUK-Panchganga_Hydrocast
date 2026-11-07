@@ -49,7 +49,7 @@ services:
   # ── Frontend Next.js Public Portal (Port 3000) ──
   frontend:
     build:
-      context: ./frontend
+      context: ./frontend-public
       dockerfile: Dockerfile
     container_name: hydrocast-frontend
     ports:
