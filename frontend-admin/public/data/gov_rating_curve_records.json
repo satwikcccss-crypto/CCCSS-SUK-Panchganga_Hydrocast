@@ -1,0 +1,28 @@
+{
+  "source": "Maharashtra Water Resources Department (WRD) / Government Gauge Records",
+  "river": "Panchganga",
+  "location": "Rajaram K.T. Weir / Shivaji Bridge (Kolhapur)",
+  "gauge_datum_msl": 530.18,
+  "unit_cusec_to_m3s": 0.028316846592,
+  "records": [
+    { "stage_m": 533.54, "stage_ft": "11' 0\"", "discharge_cusecs": 2825, "discharge_m3s": 80.00, "note": "Low Flow / Live Stage Regime" },
+    { "stage_m": 533.56, "stage_ft": "11' 1\"", "discharge_cusecs": 2869, "discharge_m3s": 81.24, "note": "Low Flow" },
+    { "stage_m": 533.59, "stage_ft": "11' 2\"", "discharge_cusecs": 2913, "discharge_m3s": 82.49, "note": "Low Flow" },
+    { "stage_m": 533.64, "stage_ft": "11' 4\"", "discharge_cusecs": 3002, "discharge_m3s": 85.01, "note": "Low Flow" },
+    { "stage_m": 533.66, "stage_ft": "11' 5\"", "discharge_cusecs": 3046, "discharge_m3s": 86.25, "note": "Low Flow" },
+    { "stage_m": 533.69, "stage_ft": "11' 6\"", "discharge_cusecs": 3090, "discharge_m3s": 87.50, "note": "Low Flow" },
+    { "stage_m": 533.71, "stage_ft": "11' 7\"", "discharge_cusecs": 3134, "discharge_m3s": 88.74, "note": "Low Flow" },
+    { "stage_m": 533.99, "stage_ft": "12' 6\"", "discharge_cusecs": 3902, "discharge_m3s": 110.49, "note": "Low Flow" },
+    { "stage_m": 535.21, "stage_ft": "16' 6\"", "discharge_cusecs": 7684, "discharge_m3s": 217.59, "note": "Medium In-Bank Flow" },
+    { "stage_m": 535.59, "stage_ft": "17' 9\"", "discharge_cusecs": 8958, "discharge_m3s": 253.66, "note": "Bankfull Transition" },
+    { "stage_m": 535.77, "stage_ft": "18' 4\"", "discharge_cusecs": 9690, "discharge_m3s": 274.39, "note": "Over-Weir Flow" },
+    { "stage_m": 536.41, "stage_ft": "20' 5\"", "discharge_cusecs": 13087, "discharge_m3s": 370.58, "note": "Over-Weir Flow" },
+    { "stage_m": 538.16, "stage_ft": "26' 2\"", "discharge_cusecs": 21650, "discharge_m3s": 613.06, "note": "Submerged Weir Flow" },
+    { "stage_m": 539.02, "stage_ft": "29' 0\"", "discharge_cusecs": 28270, "discharge_m3s": 800.52, "note": "Pre-Flood Channel Flow" },
+    { "stage_m": 541.50, "stage_ft": "37' 1\"", "discharge_cusecs": 52266, "discharge_m3s": 1480.00, "note": "Rajaram Alert Level" },
+    { "stage_m": 542.10, "stage_ft": "39' 1\"", "discharge_cusecs": 63567, "discharge_m3s": 1800.00, "note": "Shivaji Alert Level" },
+    { "stage_m": 542.70, "stage_ft": "41' 1\"", "discharge_cusecs": 77692, "discharge_m3s": 2200.00, "note": "Warning Level" },
+    { "stage_m": 543.30, "stage_ft": "43' 0\"", "discharge_cusecs": 94467, "discharge_m3s": 2675.00, "note": "Danger Level" },
+    { "stage_m": 545.33, "stage_ft": "49' 8\"", "discharge_cusecs": 135961, "discharge_m3s": 3850.00, "note": "Highest Flood Level (HFL 2019/2021)" }
+  ]
+}

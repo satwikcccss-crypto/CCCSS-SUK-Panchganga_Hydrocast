@@ -1,0 +1,159 @@
+@import url("https://fonts.googleapis.com/css2?family=Segoe+UI+Variable:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --w-bg: #f3f3f3;
+  --w-sidebar: #f8f8f8;
+  --w-card: #ffffff;
+  --w-card-subtle: #fafafa;
+  --w-border: #e5e5e5;
+  --w-border-strong: #d2d2d2;
+  --w-hover: #eaeaea;
+  --w-active: #dfdfdf;
+  --w-accent: #0067b8;
+  --w-accent-hover: #005a9e;
+  --w-accent-light: #e0eef9;
+  --w-text: #1b1b1b;
+  --w-text-sec: #5c5c5c;
+  --w-text-mut: #8c8c8c;
+  --w-ok: #0f7b0f;
+  --w-warn: #9d5d00;
+  --w-bad: #c42b1c;
+  --w-radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  background-color: var(--w-bg);
+  color: var(--w-text);
+  font-family: "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+.font-mono-code {
+  font-family: "JetBrains Mono", Consolas, "Cascadia Mono", monospace;
+}
+
+/* Custom Thin Windows Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Windows Fluent Action Button */
+.win-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  border-radius: 5px;
+  border: 1px solid var(--w-border-strong);
+  background: #ffffff;
+  color: var(--w-text);
+  cursor: pointer;
+  transition: all 0.12s cubic-bezier(0, 0, 0, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  user-select: none;
+}
+
+.win-btn:hover:not(:disabled) {
+  background: #f7f7f7;
+  border-color: #b5b5b5;
+}
+
+.win-btn:active:not(:disabled) {
+  background: #eeeeee;
+  transform: scale(0.99);
+}
+
+.win-btn.primary {
+  background: var(--w-accent);
+  color: #ffffff;
+  border-color: #005a9e;
+}
+
+.win-btn.primary:hover:not(:disabled) {
+  background: var(--w-accent-hover);
+  border-color: #004d86;
+}
+
+.win-btn.danger {
+  background: #fdf3f2;
+  color: var(--w-bad);
+  border-color: #f6c0bc;
+}
+
+.win-btn.danger:hover:not(:disabled) {
+  background: #fbe6e4;
+  border-color: #e57368;
+}
+
+.win-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Windows Status Pill */
+.win-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: Consolas, "Cascadia Mono", monospace;
+}
+
+.win-pill.ok {
+  background: #dff6dd;
+  color: #107c10;
+  border: 1px solid #c3eec0;
+}
+
+.win-pill.warn {
+  background: #fff4ce;
+  color: #794500;
+  border: 1px solid #ffe799;
+}
+
+.win-pill.bad {
+  background: #fde7e9;
+  color: #a80000;
+  border: 1px solid #f8bfc4;
+}
+
+.win-pill.info {
+  background: #eff6fc;
+  color: #005a9e;
+  border: 1px solid #c7e0f4;
+}
+
+/* Leaflet map light mode styling */
+.leaflet-container {
+  background: #f1f5f9 !important;
+  font-family: inherit !important;
+}
