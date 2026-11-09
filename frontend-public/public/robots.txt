@@ -1,0 +1,15 @@
+# HydroCast Panchganga — Government Flood Early Warning System
+# Automated scraping and data harvesting is prohibited.
+# Authorized API access requires an API key from CCCSS-SUK.
+
+User-agent: *
+Disallow: /api/
+Disallow: /_next/
+
+User-agent: Googlebot
+Allow: /dashboard
+Disallow: /api/
+
+User-agent: bingbot
+Allow: /dashboard
+Disallow: /api/

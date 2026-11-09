@@ -383,8 +383,8 @@ export default function AccuracyPanel({ defaultTab = "charts" }: AccuracyPanelPr
       const hg = hydrograph[h] ?? {};
       const obs = actualObserved.find((o: any) => o.lead_hours === h) ?? {};
 
-      const predS = sFc.stage_m ?? (hg.stage_m ?? 532.63);
-      const predQ = sFc.discharge_m3s ?? (hg.discharge_m3s ?? 91.1);
+      const predS = sFc.stage_m ?? hg.stage_m;
+      const predQ = sFc.discharge_m3s ?? hg.discharge_m3s;
       const actS = obs.observed_stage_m ?? null;
       const actFt = obs.observed_distance_ft ?? null;
       const actQ = obs.observed_discharge_m3s ?? null;

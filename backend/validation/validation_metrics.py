@@ -117,7 +117,7 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
     # If actual observations are not explicitly present, query real ThingSpeak sensor feeds
     if not actual_obs and shivaji_fc:
         try:
-            from backend.hydrology.realtime_telemetry_validator import validate_active_cycle
+            from backend.validation.realtime_telemetry_validator import validate_active_cycle
             cycle_id = run_state.get("cycle_id") or run_state.get("summary", {}).get("cycle_id")
             val_res = validate_active_cycle(run_id=cycle_id)
             actual_obs = val_res.get("actual_observed_series", [])
@@ -171,7 +171,7 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
     else:
         pred_q = obs_q = None
 
-    from backend.hydrology.stage_converter import assess_low_flow_guard
+    from backend.stage_conversion.stage_converter import assess_low_flow_guard
 
     # Low-flow representativeness. During stable baseflow a constant offset is a
     # datum/anchor bias, and observed stages below the lowest WRD gauge make the
@@ -220,7 +220,7 @@ def evaluate_forecast_accuracy(run_state: Dict[str, Any]) -> Dict[str, Any]:
     # Skill metrics (NSE, Spearman, Pearson) require a minimum matched sample size
     # and enough observed spread; otherwise the NSE denominator collapses and the
     # score is numerically unstable rather than informative.
-    from backend.hydrology.realtime_telemetry_validator import (
+    from backend.validation.realtime_telemetry_validator import (
         MIN_CORRELATION_SAMPLES,
         MIN_OBS_Q_STD_M3S,
         MIN_OBS_STAGE_STD_M,

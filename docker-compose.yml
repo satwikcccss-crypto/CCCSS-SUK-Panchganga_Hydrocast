@@ -1,21 +1,21 @@
 # =============================================================================
-# HydroCast Panchganga — Docker Compose for Containerized Testing
-# Target: Shivaji University Kolhapur (SUK)
-#
+# HydroCast Panchganga — Docker Compose (Production)
+# =============================================================================
 # Usage:
-#   docker compose up -d          # Start backend + PostgreSQL
-#   docker compose up -d backend  # Start backend only (degrades gracefully)
+#   docker compose up -d              # Start all services
+#   docker compose up -d backend      # Start backend + DB only
+#   docker compose logs -f backend    # Follow backend logs
 # =============================================================================
 
 services:
-  # ── PostgreSQL 16 + PostGIS (optional; backend degrades without it) ──
+  # ── PostgreSQL 16 + PostGIS ──
   db:
     image: postgis/postgis:16-3.4
     container_name: hydrocast-db
     environment:
       POSTGRES_DB: rainfall_runoff
-      POSTGRES_USER: hms_app
-      POSTGRES_PASSWORD: hms_secret_2026
+      POSTGRES_USER: hydrocast
+      POSTGRES_PASSWORD: hydrocast_2026
     ports:
       - "5432:5432"
     volumes:
@@ -23,13 +23,13 @@ services:
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
       - ./database/seeds.sql:/docker-entrypoint-initdb.d/02-seeds.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U hms_app -d rainfall_runoff"]
+      test: ["CMD-SHELL", "pg_isready -U hydrocast -d rainfall_runoff"]
       interval: 10s
       timeout: 5s
       retries: 5
     restart: unless-stopped
 
-  # ── Backend FastAPI (Port 8000) ──
+  # ── Backend Public API (Port 8000) ──
   backend:
     build:
       context: .
@@ -40,27 +40,62 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql://hms_app:hms_secret_2026@db:5432/rainfall_runoff
+      DATABASE_URL: postgresql://hydrocast:hydrocast_2026@db:5432/rainfall_runoff
+      CORS_ORIGINS: http://localhost:3000,http://localhost:3001,http://frontend:3000,http://frontend-admin:3001
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
 
-  # ── Frontend Next.js Public Portal (Port 3000) ──
+  # ── Backend Admin API (Port 8001) ──
+  backend-admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: hydrocast-backend-admin
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://hydrocast:hydrocast_2026@db:5432/rainfall_runoff
+      ADMIN_CORS_ORIGINS: http://localhost:3001,http://frontend-admin:3001,http://localhost:3000,http://frontend:3000
+    command: ["uvicorn", "backend.api.admin_app:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "2"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── Frontend Public Dashboard (Port 3000) ──
   frontend:
     build:
       context: ./frontend-public
-      dockerfile: Dockerfile
     container_name: hydrocast-frontend
     ports:
       - "3000:3000"
-    env_file:
-      - .env
     environment:
       NEXT_PUBLIC_API_URL: http://backend:8000
       NEXT_PUBLIC_WS_URL: ws://backend:8000/ws/live
     depends_on:
       - backend
+    restart: unless-stopped
+
+  # ── Frontend Admin Console (Port 3001) ──
+  frontend-admin:
+    build:
+      context: ./frontend-admin
+    container_name: hydrocast-frontend-admin
+    ports:
+      - "3001:3001"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+      NEXT_PUBLIC_ADMIN_API_URL: http://backend-admin:8001
+      NEXT_PUBLIC_WS_URL: ws://backend:8000/ws/live
+      NEXT_PUBLIC_ADMIN_WS_URL: ws://backend-admin:8001/ws/admin/telemetry
+      PORT: "3001"
+    depends_on:
+      - backend
+      - backend-admin
     restart: unless-stopped
 
 volumes:

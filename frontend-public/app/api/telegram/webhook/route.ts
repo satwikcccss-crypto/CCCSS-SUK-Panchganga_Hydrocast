@@ -5,19 +5,17 @@ import path from "path";
 
 // Utility to fetch latest pipeline state
 function getLatestData() {
-  const candidates = [
-    path.join(process.cwd(), "public", "data", "latest_pipeline_state.json"),
-    path.join(process.cwd(), "data", "openmeteo_dss", "latest_pipeline_state.json"),
-  ];
-
-  for (const file of candidates) {
-    try {
-      if (fs.existsSync(file)) {
-        return JSON.parse(fs.readFileSync(file, "utf-8"));
-      }
-    } catch (e) {
-      console.error(`Error reading ${file}:`, e);
+  const cwd = process.cwd();
+  const root = (cwd.endsWith("frontend-public") || cwd.endsWith("frontend-admin") || cwd.endsWith("frontend"))
+    ? path.resolve(cwd, "..")
+    : cwd;
+  const file = path.join(root, "data", "openmeteo_dss", "latest_pipeline_state.json");
+  try {
+    if (fs.existsSync(file)) {
+      return JSON.parse(fs.readFileSync(file, "utf-8"));
     }
+  } catch (e) {
+    console.error(`Error reading ${file}:`, e);
   }
   return null;
 }

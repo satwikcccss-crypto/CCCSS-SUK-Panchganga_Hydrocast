@@ -37,11 +37,11 @@ else:
     PROJECT_ROOT = HISTORICAL_CHECKS_DIR.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.ecmwf.open_meteo import fetch_point_forecast
-from src.hms.runner import execute_hec_hms, _execute_hec_hms_core
-from src.hydrology.stage_converter import convert_discharge_to_stage_manning
-from src.ecmwf.station_selector import STATION_REGISTRY, SUBBASIN_AREAS_KM2, select_active_subbasin_gages
-from src.hydrology.validation_metrics import (
+from backend.rainfall.open_meteo import fetch_point_forecast
+from backend.hms.runner import execute_hec_hms, _execute_hec_hms_core
+from backend.stage_conversion.stage_converter import convert_discharge_to_stage_manning
+from backend.rainfall.station_selector import STATION_REGISTRY, SUBBASIN_AREAS_KM2, select_active_subbasin_gages
+from backend.validation.validation_metrics import (
     evaluate_forecast_accuracy,
     compute_nse,
     compute_rmse_mae,

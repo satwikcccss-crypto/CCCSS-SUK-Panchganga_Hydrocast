@@ -4,9 +4,12 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // Route operator traffic on port 3000 to the dedicated Windows Settings Console on port 3001
   if (path.startsWith("/admin") || path.startsWith("/console")) {
-    return NextResponse.redirect(new URL("http://localhost:3001/admin"));
+    const adminPort = process.env.NEXT_PUBLIC_ADMIN_PORT || "3001";
+    const adminUrl = new URL(request.url);
+    adminUrl.port = adminPort;
+    adminUrl.pathname = "/admin";
+    return NextResponse.redirect(adminUrl);
   }
 
   return NextResponse.next();

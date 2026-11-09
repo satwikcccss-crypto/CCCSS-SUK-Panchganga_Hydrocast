@@ -67,8 +67,6 @@ def init_pool(
     """
     global _POOL, _POOL_UNAVAILABLE
     with _POOL_LOCK:
-        if _POOL_UNAVAILABLE:
-            return None
         if _POOL is not None and not _POOL.closed:
             return _POOL
 
@@ -143,18 +141,23 @@ def get_resilient_connection(max_retries: int = 2, retry_delay: float = 0.5):
     Yields None when PostgreSQL is unavailable (graceful degradation).
     Callers must check `conn is not None` before using it.
     """
-    global _POOL
+    global _POOL, _POOL_UNAVAILABLE
     conn = None
     last_err = None
 
+    # Reset the circuit-breaker flag so each call retries if PostgreSQL
+    # has come back online since the last failure.
+    _POOL_UNAVAILABLE = False
+
     for attempt in range(1, max_retries + 1):
         try:
-            if _POOL_UNAVAILABLE:
-                yield None
-                return
             if _POOL is None or _POOL.closed:
                 _POOL = init_pool()
                 if _POOL is None:
+                    if attempt < max_retries:
+                        time.sleep(retry_delay)
+                        retry_delay *= 2.0
+                        continue
                     yield None
                     return
             conn = _POOL.getconn()

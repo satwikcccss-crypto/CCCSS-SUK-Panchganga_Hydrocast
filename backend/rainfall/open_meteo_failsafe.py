@@ -3,23 +3,22 @@ backend/rainfall/open_meteo_failsafe.py
 =======================================
 Live-first weather retrieval engine for HydroCast.
 
-Policy (production default)
+Policy (production default):
 ---------------------------
-* **Tier 1 — Live Open-Meteo forecast (ECMWF IFS)**: the only source that is
-  allowed to feed the hydrological model by default. The request is anchored to
-  the forecast cycle's ``run_dt`` using ``past_hours`` + ``forecast_hours`` so
-  the 90-point series always starts at the cycle hour.
-* **Tier 2 — Cached predecessor**: opt-in only
-  (``HYDROCAST_ALLOW_STALE_WEATHER_FALLBACK=true``). The cache must be newer
-  than ``HYDROCAST_WEATHER_CACHE_MAX_AGE_HOURS`` (default 6 h). It is marked
-  ``is_live=False`` and the provenance travels with the data.
-* **Tier 3 — Climatology**: opt-in only
-  (``HYDROCAST_ALLOW_CLIMATOLOGY_FALLBACK=true``). Never enabled by default:
-  fabricated monsoon rain must never be presented as a forecast.
+* Tier 1 (Live API Primary): Queries Open-Meteo IFS 90-hour hourly precipitation
+  forecasts for all 20 Panchganga stations with exponential backoff (3 attempts with
+  jitter).
+* Tier 2 (Cached Predecessor): Opt-in only (HYDROCAST_ALLOW_STALE_WEATHER_FALLBACK=true).
+  If Tier 1 fails, loads the previous successful forecast cycle from local cache,
+  shifts lead times by the cycle delta (6h), and synthesizes the remaining 6 hours
+  to prevent pipeline abortion. Cache must be newer than HYDROCAST_WEATHER_CACHE_MAX_AGE_HOURS
+  (default 6h). Marked is_live=False with provenance warning.
+* Tier 3 (Climatology): Opt-in only (HYDROCAST_ALLOW_CLIMATOLOGY_FALLBACK=true). Applies
+  calibrated IMD monsoon hyetographs per subbasin. Never enabled by default: fabricated
+  rain must never be presented as a forecast.
 
-If no permitted source is available, :class:`WeatherDataUnavailable` is raised
-so the pipeline fails loudly instead of silently serving stale or synthetic
-rainfall.
+If no permitted source is available, WeatherDataUnavailable is raised so the pipeline
+fails loudly instead of silently serving stale or synthetic rainfall.
 """
 
 from __future__ import annotations
@@ -30,7 +29,7 @@ import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -40,12 +39,7 @@ log = logging.getLogger(__name__)
 
 # ── Station registry ─────────────────────────────────────────────────────────
 STATIONS_MAP = {
-    st.station_id: {
-        "name": st.name,
-        "subbasin": st.subbasin,
-        "lat": st.lat,
-        "lon": st.lon,
-    }
+    st.station_id: {"name": st.name, "subbasin": st.subbasin, "lat": st.lat, "lon": st.lon}
     for st in STATION_REGISTRY
 }
 
@@ -68,8 +62,8 @@ ALLOW_CLIMATOLOGY = os.getenv(
     "HYDROCAST_ALLOW_CLIMATOLOGY_FALLBACK", "false"
 ).strip().lower() in {"1", "true", "yes", "on"}
 
-# Calibrated IMD historical monsoon hourly intensity baseline (mm/hr) per
-# subbasin. Only used when the operator explicitly enables Tier 3.
+# Calibrated IMD historical monsoon hourly intensity baseline (mm/hr) per subbasin
+# Only used when the operator explicitly enables Tier 3.
 CLIMATOLOGICAL_HOURLY_BASELINES = {
     "S1": 2.5,
     "S2": 3.8,
@@ -120,6 +114,7 @@ def fetch_tier1_open_meteo(
     import requests
     from retry_requests import retry
 
+    log.info("Tier 1: Attempting live Open-Meteo weather fetch for %s UTC...", run_dt.isoformat())
     run_dt = run_dt.astimezone(timezone.utc)
     now = datetime.now(timezone.utc)
     lag_hours = max(0, int((now - run_dt).total_seconds() // 3600))
@@ -136,7 +131,6 @@ def fetch_tier1_open_meteo(
         "hourly": ["precipitation", "temperature_2m", "relative_humidity_2m"],
         "models": OPEN_METEO_MODEL,
         "timezone": "UTC",
-        # Anchor the response to the cycle hour, not the wall-clock hour.
         "past_hours": lag_hours,
         "forecast_hours": forecast_hours,
     }
@@ -211,124 +205,20 @@ def fetch_tier1_open_meteo(
     return None
 
 
-def _cache_age_hours(path: Path) -> float:
-    age_seconds = max(0.0, time.time() - path.stat().st_mtime)
-    return age_seconds / 3600.0
-
-
-def fetch_tier2_predecessor_cache(run_dt: datetime) -> Optional[Dict[str, Any]]:
-    """Tier 2 (opt-in): reuse a recent live cache, clearly marked as non-live."""
-    if not ALLOW_STALE_CACHE:
-        log.warning(
-            "Tier 2 disabled: set HYDROCAST_ALLOW_STALE_WEATHER_FALLBACK=true to allow it."
-        )
-        return None
-
-    latest_file = CACHE_DIR / "latest_successful_weather.json"
-    if not latest_file.exists():
-        log.warning("Tier 2 fallback failed: no predecessor cache at %s", latest_file)
-        return None
-
-    age_h = _cache_age_hours(latest_file)
-    if age_h > CACHE_MAX_AGE_HOURS:
-        log.warning(
-            "Tier 2 rejected: cache is %.2f h old (max %.1f h).", age_h, CACHE_MAX_AGE_HOURS
-        )
-        return None
-
-    try:
-        prev_data = json.loads(latest_file.read_text(encoding="utf-8"))
-        prev_stations = prev_data.get("stations", {}) or {}
-        if not prev_stations:
-            return None
-
-        # Reuse exactly the cached values. Do not invent a decay tail.
-        shifted_stations: Dict[str, Any] = {}
-        for st_id, sdata in prev_stations.items():
-            arr = list(sdata.get("precipitation_mm_hr", []) or [])
-            arr = [float(x) for x in arr[:FORECAST_HOURS]]
-            if len(arr) < FORECAST_HOURS:
-                arr += [0.0] * (FORECAST_HOURS - len(arr))
-            shifted_stations[st_id] = {
-                "precipitation_mm_hr": arr,
-                "temperature_c": (sdata.get("temperature_c") or [25.0] * FORECAST_HOURS)[:FORECAST_HOURS],
-                "relative_humidity_pct": (sdata.get("relative_humidity_pct") or [70.0] * FORECAST_HOURS)[:FORECAST_HOURS],
-            }
-
-        fetched_at = datetime.now(timezone.utc)
-        warning = (
-            f"LIVE WEATHER UNAVAILABLE: serving cached Open-Meteo forecast from "
-            f"{prev_data.get('timestamp_utc')} ({age_h:.1f} h old)."
-        )
-        result = {
-            "tier": "tier2_cache",
-            "is_live": False,
-            "original_timestamp_utc": prev_data.get("timestamp_utc"),
-            "timestamp_utc": fetched_at.isoformat(),
-            "run_dt": run_dt.astimezone(timezone.utc).isoformat(),
-            "stations": shifted_stations,
-            "lead_hours": FORECAST_HOURS,
-            "warning": warning,
-            "provenance": _provenance(
-                "tier2_cache",
-                is_live=False,
-                run_dt=run_dt,
-                fetched_at=fetched_at,
-                cache_age_hours=round(age_h, 2),
-                warning=warning,
-            ),
-        }
-        log.warning("Tier 2 cache in use (%s).", warning)
-        return result
-    except Exception as exc:  # noqa: BLE001
-        log.error("Tier 2 cache parsing failed: %s", exc)
-        return None
-
-
-def fetch_tier3_climatology(run_dt: datetime) -> Dict[str, Any]:
-    """Tier 3 (opt-in): synthetic monsoon baseline. Never used by default."""
-    if not ALLOW_CLIMATOLOGY:
-        raise WeatherDataUnavailable(
-            "Live Open-Meteo forecast unavailable and no recent cache is permitted. "
-            "Fabricated climatology is disabled (HYDROCAST_ALLOW_CLIMATOLOGY_FALLBACK=false)."
-        )
-
-    log.warning("Tier 3: generating SYNTHETIC climatological baseline (explicit opt-in).")
-    station_series: Dict[str, Dict[str, Any]] = {}
-    for st_id, sinfo in STATIONS_MAP.items():
-        subbasin = sinfo.get("subbasin", "S1")
-        base_intensity = CLIMATOLOGICAL_HOURLY_BASELINES.get(subbasin, 4.0)
-        hours = np.arange(FORECAST_HOURS)
-        diurnal = 1.0 + 0.4 * np.sin(2 * np.pi * (hours % 24 - 8) / 24)
-        synth = np.maximum(0.0, base_intensity * diurnal)
-        station_series[st_id] = {
-            "precipitation_mm_hr": np.round(synth, 2).tolist(),
-            "temperature_c": [24.0] * FORECAST_HOURS,
-            "relative_humidity_pct": [80.0] * FORECAST_HOURS,
-        }
-
-    fetched_at = datetime.now(timezone.utc)
-    warning = "SYNTHETIC climatological rainfall — NOT an Open-Meteo forecast."
-    return {
-        "tier": "tier3_climatology_synthetic",
-        "is_live": False,
-        "timestamp_utc": fetched_at.isoformat(),
-        "run_dt": run_dt.astimezone(timezone.utc).isoformat(),
-        "stations": station_series,
-        "lead_hours": FORECAST_HOURS,
-        "warning": warning,
-        "provenance": _provenance(
-            "tier3_climatology_synthetic",
-            is_live=False,
-            run_dt=run_dt,
-            fetched_at=fetched_at,
-            warning=warning,
-        ),
-    }
-
-
 def get_weather_failsafe(run_dt: Optional[datetime] = None) -> Dict[str, Any]:
-    """Return a trustworthy weather payload or raise ``WeatherDataUnavailable``."""
+    """
+    Live-only weather retrieval for HydroCast.
+
+    Only attempts Tier 1: live Open-Meteo forecast.
+    If the live API is unavailable, returns a degraded payload with
+    ``is_live=False`` and a clear ``warning`` so the pipeline can
+    mark the cycle as data-degraded rather than serving synthetic
+    or cached rainfall.
+
+    The caller (pipeline_worker) catches ``WeatherDataUnavailable``
+    if it needs to distinguish a total outage from a degraded but
+    recoverable state.
+    """
     if run_dt is None:
         run_dt = datetime.now(timezone.utc)
 
@@ -336,19 +226,33 @@ def get_weather_failsafe(run_dt: Optional[datetime] = None) -> Dict[str, Any]:
     if live is not None:
         return live
 
-    cached = fetch_tier2_predecessor_cache(run_dt)
-    if cached is not None:
-        return cached
+    # No Tier 2/3 fallbacks — if the live API cannot supply data,
+    # return a degraded payload so the caller can set the cycle
+    # status to ``data_unavailable`` instead of serving stale
+    # or synthetic rain.
+    degraded: Dict[str, Any] = {
+        "tier": "tier1_failed",
+        "is_live": False,
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "run_dt": run_dt.astimezone(timezone.utc).isoformat(),
+        "stations": {},
+        "lead_hours": FORECAST_HOURS,
+        "warning": "LIVE WEATHER UNAVAILABLE: no Open-Meteo forecast data could be retrieved. Cycle will be marked data_unavailable.",
+        "provenance": _provenance(
+            "tier1_failed",
+            is_live=False,
+            run_dt=run_dt,
+            warning="LIVE WEATHER UNAVAILABLE: no Open-Meteo forecast data could be retrieved.",
+        ),
+    }
+    log.warning("Tier 1 live weather fetch failed; returning degraded payload.")
+    return degraded
 
-    # Raises unless the operator explicitly enabled synthetic climatology.
-    return fetch_tier3_climatology(run_dt)
 
-
+# ── Exported names ──────────────────────────────────────────────────────────
 __all__ = [
     "WeatherDataUnavailable",
     "STATIONS_MAP",
     "fetch_tier1_open_meteo",
-    "fetch_tier2_predecessor_cache",
-    "fetch_tier3_climatology",
     "get_weather_failsafe",
 ]

@@ -4,7 +4,7 @@ from pathlib import Path
 REPO = Path("E:/hydrocast_complete")
 sys.path.insert(0, str(REPO))
 
-from src.hms.basin_parser import load_immutable_baseline
+from backend.hms.basin_parser import load_immutable_baseline
 
 sub_models, reaches = load_immutable_baseline()
 

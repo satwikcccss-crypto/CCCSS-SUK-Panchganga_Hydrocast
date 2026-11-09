@@ -562,7 +562,7 @@ def _rajaram_elevation_m() -> np.ndarray:
     return RAJARAM_SURVEY[:, 2]
 
 
-# `_station_from_points` is imported from backend.hydrology.rating_physics.
+# `_station_from_points` is imported from backend.hydraulics.rating_physics.
 
 
 def estimate_low_flow_discharge(

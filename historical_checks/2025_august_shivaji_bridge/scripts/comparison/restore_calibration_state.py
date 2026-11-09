@@ -36,7 +36,7 @@ import sys
 REPO = Path("E:/hydrocast_complete")
 sys.path.insert(0, str(REPO))
 
-from src.hms.basin_parser import load_immutable_baseline
+from backend.hms.basin_parser import load_immutable_baseline
 
 STATE = REPO / "data" / "telemetry" / "ml_calibration_state.json"
 STAMP = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")

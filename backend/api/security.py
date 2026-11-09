@@ -107,10 +107,12 @@ async def verify_admin_credentials_db(
         try:
             async with db_pool.acquire() as conn:
                 row = await conn.fetchrow(
-                    "SELECT password_hash, role FROM admin_users WHERE username = $1",
+                    "SELECT password_hash, role, is_active FROM admin_users WHERE username = $1",
                     username.strip(),
                 )
                 if row:
+                    if row.get("is_active") is False:
+                        return False, ""
                     pwd_hash = row["password_hash"]
                     role = row.get("role", "dev")
                     if verify_password(password, pwd_hash):

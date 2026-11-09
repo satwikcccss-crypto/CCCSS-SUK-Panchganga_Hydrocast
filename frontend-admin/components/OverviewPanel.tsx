@@ -70,7 +70,7 @@ export default function OverviewPanel({
   const shivajiLead = shivajiPeakArr?.peak_lead_hours ?? outlet?.lead_hours_to_peak ?? 0;
   const rajaramLead = rajaramPeakArr?.peak_lead_hours ?? outlet?.lead_hours_to_peak ?? 0;
 
-  const shivajiLvl = b0?.current_stage_m ?? b0?.stage_m ?? 532.63;
+  const shivajiLvl = b0?.current_stage_m ?? b0?.stage_m;
   const shivajiPeak = b0?.peak_stage_m ?? (bShivaji?.forecast ? Math.max(...bShivaji.forecast.map((f: any) => f.stage_m)) : shivajiLvl);
 
   const shivajiData: GaugeData = {
@@ -95,7 +95,7 @@ export default function OverviewPanel({
     },
   };
 
-  const rajaramLvl = b1?.current_stage_m ?? b1?.stage_m ?? 538.86;
+  const rajaramLvl = b1?.current_stage_m ?? b1?.stage_m;
   const rajaramPeak = b1?.peak_stage_m ?? (bRajaram?.forecast ? Math.max(...bRajaram.forecast.map((f: any) => f.stage_m)) : rajaramLvl);
   const rajaramData: GaugeData = {
     waterLevel: rajaramLvl,

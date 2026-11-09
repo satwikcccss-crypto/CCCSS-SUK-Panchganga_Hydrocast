@@ -35,7 +35,6 @@ const securityHeaders = [
 
 const nextConfig = {
   reactStrictMode: true,
-  output: "standalone",
   // Do not advertise the framework/version.
   poweredByHeader: false,
   env: {

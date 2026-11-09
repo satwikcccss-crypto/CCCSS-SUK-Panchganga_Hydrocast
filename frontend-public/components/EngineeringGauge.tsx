@@ -59,7 +59,7 @@ export const EngineeringGauge: React.FC<{
   const TR = TX + TW, UH = H - PADT - PADB;
   
   // Use a zoom range that covers both current level and forecast peak
-  const maxRef = Math.max(level, forecastLevel ?? level, sensor.dangerLevels.alert - 1.0);
+  const maxRef = Math.max(level, forecastLevel ?? level);
   const minRef = Math.min(level, forecastLevel ?? level);
   const ZM = Math.max(2.8, (maxRef - minRef) + 1.8);
 

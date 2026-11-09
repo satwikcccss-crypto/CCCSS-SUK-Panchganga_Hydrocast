@@ -3,32 +3,39 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-/**
- * POST /api/admin/dispatch
- * Handles operator commands: "trigger", "db_test", "backup", "message_dispatch", "abort", "recalibrate"
- */
-export async function POST(req: Request) {
-  const body = (await req.json().catch(() => ({}))) as { action?: string; body?: any };
-  const action = body.action || "trigger";
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  const adminApiBase = process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:8001";
-  const token = process.env.ADMIN_DISPATCH_TOKEN || "windows_server_internal_operator";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const ADMIN_API_BASE = process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:8001";
+const API_KEY = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || "";
 
+function authHeaders(token?: string): Record<string, string> {
+  const h: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) h["Authorization"] = `Bearer ${token}`;
+  if (API_KEY) h["X-API-Key"] = API_KEY;
+  return h;
+}
+
+export async function POST(req: Request) {
+  const body = (await req.json().catch(() => ({}))) as {
+    action?: string;
+    body?: any;
+    token?: string;
+  };
+  const action = body.action || "trigger";
+  const token = body.token;
   const sentAt = new Date().toISOString();
 
-  // 1. DATABASE TEST ACTION
+  // DATABASE TEST
   if (action === "db_test" || action === "test_db") {
     try {
       const startTime = Date.now();
-      // Try admin health endpoint first, then public health
-      let healthRes = await fetch(`${adminApiBase}/api/v1/admin/health`, {
-        headers: { Authorization: `Bearer ${token}` },
+      let healthRes = await fetch(`${ADMIN_API_BASE}/api/v1/admin/health`, {
+        headers: authHeaders(token),
         cache: "no-store",
         signal: AbortSignal.timeout(6000),
       }).catch(() => null);
 
       if (!healthRes || !healthRes.ok) {
-        healthRes = await fetch(`${apiBase}/health`, {
+        healthRes = await fetch(`${API_BASE}/api/v1/health`, {
           cache: "no-store",
           signal: AbortSignal.timeout(6000),
         }).catch(() => null);
@@ -45,31 +52,29 @@ export async function POST(req: Request) {
         latency_ms: latencyMs,
         database: {
           status: isUp ? "CONNECTED" : "STANDBY",
-          engine: "PostgreSQL 16 (hydrocast_db)",
+          engine: "PostgreSQL 16 (rainfall_runoff)",
           host: "localhost:5432",
-          tables_verified: ["forecast_runs", "observed_stage", "rain_gauges", "cross_sections", "ecmwf_forecasts"],
-          health_check: responseData || { status: isUp ? "healthy" : "standby_ok", ping_latency_ms: latencyMs },
+          health_check: responseData || { status: isUp ? "healthy" : "standby_ok" },
         },
         message: isUp
-          ? `✓ Database connection verified healthy (${latencyMs}ms latency). All core tables accessible.`
-          : `✓ Database listener tested (localhost:5432). PostgreSQL tablespace ready.`,
+          ? `Database connection verified healthy (${latencyMs}ms latency).`
+          : `Database listener tested (localhost:5432). PostgreSQL standby.`,
       });
     } catch (err: any) {
       return NextResponse.json({
-        ok: true,
+        ok: false,
         action: "db_test",
         sent_at: sentAt,
-        database: { status: "STANDBY", host: "localhost:5432" },
-        message: `Database test probe finished: ${err?.message || "Verified localhost:5432 connection channel"}`,
+        message: `Database test failed: ${err?.message || "Unknown error"}`,
       });
     }
   }
 
-  // 2. MESSAGE DISPATCH ACTION
+  // MESSAGE DISPATCH
   if (action === "message_dispatch" || action === "dispatch_message") {
     try {
-      // Trigger bulletin or telegram broadcast
-      let alertRes = await fetch(`${apiBase}/api/v1/alerts/bulletin`, {
+      const alertRes = await fetch(`${API_BASE}/api/v1/alerts/bulletin`, {
+        headers: authHeaders(token),
         cache: "no-store",
         signal: AbortSignal.timeout(8000),
       }).catch(() => null);
@@ -81,56 +86,61 @@ export async function POST(req: Request) {
         action: "message_dispatch",
         sent_at: sentAt,
         broadcast: {
-          channels: ["CWC Control Room Kolhapur", "DDMA Kolhapur Collectorate", "Telegram Bot @HydrocastAlertBot"],
+          channels: ["CWC Control Room Kolhapur", "DDMA Kolhapur Collectorate", "Telegram Bot"],
           bulletin_generated: !!bulletin,
-          recipients_count: 3,
-          alert_status: bulletin?.alert_level || "ROUTINE_UPDATE",
+          alert_status: bulletin?.sites?.[0]?.alert_level || "ROUTINE_UPDATE",
         },
-        message: "✓ Emergency message & flood bulletin dispatched to CWC, DDMA, and Telegram broadcast channels.",
+        message: "Flood bulletin dispatched to CWC, DDMA, and Telegram channels.",
       });
     } catch (err: any) {
       return NextResponse.json({
-        ok: true,
+        ok: false,
         action: "message_dispatch",
         sent_at: sentAt,
-        message: "✓ Flood warning message queue processed and dispatched to alert channels.",
+        message: `Dispatch failed: ${err?.message || "Unknown error"}`,
       });
     }
   }
 
-  // 3. PIPELINE TRIGGER, BACKUP, ABORT, RECALIBRATE
-  let targetUrl = `${apiBase}/api/v1/admin/pipeline/trigger`;
-  let method = "POST";
+  // PIPELINE TRIGGER, BACKUP, ABORT, RECALIBRATE
+  const actionMap: Record<string, { primary: string; fallback: string }> = {
+    trigger: {
+      primary: `${API_BASE}/api/v1/admin/pipeline/trigger`,
+      fallback: `${ADMIN_API_BASE}/api/v1/admin/trigger-run`,
+    },
+    backup: {
+      primary: `${API_BASE}/api/v1/admin/backup/trigger`,
+      fallback: `${ADMIN_API_BASE}/api/v1/admin/backup-db`,
+    },
+    db_backup: {
+      primary: `${API_BASE}/api/v1/admin/backup/trigger`,
+      fallback: `${ADMIN_API_BASE}/api/v1/admin/backup-db`,
+    },
+    abort: {
+      primary: `${API_BASE}/api/v1/admin/pipeline/abort`,
+      fallback: `${ADMIN_API_BASE}/api/v1/admin/abort`,
+    },
+    recalibrate: {
+      primary: `${API_BASE}/api/v1/admin/recalibrate`,
+      fallback: `${ADMIN_API_BASE}/api/v1/admin/recalibrate`,
+    },
+  };
 
-  if (action === "backup" || action === "db_backup") {
-    targetUrl = `${apiBase}/api/v1/admin/backup/trigger`;
-  } else if (action === "abort") {
-    targetUrl = `${apiBase}/api/v1/admin/pipeline/abort`;
-  } else if (action === "recalibrate") {
-    targetUrl = `${apiBase}/api/v1/admin/recalibrate`;
-  }
+  const urls = actionMap[action] || actionMap.trigger;
 
   try {
-    let res = await fetch(targetUrl, {
-      method,
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    let res = await fetch(urls.primary, {
+      method: "POST",
+      headers: authHeaders(token),
       body: JSON.stringify(body.body || {}),
       cache: "no-store",
       signal: AbortSignal.timeout(15000),
     }).catch(() => null);
 
-    // Fallback to Admin API Port 8001 if Port 8000 admin route is not active
     if (!res || !res.ok) {
-      const fallbackUrl =
-        action === "backup" || action === "db_backup"
-          ? `${adminApiBase}/api/v1/admin/backup-db`
-          : action === "recalibrate"
-          ? `${adminApiBase}/api/v1/admin/recalibrate`
-          : `${adminApiBase}/api/v1/admin/trigger-run`;
-
-      res = await fetch(fallbackUrl, {
-        method,
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      res = await fetch(urls.fallback, {
+        method: "POST",
+        headers: authHeaders(token),
         body: JSON.stringify(body.body || {}),
         cache: "no-store",
         signal: AbortSignal.timeout(15000),
@@ -144,23 +154,21 @@ export async function POST(req: Request) {
         backend_status: res.status,
         sent_at: sentAt,
         data,
-        message: `✓ Command '${action}' dispatched successfully to Windows hydrologic server.`,
+        message: `Command '${action}' dispatched successfully.`,
       });
     }
 
-    // Graceful fallback response when background worker handles async queuing
     return NextResponse.json({
-      ok: true,
-      backend_status: res ? res.status : 202,
+      ok: false,
+      backend_status: res ? res.status : null,
       sent_at: sentAt,
-      message: `✓ Operator command '${action}' registered and queued for execution.`,
+      message: `Command '${action}' failed — backend returned ${res?.status ?? "no response"}.`,
     });
   } catch (err: any) {
     return NextResponse.json({
-      ok: true,
-      backend_url: targetUrl,
+      ok: false,
       sent_at: sentAt,
-      message: `✓ Operator command '${action}' signaled to background scheduler.`,
+      message: `Command '${action}' failed: ${err?.message || "Backend unreachable"}`,
     });
   }
 }

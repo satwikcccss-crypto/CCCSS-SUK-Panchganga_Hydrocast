@@ -118,7 +118,7 @@ export default function Dashboard() {
       hfl: bShivaji?.site?.hfl_m ?? b0?.hfl_m ?? 545.33,
     },
   };
-  const shivajiLvl = b0?.current_stage_m ?? b0?.stage_m ?? 532.63;
+  const shivajiLvl = b0?.current_stage_m ?? b0?.stage_m;
   const shivajiPeak = b0?.peak_stage_m ?? (bShivaji?.forecast ? Math.max(...bShivaji.forecast.map((f: any) => f.stage_m)) : shivajiLvl);
   const shivajiLead = b0?.peak_arrival?.peak_lead_hours ?? peakAt;
 
@@ -143,7 +143,7 @@ export default function Dashboard() {
       hfl: bRajaram?.site?.hfl_m ?? b1?.hfl_m ?? 545.33,
     },
   };
-  const rajaramLvl = b1?.current_stage_m ?? b1?.stage_m ?? 538.86;
+  const rajaramLvl = b1?.current_stage_m ?? b1?.stage_m;
   const rajaramPeak = b1?.peak_stage_m ?? (bRajaram?.forecast ? Math.max(...bRajaram.forecast.map((f: any) => f.stage_m)) : rajaramLvl);
   const rajaramLead = b1?.peak_arrival?.peak_lead_hours ?? peakAt;
 
@@ -162,7 +162,10 @@ export default function Dashboard() {
   }));
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-50">
+    <div
+      className="flex flex-col h-screen overflow-hidden bg-slate-50 select-none"
+      onContextMenu={(e) => e.preventDefault()}
+    >
       {/* ── TOP FLOOD ALERT BANNER ───────────────────────────────────── */}
       {activeAlerts.length > 0 && <FloodBanner alerts={activeAlerts} />}
 
@@ -177,12 +180,19 @@ export default function Dashboard() {
                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-900">HYDROCAST</span>
-              <span className="text-xs text-gray-500 hidden md:inline">
-                / Panchganga Basin
-              </span>
+          <div className="flex items-center gap-2">
+            <img
+              src="/assets/suk-logo-bw.png"
+              alt="Shivaji University"
+              className="w-7 h-7 rounded-full hidden sm:block"
+            />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-gray-900">HYDROCAST</span>
+                <span className="text-xs text-gray-500 hidden md:inline">
+                  / Panchganga Basin
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -218,9 +228,9 @@ export default function Dashboard() {
           </div>
 
           <div
-            className={`px-2 py-1 rounded text-xs font-semibold border ${alertBadge.bg} ${alertBadge.text} ${alertBadge.border}`}
+            className={`px-2 py-1 rounded text-xs font-semibold border whitespace-nowrap ${alertBadge.bg} ${alertBadge.text} ${alertBadge.border}`}
           >
-            Flood Status: {worstAlert}
+            <span className="hidden sm:inline">Flood Status: </span>{worstAlert}
           </div>
         </div>
       </header>

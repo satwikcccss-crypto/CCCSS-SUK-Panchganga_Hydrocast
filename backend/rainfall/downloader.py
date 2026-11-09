@@ -15,8 +15,19 @@ from pathlib import Path
 
 import numpy as np
 import xarray as xr
-import cfgrib                       # pip install cfgrib
-from ecmwf.opendata import Client   # pip install ecmwf-opendata
+
+# Optional decode/download dependencies. Import lazily so the module (and the
+# Open-Meteo failsafe path that never touches GRIB) stays importable on a
+# minimal install.
+try:
+    import cfgrib                       # pip install cfgrib
+except ImportError:  # pragma: no cover
+    cfgrib = None
+
+try:
+    from ecmwf.opendata import Client   # pip install ecmwf-opendata
+except ImportError:  # pragma: no cover
+    Client = None
 
 USE_MARS = os.getenv("USE_MARS", "false").lower() == "true"
 if USE_MARS:
@@ -25,7 +36,7 @@ if USE_MARS:
     except ImportError:
         ecmwfapi = None
 
-from backend.ecmwf.retry_utils import with_retry
+from backend.rainfall.retry_utils import with_retry
 
 log = logging.getLogger(__name__)
 
@@ -67,6 +78,11 @@ def download_opendata(date: str, time: str, out_path: Path) -> Path:
         log.info("GRIB2 already cached: %s", grib_path)
         return grib_path
 
+    if Client is None:  # pragma: no cover - optional dependency
+        raise RuntimeError(
+            "ecmwf-opendata is not installed. Install it with "
+            "`pip install ecmwf-opendata`, or use the Open-Meteo failsafe path."
+        )
     client = Client(source="ecmwf")  # or source="azure" / "aws"
     log.info("Downloading ECMWF Open Data: date=%s time=%s steps=%s", date, time, LEAD_HOURS)
 
@@ -122,6 +138,11 @@ def grib_to_hourly_nc(grib_path: Path, out_nc: Path) -> xr.Dataset:
     Convert accumulated TP (m) GRIB2 → hourly intensity mm/hr NetCDF.
     ECMWF stores TP as accumulated from run start → diff to get hourly.
     """
+    if cfgrib is None:  # pragma: no cover - optional dependency
+        raise RuntimeError(
+            "cfgrib is not installed. Install it with `pip install cfgrib` "
+            "to decode GRIB2, or use the Open-Meteo failsafe path."
+        )
     log.info("Decoding GRIB2: %s", grib_path)
     ds_list = cfgrib.open_datasets(str(grib_path))
 

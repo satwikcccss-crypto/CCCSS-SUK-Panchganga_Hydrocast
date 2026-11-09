@@ -196,13 +196,13 @@ export default function OverviewPanel({
       {/* ── PEAK FLOOD ARRIVAL & CONFIDENCE INTERVAL MONITOR (±2.0h) ─────────── */}
       <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-4 border-b border-slate-100 gap-2">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse"></span>
-            <h2 className="text-sm font-semibold text-slate-900 tracking-wide uppercase">
+          <div className="flex items-start gap-2.5 min-w-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse shrink-0 mt-1"></span>
+            <h2 className="text-xs sm:text-sm font-semibold text-slate-900 tracking-wide uppercase leading-tight">
               Peak Flood Strike Horizon & Permissible Confidence Interval (±2.0h)
             </h2>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">
               95% Confidence Band
             </span>
@@ -222,7 +222,7 @@ export default function OverviewPanel({
           {/* Shivaji Bridge Peak Card */}
           <div className="bg-slate-50/60 border border-slate-200/80 rounded-md p-4 flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5">
                 <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
                   Chhatrapati Shivaji Maharaj Bridge
                 </span>
@@ -281,7 +281,7 @@ export default function OverviewPanel({
           {/* Rajaram K.T. Weir Peak Card */}
           <div className="bg-slate-50/60 border border-slate-200/80 rounded-md p-4 flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5">
                 <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
                   Rajaram K.T. Weir (Kasba Bawada)
                 </span>

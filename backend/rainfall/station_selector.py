@@ -58,7 +58,7 @@ SUBBASIN_AREAS_KM2: Dict[str, float] = {
     "S4": 262.00,   # Karanjphen Subbasin
     "S5": 106.39,   # Padasali Subbasin
     "S6": 227.72,   # Gaganbawda Subbasin
-    "S7": 195.39,   # Garivade Subbasin
+    "S7": 195.39,   # Ga rivade Subbasin
     "S8": 177.44,   # Beed Subbasin
     "S9": 366.97,   # Radhanagari Subbasin
 }

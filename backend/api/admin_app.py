@@ -23,6 +23,7 @@ No public read routes are exposed here — those live on the Public API (Port 80
 """
 
 import os
+import sys
 import logging
 from datetime import datetime, timezone
 from typing import Optional
@@ -38,6 +39,7 @@ from slowapi.errors import RateLimitExceeded
 load_dotenv()
 
 from backend.api.admin import router as admin_router  # noqa: E402
+from backend.api.websocket_hub import router as ws_hub_router  # noqa: E402
 from backend.api.limits import limiter, RATE_LIMIT_LOGIN  # noqa: E402
 from backend.api.security import verify_admin_auth  # noqa: E402
 
@@ -98,12 +100,18 @@ async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
 # ── CORS (admin console same-origin only) ──────────────────────────────────────
 
 _cors_raw = [o.strip() for o in os.getenv("ADMIN_CORS_ORIGINS", "").split(",") if o.strip()]
-_cors_wildcard = "*" in _cors_raw
+for _default_origin in ("http://localhost:3001", "http://127.0.0.1:3001", "http://localhost:3000", "http://127.0.0.1:3000"):
+    if _default_origin not in _cors_raw:
+        _cors_raw.append(_default_origin)
+if "*" in _cors_raw:
+    _sec_log = logging.getLogger(__name__)
+    _sec_log.critical("ADMIN_CORS_ORIGINS contains '*' — wildcard origins are prohibited on admin API.")
+    sys.exit(1)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if _cors_wildcard else _cors_raw,
-    allow_credentials=not _cors_wildcard,
+    allow_origins=_cors_raw,
+    allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-API-Key"],
 )
@@ -127,6 +135,29 @@ class AdminSecurityHeadersMiddleware(BaseHTTPMiddleware):
 app.add_middleware(AdminSecurityHeadersMiddleware)
 
 
+# ── Anti-scraping (admin is fully JWT-protected but block bots early) ────────
+_BLOCKED_UA_FRAGMENTS = [
+    "scrapy", "httpclient", "python-requests", "go-http-client",
+    "wget", "curl", "libwww", "java/", "okhttp", "httpx",
+    "node-fetch", "undici", "axios", "got ", "superagent",
+]
+
+class AdminAntiScrapingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        ua = (request.headers.get("user-agent") or "").lower()
+        if not ua or any(frag in ua for frag in _BLOCKED_UA_FRAGMENTS):
+            path = request.url.path
+            if path.startswith("/api/") and "/auth/" not in path:
+                return JSONResponse(
+                    status_code=403,
+                    content={"detail": "Automated access prohibited."},
+                )
+        return await call_next(request)
+
+
+app.add_middleware(AdminAntiScrapingMiddleware)
+
+
 # ── Config ─────────────────────────────────────────────────────────────────────
 
 DB_URL = os.getenv("DATABASE_URL", "")
@@ -140,13 +171,33 @@ if not ADMIN_PASSWORD:
     log.warning("ADMIN_PASSWORD is not set — admin login will be disabled.")
 
 _pool: asyncpg.Pool | None = None
+_admin_pool_unavailable: bool = False
+_admin_pool_last_attempt: float = 0.0
 
-
-async def get_pool() -> asyncpg.Pool:
-    global _pool
-    if _pool is None:
-        _pool = await asyncpg.create_pool(DB_URL, min_size=2, max_size=10)
-    return _pool
+async def get_pool() -> Optional[asyncpg.Pool]:
+    """Return the asyncpg pool with circuit breaker for fast failure."""
+    global _pool, _admin_pool_unavailable, _admin_pool_last_attempt
+    import asyncio, time as _time
+    if _pool is not None:
+        return _pool
+    now = _time.monotonic()
+    if _admin_pool_unavailable and (now - _admin_pool_last_attempt) < 30.0:
+        return None
+    _admin_pool_last_attempt = now
+    if not DB_URL:
+        _admin_pool_unavailable = True
+        return None
+    try:
+        _pool = await asyncio.wait_for(
+            asyncpg.create_pool(DB_URL, min_size=1, max_size=10, command_timeout=10),
+            timeout=5.0,
+        )
+        _admin_pool_unavailable = False
+        return _pool
+    except Exception as e:
+        _admin_pool_unavailable = True
+        log.warning("Admin DB pool unavailable: %s", e)
+        return None
 
 
 # ── Auth Dependency ────────────────────────────────────────────────────────────
@@ -184,6 +235,8 @@ AdminDep = Depends(verify_admin_or_key)
 
 # Mount the admin router (all routes under /api/v1/admin)
 app.include_router(admin_router)
+# Mount real-time WebSocket hub (admin logs + telemetry streams)
+app.include_router(ws_hub_router)
 
 
 # ── Admin-Only Routes ──────────────────────────────────────────────────────────
@@ -196,9 +249,12 @@ app.include_router(admin_router)
 async def admin_health(request: Request, _: bool = AdminDep):
     try:
         pool = await get_pool()
-        async with pool.acquire() as conn:
-            await conn.fetchval("SELECT 1")
-        db_status = "healthy"
+        if pool is not None:
+            async with pool.acquire() as conn:
+                await conn.fetchval("SELECT 1")
+            db_status = "healthy"
+        else:
+            db_status = "offline (circuit breaker active)"
     except Exception as e:
         db_status = f"unreachable: {e}"
 
@@ -296,10 +352,18 @@ admin_ws_manager = AdminWSManager()
 
 @app.websocket("/ws/admin/logs")
 async def ws_admin_logs(websocket: WebSocket, token: Optional[str] = Query(None)):
-    # Authenticate via query token for WebSocket
-    if not (token and JWT_SECRET and token == JWT_SECRET):
+    # Authenticate via JWT token or API key for WebSocket
+    if not token:
         await websocket.close(code=1008)
         return
+    # Accept valid JWT or API key
+    try:
+        from backend.api.security import decode_access_token
+        decode_access_token(token)
+    except Exception:
+        if not (API_KEY and token == API_KEY):
+            await websocket.close(code=1008)
+            return
     if not await admin_ws_manager.connect(websocket):
         return
     try:
@@ -311,11 +375,11 @@ async def ws_admin_logs(websocket: WebSocket, token: Optional[str] = Query(None)
 
 @app.on_event("startup")
 async def startup():
-    try:
-        await get_pool()
+    pool = await get_pool()
+    if pool is not None:
         log.info("Admin API database pool established")
-    except Exception as e:
-        log.warning("Admin API DB pool deferred: %s", e)
+    else:
+        log.warning("Admin API database offline — degraded mode")
 
 
 @app.on_event("shutdown")

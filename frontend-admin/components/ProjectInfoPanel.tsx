@@ -10,25 +10,33 @@ export default function ProjectInfoPanel() {
       <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-sky-950 to-indigo-950 rounded-xl p-6 sm:p-8 text-white shadow-md border border-slate-800">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider uppercase rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">
-              DST-SERB Sponsored Research Project
-            </span>
-            <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider uppercase rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-              Shivaji University, Kolhapur
-            </span>
-            <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider uppercase rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
-              CCCSS Initiative
-            </span>
+          <div className="flex items-start gap-4 sm:gap-5 mb-4">
+            <img
+              src="/assets/suk-logo-color.webp"
+              alt="Shivaji University, Kolhapur — शिवाजी विद्यापीठ, कोल्हापूर"
+              className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 border-white/20 shadow-lg shrink-0 bg-white/10"
+            />
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider uppercase rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">
+                  DST-SERB Sponsored
+                </span>
+                <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider uppercase rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                  Shivaji University
+                </span>
+                <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider uppercase rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                  CCCSS Initiative
+                </span>
+              </div>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white mb-1">
+                IoT and Geoinformatics-Based Flood Monitoring &amp; Prediction System
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+                High-precision operational hydrological simulation, real-time ultrasonic river gauge telemetry,
+                and AI-adaptive stage forecasting for the Panchganga River Basin in Kolhapur, Maharashtra.
+              </p>
+            </div>
           </div>
-
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
-            IoT and Geoinformatics-Based Flood Monitoring & Prediction System
-          </h1>
-          <p className="text-sm sm:text-base text-slate-300 max-w-3xl leading-relaxed">
-            High-precision operational hydrological simulation, real-time ultrasonic river gauge telemetry, 
-            and AI-adaptive stage forecasting for the Panchganga River Basin in Kolhapur, Maharashtra.
-          </p>
         </div>
       </div>
 
@@ -185,6 +193,51 @@ export default function ProjectInfoPanel() {
               Unauthorized access, reproduction, commercial scraping, or reverse engineering of this portal 
               and its underlying databases is strictly prohibited under institutional IP policies and Indian Cyber Law.
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── ACKNOWLEDGEMENT ───────────────────────────────────────── */}
+      <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-xs">
+        <div className="flex items-start gap-4 sm:gap-5">
+          <img
+            src="/assets/suk-logo-color.webp"
+            alt="Shivaji University, Kolhapur"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-slate-200 shrink-0"
+          />
+          <div>
+            <h2 className="text-base font-bold text-slate-900 mb-2">Acknowledgement</h2>
+            <p className="text-sm text-slate-700 leading-relaxed mb-3">
+              This flood forecasting and early warning system is the product of a collective and sustained
+              endeavour by the <strong className="text-slate-900">Centre for Climate Change and Sustainability Studies (CCCSS)</strong> at
+              Shivaji University, Kolhapur. The project has been realised under the guidance and vision of
+              the Research Coordinator and the dedicated efforts of the research personnel, project staff,
+              and technical associates of the Centre.
+            </p>
+            <p className="text-sm text-slate-700 leading-relaxed mb-3">
+              We gratefully acknowledge the infrastructure and computational support extended by
+              the <strong className="text-slate-900">University Computer Centre, Shivaji University</strong>,
+              whose facilities have been instrumental in hosting and operating this system. We also express
+              our sincere appreciation for the contributions and cooperation of all individuals who have
+              been associated with this project in various capacities.
+            </p>
+            <p className="text-sm text-slate-700 leading-relaxed mb-4">
+              This work has greatly benefited from the institutional partnership and data-sharing
+              arrangements with our partner government bodies — the <strong className="text-slate-900">Water Resources
+              Department (WRD), Maharashtra</strong>, the <strong className="text-slate-900">Central Water
+              Commission (CWC)</strong>, and the <strong className="text-slate-900">District Disaster
+              Management Authority (DDMA), Kolhapur</strong> — as well as the cooperation of the
+              local administration, whose domain expertise and field-level coordination continue
+              to strengthen the operational integrity and public relevance of this system.
+            </p>
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-100">
+              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Partners &amp; Affiliations</span>
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-sky-50 text-sky-800 border border-sky-200">DST-SERB, Govt. of India</span>
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-50 text-emerald-800 border border-emerald-200">WRD Maharashtra</span>
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-50 text-amber-800 border border-amber-200">CWC</span>
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-rose-50 text-rose-800 border border-rose-200">DDMA Kolhapur</span>
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-indigo-50 text-indigo-800 border border-indigo-200">SUK Computer Centre</span>
+            </div>
           </div>
         </div>
       </div>

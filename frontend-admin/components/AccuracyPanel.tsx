@@ -373,7 +373,7 @@ export default function AccuracyPanel({ initialTab = "charts" }: { initialTab?: 
       const hg = hydrograph[h] ?? {};
       const obs = actualObserved.find((o: any) => o.lead_hours === h) ?? {};
 
-      const predS = sFc.stage_m ?? (hg.stage_m ?? 532.63);
+      const predS = sFc.stage_m ?? hg.stage_m;
       const predQ = sFc.discharge_m3s ?? (hg.discharge_m3s ?? 91.1);
       const actS = obs.observed_stage_m ?? null;
       const actFt = obs.observed_distance_ft ?? null;
@@ -387,7 +387,7 @@ export default function AccuracyPanel({ initialTab = "charts" }: { initialTab?: 
         timestamp: sFc.forecast_time || hg.timestamp || obs.timestamp || `T+${h}h`,
         stage_m: predS,
         discharge_m3s: predQ,
-        rajaram_stage_m: rFc.stage_m ?? 532.63,
+        rajaram_stage_m: rFc.stage_m,
         alert_level: sFc.alert_level || "NORMAL",
         has_observation: hasObs,
         observed_stage_m: actS,

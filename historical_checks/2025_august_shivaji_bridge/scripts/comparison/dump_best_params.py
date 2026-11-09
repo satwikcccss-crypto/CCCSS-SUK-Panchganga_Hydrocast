@@ -8,7 +8,7 @@ import numpy as np
 REPO = Path("E:/hydrocast_complete")
 sys.path.insert(0, str(REPO))
 
-from src.hms.basin_parser import load_immutable_baseline
+from backend.hms.basin_parser import load_immutable_baseline
 
 # Best per-subbasin life-safety config (pass 1, best NSE)
 ALPHA_K = 0.80

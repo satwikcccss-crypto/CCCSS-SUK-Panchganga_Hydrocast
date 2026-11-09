@@ -25,44 +25,7 @@
     ],
     "errors": [],
     "warnings": [],
-    "console_errors": [
-      "[error] Connecting to 'http://localhost:8000/api/v1/runoff/stage/RAJARAM_BRIDGE?_cb=1794032976149' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/runoff/stage/RAJARAM_BRIDGE?_cb=1794032976149. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/status?_cb=1794032976156' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/status?_cb=1794032976156. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/runoff/summary?_cb=1794032976156' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/runoff/summary?_cb=1794032976156. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/runoff/hydrograph?_cb=1794032976157' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/runoff/hydrograph?_cb=1794032976157. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/alerts?_cb=1794032976158' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/alerts?_cb=1794032976158. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/rainfall/ecmwf?_cb=1794032976158' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/rainfall/ecmwf?_cb=1794032976158. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/rainfall/stations?_cb=1794032976158' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/rainfall/stations?_cb=1794032976158. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/accuracy?_cb=1794032976159' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/accuracy?_cb=1794032976159. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/runoff/stage/SHIVAJI_BRIDGE?_cb=1794032976159' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/runoff/stage/SHIVAJI_BRIDGE?_cb=1794032976159. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/status?_cb=1794032981165' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/status?_cb=1794032981165. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/rainfall/ecmwf?_cb=1794032981165' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/rainfall/ecmwf?_cb=1794032981165. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/rainfall/stations?_cb=1794032981165' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/rainfall/stations?_cb=1794032981165. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/runoff/stage/SHIVAJI_BRIDGE?_cb=1794032981165' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/runoff/stage/SHIVAJI_BRIDGE?_cb=1794032981165. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/runoff/stage/RAJARAM_BRIDGE?_cb=1794032986161' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/runoff/stage/RAJARAM_BRIDGE?_cb=1794032986161. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/runoff/summary?_cb=1794032986162' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/runoff/summary?_cb=1794032986162. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/runoff/hydrograph?_cb=1794032986162' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/runoff/hydrograph?_cb=1794032986162. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/alerts?_cb=1794032986162' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/alerts?_cb=1794032986162. Refused to connect because it violates the document's Content Security Policy.",
-      "[error] Connecting to 'http://localhost:8000/api/v1/rainfall/stations?_cb=1794032986177' violates the following Content Security Policy directive: \"connect-src 'self' ws: wss:\". The action has been blocked.",
-      "[error] Fetch API cannot load http://localhost:8000/api/v1/rainfall/stations?_cb=1794032986177. Refused to connect because it violates the document's Content Security Policy."
-    ]
+    "console_errors": []
   },
   "admin": {
     "pages": [
@@ -104,8 +67,12 @@
         "status": "OK"
       },
       {
-        "category": "System Host & DB Health",
-        "status": "BUTTON_NOT_FOUND"
+        "category": "Pipeline & Diagnostics",
+        "status": "OK"
+      },
+      {
+        "category": "Database & Host Health",
+        "status": "OK"
       }
     ],
     "errors": [],

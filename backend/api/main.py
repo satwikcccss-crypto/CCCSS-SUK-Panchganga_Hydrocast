@@ -43,7 +43,8 @@ import re
 import asyncio
 import logging
 import hashlib
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from pathlib import Path
 from typing import Optional, Any
 
 import asyncpg
@@ -152,7 +153,7 @@ app.add_middleware(
     allow_origins=_cors_raw,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=["Authorization", "Content-Type", "X-API-Key", "X-Internal-Key", "Cache-Control", "Pragma"],
 )
 
 
@@ -197,6 +198,43 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(SecurityHeadersMiddleware)
 
+
+# ── Anti-scraping / Bot-detection middleware ──────────────────────────────────
+_BLOCKED_UA_FRAGMENTS = [
+    "scrapy", "httpclient", "python-requests", "go-http-client",
+    "wget", "curl", "libwww", "java/", "okhttp", "httpx",
+    "node-fetch", "undici", "axios", "got ", "superagent",
+]
+_ALLOWED_BOT_UAS = ["googlebot", "bingbot", "uptimerobot"]
+
+class AntiScrapingMiddleware(BaseHTTPMiddleware):
+    """Block automated scraping tools from data endpoints."""
+
+    async def dispatch(self, request: Request, call_next):
+        path = request.url.path
+        if not path.startswith("/api/v1/") or path == "/api/v1/health":
+            return await call_next(request)
+
+        ua = (request.headers.get("user-agent") or "").lower()
+        if not ua:
+            return JSONResponse(
+                status_code=403,
+                content={"detail": "Forbidden: missing User-Agent"},
+            )
+
+        is_known_bot = any(frag in ua for frag in _BLOCKED_UA_FRAGMENTS)
+        is_allowed = any(frag in ua for frag in _ALLOWED_BOT_UAS)
+        if is_known_bot and not is_allowed:
+            return JSONResponse(
+                status_code=403,
+                content={"detail": "Automated scraping is prohibited. This is a government early warning system."},
+            )
+
+        return await call_next(request)
+
+
+app.add_middleware(AntiScrapingMiddleware)
+
 # Mount Administrative & Control Router (protected by JWT & API Key)
 app.include_router(admin_router)
 
@@ -211,58 +249,162 @@ PUBLIC_CACHE_MAX_AGE = int(os.getenv("PUBLIC_CACHE_MAX_AGE", "300"))
 # ── DB pool (asyncpg) ─────────────────────────────────────────────────────────
 
 _pool: asyncpg.Pool | None = None
+_pool_unavailable: bool = False
+_pool_last_attempt: float = 0.0
+_POOL_RETRY_SECONDS: float = 30.0
 
-async def get_pool() -> asyncpg.Pool:
-    global _pool
-    if _pool is None:
-        _pool = await asyncpg.create_pool(DB_URL, min_size=2, max_size=10)
-    return _pool
+async def get_pool() -> Optional[asyncpg.Pool]:
+    """Return the asyncpg pool, or None when PostgreSQL is unreachable.
+
+    Uses a circuit breaker so a missing database doesn't hang every request:
+    after a failed attempt, subsequent calls return None immediately for
+    _POOL_RETRY_SECONDS before trying again.
+    """
+    global _pool, _pool_unavailable, _pool_last_attempt
+    if _pool is not None:
+        try:
+            async with _pool.acquire() as conn:
+                await conn.fetchval("SELECT 1")
+            return _pool
+        except Exception:
+            _pool = None
+
+    import time as _time
+    now = _time.monotonic()
+    if _pool_unavailable and (now - _pool_last_attempt) < _POOL_RETRY_SECONDS:
+        return None
+
+    _pool_last_attempt = now
+    if not DB_URL:
+        _pool_unavailable = True
+        return None
+    try:
+        _pool = await asyncio.wait_for(
+            asyncpg.create_pool(DB_URL, min_size=1, max_size=10, command_timeout=10),
+            timeout=5.0,
+        )
+        _pool_unavailable = False
+        return _pool
+    except Exception as e:
+        _pool_unavailable = True
+        log.warning("Database pool unavailable: %s", e)
+        return None
+
+
+def _load_pipeline_state() -> Optional[dict]:
+    """Load the latest pipeline state JSON for DB-offline fallback."""
+    from pathlib import Path
+    state_file = Path(__file__).resolve().parents[2] / "data" / "openmeteo_dss" / "latest_pipeline_state.json"
+    if state_file.exists():
+        try:
+            return json.loads(state_file.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return None
+
+_VISIT_LEDGER_FILE = Path(__file__).resolve().parents[2] / "data" / "visit_ledger.json"
+_visit_ledger_lock = asyncio.Lock()
+
+
+def _load_visit_ledger() -> dict:
+    """Load file-based visitor ledger for DB-offline fallback."""
+    try:
+        if _VISIT_LEDGER_FILE.exists():
+            data = json.loads(_VISIT_LEDGER_FILE.read_text(encoding="utf-8"))
+            if isinstance(data, dict) and "days" in data:
+                return data
+    except Exception:
+        pass
+    return {"days": {}, "seen_hashes": {}}
+
+
+def _save_visit_ledger(ledger: dict) -> None:
+    """Persist visitor ledger to disk."""
+    try:
+        _VISIT_LEDGER_FILE.parent.mkdir(parents=True, exist_ok=True)
+        _VISIT_LEDGER_FILE.write_text(
+            json.dumps(ledger, indent=2), encoding="utf-8"
+        )
+    except Exception as e:
+        log.warning("Could not persist visit ledger: %s", e)
+
+
+def _file_record_visit(ip_hash: str) -> dict:
+    """Record a visit in the file-based ledger, returning counts."""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    ledger = _load_visit_ledger()
+    days = ledger.setdefault("days", {})
+    seen = ledger.setdefault("seen_hashes", {})
+    today_hashes = seen.get(today, [])
+    if ip_hash not in today_hashes:
+        today_hashes.append(ip_hash)
+        seen[today] = today_hashes
+        days[today] = days.get(today, 0) + 1
+    # Prune hash lists older than 7 days to keep the file small
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%d")
+    for d in list(seen.keys()):
+        if d < cutoff:
+            del seen[d]
+    _save_visit_ledger(ledger)
+    daily = days.get(today, 0)
+    total = sum(days.values())
+    return {"daily": daily, "total": total}
+
+
+def _file_read_visits() -> dict:
+    """Read visitor counts from the file-based ledger."""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    ledger = _load_visit_ledger()
+    days = ledger.get("days", {})
+    daily = days.get(today, 0)
+    total = sum(days.values())
+    return {"daily": daily, "total": total}
+
 
 telegram_app = None
 
 @app.on_event("startup")
 async def startup():
-    try:
-        pool = await get_pool()
-        log.info("Database connection pool established")
-        
-        # Init Visitor Counter & Admin Users RBAC Tables
-        async with pool.acquire() as conn:
-            await conn.execute("""
-                CREATE TABLE IF NOT EXISTS site_visits (
-                    visit_date DATE PRIMARY KEY,
-                    visit_count INT DEFAULT 1
-                );
-                CREATE TABLE IF NOT EXISTS site_visitor_ips (
-                    ip_hash TEXT,
-                    visit_date DATE,
-                    PRIMARY KEY(ip_hash, visit_date)
-                );
-                CREATE TABLE IF NOT EXISTS admin_users (
-                    id SERIAL PRIMARY KEY,
-                    username VARCHAR(64) UNIQUE NOT NULL,
-                    password_hash TEXT NOT NULL,
-                    role VARCHAR(32) NOT NULL DEFAULT 'dev',
-                    created_at TIMESTAMPTZ DEFAULT NOW(),
-                    last_login TIMESTAMPTZ
-                );
-            """)
-
-            # Optional: auto-seed admin if configured or table empty
-            init_admin = os.getenv("INIT_ADMIN_TABLE", "true").lower() == "true"
-            if init_admin:
-                admin_user = os.getenv("ADMIN_USERNAME", "admin")
-                admin_pass = os.getenv("ADMIN_PASSWORD", "")
-                if admin_pass:
-                    import bcrypt
-                    pw_hash = bcrypt.hashpw(admin_pass.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-                    await conn.execute("""
-                        INSERT INTO admin_users (username, password_hash, role)
-                        VALUES ($1, $2, 'dev')
-                        ON CONFLICT (username) DO NOTHING;
-                    """, admin_user, pw_hash)
-    except Exception as e:
-        log.warning("Database pool connection delayed or offline: %s", e)
+    pool = await get_pool()
+    if pool is not None:
+        try:
+            log.info("Database connection pool established")
+            async with pool.acquire() as conn:
+                await conn.execute("""
+                    CREATE TABLE IF NOT EXISTS site_visits (
+                        visit_date DATE PRIMARY KEY,
+                        visit_count INT DEFAULT 1
+                    );
+                    CREATE TABLE IF NOT EXISTS site_visitor_ips (
+                        ip_hash TEXT,
+                        visit_date DATE,
+                        PRIMARY KEY(ip_hash, visit_date)
+                    );
+                    CREATE TABLE IF NOT EXISTS admin_users (
+                        id SERIAL PRIMARY KEY,
+                        username VARCHAR(64) UNIQUE NOT NULL,
+                        password_hash TEXT NOT NULL,
+                        role VARCHAR(32) NOT NULL DEFAULT 'dev',
+                        created_at TIMESTAMPTZ DEFAULT NOW(),
+                        last_login TIMESTAMPTZ
+                    );
+                """)
+                init_admin = os.getenv("INIT_ADMIN_TABLE", "true").lower() == "true"
+                if init_admin:
+                    admin_user = os.getenv("ADMIN_USERNAME", "admin")
+                    admin_pass = os.getenv("ADMIN_PASSWORD", "")
+                    if admin_pass:
+                        import bcrypt
+                        pw_hash = bcrypt.hashpw(admin_pass.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+                        await conn.execute("""
+                            INSERT INTO admin_users (username, password_hash, role)
+                            VALUES ($1, $2, 'dev')
+                            ON CONFLICT (username) DO NOTHING;
+                        """, admin_user, pw_hash)
+        except Exception as e:
+            log.warning("Database initialization failed: %s", e)
+    else:
+        log.warning("Database offline — API will serve from JSON pipeline state files")
 
     try:
         from backend.alerts.telegram_bot import build_telegram_application
@@ -403,35 +545,49 @@ async def system_status(request: Request):
     """
     try:
         pool = await get_pool()
-        async with pool.acquire() as conn:
-            last_cycle = await conn.fetchrow("""
-                SELECT run_id, status, start_time, end_time, duration_seconds
-                FROM simulation_runs
-                ORDER BY start_time DESC LIMIT 1
-            """)
-            active_alerts = await conn.fetchval("SELECT COUNT(*) FROM alert_events WHERE status='active'")
-            pipeline_ok   = await conn.fetchval("""
-                SELECT (COUNT(*) >= 12 AND COUNT(*) FILTER (WHERE status <> 'success') = 0)
-                FROM pipeline_step_log
-                WHERE cycle_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
-            """)
-        return {
-            "system":         "operational",
-            "last_cycle":     dict(last_cycle) if last_cycle else None,
-            "active_alerts":  active_alerts or 0,
-            "pipeline_ok":    bool(pipeline_ok),
-            "server_time":    datetime.now(timezone.utc).isoformat(),
-        }
+        if pool is not None:
+            async with pool.acquire() as conn:
+                last_cycle = await conn.fetchrow("""
+                    SELECT run_id, status, start_time, end_time, duration_seconds
+                    FROM simulation_runs
+                    ORDER BY start_time DESC LIMIT 1
+                """)
+                active_alerts = await conn.fetchval("SELECT COUNT(*) FROM alert_events WHERE status='active'")
+                pipeline_ok   = await conn.fetchval("""
+                    SELECT (COUNT(*) >= 12 AND COUNT(*) FILTER (WHERE status <> 'success') = 0)
+                    FROM pipeline_step_log
+                    WHERE cycle_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+                """)
+            return {
+                "system":         "operational",
+                "last_cycle":     dict(last_cycle) if last_cycle else None,
+                "active_alerts":  active_alerts or 0,
+                "pipeline_ok":    bool(pipeline_ok),
+                "server_time":    datetime.now(timezone.utc).isoformat(),
+            }
     except Exception as e:
         log.warning("Status query fallback: %s", e)
+
+    state = _load_pipeline_state()
+    if state:
+        status_info = state.get("status", {})
+        last_cycle_info = status_info.get("last_cycle")
         return {
             "system": "operational",
-            "last_cycle": None,
+            "last_cycle": last_cycle_info,
             "active_alerts": 0,
-            "pipeline_ok": False,
+            "pipeline_ok": status_info.get("system") == "operational",
             "server_time": datetime.now(timezone.utc).isoformat(),
-            "note": "Database query pending or initial run awaiting",
+            "note": "Serving from pipeline state file (database offline)",
         }
+    return {
+        "system": "operational",
+        "last_cycle": None,
+        "active_alerts": 0,
+        "pipeline_ok": False,
+        "server_time": datetime.now(timezone.utc).isoformat(),
+        "note": "Database offline, no pipeline state available",
+    }
 
 
 @app.post(
@@ -460,27 +616,33 @@ async def record_visit(request: Request):
         # VISIT_HASH_SALT in production for a non-reversible pseudonym.
         ip_hash = hashlib.sha256(client_ip.encode("utf-8")).hexdigest()
     
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        exists = await conn.fetchval(
-            "SELECT 1 FROM site_visitor_ips WHERE ip_hash=$1 AND visit_date=CURRENT_DATE",
-            ip_hash
-        )
-        if not exists:
-            await conn.execute(
-                "INSERT INTO site_visitor_ips (ip_hash, visit_date) VALUES ($1, CURRENT_DATE)",
+    try:
+        pool = await get_pool()
+        if pool is None:
+            counts = _file_record_visit(ip_hash)
+            return {**counts, "source": "file"}
+        async with pool.acquire() as conn:
+            exists = await conn.fetchval(
+                "SELECT 1 FROM site_visitor_ips WHERE ip_hash=$1 AND visit_date=CURRENT_DATE",
                 ip_hash
             )
-            await conn.execute("""
-                INSERT INTO site_visits (visit_date, visit_count)
-                VALUES (CURRENT_DATE, 1)
-                ON CONFLICT (visit_date) DO UPDATE SET visit_count = site_visits.visit_count + 1
-            """)
-        
-        daily = await conn.fetchval("SELECT visit_count FROM site_visits WHERE visit_date=CURRENT_DATE")
-        total = await conn.fetchval("SELECT SUM(visit_count) FROM site_visits")
-        
-    return {"daily": daily or 0, "total": total or 0}
+            if not exists:
+                await conn.execute(
+                    "INSERT INTO site_visitor_ips (ip_hash, visit_date) VALUES ($1, CURRENT_DATE)",
+                    ip_hash
+                )
+                await conn.execute("""
+                    INSERT INTO site_visits (visit_date, visit_count)
+                    VALUES (CURRENT_DATE, 1)
+                    ON CONFLICT (visit_date) DO UPDATE SET visit_count = site_visits.visit_count + 1
+                """)
+            daily = await conn.fetchval("SELECT visit_count FROM site_visits WHERE visit_date=CURRENT_DATE")
+            total = await conn.fetchval("SELECT SUM(visit_count) FROM site_visits")
+        return {"daily": daily or 0, "total": total or 0}
+    except Exception as e:
+        log.warning("Visit recording fallback: %s", e)
+        counts = _file_record_visit(ip_hash)
+        return {**counts, "source": "file"}
 
 
 @app.get(
@@ -499,13 +661,21 @@ async def read_visits(request: Request, response: Response):
     response is explicitly uncacheable so a CDN cannot serve a stale odometer.
     """
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        daily = await conn.fetchval(
-            "SELECT visit_count FROM site_visits WHERE visit_date=CURRENT_DATE"
-        )
-        total = await conn.fetchval("SELECT SUM(visit_count) FROM site_visits")
-    return {"daily": daily or 0, "total": total or 0}
+    try:
+        pool = await get_pool()
+        if pool is None:
+            counts = _file_read_visits()
+            return {**counts, "source": "file"}
+        async with pool.acquire() as conn:
+            daily = await conn.fetchval(
+                "SELECT visit_count FROM site_visits WHERE visit_date=CURRENT_DATE"
+            )
+            total = await conn.fetchval("SELECT SUM(visit_count) FROM site_visits")
+        return {"daily": daily or 0, "total": total or 0}
+    except Exception as e:
+        log.warning("Visits fallback: %s", e)
+        counts = _file_read_visits()
+        return {**counts, "source": "file"}
 
 
 @app.get(
@@ -537,6 +707,9 @@ async def ecmwf_hyetograph(request: Request, subbasin_id: Optional[str] = None):
             rows = await conn.fetch(query, *params)
     except Exception as e:
         log.warning("ECMWF hyetograph fallback: %s", e)
+        state = _load_pipeline_state()
+        if state and state.get("ecmwf"):
+            return state["ecmwf"]
         return {}
 
     result: dict[str, list] = {}
@@ -581,6 +754,9 @@ async def station_selection(request: Request):
             """)
     except Exception as e:
         log.warning("Station selection fallback: %s", e)
+        state = _load_pipeline_state()
+        if state and state.get("stations"):
+            return state["stations"]
         return []
     return _jsonify(rows)
 
@@ -619,6 +795,9 @@ async def gauge_hyetographs(request: Request):
             """)
     except Exception as e:
         log.warning("Gauge hyetographs fallback: %s", e)
+        state = _load_pipeline_state()
+        if state and state.get("gauges"):
+            return state["gauges"]
         return []
     return _jsonify(rows)
 
@@ -655,6 +834,9 @@ async def outlet_hydrograph(request: Request, outlet_node: str = "J_Outlet"):
             """, outlet_node)
     except Exception as e:
         log.warning("Outlet hydrograph fallback: %s", e)
+        state = _load_pipeline_state()
+        if state and state.get("hydrograph"):
+            return state["hydrograph"]
         return []
     return _jsonify(rows)
 
@@ -708,6 +890,37 @@ async def runoff_summary(request: Request):
             """)
     except Exception as e:
         log.warning("Runoff summary fallback: %s", e)
+        state = _load_pipeline_state()
+        if state:
+            summary = state.get("summary", {})
+            bridges_data = []
+            for key in ("bridgeShivaji", "bridgeRajaram"):
+                b = state.get(key, {})
+                if b:
+                    site = b.get("site", {})
+                    forecast = b.get("forecast", [])
+                    peak_stage = max((f.get("stage_m", 0) for f in forecast), default=0) if forecast else 0
+                    bridges_data.append({
+                        "site_id": site.get("site_id", key),
+                        "site_name": site.get("site_name", key),
+                        "alert_stage_m": site.get("alert_stage_m", 0),
+                        "warning_stage_m": site.get("warning_stage_m", 0),
+                        "danger_stage_m": site.get("danger_stage_m", 0),
+                        "hfl_m": site.get("hfl_m", 0),
+                        "peak_stage_m": round(peak_stage, 2),
+                        "current_stage_m": forecast[0].get("stage_m", 0) if forecast else 0,
+                        "stage_m": forecast[0].get("stage_m", 0) if forecast else 0,
+                        "alert_level": forecast[0].get("alert_level", "NORMAL") if forecast else "NORMAL",
+                        "forecast": forecast,
+                    })
+            return {
+                "outlet": summary.get("outlet", summary) if isinstance(summary, dict) else summary,
+                "summary": summary,
+                "bridges": bridges_data,
+                "hydrograph": state.get("hydrograph", []),
+                "peak_arrival": state.get("peak_arrival", summary.get("peak_arrival", {})),
+                "recalibration": state.get("recalibration", {}),
+            }
         return {
             "outlet": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
                        "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
@@ -877,6 +1090,13 @@ async def bridge_stage_forecast(request: Request, site_id: str):
             )
     except Exception as e:
         log.warning("Bridge stage forecast fallback: %s", e)
+        state = _load_pipeline_state()
+        if state:
+            key_map = {"SHIVAJI_BRIDGE": "bridgeShivaji", "RAJARAM_BRIDGE": "bridgeRajaram", "RAJARAM_WEIR": "bridgeRajaram"}
+            json_key = key_map.get(site_id)
+            if json_key and state.get(json_key):
+                b = state[json_key]
+                return {"site": b.get("site", {}), "forecast": b.get("forecast", [])}
         raise HTTPException(status_code=404, detail=f"Bridge site '{site_id}' not found")
     if not meta:
         raise HTTPException(status_code=404, detail=f"Bridge site '{site_id}' not found")
@@ -907,6 +1127,15 @@ async def active_alerts(request: Request):
             rows = await conn.fetch("SELECT * FROM v_active_alerts_enriched")
     except Exception as e:
         log.warning("Active alerts fallback: %s", e)
+        state = _load_pipeline_state()
+        if state:
+            alerts = state.get("alerts", [])
+            if alerts:
+                return alerts
+            status_info = state.get("status", {})
+            last_cycle = status_info.get("last_cycle", {})
+            if last_cycle and last_cycle.get("alert_level", "NORMAL") != "NORMAL":
+                return [{"alert_level": last_cycle["alert_level"], "site_id": "SYSTEM", "status": "active"}]
         return []
     return _jsonify(rows)
 
@@ -995,6 +1224,13 @@ async def pipeline_status(request: Request):
             """)
     except Exception as e:
         log.warning("Pipeline status fallback: %s", e)
+        state = _load_pipeline_state()
+        if state and state.get("pipeline"):
+            p = state["pipeline"]
+            return {
+                "steps": p.get("steps", []),
+                "metrics": p.get("metrics", {}),
+            }
         return {"steps": [], "metrics": {}}
     return {
         "steps":   _jsonify(rows),
@@ -1246,28 +1482,60 @@ async def hydrosim_stage(
 
     The series is the *latest* forecast cycle only — never a blend of cycles.
     """
-    pool = await get_pool()
-    async with pool.acquire() as conn:
-        run = await conn.fetchrow(
-            "SELECT run_id, start_time FROM simulation_runs ORDER BY start_time DESC LIMIT 1"
-        )
-        rows = await conn.fetch(
-            """
-            SELECT f.site_id, b.site_name, b.river_name, b.latitude, b.longitude,
-                   b.alert_stage_m, b.warning_stage_m, b.danger_stage_m, b.hfl_m,
-                   b.zero_datum_m,
-                   f.forecast_time, f.lead_hours, f.stage_m, f.discharge_m3s,
-                   f.alert_level, f.is_above_danger
-            FROM bridge_stage_forecast f
-            JOIN bridge_sites b ON b.site_id = f.site_id
-            WHERE f.forecast_run_id = (
-                SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1
-            )
-              AND ($1::text IS NULL OR f.site_id = $1)
-            ORDER BY f.site_id, f.lead_hours
-            """,
-            site_id,
-        )
+    rows = []
+    run = None
+    try:
+        pool = await get_pool()
+        if pool is not None:
+            async with pool.acquire() as conn:
+                run = await conn.fetchrow(
+                    "SELECT run_id, start_time FROM simulation_runs ORDER BY start_time DESC LIMIT 1"
+                )
+                rows = await conn.fetch(
+                    """
+                    SELECT f.site_id, b.site_name, b.river_name, b.latitude, b.longitude,
+                           b.alert_stage_m, b.warning_stage_m, b.danger_stage_m, b.hfl_m,
+                           b.zero_datum_m,
+                           f.forecast_time, f.lead_hours, f.stage_m, f.discharge_m3s,
+                           f.alert_level, f.is_above_danger
+                    FROM bridge_stage_forecast f
+                    JOIN bridge_sites b ON b.site_id = f.site_id
+                    WHERE f.forecast_run_id = (
+                        SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1
+                    )
+                      AND ($1::text IS NULL OR f.site_id = $1)
+                    ORDER BY f.site_id, f.lead_hours
+                    """,
+                    site_id,
+                )
+    except Exception as e:
+        log.warning("Water levels DB fallback: %s", e)
+
+    if not run or not rows:
+        state = _load_pipeline_state()
+        if state:
+            all_forecast = []
+            for key in ("bridgeShivaji", "bridgeRajaram"):
+                b = state.get(key, {})
+                if not b:
+                    continue
+                s = b.get("site", {})
+                sid = s.get("site_id", "")
+                if site_id and sid != site_id:
+                    continue
+                for f in b.get("forecast", []):
+                    all_forecast.append({
+                        "site_id": sid,
+                        "site_name": s.get("site_name", ""),
+                        "forecast_time": f.get("forecast_time", ""),
+                        "lead_hours": f.get("lead_hours", 0),
+                        "stage_m": f.get("stage_m", 0),
+                        "discharge_m3s": f.get("discharge_m3s", 0),
+                        "alert_level": f.get("alert_level", "NORMAL"),
+                        "is_above_danger": f.get("is_above_danger", False),
+                    })
+            if all_forecast:
+                return {"cycle_id": state.get("cycle_id", ""), "issued_at": state.get("run_dt", ""), "sites": all_forecast}
 
     if not run:
         raise HTTPException(

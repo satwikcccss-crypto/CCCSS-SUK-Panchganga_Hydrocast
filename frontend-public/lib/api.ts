@@ -120,17 +120,24 @@ export async function fetchBridgeStage(siteId: string): Promise<any> {
 // ── Aggregated dashboard (single call, queries PostgreSQL) ──────────────────
 
 export async function fetchDashboardData(runId?: string): Promise<any> {
-  const url = runId
-    ? `${BASE}/api/v1/dashboard?run_id=${encodeURIComponent(runId)}`
-    : `${BASE}/api/v1/dashboard`;
+  const query = runId ? `?run_id=${encodeURIComponent(runId)}` : "";
+  const url = typeof window !== "undefined"
+    ? `/api/v1/dashboard${query}`
+    : `${BASE}/api/v1/dashboard${query}`;
   return _fetchWithCache(url);
 }
 
 // ── Convenience wrappers (match existing dashboard usage) ───────────────────
 
 export const api = {
-  status: async () => (await fetchStatus()).status ?? (await fetchStatus()),
-  cycleStatus: async () => (await fetchStatus()).status ?? (await fetchStatus()),
+  status: async () => {
+    const data = await fetchStatus();
+    return data.status ?? data;
+  },
+  cycleStatus: async () => {
+    const data = await fetchStatus();
+    return data.status ?? data;
+  },
   ecmwfHyetograph: async () => (await fetchRainfall()),
   stationSelection: async () => (await fetchStations()),
   gaugeHyetographs: async () => (await fetchStations()),

@@ -495,7 +495,7 @@ def run_forecast_cycle(start_dt: Optional[datetime] = None) -> Dict[str, dict]:
 
     s4 = _start_step("04. Real-Time Calibration Assessment (physics-informed, gated ML)")
     # Real-Time ML Recalibration Check against Live Telemetry
-    from backend.hydrology.realtime_telemetry_validator import get_all_available_observations
+    from backend.validation.realtime_telemetry_validator import get_all_available_observations
     obs_cache = get_all_available_observations(fetch_remote=True)
     
     if shivaji_telemetry and shivaji_telemetry.get("stage_m"):

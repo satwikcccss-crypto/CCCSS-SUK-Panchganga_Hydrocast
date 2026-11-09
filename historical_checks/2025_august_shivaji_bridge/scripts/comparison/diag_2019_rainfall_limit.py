@@ -11,13 +11,13 @@ REPO = Path("E:/hydrocast_complete")
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "historical_checks"))
 
-from src.hms.basin_parser import load_immutable_baseline
-from src.hms.runner import _execute_hec_hms_core
-from src.hydrology.stage_converter import (
+from backend.hms.basin_parser import load_immutable_baseline
+from backend.hms.runner import _execute_hec_hms_core
+from backend.stage_conversion.stage_converter import (
     convert_discharge_to_stage_manning,
     convert_stage_to_discharge_manning,
 )
-from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_gages
+from backend.rainfall.station_selector import STATION_REGISTRY, select_active_subbasin_gages
 from run_historical_event import fetch_historical_rainfall_for_station   # noqa: E402
 
 SUBS = [f"S{i}" for i in range(1, 10)]

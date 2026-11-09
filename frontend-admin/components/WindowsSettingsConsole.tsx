@@ -31,8 +31,10 @@ import {
   RefreshCw,
   LucideIcon,
   Terminal,
+  LogOut,
 } from "lucide-react";
 import { api, fetchDashboardData } from "@/lib/api";
+import { clearSession, getSession, isOperator } from "@/lib/auth";
 
 // Dynamic component imports
 import OverviewPanel from "@/components/OverviewPanel";
@@ -80,6 +82,7 @@ interface NavCategory {
     | "Intelligence & Audit"
     | "Windows Host & DB";
   desc: string;
+  operatorOnly?: boolean;
 }
 
 // Windows 11 Settings Categories — zero hardcoded numbers or static badges
@@ -153,6 +156,7 @@ const NAV_CATEGORIES: NavCategory[] = [
     icon: Cpu,
     group: "Intelligence & Audit",
     desc: "Physics-informed Levenberg–Marquardt optimization parameters",
+    operatorOnly: true,
   },
   {
     id: "validation",
@@ -167,6 +171,7 @@ const NAV_CATEGORIES: NavCategory[] = [
     icon: Server,
     group: "Windows Host & DB",
     desc: "12-stage automation workflow, live runtime logs & SLA status",
+    operatorOnly: true,
   },
   {
     id: "storage",
@@ -174,12 +179,14 @@ const NAV_CATEGORIES: NavCategory[] = [
     icon: Database,
     group: "Windows Host & DB",
     desc: "PostgreSQL 16 tablespace, hardware meters & DST-SERB info",
+    operatorOnly: true,
   },
 ];
 
 export default function WindowsSettingsConsole() {
   const [activeCategory, setActiveCategory] = useState<NavCategoryId>("overview");
   const [searchFilter, setSearchFilter] = useState<string>("");
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [selectedStationId, setSelectedStationId] = useState<string>("KARANJPHEN");
   const [dispatchStatus, setDispatchStatus] = useState<{ text: string; ok: boolean; details?: string } | null>(null);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
@@ -207,23 +214,26 @@ export default function WindowsSettingsConsole() {
 
   const lastCycle = status?.last_cycle ?? {};
   const cycleId = pipeline?.cycle || lastCycle?.run_id || "CYC_LATEST_24x7";
-  const peakQ = summary?.outlet?.peak_discharge_m3s ?? 0;
-  const peakAt = summary?.outlet?.lead_hours_to_peak ?? 0;
+  const peakQ = summary?.outlet?.peak_discharge_m3s ?? summary?.peak_discharge_m3s ?? 0;
+  const peakAt = summary?.outlet?.lead_hours_to_peak ?? summary?.lead_hours_to_peak ?? 0;
 
-  const shivajiBridge = summary?.bridges?.[0] || bShivaji;
-  const rajaramBridge = summary?.bridges?.[1] || bRajaram;
+  const shivajiBridge = summary?.bridges?.shivaji ?? summary?.bridges?.[0] ?? bShivaji;
+  const rajaramBridge = summary?.bridges?.rajaram ?? summary?.bridges?.[1] ?? bRajaram;
 
-  // Filtered navigation list based on search
+  const _isOp = isOperator();
+
+  // Filtered navigation list based on search and role
   const filteredNav = useMemo(() => {
-    if (!searchFilter.trim()) return NAV_CATEGORIES;
+    const base = _isOp ? NAV_CATEGORIES : NAV_CATEGORIES.filter((c) => !c.operatorOnly);
+    if (!searchFilter.trim()) return base;
     const q = searchFilter.toLowerCase();
-    return NAV_CATEGORIES.filter(
+    return base.filter(
       (c) =>
         c.label.toLowerCase().includes(q) ||
         c.desc.toLowerCase().includes(q) ||
         c.group.toLowerCase().includes(q)
     );
-  }, [searchFilter]);
+  }, [searchFilter, _isOp]);
 
   // Group items by Windows Settings category
   const groupedNav = useMemo(() => {
@@ -332,8 +342,12 @@ export default function WindowsSettingsConsole() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#f3f3f3] text-[#1a1a1a]">
+      {/* Mobile sidebar overlay */}
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 z-40 bg-black/40 md:hidden" onClick={() => setMobileSidebarOpen(false)} />
+      )}
       {/* ── LEFT FLUENT SETTINGS SIDEBAR (280px) ─────────────────────────── */}
-      <aside className="w-[280px] shrink-0 border-r border-[#e5e5e5] bg-[#f8f8f8] flex flex-col h-full select-none">
+      <aside className={`fixed md:relative inset-y-0 left-0 z-50 w-[280px] shrink-0 border-r border-[#e5e5e5] bg-[#f8f8f8] flex flex-col h-full select-none transition-transform md:translate-x-0 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
         {/* Top Window / App Brand Header */}
         <div className="p-4 flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-[#0067b8] flex items-center justify-center text-white font-bold shadow-xs">
@@ -377,7 +391,7 @@ export default function WindowsSettingsConsole() {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setActiveCategory(item.id)}
+                    onClick={() => { setActiveCategory(item.id); setMobileSidebarOpen(false); }}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-left transition-all text-xs relative ${
                       isActive
                         ? "bg-[#ffffff] font-semibold text-[#0067b8] shadow-xs border border-[#e5e5e5]"
@@ -411,9 +425,18 @@ export default function WindowsSettingsConsole() {
       {/* ── RIGHT MAIN CANVAS / SETTINGS PAGE (FLUID ENTERPRISE WIDTH) ────── */}
       <main className="flex-1 overflow-y-auto flex flex-col h-full relative">
         {/* Top Breadcrumb & Link Header */}
-        <header className="px-6 py-3.5 border-b border-[#e5e5e5] bg-[#ffffff] flex items-center justify-between shrink-0">
+        <header className="px-4 md:px-6 py-3.5 border-b border-[#e5e5e5] bg-[#ffffff] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2 text-xs text-[#5c5c5c]">
-            <span className="font-semibold text-[#1a1a1a]">HydroCast Server Settings</span>
+            <button
+              onClick={() => setMobileSidebarOpen(true)}
+              className="md:hidden p-1 -ml-1 mr-1 rounded hover:bg-[#eaeaea]"
+            >
+              <svg className="w-5 h-5 text-[#3b3b3b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <img src="/assets/suk-logo-bw.png" alt="Shivaji University" className="w-6 h-6 rounded-full hidden sm:block" />
+            <span className="font-semibold text-[#1a1a1a] hidden sm:inline">HydroCast Server Settings</span>
             <ChevronRight className="w-3.5 h-3.5 text-[#8c8c8c]" />
             <span className="font-semibold text-[#0067b8]">{activeCategoryMeta.label}</span>
           </div>
@@ -426,7 +449,7 @@ export default function WindowsSettingsConsole() {
               title="Toggle live Windows Terminal execution logs tray"
             >
               <Terminal className="w-3.5 h-3.5" />
-              <span>Terminal Console</span>
+              <span className="hidden sm:inline">Terminal Console</span>
             </button>
 
             <button
@@ -435,19 +458,36 @@ export default function WindowsSettingsConsole() {
               title="Refresh live telemetry from server"
             >
               <RefreshCw className="w-3 h-3 text-[#5c5c5c]" />
-              <span>Refresh</span>
+              <span className="hidden sm:inline">Refresh</span>
             </button>
 
             <a
               href="http://localhost:3000/dashboard"
               target="_blank"
               rel="noreferrer"
-              className="win-btn"
+              className="win-btn hidden sm:flex"
               title="Open public visitor dashboard in new window"
             >
               <span>Public Portal (3000)</span>
               <ExternalLink className="w-3 h-3 text-[#5c5c5c]" />
             </a>
+
+            {getSession() && (
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                _isOp ? "bg-[#dff6dd] text-[#107c10]" : "bg-[#edebe9] text-[#605e5c]"
+              }`}>
+                {getSession()?.role?.toUpperCase()}
+              </span>
+            )}
+
+            <button
+              onClick={() => { clearSession(); window.location.href = "/login"; }}
+              className="win-btn text-[#a4262c] hover:bg-[#fde7e9]"
+              title="Sign out of operator console"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Sign Out</span>
+            </button>
           </div>
         </header>
 
@@ -482,52 +522,55 @@ export default function WindowsSettingsConsole() {
               </div>
             </div>
 
-            {/* Admin Controls: Trigger Forecast Run, DB Test, DB Backup, Message Dispatch */}
-            <div className="flex flex-wrap items-center gap-2 border-t xl:border-t-0 pt-3 xl:pt-0 border-[#f0f0f0]">
-              {/* Control 1: Force Forecast Run */}
-              <button
-                onClick={() => handleDispatch("trigger", "Forecast Run")}
-                disabled={loadingAction === "Forecast Run"}
-                className="win-btn primary"
-                title="Execute 12-stage automated simulation pipeline"
-              >
-                <Play className="w-3.5 h-3.5" />
-                <span>{loadingAction === "Forecast Run" ? "Executing Pipeline..." : "Force Forecast Run"}</span>
-              </button>
+            {/* Admin Controls: gated to operator roles (dev/admin) */}
+            {isOperator() ? (
+              <div className="flex flex-wrap items-center gap-2 border-t xl:border-t-0 pt-3 xl:pt-0 border-[#f0f0f0]">
+                <button
+                  onClick={() => handleDispatch("trigger", "Forecast Run")}
+                  disabled={loadingAction === "Forecast Run"}
+                  className="win-btn primary"
+                  title="Execute 12-stage automated simulation pipeline"
+                >
+                  <Play className="w-3.5 h-3.5" />
+                  <span>{loadingAction === "Forecast Run" ? "Executing Pipeline..." : "Force Forecast Run"}</span>
+                </button>
 
-              {/* Control 2: DB Test */}
-              <button
-                onClick={() => handleDispatch("db_test", "DB Test")}
-                disabled={loadingAction === "DB Test"}
-                className="win-btn"
-                title="Verify PostgreSQL tablespace health and connection latency"
-              >
-                <Database className="w-3.5 h-3.5 text-[#0067b8]" />
-                <span>{loadingAction === "DB Test" ? "Testing..." : "DB Test"}</span>
-              </button>
+                <button
+                  onClick={() => handleDispatch("db_test", "DB Test")}
+                  disabled={loadingAction === "DB Test"}
+                  className="win-btn"
+                  title="Verify PostgreSQL tablespace health and connection latency"
+                >
+                  <Database className="w-3.5 h-3.5 text-[#0067b8]" />
+                  <span>{loadingAction === "DB Test" ? "Testing..." : "DB Test"}</span>
+                </button>
 
-              {/* Control 3: DB Backup */}
-              <button
-                onClick={() => handleDispatch("backup", "DB Backup")}
-                disabled={loadingAction === "DB Backup"}
-                className="win-btn"
-                title="Trigger local PostgreSQL tablespace backup"
-              >
-                <HardDrive className="w-3.5 h-3.5 text-[#5c5c5c]" />
-                <span>{loadingAction === "DB Backup" ? "Backing up..." : "DB Backup"}</span>
-              </button>
+                <button
+                  onClick={() => handleDispatch("backup", "DB Backup")}
+                  disabled={loadingAction === "DB Backup"}
+                  className="win-btn"
+                  title="Trigger local PostgreSQL tablespace backup"
+                >
+                  <HardDrive className="w-3.5 h-3.5 text-[#5c5c5c]" />
+                  <span>{loadingAction === "DB Backup" ? "Backing up..." : "DB Backup"}</span>
+                </button>
 
-              {/* Control 4: Message Dispatch */}
-              <button
-                onClick={() => handleDispatch("message_dispatch", "Message Dispatch")}
-                disabled={loadingAction === "Message Dispatch"}
-                className="win-btn"
-                title="Send CWC and DDMA flood warning broadcast bulletin"
-              >
-                <Send className="w-3.5 h-3.5 text-[#0067b8]" />
-                <span>{loadingAction === "Message Dispatch" ? "Dispatching..." : "Message Dispatch"}</span>
-              </button>
-            </div>
+                <button
+                  onClick={() => handleDispatch("message_dispatch", "Message Dispatch")}
+                  disabled={loadingAction === "Message Dispatch"}
+                  className="win-btn"
+                  title="Send CWC and DDMA flood warning broadcast bulletin"
+                >
+                  <Send className="w-3.5 h-3.5 text-[#0067b8]" />
+                  <span>{loadingAction === "Message Dispatch" ? "Dispatching..." : "Message Dispatch"}</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 border-t xl:border-t-0 pt-3 xl:pt-0 border-[#f0f0f0]">
+                <ShieldCheck className="w-4 h-4 text-[#8a8886]" />
+                <span className="text-xs text-[#8a8886]">Read-only access &middot; {getSession()?.role ?? "viewer"}</span>
+              </div>
+            )}
           </div>
 
           {/* Action Notification Banner */}

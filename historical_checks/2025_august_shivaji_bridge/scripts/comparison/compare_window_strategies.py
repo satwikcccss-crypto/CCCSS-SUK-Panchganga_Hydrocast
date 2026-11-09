@@ -29,11 +29,11 @@ REPO = Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(REPO))
 
-from src.ecmwf.station_selector import STATION_REGISTRY, select_active_subbasin_gages
-from src.hms.basin_parser import load_immutable_baseline
-from src.hms.runner import compute_emulator_hydrograph
-from src.hydrology.stage_converter import convert_discharge_to_stage_manning
-from src.hydrology.validation_metrics import (
+from backend.rainfall.station_selector import STATION_REGISTRY, select_active_subbasin_gages
+from backend.hms.basin_parser import load_immutable_baseline
+from backend.hms.runner import compute_emulator_hydrograph
+from backend.stage_conversion.stage_converter import convert_discharge_to_stage_manning
+from backend.validation.validation_metrics import (
     compute_nse, compute_rmse_mae, compute_kge, compute_pbias,
 )
 sys.path.insert(0, str(REPO / "historical_checks"))
