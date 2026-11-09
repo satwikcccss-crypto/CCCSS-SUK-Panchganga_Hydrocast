@@ -9,6 +9,7 @@ import OverviewPanel from "@/components/OverviewPanel";
 import RainfallPanel from "@/components/RainfallPanel";
 import RunoffPanel from "@/components/RunoffPanel";
 import ProjectInfoPanel from "@/components/ProjectInfoPanel";
+import DataSharingPanel from "@/components/DataSharingPanel";
 import FloodBanner from "@/components/FloodBanner";
 import VisitorCounterWidget from "@/components/OdometerCounter";
 import EngineeringGauge, { GaugeSensor, GaugeData } from "@/components/EngineeringGauge";
@@ -23,6 +24,7 @@ type PanelType =
   | "river-stages"
   | "cross-section"
   | "rainfall"
+  | "data-sharing"
   | "info";
 
 const NAV = [
@@ -49,6 +51,12 @@ const NAV = [
     label: "Rainfall & Rain Gauges",
     icon: "Rainfall",
     desc: "20 Gauging Stations & 90-Hour Forward Hyetographs",
+  },
+  {
+    id: "data-sharing",
+    label: "Open Data & Alerts",
+    icon: "DataSharing",
+    desc: "Public API, Python Client & Telegram Flood Alerts",
   },
   {
     id: "info",
@@ -492,7 +500,10 @@ export default function Dashboard() {
           {/* 4. RAINFALL & RAIN GAUGES PANEL */}
           {panel === "rainfall" && <RainfallPanel />}
 
-          {/* 5. PROJECT INFO PANEL */}
+          {/* 5. OPEN DATA & TELEGRAM ALERTS PANEL */}
+          {panel === "data-sharing" && <DataSharingPanel />}
+
+          {/* 6. PROJECT INFO PANEL */}
           {panel === "info" && <ProjectInfoPanel />}
         </main>
       </div>
