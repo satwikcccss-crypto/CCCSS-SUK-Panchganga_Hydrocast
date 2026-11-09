@@ -103,6 +103,7 @@ Desktop.ini
 # Local scratch and logs
 scratch/
 logs/
+.agent/
 node_modules/
 package-lock.json
 package.json
