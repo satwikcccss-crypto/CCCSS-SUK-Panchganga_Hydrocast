@@ -213,9 +213,9 @@ class SchedulerDaemon:
         now = datetime.now(timezone.utc)
         if now.hour not in self._cycle_hours:
             return
-        # Fire once per slot, in the first few minutes of the hour.
+        # Fire once per slot (00, 06, 12, 18 UTC).
         slot = now.strftime("%Y%m%d_%H")
-        if now.minute >= 5 or slot == self._last_scheduled_slot:
+        if slot == self._last_scheduled_slot:
             return
         with self._state_lock:
             self._last_scheduled_slot = slot

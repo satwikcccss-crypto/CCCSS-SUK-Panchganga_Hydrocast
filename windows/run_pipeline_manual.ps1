@@ -27,7 +27,7 @@ Write-Host " HYDROCAST PANCHGANGA -- MANUAL FORECAST CYCLE RUNNER" -ForegroundCo
 Write-Host " Shivaji University Kolhapur (SUK) Windows Server Standard" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
-$PyCmd = "from backend.services.pipeline_worker import execute_cycle; "
+$PyCmd = "from backend.service.pipeline_worker import execute_cycle; "
 if ($SingleStep -gt 0) {
     Write-Host "Mode: SINGLE STEP RETRY (Step $SingleStep)" -ForegroundColor Yellow
     $PyCmd += "res = execute_cycle(single_step=$SingleStep); print(res)"

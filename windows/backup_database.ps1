@@ -37,6 +37,7 @@ Write-Host "[BACKUP] Starting backup for $DbName to $DumpFile..." -ForegroundCol
 $PgDumpCmd = Get-Command pg_dump -ErrorAction SilentlyContinue
 if (-not $PgDumpCmd) {
     $CommonPaths = @(
+        "E:\PostgreSQL\16\bin\pg_dump.exe",
         "C:\Program Files\PostgreSQL\16\bin\pg_dump.exe",
         "C:\Program Files\PostgreSQL\15\bin\pg_dump.exe",
         "C:\Program Files\PostgreSQL\14\bin\pg_dump.exe"

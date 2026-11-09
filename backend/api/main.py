@@ -576,7 +576,7 @@ async def system_status(request: Request):
             "system": "operational",
             "last_cycle": last_cycle_info,
             "active_alerts": 0,
-            "pipeline_ok": status_info.get("system") == "operational",
+            "pipeline_ok": False,
             "server_time": datetime.now(timezone.utc).isoformat(),
             "note": "Serving from pipeline state file (database offline)",
         }
@@ -1510,8 +1510,6 @@ async def hydrosim_stage(
                 )
     except Exception as e:
         log.warning("Water levels DB fallback: %s", e)
-
-    if not run or not rows:
         state = _load_pipeline_state()
         if state:
             all_forecast = []

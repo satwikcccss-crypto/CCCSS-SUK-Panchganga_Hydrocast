@@ -1,52 +1,71 @@
 """
 tests/test_weather_failsafe.py
 ==============================
-Unit tests for the multi-tier weather failsafe engine.
+Unit tests for the live-first weather retrieval and failsafe engine.
 """
 
 from datetime import datetime, timezone
+from unittest.mock import patch
 import pytest
+
 from backend.rainfall.open_meteo_failsafe import (
-    fetch_tier2_predecessor_cache,
-    fetch_tier3_climatology,
+    STATIONS_MAP,
+    FORECAST_HOURS,
+    fetch_tier1_open_meteo,
     get_weather_failsafe,
-    CLIMATOLOGICAL_HOURLY_BASELINES,
+    WeatherDataUnavailable,
 )
 
 
-def test_tier3_climatology_fallback():
-    """Verify that Tier 3 climatology produces valid 90-hr precipitation series for all stations."""
+def test_station_registry_geometry():
+    """Verify that all stations are registered with valid coordinates and subbasins."""
+    assert len(STATIONS_MAP) >= 12
+    for st_id, info in STATIONS_MAP.items():
+        assert "lat" in info and "lon" in info
+        assert "subbasin" in info
+        assert 15.5 <= info["lat"] <= 17.5
+        assert 73.5 <= info["lon"] <= 75.0
+
+
+def test_master_failsafe_degraded_fallback():
+    """Verify that get_weather_failsafe returns a well-formed degraded payload when live API fails."""
     now = datetime.now(timezone.utc)
-    res = fetch_tier3_climatology(now)
-
-    assert res["tier"] == "tier3_climatology_baseline"
-    assert res["lead_hours"] == 90
-    assert len(res["stations"]) >= 12
-
-    # Check that Karveer (S1) and Gaganbawda (S6) have non-negative rainfall
-    assert "KARVEER" in res["stations"]
-    assert "GAGANBAWDA" in res["stations"]
-
-    p_karveer = res["stations"]["KARVEER"]["precipitation_mm_hr"]
-    p_gaganbawda = res["stations"]["GAGANBAWDA"]["precipitation_mm_hr"]
-
-    assert len(p_karveer) == 90
-    assert len(p_gaganbawda) == 90
-    assert all(p >= 0.0 for p in p_karveer)
-    assert all(p >= 0.0 for p in p_gaganbawda)
-
-    # Gaganbawda (orographic crest) should have higher mean intensity than Karveer (valley)
-    assert sum(p_gaganbawda) > sum(p_karveer)
-
-
-def test_master_failsafe_always_returns_valid_weather():
-    """Verify that get_weather_failsafe never raises an exception and always returns 90h weather."""
-    now = datetime.now(timezone.utc)
-    res = get_weather_failsafe(now)
+    with patch("backend.rainfall.open_meteo_failsafe.fetch_tier1_open_meteo", return_value=None):
+        res = get_weather_failsafe(now)
 
     assert res is not None
-    assert "stations" in res
-    assert "lead_hours" in res
-    assert res["lead_hours"] == 90
-    assert res["tier"] in ("tier1_live_api", "tier2_predecessor_extrapolated", "tier3_climatology_baseline")
+    assert res["is_live"] is False
+    assert res["tier"] == "tier1_failed"
+    assert "provenance" in res
+    assert "warning" in res
+    assert res["provenance"]["tier"] == "tier1_failed"
 
+
+def test_master_failsafe_live_success():
+    """Verify that get_weather_failsafe passes through live API results correctly."""
+    now = datetime.now(timezone.utc)
+    mock_payload = {
+        "tier": "tier1_live_api",
+        "is_live": True,
+        "timestamp_utc": now.isoformat(),
+        "run_dt": now.isoformat(),
+        "stations": {
+            "KARVEER": {
+                "precipitation_mm_hr": [1.0] * FORECAST_HOURS,
+                "temperature_c": [24.0] * FORECAST_HOURS,
+                "relative_humidity_pct": [75.0] * FORECAST_HOURS,
+            }
+        },
+        "lead_hours": FORECAST_HOURS,
+        "provenance": {"tier": "tier1_live_api", "is_live": True},
+        "error": None,
+    }
+
+    with patch("backend.rainfall.open_meteo_failsafe.fetch_tier1_open_meteo", return_value=mock_payload):
+        res = get_weather_failsafe(now)
+
+    assert res is not None
+    assert res["is_live"] is True
+    assert res["tier"] == "tier1_live_api"
+    assert "KARVEER" in res["stations"]
+    assert len(res["stations"]["KARVEER"]["precipitation_mm_hr"]) == FORECAST_HOURS
