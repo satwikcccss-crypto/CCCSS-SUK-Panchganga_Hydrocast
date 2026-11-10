@@ -43,6 +43,7 @@ import re
 import asyncio
 import logging
 import hashlib
+import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Optional, Any
@@ -50,6 +51,7 @@ from typing import Optional, Any
 import asyncpg
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Depends, Header, Request, Query, status
+from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -116,6 +118,60 @@ app = FastAPI(
 )
 
 app.state.limiter = limiter
+
+# ── Custom OpenAPI Schema (Public Read-Only Sanitization) ────────────────────
+def custom_openapi():
+    """
+    Sanitize the public OpenAPI reference.
+    Exposes strictly the free, open-access public flood intelligence endpoint
+    and the service health check. All internal pipeline, simulation,
+    and administrative endpoints are stripped to protect system internals.
+    """
+    if app.openapi_schema:
+        return app.openapi_schema
+
+    schema = get_openapi(
+        title="Shivaji University Kolhapur — HydroCast Public Flood Intelligence API",
+        version="1.0.0",
+        description=(
+            "### Official Free Public Flood Intelligence API\n"
+            "Centre for Climate Change and Sustainability Studies (CCCSS), Shivaji University, Kolhapur.\n\n"
+            "**100% Free & Open Access — No API Key Required.**\n\n"
+            "Serves real-time 90-hour river stages (Shivaji Bridge & Rajaram Weir), "
+            "basin discharge hydrograph, and 20-station rainfall intelligence.\n\n"
+            "**Anti-Scraping & Fair Use Protection:**\n"
+            "- High-speed in-memory caching (20s TTL) for sub-millisecond responses.\n"
+            "- Rate-limited to 60 requests/minute per client IP.\n"
+            "- Cache-Control: `public, max-age=20`."
+        ),
+        routes=app.routes,
+    )
+
+    allowed_endpoints = {"/api/SUK_hydrocast_v1", "/api/v1/health"}
+    filtered_paths = {}
+
+    for path, methods in schema.get("paths", {}).items():
+        if path in allowed_endpoints:
+            for method, details in methods.items():
+                details["tags"] = ["Free Public Flood API"]
+                details.pop("security", None)
+            filtered_paths[path] = methods
+
+    schema["paths"] = filtered_paths
+    schema["tags"] = [
+        {
+            "name": "Free Public Flood API",
+            "description": "Free, read-only flood intelligence feeds for public and researchers.",
+        }
+    ]
+    if "components" in schema:
+        schema["components"].pop("securitySchemes", None)
+    schema.pop("security", None)
+
+    app.openapi_schema = schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
 
 # Rate limit exception handler with RFC-standard Retry-After header
 @app.exception_handler(RateLimitExceeded)
@@ -1817,6 +1873,10 @@ async def hydrosim_stage(
     }
 
 
+_FEED_CACHE: dict[str, Any] = {"payload": None, "cached_at": 0.0}
+_FEED_CACHE_TTL_SEC = 20.0
+
+
 @app.get(
     "/api/SUK_hydrocast_v1",
     tags=["SUK Public API"],
@@ -1840,7 +1900,7 @@ async def hydrosim_stage(
     summary="Alias for comprehensive forecast feed",
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
-async def complete_forecast_feed(request: Request):
+async def complete_forecast_feed(request: Request, response: Response):
     """
     Open-Meteo style comprehensive flood forecast feed.
 
@@ -1852,6 +1912,13 @@ async def complete_forecast_feed(request: Request):
       3. stations_rainfall: station-wise 90-hr cumulative rainfall, peak intensity, and peak timestamp.
       4. outlet_hydrograph_90h: full 90-hr discharge hydrograph.
     """
+    global _FEED_CACHE
+    now = time.time()
+    if _FEED_CACHE["payload"] and (now - _FEED_CACHE["cached_at"] < _FEED_CACHE_TTL_SEC):
+        response.headers["X-Cache"] = "HIT"
+        response.headers["Cache-Control"] = "public, max-age=20"
+        return _FEED_CACHE["payload"]
+
     state = _load_pipeline_state() or {}
     run = None
     bridge_rows = []
@@ -1984,7 +2051,7 @@ async def complete_forecast_feed(request: Request):
     else:
         outlet_90h = state.get("hydrograph", [])
 
-    return {
+    payload = {
         "status": "success",
         "cycle_id": cycle_id,
         "issued_at": issued_at,
@@ -1999,6 +2066,12 @@ async def complete_forecast_feed(request: Request):
         "stations_rainfall": sorted(stations_rainfall, key=lambda x: x["cumulative_90h_mm"], reverse=True),
         "outlet_hydrograph_90h": outlet_90h,
     }
+
+    response.headers["X-Cache"] = "MISS"
+    response.headers["Cache-Control"] = "public, max-age=20"
+    _FEED_CACHE["payload"] = payload
+    _FEED_CACHE["cached_at"] = now
+    return payload
 
 
 # ── WebSocket live push ────────────────────────────────────────────────────────

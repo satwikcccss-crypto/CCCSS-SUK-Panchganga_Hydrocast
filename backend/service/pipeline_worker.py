@@ -871,6 +871,15 @@ def write_dashboard_payload(
     JSON_STATE_DIR.mkdir(parents=True, exist_ok=True)
     JSON_RUNS_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Real PCHIP rating-curve conversion + per-hour CWC classification.
+    # Imported locally to keep import order stable and avoid coupling the
+    # module load graph; these are the same converters used by Step 09 so the
+    # dashboard never shows fabricated stages or blanket-NORMAL alerts.
+    from backend.stage_conversion.stage_converter import (
+        convert_discharge_to_stage_manning,
+    )
+    from backend.alerts.evaluator import classify_stage
+
     # Normalize the emulator output (q_total / timestamps / peak_h) into the
     # dashboard hydrograph shape used below.
     if not hg_results.get("hydrograph") and hg_results.get("q_total") is not None:
@@ -921,24 +930,33 @@ def write_dashboard_payload(
     max_peak = max(shivaji_peak_stage, rajaram_peak_stage)
     for h in range(len(hydrograph)):
         pt = hydrograph[h] if h < len(hydrograph) else {}
-        frac = (pt.get("discharge_m3s", 0.0) / peak_q) if peak_q > 0 else 0.0
-        shivaji_stage = round(532.0 + frac * (shivaji_peak_stage - 532.0), 2)
-        rajaram_stage = round(532.6 + frac * (rajaram_peak_stage - 532.6), 2)
+        q = float(pt.get("discharge_m3s", 0.0) or 0.0)
+        # Real PCHIP rating-curve conversion (identical to Step 09), never a
+        # linear interpolation. Per-hour CWC classification so the dashboard
+        # reflects true alert state at every lead hour.
+        shivaji_stage = round(
+            convert_discharge_to_stage_manning(q, "SHIVAJI_BRIDGE"), 2
+        )
+        rajaram_stage = round(
+            convert_discharge_to_stage_manning(q, "RAJARAM_BRIDGE"), 2
+        )
+        shivaji_level = classify_stage("SHIVAJI_BRIDGE", shivaji_stage)
+        rajaram_level = classify_stage("RAJARAM_BRIDGE", rajaram_stage)
         shivaji_forecast.append({
             "lead_hours": h,
             "forecast_time": pt.get("timestamp", ""),
             "stage_m": shivaji_stage,
-            "discharge_m3s": pt.get("discharge_m3s", 0.0),
-            "alert_level": "NORMAL",
-            "is_above_danger": False,
+            "discharge_m3s": q,
+            "alert_level": shivaji_level,
+            "is_above_danger": shivaji_level in ("DANGER", "HISTORIC_PEAK"),
         })
         rajaram_forecast.append({
             "lead_hours": h,
             "forecast_time": pt.get("timestamp", ""),
             "stage_m": rajaram_stage,
-            "discharge_m3s": pt.get("discharge_m3s", 0.0),
-            "alert_level": "NORMAL",
-            "is_above_danger": False,
+            "discharge_m3s": q,
+            "alert_level": rajaram_level,
+            "is_above_danger": rajaram_level in ("DANGER", "HISTORIC_PEAK"),
         })
 
     shivaji_alert = "DANGER" if shivaji_peak_stage >= 543.30 else ("WARNING" if shivaji_peak_stage >= 542.70 else ("ALERT" if shivaji_peak_stage >= 542.10 else "NORMAL"))
