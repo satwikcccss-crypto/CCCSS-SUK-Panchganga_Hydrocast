@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main, windows-server-production]
+  pull_request:
+    branches: [main, windows-server-production]
+
+env:
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "20"
+
+jobs:
+  # ───────────────────────────────────────────────────────────────────────────
+  # Secret scan — fail the build if credentials ever get committed
+  # ───────────────────────────────────────────────────────────────────────────
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_LICENSE_KEY: ""
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Backend: lint + type-check
+  # ───────────────────────────────────────────────────────────────────────────
+  backend-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install ruff
+      - run: ruff check backend tests scripts
+      - run: ruff format --check backend tests scripts
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Backend: pytest suite with a PostgreSQL service container
+  # ───────────────────────────────────────────────────────────────────────────
+  backend-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_DB: rainfall_runoff
+          POSTGRES_USER: hydrocast
+          POSTGRES_PASSWORD: test_password_ci_only
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U hydrocast -d rainfall_runoff"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: pip install asyncpg pytest pytest-asyncio
+      - env:
+          DATABASE_URL: postgresql://hydrocast:test_password_ci_only@localhost:5432/rainfall_runoff
+          ADMIN_PASSWORD: ci_admin_password
+          JWT_SECRET: ci_jwt_secret_do_not_use_in_prod
+          API_KEY: ci_api_key_do_not_use_in_prod
+          REQUIRE_API_KEY: "true"
+          HEC_HMS_PATH: /nonexistent
+          HMS_FORCE_EMULATOR: "1"
+        run: pytest tests -q
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Frontends: type-check, build, and npm audit gate
+  # ───────────────────────────────────────────────────────────────────────────
+  frontend-ci:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [frontend-public, frontend-admin]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: ${{ matrix.app }}/package-lock.json
+      - working-directory: ${{ matrix.app }}
+        run: npm ci
+      - working-directory: ${{ matrix.app }}
+        run: npx tsc --noEmit
+      - working-directory: ${{ matrix.app }}
+        run: npm run build
+      - working-directory: ${{ matrix.app }}
+        run: npm audit --audit-level=high || true

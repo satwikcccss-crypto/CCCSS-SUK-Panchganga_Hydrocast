@@ -723,12 +723,17 @@ def run_pipeline(
         mark_complete(conn, cycle_id)
         return {"status": "completed", "cycle_id": cycle_id}
 
-    except Exception:
+    except Exception as exc:
+        log.exception("Forecast cycle %s failed: %s", cycle_id, exc)
         try:
             mark_complete(conn, cycle_id)
         except Exception:
             pass
-        sys.exit(1)
+        return {
+            "status": "failed",
+            "cycle_id": cycle_id,
+            "error": str(exc),
+        }
     finally:
         try:
             conn.close()
