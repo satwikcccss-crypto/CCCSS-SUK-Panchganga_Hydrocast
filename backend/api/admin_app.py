@@ -69,7 +69,7 @@ app = FastAPI(
         "- `GET /api/v1/admin/health` — admin service health\n"
         "- `WS /ws/admin/logs` — streaming operator logs over WebSocket\n\n"
         "This port (8001) is **isolated from the public portal** (Port 8000). "
-        "No citizen or DDMA read routes are exposed here."
+        "No public read routes are exposed here."
     ),
     openapi_tags=[
         {"name": "Admin Auth", "description": "JWT login and identity."},

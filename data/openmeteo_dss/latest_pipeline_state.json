@@ -4,18 +4,18 @@
     "cycle_id": "CYC_20261106_06z",
     "forecast_date": "06 Nov 2026",
     "cycle_time": "06z",
-    "peak_discharge_m3s": 9.3,
-    "baseflow_m3s": 9.3,
+    "peak_discharge_m3s": 9.1,
+    "baseflow_m3s": 9.1,
     "lead_hours_to_peak": 0,
     "peak_time": "2026-11-06T06:00:00+00:00",
-    "total_volume_mcm": 2.8,
+    "total_volume_mcm": 2.7,
     "peak_arrival": {
       "shivaji": {
         "site_id": "SHIVAJI_BRIDGE",
         "site_name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
         "peak_lead_hours": 0,
         "peak_arrival_time": "2026-11-06T06:00:00+00:00",
-        "peak_discharge_m3s": 9.3,
+        "peak_discharge_m3s": 9.1,
         "peak_stage_m": 531.54,
         "confidence_interval": {
           "margin_hours": 2.0,
@@ -41,7 +41,7 @@
         "site_name": "Rajaram K.T. Weir (Kasba Bawada)",
         "peak_lead_hours": 0,
         "peak_arrival_time": "2026-11-06T06:00:00+00:00",
-        "peak_discharge_m3s": 9.3,
+        "peak_discharge_m3s": 9.1,
         "peak_stage_m": 532.19,
         "confidence_interval": {
           "margin_hours": 2.0,
@@ -67,7 +67,7 @@
         "site_name": "Panchganga Basin Sink (Rajaram Weir)",
         "peak_lead_hours": 0,
         "peak_arrival_time": "2026-11-06T06:00:00+00:00",
-        "peak_discharge_m3s": 9.3,
+        "peak_discharge_m3s": 9.1,
         "peak_stage_m": 531.54,
         "confidence_interval": {
           "margin_hours": 2.0,
@@ -21383,9 +21383,9 @@
       "hour": 0,
       "timestamp": "2026-11-06T06:00:00+00:00",
       "lead_hours": 0,
-      "discharge_m3s": 9.3,
+      "discharge_m3s": 9.1,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 9.3,
+      "baseflow_m3s": 9.1,
       "stage_m": 531.54,
       "is_peak": true
     },
@@ -21393,9 +21393,9 @@
       "hour": 1,
       "timestamp": "2026-11-06T07:00:00+00:00",
       "lead_hours": 1,
-      "discharge_m3s": 9.3,
+      "discharge_m3s": 9.1,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 9.3,
+      "baseflow_m3s": 9.1,
       "stage_m": 531.54,
       "is_peak": false
     },
@@ -21403,9 +21403,9 @@
       "hour": 2,
       "timestamp": "2026-11-06T08:00:00+00:00",
       "lead_hours": 2,
-      "discharge_m3s": 9.3,
+      "discharge_m3s": 9.1,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 9.3,
+      "baseflow_m3s": 9.1,
       "stage_m": 531.54,
       "is_peak": false
     },
@@ -21413,9 +21413,9 @@
       "hour": 3,
       "timestamp": "2026-11-06T09:00:00+00:00",
       "lead_hours": 3,
-      "discharge_m3s": 9.2,
+      "discharge_m3s": 9.1,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 9.3,
+      "baseflow_m3s": 9.1,
       "stage_m": 531.53,
       "is_peak": false
     },
@@ -21423,9 +21423,9 @@
       "hour": 4,
       "timestamp": "2026-11-06T10:00:00+00:00",
       "lead_hours": 4,
-      "discharge_m3s": 9.2,
+      "discharge_m3s": 9.1,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 9.3,
+      "baseflow_m3s": 9.1,
       "stage_m": 531.53,
       "is_peak": false
     },
@@ -21433,9 +21433,9 @@
       "hour": 5,
       "timestamp": "2026-11-06T11:00:00+00:00",
       "lead_hours": 5,
-      "discharge_m3s": 9.2,
+      "discharge_m3s": 9.1,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 9.3,
+      "baseflow_m3s": 9.1,
       "stage_m": 531.53,
       "is_peak": false
     },
@@ -21443,9 +21443,9 @@
       "hour": 6,
       "timestamp": "2026-11-06T12:00:00+00:00",
       "lead_hours": 6,
-      "discharge_m3s": 9.2,
+      "discharge_m3s": 9.1,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 9.3,
+      "baseflow_m3s": 9.1,
       "stage_m": 531.53,
       "is_peak": false
     },
@@ -21453,9 +21453,9 @@
       "hour": 7,
       "timestamp": "2026-11-06T13:00:00+00:00",
       "lead_hours": 7,
-      "discharge_m3s": 9.2,
+      "discharge_m3s": 9.1,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 9.3,
+      "baseflow_m3s": 9.1,
       "stage_m": 531.53,
       "is_peak": false
     },
@@ -21463,9 +21463,9 @@
       "hour": 8,
       "timestamp": "2026-11-06T14:00:00+00:00",
       "lead_hours": 8,
-      "discharge_m3s": 9.2,
+      "discharge_m3s": 9.1,
       "surface_runoff_m3s": 0.0,
-      "baseflow_m3s": 9.3,
+      "baseflow_m3s": 9.1,
       "stage_m": 531.53,
       "is_peak": false
     },
@@ -22303,7 +22303,7 @@
         "forecast_time": "2026-11-06T06:00:00+00:00",
         "lead_hours": 0,
         "stage_m": 531.54,
-        "discharge_m3s": 9.3,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -22311,7 +22311,7 @@
         "forecast_time": "2026-11-06T07:00:00+00:00",
         "lead_hours": 1,
         "stage_m": 531.54,
-        "discharge_m3s": 9.3,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -22319,7 +22319,7 @@
         "forecast_time": "2026-11-06T08:00:00+00:00",
         "lead_hours": 2,
         "stage_m": 531.54,
-        "discharge_m3s": 9.3,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -22327,7 +22327,7 @@
         "forecast_time": "2026-11-06T09:00:00+00:00",
         "lead_hours": 3,
         "stage_m": 531.53,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -22335,7 +22335,7 @@
         "forecast_time": "2026-11-06T10:00:00+00:00",
         "lead_hours": 4,
         "stage_m": 531.53,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -22343,7 +22343,7 @@
         "forecast_time": "2026-11-06T11:00:00+00:00",
         "lead_hours": 5,
         "stage_m": 531.53,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -22351,7 +22351,7 @@
         "forecast_time": "2026-11-06T12:00:00+00:00",
         "lead_hours": 6,
         "stage_m": 531.53,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -22359,7 +22359,7 @@
         "forecast_time": "2026-11-06T13:00:00+00:00",
         "lead_hours": 7,
         "stage_m": 531.53,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -22367,7 +22367,7 @@
         "forecast_time": "2026-11-06T14:00:00+00:00",
         "lead_hours": 8,
         "stage_m": 531.53,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -23078,7 +23078,7 @@
         "forecast_time": "2026-11-06T06:00:00+00:00",
         "lead_hours": 0,
         "stage_m": 532.19,
-        "discharge_m3s": 9.3,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -23086,7 +23086,7 @@
         "forecast_time": "2026-11-06T07:00:00+00:00",
         "lead_hours": 1,
         "stage_m": 532.19,
-        "discharge_m3s": 9.3,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -23094,7 +23094,7 @@
         "forecast_time": "2026-11-06T08:00:00+00:00",
         "lead_hours": 2,
         "stage_m": 532.19,
-        "discharge_m3s": 9.3,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -23102,7 +23102,7 @@
         "forecast_time": "2026-11-06T09:00:00+00:00",
         "lead_hours": 3,
         "stage_m": 532.18,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -23110,7 +23110,7 @@
         "forecast_time": "2026-11-06T10:00:00+00:00",
         "lead_hours": 4,
         "stage_m": 532.18,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -23118,7 +23118,7 @@
         "forecast_time": "2026-11-06T11:00:00+00:00",
         "lead_hours": 5,
         "stage_m": 532.18,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -23126,7 +23126,7 @@
         "forecast_time": "2026-11-06T12:00:00+00:00",
         "lead_hours": 6,
         "stage_m": 532.18,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -23134,7 +23134,7 @@
         "forecast_time": "2026-11-06T13:00:00+00:00",
         "lead_hours": 7,
         "stage_m": 532.18,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -23142,7 +23142,7 @@
         "forecast_time": "2026-11-06T14:00:00+00:00",
         "lead_hours": 8,
         "stage_m": 532.18,
-        "discharge_m3s": 9.2,
+        "discharge_m3s": 9.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },

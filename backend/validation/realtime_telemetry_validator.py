@@ -84,6 +84,13 @@ TELEMETRY_CACHE_FILE = TELEMETRY_CACHE_DIR / "thingspeak_hourly_cache.json"
 
 
 
+def is_monsoon_season(dt: Optional[datetime] = None) -> bool:
+    """Returns True if date is within the active monsoon deployment window (June 1 - October 31)."""
+    if dt is None:
+        dt = datetime.now(timezone.utc)
+    return 6 <= dt.month <= 10
+
+
 def load_telemetry_cache() -> Dict[str, Dict[str, Any]]:
     """Loads all previously verified hourly observations from disk."""
     if TELEMETRY_CACHE_FILE.exists():
@@ -332,12 +339,82 @@ def validate_run_with_observations(
 
     completion_pct = round((verified_hours / max(1, total_hours)) * 100.0, 1)
 
-    metrics = compute_pure_metrics(
-        pred_stages=np.array(pred_stages),
-        obs_stages=np.array(obs_stages),
-        pred_discharges=np.array(pred_discharges),
-        obs_discharges=np.array(obs_discharges),
-    )
+    in_monsoon = is_monsoon_season(now_utc)
+    sensor_offline = verified_hours < 6
+
+    if not in_monsoon and sensor_offline:
+        sensor_status = "SEASONAL_STANDBY"
+        status_label = "Seasonal Dormant (Active June–October)"
+        calibration_mode = "PHYSICAL_BASELINE"
+        recalibration_applied = False
+        status_note = "📡 IoT Sensor: Seasonal Standby (Operates June–Oct) · Calibrated Hydrodynamic Baseline Active"
+        metrics = {
+            "status": "SEASONAL_STANDBY",
+            "status_label": status_label,
+            "status_note": status_note,
+            "sensor_status": sensor_status,
+            "stage_rmse_m": None,
+            "stage_mae_m": None,
+            "stage_nse": None,
+            "stage_pbias_pct": None,
+            "stage_spearman_rho": None,
+            "stage_pearson_r": None,
+            "stage_r2": None,
+            "discharge_rmse_m3s": None,
+            "discharge_mae_m3s": None,
+            "discharge_nse": None,
+            "discharge_pbias_pct": None,
+            "discharge_spearman_rho": None,
+            "discharge_pearson_r": None,
+            "discharge_r2": None,
+            "sample_size": verified_hours,
+        }
+    elif sensor_offline:
+        sensor_status = "OFFLINE"
+        status_label = "Sensor Offline"
+        calibration_mode = "PHYSICAL_BASELINE"
+        recalibration_applied = False
+        status_note = "Telemetry offline; operating on WRD-calibrated baseline model"
+        metrics = {
+            "status": "OFFLINE",
+            "status_label": status_label,
+            "status_note": status_note,
+            "sensor_status": sensor_status,
+            "stage_rmse_m": None,
+            "stage_mae_m": None,
+            "stage_nse": None,
+            "stage_pbias_pct": None,
+            "stage_spearman_rho": None,
+            "stage_pearson_r": None,
+            "stage_r2": None,
+            "discharge_rmse_m3s": None,
+            "discharge_mae_m3s": None,
+            "discharge_nse": None,
+            "discharge_pbias_pct": None,
+            "discharge_spearman_rho": None,
+            "discharge_pearson_r": None,
+            "discharge_r2": None,
+            "sample_size": verified_hours,
+        }
+    else:
+        sensor_status = "ONLINE"
+        status_label = "Sensor Online"
+        calibration_mode = "REALTIME_DYNAMIC"
+        recalibration_applied = True
+        status_note = f"Verified across {verified_hours} observation hours."
+        metrics = compute_pure_metrics(
+            pred_stages=np.array(pred_stages),
+            obs_stages=np.array(obs_stages),
+            pred_discharges=np.array(pred_discharges),
+            obs_discharges=np.array(obs_discharges),
+        )
+        if isinstance(metrics, dict):
+            for k, v in list(metrics.items()):
+                if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+                    metrics[k] = None
+            metrics["status_note"] = status_note
+            metrics["status_label"] = status_label
+            metrics["sensor_status"] = sensor_status
 
     scatter_points = [
         {
@@ -368,6 +445,10 @@ def validate_run_with_observations(
         "cycle_id": cycle_id,
         "validation_timestamp": now_utc.isoformat(),
         "sensor_source": f"ThingSpeak Channel {THINGSPEAK_CHANNEL_ID} (Shivaji Bridge Ultrasonic)",
+        "sensor_status": sensor_status,
+        "calibration_mode": calibration_mode,
+        "recalibration_applied": recalibration_applied,
+        "status_note": status_note,
         "sensor_datum_msl": SHIVAJI_DATUM_MSL,
         "reach_metadata": {
             "validation_point": "Chhatrapati Shivaji Maharaj Bridge",

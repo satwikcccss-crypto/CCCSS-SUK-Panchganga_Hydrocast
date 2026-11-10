@@ -26,6 +26,7 @@ export default function OverviewPanel({
   const { data: ecmwf } = useSWR("ecmwf", api.ecmwfHyetograph, { refreshInterval: 60000 });
   const { data: stations } = useSWR("stations", api.stationSelection, { refreshInterval: 60000 });
   const { data: validationData } = useSWR("validation", () => api.validation(), { refreshInterval: 30000 });
+  const { data: sensorsData } = useSWR("sensors-live", api.sensorsLive, { refreshInterval: 15000 });
 
   const { data: bShivaji } = useSWR("bridge-SHIVAJI_BRIDGE", api.bridgeShivaji, { refreshInterval: 30000 });
   const { data: bRajaram } = useSWR("bridge-RAJARAM_BRIDGE", api.bridgeRajaram, { refreshInterval: 30000 });
@@ -47,8 +48,8 @@ export default function OverviewPanel({
   const stationsList: any[] = stations ?? [];
   const totalBasinRainVolMcm = stationsList.length > 0
     ? ((stationsList.reduce((acc: number, s: any) => acc + (s.cumulative_90h_mm ?? 0), 0) / stationsList.length) * 2140.0) / 1000.0
-    : (lastCycle?.total_rainfall_volume_mcm ?? 31.9);
-  const maxStationRain = lastCycle?.total_rainfall_mm ?? (stationsList.length > 0 ? Math.max(...stationsList.map((s: any) => s.cumulative_90h_mm ?? 0)) : 50.1);
+    : (lastCycle?.total_rainfall_volume_mcm ?? 0);
+  const maxStationRain = lastCycle?.total_rainfall_mm ?? (stationsList.length > 0 ? Math.max(...stationsList.map((s: any) => s.cumulative_90h_mm ?? 0)) : 0);
 
   // Dynamic Live Bridge Data
   const bridgesAny: any = summary?.bridges;
@@ -76,7 +77,7 @@ export default function OverviewPanel({
   const shivajiLead = shivajiPeakArr?.peak_lead_hours ?? outlet?.lead_hours_to_peak ?? 0;
   const rajaramLead = rajaramPeakArr?.peak_lead_hours ?? outlet?.lead_hours_to_peak ?? 0;
 
-  const shivajiLvl = b0?.current_stage_m ?? b0?.stage_m ?? 532.63;
+  const shivajiLvl = b0?.current_stage_m ?? b0?.stage_m;
   const shivajiPeak = b0?.peak_stage_m ?? (bShivaji?.forecast ? Math.max(...bShivaji.forecast.map((f: any) => f.stage_m)) : shivajiLvl);
 
   const shivajiData: GaugeData = {
@@ -101,7 +102,7 @@ export default function OverviewPanel({
     },
   };
 
-  const rajaramLvl = b1?.current_stage_m ?? b1?.stage_m ?? 538.86;
+  const rajaramLvl = b1?.current_stage_m ?? b1?.stage_m;
   const rajaramPeak = b1?.peak_stage_m ?? (bRajaram?.forecast ? Math.max(...bRajaram.forecast.map((f: any) => f.stage_m)) : rajaramLvl);
   const rajaramData: GaugeData = {
     waterLevel: rajaramLvl,
@@ -451,6 +452,45 @@ export default function OverviewPanel({
         )}
       </div>
 
+      {/* ── LIVE IoT SENSOR NETWORK ──────────────────────────────────────── */}
+      <div className={CARD}>
+        <div className={CARD_HEADER}>
+          <span>Live Sensor Network</span>
+          <button
+            onClick={() => onNavigateTab("sensors")}
+            className="text-[10px] text-blue-600 hover:underline"
+          >
+            View Details →
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {(Array.isArray(sensorsData) ? sensorsData : sensorsData?.stations ?? []).map((s: any) => (
+            <div key={s.station_id} className="border border-gray-100 rounded p-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-semibold text-gray-800">{s.name}</span>
+                <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded ${
+                  s.status === "ONLINE" ? "bg-green-100 text-green-700"
+                  : s.status === "STALE" ? "bg-orange-100 text-orange-700"
+                  : s.status === "OFFLINE" ? "bg-red-100 text-red-700"
+                  : "bg-yellow-100 text-yellow-700"
+                }`}>{s.status}</span>
+              </div>
+              <div className="text-lg font-mono font-bold text-gray-900">
+                {s.stage_m != null ? `${s.stage_m.toFixed(2)} m` : "—"}
+              </div>
+              <div className="text-[10px] text-gray-400 mt-1">
+                {s.station_id} · {s.type === "ultrasonic_radar" ? "Ultrasonic Radar" : s.type}
+                {s.voltage != null && ` · ${s.voltage}V`}
+              </div>
+            </div>
+          ))}
+          {(!sensorsData || (Array.isArray(sensorsData) ? sensorsData : sensorsData?.stations ?? []).length === 0) && (
+            <div className="col-span-3 text-center text-xs text-gray-400 py-4">
+              Sensor data loading...
+            </div>
+          )}
+        </div>
+      </div>
 
     </div>
   );

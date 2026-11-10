@@ -26,10 +26,10 @@ export default function StageGauge({
   forecastTime,
   minH = 528,
   maxH = 545,
-  alert = 533.5,
-  warning = 535.5,
-  danger = 536.8,
-  hfl = 538.5,
+  alert = 542.10,
+  warning = 542.70,
+  danger = 543.30,
+  hfl = 545.33,
 }: Props) {
   const config = getAlertConfig(stage, danger, warning, alert);
   const range = maxH - minH;

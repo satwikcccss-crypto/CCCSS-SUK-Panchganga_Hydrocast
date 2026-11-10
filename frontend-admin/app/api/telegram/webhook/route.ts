@@ -99,7 +99,7 @@ export async function POST(req: Request) {
                   `/status - System health & latest forecast cycle\n` +
                   `/stage - Current water levels and peak stages\n` +
                   `/alerts - Active warning and danger alerts\n` +
-                  `/bulletin - Latest CWC flood bulletin`;
+                  `/bulletin - Latest flood bulletin`;
       await sendMessage(chatId, msg);
     } 
     else if (text.startsWith("/status")) {

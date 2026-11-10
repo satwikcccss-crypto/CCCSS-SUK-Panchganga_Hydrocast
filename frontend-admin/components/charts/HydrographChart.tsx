@@ -21,7 +21,7 @@ interface HydrographProps {
 
 export default function HydrographChart({
   data,
-  thresholds = { alert: 1800, warning: 2200, danger: 2800, hfl: 3800 },
+  thresholds = {},
   showStage = false,
   height = 240,
 }: HydrographProps) {
@@ -117,7 +117,7 @@ export default function HydrographChart({
       },
       y: {
         position: "left",
-        suggestedMax: Math.max(...qValues, alertThresh ?? 1200, 1400) * 1.1,
+        suggestedMax: Math.max(...qValues, alertThresh ?? 0) * 1.1,
         ticks: { color: "#4B5563", font: { size: 10, family: "monospace" } },
         grid: { color: "#F3F4F6" },
         title: {

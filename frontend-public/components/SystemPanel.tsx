@@ -160,8 +160,8 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
       qc: mlConfidence,
     },
     {
-      name: "Telegram Bot & DDMA Emergency Dispatcher",
-      type: "Serverless Webhook & CWC Flood Bulletins",
+      name: "Telegram Bot & Emergency Alert Dispatcher",
+      type: "Serverless Webhook & Flood Bulletins",
       status: "online",
       lag: "<500ms",
       qc: 100,

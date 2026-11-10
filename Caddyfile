@@ -1,0 +1,135 @@
+# ==============================================================================
+# HydroCast Production Caddyfile — Shivaji University Kolhapur (SUK)
+# Domain: hydrocast.unishivaji.ac.in
+# ==============================================================================
+
+{
+    # Global options
+    admin off
+    email cccss@unishivaji.ac.in
+}
+
+# 1. Official Institutional Production Domain (HydroCast & CCCSS)
+hydrocast.unishivaji.ac.in, cccss.unishivaji.ac.in {
+    encode zstd gzip
+
+    # Security Headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    }
+
+    # Interactive OpenAPI / Swagger Documentation
+    handle /docs* {
+        reverse_proxy localhost:8000 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    handle /openapi.json {
+        reverse_proxy localhost:8000 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    handle /redoc* {
+        reverse_proxy localhost:8000 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # FastAPI REST Backend & Open Data Feed
+    handle /api/* {
+        reverse_proxy localhost:8000 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # Real-time WebSocket Telemetry & Cycle Broadcasts
+    handle /ws/* {
+        reverse_proxy localhost:8000 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # Operator Mission Control Room (Dedicated Admin Sub-path)
+    handle_path /admin* {
+        reverse_proxy localhost:3001 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # Public Citizen Flood Intelligence Portal (Next.js :3000)
+    handle {
+        reverse_proxy localhost:3000 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    log {
+        output file "data/logs/caddy_access.log" {
+            roll_size 10mb
+            roll_keep 10
+        }
+    }
+}
+
+# 2. Localhost & Campus LAN Fallback (:80)
+:80 {
+    encode zstd gzip
+
+    # OpenAPI / Swagger Documentation
+    handle /docs* {
+        reverse_proxy localhost:8000
+    }
+    handle /openapi.json {
+        reverse_proxy localhost:8000
+    }
+    handle /redoc* {
+        reverse_proxy localhost:8000
+    }
+
+    # API endpoints directly route to FastAPI
+    handle /api/* {
+        reverse_proxy localhost:8000
+    }
+
+    # WebSockets
+    handle /ws/* {
+        reverse_proxy localhost:8000
+    }
+
+    # Admin portal
+    handle_path /admin* {
+        reverse_proxy localhost:3001
+    }
+
+    # Default citizen portal
+    handle {
+        reverse_proxy localhost:3000
+    }
+}

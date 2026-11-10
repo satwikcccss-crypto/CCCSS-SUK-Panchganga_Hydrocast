@@ -39,14 +39,14 @@ export interface PipelineStep {
 const DEFAULT_STEPS: PipelineStep[] = [
   { step: 1, name: "Open-Meteo IFS 90h NWP Ingestion", script: "01_ingest_openmeteo.py", status: "completed", duration_s: 3.2, details: "18 Panchganga stations grid sync" },
   { step: 2, name: "ThingSpeak Ultrasonic Radar Ingestion", script: "02_ingest_thingspeak.py", status: "completed", duration_s: 1.1, details: "Shivaji Bridge channel 3424513" },
-  { step: 3, name: "WRD / CWC River Telemetry Sync", script: "03_ingest_wrd_cwc.py", status: "completed", duration_s: 1.4, details: "Rajaram & Shivaji staff gauges" },
+  { step: 3, name: "WRD River Telemetry Sync", script: "03_ingest_wrd.py", status: "completed", duration_s: 1.4, details: "Rajaram & Shivaji staff gauges" },
   { step: 4, name: "Dynamic Governing Station Evaluation", script: "04_eval_governing_stations.py", status: "completed", duration_s: 0.8, details: "Thiessen polygon weights S1-S9" },
   { step: 5, name: "HEC-DSS Meteorological Store Generation", script: "05_generate_dss.py", status: "completed", duration_s: 2.5, details: "Hourly precipitation hyetographs" },
   { step: 6, name: "Headless HEC-HMS 4.13 Basin Simulation", script: "06_run_hec_hms.py", status: "completed", duration_s: 8.7, details: "Loss & transform routing execution" },
   { step: 7, name: "Sink Node Hydrograph Extraction", script: "07_extract_hydrograph.py", status: "completed", duration_s: 1.2, details: "J_Outlet discharge & volume extraction" },
   { step: 8, name: "2D River Cross-Section Hydrodynamic Routing", script: "08_river_routing.py", status: "completed", duration_s: 2.1, details: "Shivaji Bridge & Rajaram Weir stages" },
   { step: 9, name: "Physics-Informed ML Recalibration", script: "09_ml_calibration.py", status: "completed", duration_s: 1.9, details: "Levenberg-Marquardt parameter tuning" },
-  { step: 10, name: "CWC / DDMA Flood Alert Classification", script: "10_eval_alerts.py", status: "completed", duration_s: 0.6, details: "Alert, Warning, Danger thresholds" },
+  { step: 10, name: "Flood Alert Threshold Classification", script: "10_eval_alerts.py", status: "completed", duration_s: 0.6, details: "Alert, Warning, Danger thresholds" },
   { step: 11, name: "Telegram Bot & Flood Bulletin Dispatch", script: "11_dispatch_bulletin.py", status: "completed", duration_s: 1.8, details: "Automated alert notification broadcast" },
   { step: 12, name: "PostgreSQL Run Ledger & Parquet Archival", script: "12_archive_runs.py", status: "completed", duration_s: 2.4, details: "State persistence & cold storage sync" },
 ];
@@ -87,7 +87,7 @@ export default function WindowsTerminalDock({
         name: s.name || DEFAULT_STEPS[idx]?.name || `Step ${idx + 1}`,
         script: s.script || DEFAULT_STEPS[idx]?.script || `step_${idx + 1}.py`,
         status: (s.status === "success" || s.status === "completed") ? "completed" : (s.status || "idle"),
-        duration_s: s.duration_s ?? s.duration_seconds ?? DEFAULT_STEPS[idx]?.duration_s ?? 2.0,
+        duration_s: s.duration_s ?? s.duration_seconds ?? DEFAULT_STEPS[idx]?.duration_s ?? null,
         details: s.details || s.description || DEFAULT_STEPS[idx]?.details || "Nominal",
       }))
     : DEFAULT_STEPS;

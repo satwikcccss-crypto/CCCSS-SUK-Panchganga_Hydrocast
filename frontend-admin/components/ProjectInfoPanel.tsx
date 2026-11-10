@@ -222,21 +222,17 @@ export default function ProjectInfoPanel() {
               been associated with this project in various capacities.
             </p>
             <p className="text-sm text-slate-700 leading-relaxed mb-4">
-              This work has greatly benefited from the institutional partnership and data-sharing
-              arrangements with our partner government bodies — the <strong className="text-slate-900">Water Resources
-              Department (WRD), Maharashtra</strong>, the <strong className="text-slate-900">Central Water
-              Commission (CWC)</strong>, and the <strong className="text-slate-900">District Disaster
-              Management Authority (DDMA), Kolhapur</strong> — as well as the cooperation of the
-              local administration, whose domain expertise and field-level coordination continue
-              to strengthen the operational integrity and public relevance of this system.
+              This work utilises publicly available hydrological data and flood threshold standards
+              published by the <strong className="text-slate-900">Water Resources Department (WRD),
+              Maharashtra</strong>. The system is developed under the guidance and operational
+              supervision of Shivaji University, Kolhapur, with funding support from DST-SERB,
+              Government of India.
             </p>
             <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-100">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Partners &amp; Affiliations</span>
+              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Affiliations</span>
               <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-sky-50 text-sky-800 border border-sky-200">DST-SERB, Govt. of India</span>
               <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-50 text-emerald-800 border border-emerald-200">WRD Maharashtra</span>
-              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-50 text-amber-800 border border-amber-200">CWC</span>
-              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-rose-50 text-rose-800 border border-rose-200">DDMA Kolhapur</span>
-              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-indigo-50 text-indigo-800 border border-indigo-200">SUK Computer Centre</span>
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-indigo-50 text-indigo-800 border border-indigo-200">CCCSS, Shivaji University</span>
             </div>
           </div>
         </div>
@@ -253,8 +249,8 @@ export default function ProjectInfoPanel() {
             This platform operates as an advanced scientific decision-support and research system. All predictions, 
             water levels, and discharge projections are issued for information and research purposes only. 
             Official flood declarations, inundation bulletins, and statutory evacuation orders remain under the 
-            sole jurisdiction of the <strong>District Disaster Management Authority (DDMA), Kolhapur</strong>, 
-            the <strong>Water Resources Department (WRD)</strong>, and the <strong>Central Water Commission (CWC)</strong>.
+            sole jurisdiction of the relevant statutory authorities including the
+            <strong>Water Resources Department (WRD), Maharashtra</strong> and district administration.
           </p>
         </div>
       </div>

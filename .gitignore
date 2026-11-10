@@ -130,3 +130,8 @@ OPENCODE_HANDOVER_CONTEXT.md
 .coverage.*
 .htmlcov/
 .pytest_cache/
+test-results/
+tests/test-results/
+reports/
+*credentials.txt
+*passwords.txt

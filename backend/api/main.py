@@ -105,7 +105,7 @@ app = FastAPI(
         {"name": "System", "description": "Anonymous dashboard usage counters."},
         {"name": "Hydrology", "description": "Forecast and observed precipitation: ECMWF areal hyetographs, station selection decisions, raw gauge records."},
         {"name": "Runoff", "description": "Forecast discharge, stage, and the live calibration parameters that produced them."},
-        {"name": "Alerts", "description": "Flood alert classification and CWC/DDMA bulletin payloads."},
+        {"name": "Alerts", "description": "Flood alert classification and bulletin payloads."},
         {"name": "Pipeline", "description": "Per-step execution status of the 12-step forecast cycle."},
         {"name": "Historical Runs", "description": "Paginated ledger of archived computation cycles."},
         {"name": "Accuracy Validation", "description": "Forecast skill metrics with explicit sample-size gates."},
@@ -481,6 +481,9 @@ class WSManager:
             self.connections.remove(ws)
 
     async def broadcast(self, data: dict):
+        if isinstance(data, dict):
+            data.setdefault("type", "NEW_CYCLE_READY")
+            data.setdefault("event", "NEW_CYCLE_READY")
         dead = []
         for ws in self.connections:
             try:
@@ -521,6 +524,49 @@ async def health_check():
         "version": "2.0.0",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
+
+# ── Database Health Endpoint ─────────────────────────────────────────────────
+
+@app.get(
+    "/api/v1/db-health",
+    dependencies=[PublicDep],
+    tags=["Health & Probes"],
+    summary="PostgreSQL database health and table statistics",
+    response_description="Database connection stats, tablespace size, and per-table row counts.",
+)
+@limiter.limit(RATE_LIMIT_PUBLIC)
+async def db_health(request: Request):
+    """Real PostgreSQL health metrics: connection latency, tablespace size,
+    active connections, and row counts for all hydrological tables."""
+    import time as _t
+    pool = await get_pool()
+    if pool is None:
+        return {"ok": False, "error": "PostgreSQL pool unavailable", "tables": {}, "tablespace_mb": None, "active_connections": None, "latency_ms": None}
+    t0 = _t.monotonic()
+    try:
+        async with pool.acquire() as conn:
+            await conn.fetchval("SELECT 1")
+            latency_ms = round((_t.monotonic() - t0) * 1000, 1)
+            db_size = await conn.fetchval("SELECT pg_database_size(current_database())")
+            tablespace_mb = round(db_size / (1024 * 1024), 1) if db_size else None
+            active = await conn.fetchval("SELECT count(*) FROM pg_stat_activity WHERE state = 'active'")
+            rows = await conn.fetch("""
+                SELECT relname AS table_name,
+                       n_live_tup AS row_count
+                FROM pg_stat_user_tables
+                ORDER BY n_live_tup DESC
+            """)
+            tables = {r["table_name"]: r["row_count"] for r in rows}
+        return {
+            "ok": True,
+            "latency_ms": latency_ms,
+            "tablespace_mb": tablespace_mb,
+            "active_connections": active,
+            "tables": tables,
+        }
+    except Exception as e:
+        return {"ok": False, "error": str(e), "tables": {}, "tablespace_mb": None, "active_connections": None, "latency_ms": None}
 
 
 # ── Operational Endpoints ─────────────────────────────────────────────────────
@@ -1144,19 +1190,15 @@ async def active_alerts(request: Request):
     "/api/v1/alerts/bulletin",
     dependencies=[PublicDep],
     tags=["Alerts"],
-    summary="CWC/DDMA flood bulletin payload",
-    response_description="A print-ready bulletin per bridge: current stage, trend, HFL margin, and recommended action.",
+    summary="Academic flood simulation bulletin payload",
+    response_description="Research simulation bulletin per bridge: simulated stage, baseflow trends, and engineering metrics.",
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def flood_bulletin(request: Request):
-    """Generate CWC-style flood bulletin JSON for all bridge sites.
+    """Generate academic simulation bulletin JSON for all bridge sites.
 
-    Includes: current stage, trend, HFL margin, recommended action.
-
-    This is the payload the Telegram dispatcher forwards to district officers,
-    so it is shaped for human reading rather than for plotting — the same data
-    in a charting-friendly form is available from
-    [`/api/v1/runoff/summary`](#api-v1-runoff-summary).
+    Academic & scientific research simulation by CCCSS, Shivaji University Kolhapur (DST-SERB).
+    NOT an official administrative flood alert or warning.
     """
     try:
         pool = await get_pool()
@@ -1184,10 +1226,111 @@ async def flood_bulletin(request: Request):
         rows = []
     issued_at = datetime.now(timezone.utc).isoformat()
     return {
-        "bulletin_title": "CWC CENTRAL WATER COMMISSION — FLOOD BULLETIN",
+        "bulletin_title": "HYDROCAST PANCHGANGA — ACADEMIC SIMULATION BULLETIN",
         "issued_at":      issued_at,
         "valid_for_hrs":  90,
+        "disclaimer":     "Scientific research digital twin by CCCSS, Shivaji University Kolhapur (DST-SERB). For official flood warnings, evacuation notices, and civil alerts, refer to competent government authorities (District Administration / DDMA / CWC).",
         "sites":          _jsonify(rows),
+    }
+
+
+@app.api_route(
+    "/api/v1/research/hydrological-summary",
+    methods=["GET", "POST"],
+    tags=["Research"],
+    summary="Academic & Scientific Hydrological Research Summary",
+    response_description="Neutral academic research simulation feed from Shivaji University Kolhapur CCCSS.",
+)
+@limiter.limit(RATE_LIMIT_PUBLIC)
+async def research_hydrological_summary(request: Request):
+    """Academic and scientific research simulation feed from Shivaji University Kolhapur.
+
+    DISCLAIMER: Academic & Scientific Research Simulation by CCCSS, Shivaji University Kolhapur.
+    For official flood warnings, evacuation notices, and civil alerts, consult District Administration / DDMA.
+    """
+    now_utc = datetime.now(timezone.utc)
+    now_ist_str = (now_utc.astimezone(timezone(timedelta(hours=5, minutes=30)))).strftime("%d-%m-%Y %I:%M %p IST")
+
+    shivaji_stage = 531.54
+    rajaram_stage = 532.19
+    peak_q = 9.10
+    lead_hours = 0
+    calculated_status = "NORMAL_BASEFLOW"
+
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            row_run = await conn.fetchrow("""
+                SELECT peak_discharge_m3s, peak_stage_m, lead_hours_to_peak, total_volume_mcm
+                FROM simulation_runs
+                ORDER BY start_time DESC LIMIT 1
+            """)
+            if row_run:
+                peak_q = float(row_run["peak_discharge_m3s"] or 9.10)
+                lead_hours = int(row_run["lead_hours_to_peak"] or 0)
+
+            rows_b = await conn.fetch("""
+                SELECT site_id, stage_m, alert_level
+                FROM bridge_stage_forecast
+                WHERE lead_hours = 1
+                  AND forecast_run_id = (SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+            """)
+            for r in rows_b:
+                sid = r["site_id"]
+                stg = float(r["stage_m"] or 531.54)
+                if sid == "SHIVAJI_BRIDGE":
+                    shivaji_stage = stg
+                elif sid == "RAJARAM_BRIDGE":
+                    rajaram_stage = stg
+    except Exception as e:
+        log.warning("Research summary fallback: %s", e)
+        state = _load_pipeline_state()
+        if state:
+            summary = state.get("summary", {})
+            peak_q = float(summary.get("peak_discharge_m3s", 9.10))
+            lead_hours = int(summary.get("lead_hours_to_peak", 0))
+
+    if shivaji_stage >= 543.30 or rajaram_stage >= 543.30:
+        calculated_status = "HIGH_STAGE_SIMULATED"
+        marathi_text = f"संशोधन निरीक्षण: पंचगंगा नदीची संगणकीय जलपातळी {shivaji_stage:.2f} मी. अंदाजित आहे. अधिकृत माहितीसाठी जिल्हा प्रशासनाची संपर्क साधावा."
+    elif shivaji_stage >= 542.10 or rajaram_stage >= 541.50:
+        calculated_status = "ELEVATED_STAGE_SIMULATED"
+        marathi_text = f"संशोधन निरीक्षण: पंचगंगा नदीची संगणकीय जलपातळी {shivaji_stage:.2f} मी. अंदाजित आहे."
+    else:
+        calculated_status = "NORMAL_BASEFLOW_SIMULATED"
+        marathi_text = f"संशोधन निरीक्षण: पंचगंगा नदीचा प्रवाह सामान्य वैज्ञानिक पातळीत ({shivaji_stage:.2f} मी., {peak_q:.1f} m³/s) संगणकीकृत आहे."
+
+    return {
+        "status": "success",
+        "system": "HydroCast Academic & Scientific Research Simulator",
+        "institution": "Centre for Climate Change and Sustainability Studies (CCCSS), Shivaji University, Kolhapur",
+        "funding": "Department of Science and Technology, Science and Engineering Research Board (DST-SERB)",
+        "disclaimer": "Academic & Scientific Research Simulation by CCCSS, Shivaji University Kolhapur. For official flood warnings, evacuation notices, and civil alerts, consult District Administration / DDMA.",
+        "marathi_disclaimer": "शिवाजी विद्यापीठ कोल्हापूर (CCCSS) व DST-SERB अंतर्गत केवळ शैक्षणिक व वैज्ञानिक संशोधनात्मक अभ्यास. अधिकृत पूर सूचना व आपत्कालीन मार्गदर्शक सूचनांसाठी जिल्हा प्रशासनाशी संपर्क साधावा.",
+        "timestamp_utc": now_utc.isoformat(),
+        "timestamp_ist": now_ist_str,
+        "scientific_simulation": {
+            "calculated_status": calculated_status,
+            "marathi_summary": marathi_text,
+            "simulated_peak_discharge_m3s": peak_q,
+            "simulated_lead_hours_to_peak": lead_hours,
+            "gauged_crossings": [
+                {
+                    "site_id": "SHIVAJI_BRIDGE",
+                    "site_name": "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
+                    "simulated_stage_m": shivaji_stage,
+                    "datum_level_m": 528.67,
+                    "danger_threshold_reference_m": 543.30,
+                },
+                {
+                    "site_id": "RAJARAM_BRIDGE",
+                    "site_name": "Rajaram K.T. Weir (Kasba Bawada)",
+                    "simulated_stage_m": rajaram_stage,
+                    "crest_level_m": 535.77,
+                    "danger_threshold_reference_m": 543.30,
+                },
+            ],
+        },
     }
 
 
@@ -1277,7 +1420,7 @@ async def cycle_history(request: Request, limit: int = Query(48, ge=1, le=500)):
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
 async def get_dashboard_payload(request: Request, run_id: Optional[str] = None):
-    """Serve the complete unified forecast and telemetry payload directly from data/runs or latest pipeline state."""
+    """Serve the complete unified forecast and telemetry payload, synchronized with PostgreSQL as single source of truth."""
     from pathlib import Path
     import json
     project_root = Path(__file__).resolve().parents[2]
@@ -1291,24 +1434,79 @@ async def get_dashboard_payload(request: Request, run_id: Optional[str] = None):
         raise HTTPException(status_code=404, detail=f"Run '{run_id}' not found")
         
     latest_state = project_root / "data" / "openmeteo_dss" / "latest_pipeline_state.json"
+    data = None
     if latest_state.exists():
         try:
             data = json.loads(latest_state.read_text(encoding="utf-8"))
-            from backend.hydrology.runs_tracker import list_computation_runs
-            data["runs_history"] = list_computation_runs(limit=100)
-            return data
         except Exception as e:
             log.warning("Failed to parse latest_pipeline_state: %s", e)
             
-    from backend.hydrology.runs_tracker import list_computation_runs, get_computation_run
-    runs = list_computation_runs(limit=1)
-    if runs:
-        latest = get_computation_run(runs[0]["cycle_id"])
-        if latest:
-            latest["runs_history"] = list_computation_runs(limit=100)
-            return latest
-            
-    return {"status": {"system": "awaiting_first_run"}, "runs_history": []}
+    if data is None:
+        from backend.hydrology.runs_tracker import list_computation_runs, get_computation_run
+        runs = list_computation_runs(limit=1)
+        if runs:
+            latest = get_computation_run(runs[0]["cycle_id"])
+            if latest:
+                data = latest
+    if data is None:
+        data = {"status": {"system": "awaiting_first_run"}, "runs_history": []}
+
+    # Synchronize with PostgreSQL (primary authority)
+    try:
+        pool = await get_pool()
+        if pool is not None:
+            async with pool.acquire() as conn:
+                run = await conn.fetchrow("""
+                    SELECT run_id, peak_discharge_m3s, lead_hours_to_peak,
+                           total_volume_mcm, peak_stage_m, alert_level, start_time
+                    FROM simulation_runs
+                    ORDER BY start_time DESC LIMIT 1
+                """)
+                if run:
+                    db_peak_q = float(run["peak_discharge_m3s"] or 0)
+                    db_volume = float(run["total_volume_mcm"] or 0)
+                    db_lead = int(run["lead_hours_to_peak"] or 0)
+                    db_alert = str(run["alert_level"] or "NORMAL")
+                    
+                    if "summary" not in data:
+                        data["summary"] = {}
+                    data["summary"]["peak_discharge_m3s"] = db_peak_q
+                    data["summary"]["baseflow_m3s"] = db_peak_q
+                    data["summary"]["total_volume_mcm"] = db_volume
+                    data["summary"]["lead_hours_to_peak"] = db_lead
+                    data["summary"]["alert_level"] = db_alert
+                    
+                    b_rows = await conn.fetch("""
+                        SELECT site_id, stage_m, discharge_m3s, alert_level, lead_hours
+                        FROM bridge_stage_forecast
+                        WHERE forecast_run_id = $1
+                        ORDER BY site_id, lead_hours ASC
+                    """, run["run_id"])
+                    if b_rows:
+                        if "bridges" not in data["summary"]:
+                            data["summary"]["bridges"] = {}
+                        if "peak_arrival" not in data["summary"]:
+                            data["summary"]["peak_arrival"] = {}
+                        for b_site, b_key in [("SHIVAJI_BRIDGE", "shivaji"), ("RAJARAM_BRIDGE", "rajaram")]:
+                            site_pts = [r for r in b_rows if r["site_id"] == b_site]
+                            if site_pts:
+                                max_stage = max(float(r["stage_m"] or 0) for r in site_pts)
+                                cur_stage = float(site_pts[0]["stage_m"] or 0)
+                                max_q = max(float(r["discharge_m3s"] or 0) for r in site_pts)
+                                if b_key not in data["summary"]["bridges"]:
+                                    data["summary"]["bridges"][b_key] = {}
+                                data["summary"]["bridges"][b_key]["current_stage_m"] = cur_stage
+                                data["summary"]["bridges"][b_key]["peak_stage_m"] = max_stage
+                                data["summary"]["bridges"][b_key]["peak_discharge_m3s"] = max_q
+                                if b_key in data["summary"]["peak_arrival"]:
+                                    data["summary"]["peak_arrival"][b_key]["peak_discharge_m3s"] = max_q
+                                    data["summary"]["peak_arrival"][b_key]["peak_stage_m"] = max_stage
+    except Exception as exc:
+        log.warning("PostgreSQL sync in get_dashboard_payload: %s", exc)
+
+    from backend.hydrology.runs_tracker import list_computation_runs
+    data["runs_history"] = list_computation_runs(limit=100)
+    return data
 
 
 @app.get(
@@ -1621,27 +1819,23 @@ async def hydrosim_stage(
 
 @app.get(
     "/api/SUK_hydrocast_v1",
-    dependencies=[PublicDep],
     tags=["SUK Public API"],
-    summary="Shivaji University Kolhapur HydroCast v1 Flood Intelligence Feed",
-    response_description="All-in-one authenticated, rate-limited flood intelligence feed for SUK.",
+    summary="Shivaji University Kolhapur HydroCast v1 Flood Intelligence Feed (Open Public Access)",
+    response_description="All-in-one completely open, read-only, rate-limited flood intelligence feed for SUK. No API key required.",
 )
 @app.get(
     "/api/v1/SUK_hydrocast_v1",
-    dependencies=[PublicDep],
     tags=["SUK Public API"],
-    summary="Shivaji University Kolhapur HydroCast v1 Flood Intelligence Feed (v1 alias)",
+    summary="Shivaji University Kolhapur HydroCast v1 Flood Intelligence Feed (v1 alias, Open Access)",
 )
 @app.get(
     "/api/v1/hydrocast/complete",
-    dependencies=[PublicDep],
     tags=["Integration"],
-    summary="Comprehensive HydroCast Forecast (Open-Meteo Style)",
+    summary="Comprehensive HydroCast Forecast (Open Access)",
     response_description="All-in-one flood intelligence: peak stages, peak discharge, runoff volume, arrival times, station rainfall peaks, and 90-hr hydrographs.",
 )
 @app.get(
     "/api/v1/forecast/complete",
-    dependencies=[PublicDep],
     tags=["Integration"],
     summary="Alias for comprehensive forecast feed",
 )
@@ -1813,6 +2007,10 @@ async def complete_forecast_feed(request: Request):
     "/ws/live",
     name="live_cycle_push",
 )
+@app.websocket(
+    "/ws/telemetry",
+    name="telemetry_cycle_push",
+)
 async def ws_live(websocket: WebSocket):
     """Push new data to connected dashboards after each completed cycle.
 
@@ -1827,6 +2025,63 @@ async def ws_live(websocket: WebSocket):
             await websocket.receive_text()
     except WebSocketDisconnect:
         ws_manager.disconnect(websocket)
+
+
+# ── Sensor Network (Multi-Station ThingSpeak IoT) ───────────────────────────
+
+@app.get(
+    "/api/v1/sensors/live",
+    dependencies=[PublicDep],
+    tags=["Sensors"],
+    summary="Live readings from all IoT sensor stations",
+    response_description="Current water level, voltage, and status for each station in the sensor network.",
+)
+@limiter.limit(RATE_LIMIT_PUBLIC)
+async def sensor_network_live(request: Request):
+    """Fetch live telemetry from all configured ThingSpeak ultrasonic radar stations.
+
+    Returns the current water level (meters MSL), raw distance (feet),
+    sensor voltage (where available), and online status for each station:
+    Shivaji Bridge (SS), Nitawade RWLS (NW), and Ichalkaranji (IK).
+    """
+    from backend.thingspeak.multi_station import fetch_all_stations
+    stations = fetch_all_stations()
+    online_count = sum(1 for s in stations if s.get("status") == "ONLINE")
+    return {
+        "stations": stations,
+        "total": len(stations),
+        "online": online_count,
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+@app.get(
+    "/api/v1/sensors/{station_id}",
+    dependencies=[PublicDep],
+    tags=["Sensors"],
+    summary="Live reading from a single sensor station",
+)
+@limiter.limit(RATE_LIMIT_PUBLIC)
+async def sensor_station_live(request: Request, station_id: str):
+    """Fetch live telemetry from a single station (SS, NW, or IK)."""
+    from backend.thingspeak.multi_station import fetch_station
+    result = fetch_station(station_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail=f"Station '{station_id}' not found. Valid: SS, NW, IK")
+    return result
+
+
+@app.get(
+    "/api/v1/sensors/registry",
+    dependencies=[PublicDep],
+    tags=["Sensors"],
+    summary="Sensor station metadata registry",
+)
+@limiter.limit(RATE_LIMIT_PUBLIC)
+async def sensor_registry(request: Request):
+    """Return station metadata (coordinates, datum, zero level) without fetching live data."""
+    from backend.thingspeak.multi_station import get_station_registry
+    return {"stations": get_station_registry()}
 
 
 @app.post("/internal/broadcast", include_in_schema=False)

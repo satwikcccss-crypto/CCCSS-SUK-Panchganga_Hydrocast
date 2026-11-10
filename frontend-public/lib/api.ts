@@ -2,7 +2,7 @@
 // All data is sourced EXCLUSIVELY from the backend PostgreSQL via FastAPI API.
 // No hardcoded fallbacks, no Supabase, no stale data.
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const BASE = process.env.NEXT_PUBLIC_API_URL || "";
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "";
 
 // ── Stale-data guard ──────────────────────────────────────────────────────────
@@ -117,6 +117,18 @@ export async function fetchBridgeStage(siteId: string): Promise<any> {
   return _fetchWithCache(`${BASE}/api/v1/runoff/stage/${encodeURIComponent(siteId)}`);
 }
 
+export async function fetchSensorsLive(): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/sensors/live`);
+}
+
+export async function fetchSensorStation(stationId: string): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/sensors/${encodeURIComponent(stationId)}`);
+}
+
+export async function fetchSensorRegistry(): Promise<any> {
+  return _fetchWithCache(`${BASE}/api/v1/sensors/registry`);
+}
+
 // ── Aggregated dashboard (single call, queries PostgreSQL) ──────────────────
 
 export async function fetchDashboardData(runId?: string): Promise<any> {
@@ -152,7 +164,25 @@ export const api = {
   },
   runDetails: async (runId: string) => await fetchRunDetails(runId),
   validation: async (runId?: string) => (await fetchAccuracy(runId)) ?? null,
-  runoffSummary: async () => await fetchRunoffSummary(),
+  runoffSummary: async () => {
+    const dash = await fetchDashboardData();
+    if (dash?.summary) {
+      const s = dash.summary;
+      return {
+        outlet: {
+          peak_discharge_m3s: s.peak_discharge_m3s ?? 0,
+          lead_hours_to_peak: s.lead_hours_to_peak ?? 0,
+          total_volume_mcm: s.total_volume_mcm ?? 0,
+          alert_level: s.alert_level ?? "NORMAL",
+        },
+        bridges: dash.bridges ?? (await fetchRunoffSummary()).bridges ?? [],
+        hydrograph: dash.hydrograph ?? [],
+        peak_arrival: s.peak_arrival ?? {},
+        recalibration: dash.recalibration ?? {},
+      };
+    }
+    return fetchRunoffSummary();
+  },
   alerts: async () => await fetchAlerts(),
   bridgeShivaji: async () => await fetchBridgeStage("SHIVAJI_BRIDGE"),
   bridgeRajaram: async () => await fetchBridgeStage("RAJARAM_BRIDGE"),
@@ -162,6 +192,9 @@ export const api = {
     const data = await fetchRunoffSummary();
     return data?.peak_arrival ?? null;
   },
+  sensorsLive: async () => await fetchSensorsLive(),
+  sensorStation: async (id: string) => await fetchSensorStation(id),
+  sensorRegistry: async () => await fetchSensorRegistry(),
   ratingCurves: async () => {
     const data = await fetchDashboardData();
     return data.ratingCurves ?? {

@@ -1,14 +1,15 @@
 {
   "name": "HydroCast — Shivaji University, Kolhapur",
   "short_name": "HydroCast",
-  "description": "Panchganga Basin real-time flood forecasting and early warning system. CCCSS, Shivaji University, Kolhapur.",
+  "description": "Panchganga Basin academic hydrological simulation and research system. CCCSS, Shivaji University, Kolhapur (DST-SERB).",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0ea5e9",
+  "background_color": "#ffffff",
+  "theme_color": "#0284c7",
   "orientation": "any",
-  "categories": ["weather", "utilities", "government"],
+  "categories": ["education", "weather", "research"],
   "lang": "en-IN",
+  "disclaimer": "Academic & Scientific Research Simulation by CCCSS, Shivaji University Kolhapur. For official flood warnings, evacuation notices, and civil alerts, consult District Administration / DDMA.",
   "icons": [
     {
       "src": "/icons/icon-192.png",

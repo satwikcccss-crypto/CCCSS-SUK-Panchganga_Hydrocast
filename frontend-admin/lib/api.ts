@@ -1,15 +1,19 @@
 // frontend/lib/api.ts
 // All data is sourced EXCLUSIVELY from the pipeline JSON — no hardcoded fallbacks
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
-// ── Response cache (30s TTL) to avoid N+1 API calls across dashboard panels ──
+// ── Response cache to avoid N+1 API calls across dashboard panels ──
 let _cache: { data: any; ts: number; runId?: string } | null = null;
-const CACHE_TTL_MS = 30_000;
+const CACHE_TTL_MS = 5_000; // 5s short TTL so dashboard never stays stale
 
-async function _cachedFetch(runId?: string): Promise<any> {
+export function invalidateCache(): void {
+  _cache = null;
+}
+
+async function _cachedFetch(runId?: string, forceFresh: boolean = false): Promise<any> {
   const now = Date.now();
-  if (_cache && (now - _cache.ts < CACHE_TTL_MS) && _cache.runId === runId) {
+  if (!forceFresh && _cache && (now - _cache.ts < CACHE_TTL_MS) && _cache.runId === runId) {
     return _cache.data;
   }
   const query = runId ? `?run_id=${encodeURIComponent(runId)}` : "";
@@ -23,12 +27,13 @@ async function _cachedFetch(runId?: string): Promise<any> {
   return data;
 }
 
-export async function fetchDashboardData(runId?: string) {
-  return _cachedFetch(runId);
+export async function fetchDashboardData(runId?: string, forceFresh: boolean = false) {
+  return _cachedFetch(runId, forceFresh);
 }
 
 export const api = {
-  status: async () => (await fetchDashboardData()).status,
+  invalidateCache,
+  status: async (fresh = false) => (await fetchDashboardData(undefined, fresh)).status,
   cycleStatus: async () => (await fetchDashboardData()).status,
   ecmwfHyetograph: async () => (await fetchDashboardData()).ecmwf,
   stationSelection: async () => (await fetchDashboardData()).stations,

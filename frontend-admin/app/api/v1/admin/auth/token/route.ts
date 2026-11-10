@@ -15,8 +15,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1. Try the admin API on port 8001
-    const adminApi = process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:8001";
+    // 1. Try the admin API on port 8000
+    const adminApi = process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:8000";
     try {
       const res = await fetch(`${adminApi}/api/v1/admin/auth/token`, {
         method: "POST",

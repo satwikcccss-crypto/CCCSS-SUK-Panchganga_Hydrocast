@@ -116,7 +116,7 @@ export default function CrossSectionViewer({
       };
     }
     // Fallback baseline — use first available forecast point or site zero datum
-    const fallbackStage = siteConfig.forecast[0]?.stage_m ?? (siteConfig as any).site?.zero_datum_m ?? (siteConfig as any).zero_datum_m ?? 530.0;
+    const fallbackStage = siteConfig.forecast[0]?.stage_m ?? (siteConfig as any).site?.zero_datum_m ?? (siteConfig as any).zero_datum_m ?? null;
     const fallbackDischarge = selectedSite === "SHIVAJI_BRIDGE" ? 108.0 : 82.0;
     return {
       stage_m: fallbackStage,

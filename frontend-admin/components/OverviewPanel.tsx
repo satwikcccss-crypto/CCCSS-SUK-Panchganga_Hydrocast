@@ -41,8 +41,8 @@ export default function OverviewPanel({
   const stationsList: any[] = stations ?? [];
   const totalBasinRainVolMcm = stationsList.length > 0
     ? ((stationsList.reduce((acc: number, s: any) => acc + (s.cumulative_90h_mm ?? 0), 0) / stationsList.length) * 2140.0) / 1000.0
-    : (lastCycle?.total_rainfall_volume_mcm ?? 31.9);
-  const maxStationRain = lastCycle?.total_rainfall_mm ?? (stationsList.length > 0 ? Math.max(...stationsList.map((s: any) => s.cumulative_90h_mm ?? 0)) : 50.1);
+    : (lastCycle?.total_rainfall_volume_mcm ?? 0);
+  const maxStationRain = lastCycle?.total_rainfall_mm ?? (stationsList.length > 0 ? Math.max(...stationsList.map((s: any) => s.cumulative_90h_mm ?? 0)) : 0);
 
   // Dynamic Live Bridge Data
   const bridgesAny: any = summary?.bridges;

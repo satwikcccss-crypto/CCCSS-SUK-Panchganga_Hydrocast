@@ -397,7 +397,7 @@ export default function AccuracyPanel({ defaultTab = "charts" }: AccuracyPanelPr
         timestamp: sFc.forecast_time || hg.timestamp || obs.timestamp || `T+${h}h`,
         stage_m: predS,
         discharge_m3s: predQ,
-        rajaram_stage_m: rFc.stage_m ?? 532.63,
+        rajaram_stage_m: rFc.stage_m ?? null,
         alert_level: sFc.alert_level || "NORMAL",
         has_observation: hasObs,
         observed_stage_m: actS,

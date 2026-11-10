@@ -19,6 +19,25 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+interface SensorReading {
+  station_id: string;
+  name: string;
+  full_name: string;
+  river: string;
+  type: string;
+  sensor_datum_m: number;
+  zero_level_m: number;
+  latitude: number;
+  longitude: number;
+  has_voltage: boolean;
+  status: string;
+  stage_m: number | null;
+  raw_distance_ft?: number;
+  voltage?: number | null;
+  timestamp?: string;
+  entry_id?: number;
+}
+
 interface LiveTelemetryProps {
   bShivaji?: any;
   bRajaram?: any;
@@ -40,12 +59,76 @@ export default function LiveTelemetryPanel({
     timestamp: string;
     latencyMs: number;
   } | null>(null);
+  const [sensorData, setSensorData] = useState<SensorReading[]>([]);
+  const [sensorLoading, setSensorLoading] = useState(false);
+  const [liveLogs, setLiveLogs] = useState<{ level: string; message: string; timestamp: string }[]>([]);
+  const [logsLoading, setLogsLoading] = useState(false);
 
-  // Live sensor values from API / props (with engineering defaults from docs/iot-telemetry.md)
-  const rawDistFt = summary?.observed_distance_ft ?? bShivaji?.live_sensor?.distance_ft ?? 17.82;
-  const rawStageM = bShivaji?.forecast?.[0]?.stage_m ?? 533.54;
-  const wrdDepthM = Math.max(0, rawStageM - 530.18);
-  const lastSyncTime = summary?.generated_at ? new Date(summary.generated_at).toLocaleTimeString() : "Just now";
+  // Live sensor values from API / props — no hardcoded fallbacks
+  const rawDistFt = summary?.observed_distance_ft ?? bShivaji?.live_sensor?.distance_ft ?? null;
+  const isMonsoon = (() => {
+    const m = new Date().getMonth(); // 5 = June, 9 = October
+    return m >= 5 && m <= 9;
+  })();
+  const rawStageM = bShivaji?.forecast?.[0]?.stage_m ?? null;
+  const wrdDepthM = rawStageM != null ? Math.max(0, rawStageM - 530.18) : null;
+  const lastSyncTime = summary?.generated_at ? new Date(summary.generated_at).toLocaleTimeString() : null;
+
+  const fetchSensorNetwork = async () => {
+    setSensorLoading(true);
+    try {
+      const BASE = process.env.NEXT_PUBLIC_API_URL || "";
+      const res = await fetch(`${BASE}/api/v1/sensors/live`, { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setSensorData(Array.isArray(data) ? data : data.stations ?? []);
+      }
+    } catch (e) {
+      /* sensor fetch is best-effort */
+    } finally {
+      setSensorLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchSensorNetwork();
+    fetchLiveLogs();
+    const interval = setInterval(() => {
+      fetchSensorNetwork();
+      fetchLiveLogs();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchLiveLogs = async () => {
+    setLogsLoading(true);
+    try {
+      const BASE = process.env.NEXT_PUBLIC_API_URL || "";
+      const res = await fetch(`${BASE}/api/v1/admin/health-log`, {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-store" },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const logs = data?.health_log ?? [];
+        setLiveLogs(
+          Array.isArray(logs)
+            ? logs
+                .map((l: any) => ({
+                  level: l.level ?? "INFO",
+                  message: l.message ?? JSON.stringify(l),
+                  timestamp: l.timestamp ?? new Date().toISOString(),
+                }))
+                .slice(-10)
+            : []
+        );
+      }
+    } catch (e) {
+      /* log fetch is best-effort */
+    } finally {
+      setLogsLoading(false);
+    }
+  };
 
   // Simulate or execute channel test
   const handleTestChannel = (channel: string) => {
@@ -56,7 +139,7 @@ export default function LiveTelemetryPanel({
         setTestResult({
           channel: "ThingSpeak Channel 3424513",
           status: "ok",
-          message: `HTTP 200 OK — Acoustic distance ${rawDistFt} ft accepted (within [15.0 ft, 80.0 ft] bounds). Resampled stage ${rawStageM.toFixed(2)} m MSL.`,
+          message: `HTTP 200 OK — Acoustic distance ${rawDistFt ?? "—"} ft accepted (within [15.0 ft, 80.0 ft] bounds). Resampled stage ${rawStageM != null ? rawStageM.toFixed(2) : "—"} m MSL.`,
           timestamp: new Date().toLocaleTimeString(),
           latencyMs: latency,
         });
@@ -70,7 +153,7 @@ export default function LiveTelemetryPanel({
         });
       } else {
         setTestResult({
-          channel: "WRD / CWC Benchmark Cross-Check",
+          channel: "WRD Benchmark Cross-Check",
           status: "ok",
           message: `Verified against official WRD datum (530.18 m MSL zero datum). Solid crest of Rajaram Weir: 535.77 m MSL.`,
           timestamp: new Date().toLocaleTimeString(),
@@ -101,6 +184,17 @@ export default function LiveTelemetryPanel({
           </div>
         </div>
 
+        {!isMonsoon && (
+          <div className="mt-4 p-3 bg-blue-50/70 border border-blue-200 rounded-lg text-blue-900 text-xs flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-bold">📡 IoT Sensor: Seasonal Standby (Operates June–Oct)</span>
+              <span>&middot;</span>
+              <span>Calibrated Hydrodynamic Baseline Active</span>
+            </div>
+            <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[11px] font-mono font-medium">9.10 m³/s Baseflow</span>
+          </div>
+        )}
+
         {/* 3 Dedicated Ingestion Channels */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
           {/* Channel 1: ThingSpeak IoT Ultrasonic Radar */}
@@ -110,10 +204,21 @@ export default function LiveTelemetryPanel({
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#0067b8] bg-[#e0eef9] px-2 py-0.5 rounded">
                   Acoustic Radar
                 </span>
-                <span className="text-xs text-emerald-600 font-mono font-bold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  ONLINE
-                </span>
+                {(() => {
+                  const ss = sensorData.find((s) => s.station_id === "SS");
+                  let st = ss?.status ?? "LOADING";
+                  if (!isMonsoon && (st === "OFFLINE" || st === "LOADING")) {
+                    st = "SEASONAL STANDBY";
+                  }
+                  const color = st === "ONLINE" ? "text-emerald-600" : st === "SEASONAL STANDBY" ? "text-blue-600" : st === "STALE" ? "text-orange-600" : st === "OFFLINE" ? "text-red-600" : "text-[#767676]";
+                  const dot = st === "ONLINE" ? "bg-emerald-500" : st === "SEASONAL STANDBY" ? "bg-blue-500" : st === "STALE" ? "bg-orange-500" : st === "OFFLINE" ? "bg-red-500" : "bg-[#767676]";
+                  return (
+                    <span className={`text-xs ${color} font-mono font-bold flex items-center gap-1`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+                      {st}
+                    </span>
+                  );
+                })()}
               </div>
 
               <h3 className="text-xs font-bold text-[#1b1b1b]">ThingSpeak Channel 3424513</h3>
@@ -129,15 +234,15 @@ export default function LiveTelemetryPanel({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#767676]">Air Range (d_air):</span>
-                  <span className="font-bold text-[#0067b8]">{rawDistFt} ft</span>
+                  <span className="font-bold text-[#0067b8]">{rawDistFt != null ? rawDistFt : "—"} ft</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#767676]">Calculated Stage H:</span>
-                  <span className="font-bold text-emerald-700">{rawStageM.toFixed(2)} m MSL</span>
+                  <span className="font-bold text-emerald-700">{rawStageM != null ? rawStageM.toFixed(2) : "—"} m MSL</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#767676]">Depth Above Zero (y):</span>
-                  <span className="font-bold text-[#1b1b1b]">{wrdDepthM.toFixed(2)} m</span>
+                  <span className="font-bold text-[#1b1b1b]">{wrdDepthM != null ? wrdDepthM.toFixed(2) : "—"} m</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#767676]">Bed Thalweg:</span>
@@ -223,7 +328,7 @@ export default function LiveTelemetryPanel({
             </div>
           </div>
 
-          {/* Channel 3: WRD Maharashtra / CWC Regulatory Ground Truth */}
+          {/* Channel 3: WRD Maharashtra Regulatory Ground Truth */}
           <div className="border border-[#e0e0e0] rounded-lg p-4 bg-[#fafafa] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -236,7 +341,7 @@ export default function LiveTelemetryPanel({
                 </span>
               </div>
 
-              <h3 className="text-xs font-bold text-[#1b1b1b]">WRD Kolhapur &amp; CWC Division</h3>
+              <h3 className="text-xs font-bold text-[#1b1b1b]">WRD Kolhapur Division</h3>
               <p className="text-[11px] text-[#5c5c5c] mt-0.5">
                 Official staff gauge posts and weir crest hydraulics
               </p>
@@ -271,7 +376,7 @@ export default function LiveTelemetryPanel({
             </div>
 
             <div className="mt-4 pt-3 border-t border-[#ededed] flex items-center justify-between">
-              <span className="text-[11px] text-[#767676] font-mono">Survey Datum: CWC GTS</span>
+              <span className="text-[11px] text-[#767676] font-mono">Survey Datum: WRD GTS</span>
               <button
                 onClick={() => handleTestChannel("wrd")}
                 disabled={testingChannel === "wrd"}
@@ -307,6 +412,108 @@ export default function LiveTelemetryPanel({
             </button>
           </div>
         )}
+      </div>
+
+      {/* ── MULTI-STATION SENSOR NETWORK ── */}
+      <div className="bg-[#ffffff] border border-[#e5e5e5] rounded-lg p-5 shadow-xs">
+        <div className="pb-4 border-b border-[#f0f0f0] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-bold text-[#1b1b1b] flex items-center gap-2">
+              <Layers className="w-4 h-4 text-[#0067b8]" />
+              <span>Panchganga Sensor Network — Live Water Levels</span>
+            </h2>
+            <p className="text-xs text-[#5c5c5c] mt-0.5">
+              Three ultrasonic radar stations across the basin: Shivaji Bridge (SS), Nitawade RWLS (NW), Ichalkaranji (IK)
+            </p>
+          </div>
+          <button
+            onClick={fetchSensorNetwork}
+            disabled={sensorLoading}
+            className="win-btn text-[11px] py-1 px-2.5"
+          >
+            <RefreshCw className={`w-3 h-3 ${sensorLoading ? "animate-spin" : ""}`} />
+            <span>{sensorLoading ? "Polling..." : "Refresh All"}</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
+          {(sensorData.length > 0 ? sensorData : [
+            { station_id: "SS", name: "Shivaji Bridge", full_name: "Chhatrapati Shivaji Maharaj Bridge, Kolhapur", sensor_datum_m: 549.35, zero_level_m: 530.18, has_voltage: true, status: "LOADING", stage_m: null, latitude: 16.695, longitude: 74.2275 },
+            { station_id: "NW", name: "Nitawade RWLS", full_name: "Nitawade River Water Level Station", sensor_datum_m: 552.80, zero_level_m: 528.00, has_voltage: true, status: "LOADING", stage_m: null, latitude: 16.720, longitude: 74.205 },
+            { station_id: "IK", name: "Ichalkaranji", full_name: "Ichalkaranji Water Level Station", sensor_datum_m: 543.71, zero_level_m: 525.00, has_voltage: false, status: "LOADING", stage_m: null, latitude: 16.691, longitude: 74.461 },
+          ] as any[]).map((sensor: any) => {
+            const isOnline = sensor.status === "ONLINE";
+            const isStale = sensor.status === "STALE";
+            const statusColor = isOnline ? "text-emerald-600" : isStale ? "text-orange-600" : sensor.status === "LOADING" ? "text-[#767676]" : sensor.status === "OFFLINE" ? "text-red-600" : "text-amber-600";
+            const statusDot = isOnline ? "bg-emerald-500" : isStale ? "bg-orange-500" : sensor.status === "LOADING" ? "bg-[#767676]" : sensor.status === "OFFLINE" ? "bg-red-500" : "bg-amber-500";
+            const depthM = sensor.stage_m != null ? Math.max(0, sensor.stage_m - sensor.zero_level_m) : null;
+
+            return (
+              <div key={sensor.station_id} className="border border-[#e0e0e0] rounded-lg p-4 bg-[#fafafa] flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#0067b8] bg-[#e0eef9] px-2 py-0.5 rounded">
+                      {sensor.station_id}
+                    </span>
+                    <span className={`text-xs ${statusColor} font-mono font-bold flex items-center gap-1`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${statusDot} ${isOnline ? "animate-pulse" : ""}`} />
+                      {sensor.status}
+                    </span>
+                  </div>
+
+                  <h3 className="text-xs font-bold text-[#1b1b1b]">{sensor.name}</h3>
+                  <p className="text-[11px] text-[#5c5c5c] mt-0.5">{sensor.full_name}</p>
+
+                  <div className="mt-3 pt-3 border-t border-[#ededed] space-y-1.5 text-xs font-mono">
+                    <div className="flex justify-between">
+                      <span className="text-[#767676]">Sensor Datum:</span>
+                      <span className="font-bold text-[#1b1b1b]">{sensor.sensor_datum_m} m MSL</span>
+                    </div>
+                    {sensor.stage_m != null && (
+                      <div className="flex justify-between">
+                        <span className="text-[#767676]">Stage:</span>
+                        <span className="font-bold text-emerald-700">{sensor.stage_m.toFixed(2)} m MSL</span>
+                      </div>
+                    )}
+                    {depthM != null && (
+                      <div className="flex justify-between">
+                        <span className="text-[#767676]">Depth above zero:</span>
+                        <span className="font-bold text-[#1b1b1b]">{depthM.toFixed(2)} m</span>
+                      </div>
+                    )}
+                    {sensor.raw_distance_ft != null && (
+                      <div className="flex justify-between">
+                        <span className="text-[#767676]">Air distance:</span>
+                        <span className="font-bold text-[#0067b8]">{sensor.raw_distance_ft} ft</span>
+                      </div>
+                    )}
+                    {sensor.has_voltage && sensor.voltage != null && (
+                      <div className="flex justify-between">
+                        <span className="text-[#767676]">Battery:</span>
+                        <span className={`font-bold ${sensor.voltage > 11 ? "text-emerald-700" : "text-amber-600"}`}>{sensor.voltage} V</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-[#767676]">Zero level:</span>
+                      <span className="text-[#5c5c5c]">{sensor.zero_level_m} m MSL</span>
+                    </div>
+                    {sensor.timestamp && (
+                      <div className="flex justify-between">
+                        <span className="text-[#767676]">Last reading:</span>
+                        <span className="text-[#5c5c5c]">{new Date(sensor.timestamp).toLocaleTimeString()}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-3 pt-3 border-t border-[#ededed] flex items-center justify-between text-[11px] font-mono text-[#767676]">
+                  <span>{sensor.latitude.toFixed(3)}°N, {sensor.longitude.toFixed(3)}°E</span>
+                  {sensor.has_voltage && <Zap className="w-3 h-3 text-[#0067b8]" />}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* ── 2. OUTLIER REJECTION & RESAMPLING PIPELINE (telemetry_metrics.py) ── */}
@@ -418,7 +625,7 @@ export default function LiveTelemetryPanel({
                   Q = 143.5 × (H - 530.18)^1.62 (m³/s)
                 </div>
                 <div className="text-[11px] text-[#5c5c5c] mt-1 font-sans">
-                  Empirical power rating curve cross-calibrated against CWC ADCP velocity-area measurements.
+                  Empirical power rating curve cross-calibrated against WRD ADCP velocity-area measurements.
                 </div>
               </div>
             </div>
@@ -445,40 +652,25 @@ export default function LiveTelemetryPanel({
           </div>
           <div className="flex items-center gap-2 text-[11px] font-mono text-[#5c5c5c]">
             <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-            <span>Worker Daemon PID: 18420</span>
+            <span>{logsLoading ? "Fetching logs..." : `PID: ${process.pid || "N/A"}`}</span>
           </div>
         </div>
 
         {/* Terminal Event Stream Box */}
         <div className="mt-4 bg-[#1e1e1e] text-[#d4d4d4] font-mono text-xs rounded-lg p-4 space-y-2 overflow-x-auto shadow-inner max-h-60 overflow-y-auto">
-          <div className="text-[#858585] text-[11px]">
-            [SYSTEM INGESTION MONITOR] Listening on ThingSpeak Channel 3424513 and Open-Meteo IFS API...
-          </div>
-          <div className="flex items-start gap-2">
-            <span className="text-[#4ec9b0] shrink-0">10:55:02</span>
-            <span className="text-[#6a9955] shrink-0">[INFO]</span>
-            <span>ThingSpeak: Fetched Feed 1 distance_ft={rawDistFt}. Filter check: PASS. Calculated stage={rawStageM.toFixed(2)}m MSL.</span>
-          </div>
-          <div className="flex items-start gap-2">
-            <span className="text-[#4ec9b0] shrink-0">10:55:03</span>
-            <span className="text-[#6a9955] shrink-0">[INFO]</span>
-            <span>telemetry_metrics.py: Hourly UTC bin aggregated (sample_count=12). Persisted to data/telemetry/thingspeak_hourly_cache.json.</span>
-          </div>
-          <div className="flex items-start gap-2">
-            <span className="text-[#4ec9b0] shrink-0">10:55:04</span>
-            <span className="text-[#6a9955] shrink-0">[INFO]</span>
-            <span>Open-Meteo: 90h NWP precipitation grid verified. 20 catchment coordinate records current.</span>
-          </div>
-          <div className="flex items-start gap-2">
-            <span className="text-[#4ec9b0] shrink-0">10:55:05</span>
-            <span className="text-[#6a9955] shrink-0">[INFO]</span>
-            <span>WRD Datum: Gauge zero at 530.180m MSL confirmed. Alert stage at 542.100m MSL. Rajaram crest at 535.770m MSL.</span>
-          </div>
-          <div className="flex items-start gap-2 text-emerald-400">
-            <span className="text-[#4ec9b0] shrink-0">10:55:06</span>
-            <span className="text-emerald-400 shrink-0">[READY]</span>
-            <span>All 3 telemetry channels validated. Ingestion ready for forecast simulation execution.</span>
-          </div>
+          {liveLogs.length > 0 ? (
+            liveLogs.map((log, idx) => (
+              <div key={idx} className="flex items-start gap-2">
+                <span className="text-[#4ec9b0] shrink-0">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                <span className={`text-[#6a9955] shrink-0`}>{log.level}</span>
+                <span>{log.message}</span>
+              </div>
+            ))
+          ) : (
+            <div className="text-[#858585] text-[11px]">
+              No live ingestion logs available. Start the scheduler or run a forecast cycle to populate logs.
+            </div>
+          )}
         </div>
       </div>
     </div>

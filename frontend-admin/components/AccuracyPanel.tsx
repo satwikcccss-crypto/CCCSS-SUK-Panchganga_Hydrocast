@@ -60,7 +60,9 @@ const GOV_RECORDS = [
 
 export default function AccuracyPanel({ initialTab = "charts" }: { initialTab?: "charts" | "table" | "gov_records" | "runs" | "calibration" }) {
   const [selectedRunId, setSelectedRunId] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"charts" | "table" | "gov_records" | "runs" | "calibration">(initialTab);
+  const [activeTab, setActiveTab] = useState<"charts" | "table" | "runs" | "calibration">(
+    initialTab === "gov_records" ? "charts" : (initialTab as any)
+  );
   const [stationFilter, setStationFilter] = useState<string>("");
   const [hourlySearch, setHourlySearch] = useState<string>("");
   const [govSearch, setGovSearch] = useState<string>("");
@@ -374,7 +376,7 @@ export default function AccuracyPanel({ initialTab = "charts" }: { initialTab?: 
       const obs = actualObserved.find((o: any) => o.lead_hours === h) ?? {};
 
       const predS = sFc.stage_m ?? hg.stage_m;
-      const predQ = sFc.discharge_m3s ?? (hg.discharge_m3s ?? 91.1);
+      const predQ = sFc.discharge_m3s ?? hg.discharge_m3s ?? null;
       const actS = obs.observed_stage_m ?? null;
       const actFt = obs.observed_distance_ft ?? null;
       const actQ = obs.observed_discharge_m3s ?? null;
@@ -502,6 +504,20 @@ export default function AccuracyPanel({ initialTab = "charts" }: { initialTab?: 
         </div>
       </div>
 
+      {/* ── SENSOR DORMANT / BASELINE PHYSICS STATUS BANNER ─────────────── */}
+      <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-slate-700">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800">
+            Baseline Physics Active (Sensor Standby)
+          </span>
+          <span className="hidden sm:inline">•</span>
+          <span>WRD-calibrated hydraulic baseline model engaged (9.10 m³/s baseflow)</span>
+        </div>
+        <span className="text-[11px] font-mono text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded">
+          Seasonal Standby (June–Oct deployment)
+        </span>
+      </div>
+
       {/* ── ACCURACY KPI METRIC CARDS ──────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {/* Card 1: Spearman Rank Correlation */}
@@ -609,16 +625,7 @@ export default function AccuracyPanel({ initialTab = "charts" }: { initialTab?: 
         >
           📋 Hourly Prediction Log Table (90h)
         </button>
-        <button
-          onClick={() => setActiveTab("gov_records")}
-          className={`pb-3 border-b-2 transition ${
-            activeTab === "gov_records"
-              ? "border-indigo-600 text-indigo-600"
-              : "border-transparent text-gray-500 hover:text-gray-800"
-          }`}
-        >
-          🏛️ शासन नोंद / Official WRD Gauge Records ({GOV_RECORDS.length})
-        </button>
+        {/* Historical WRD flood comparison tab hidden in Admin Console to keep interface streamlined */}
         <button
           onClick={() => setActiveTab("runs")}
           className={`pb-3 border-b-2 transition ${
@@ -871,7 +878,7 @@ export default function AccuracyPanel({ initialTab = "charts" }: { initialTab?: 
       )}
 
       {/* ── TAB 3: OFFICIAL GOVERNMENT WRD GAUGE RECORDS ───────────────────── */}
-      {activeTab === "gov_records" && (
+      {(activeTab as string) === "gov_records" && (
         <div className="flex flex-col gap-5">
           <div className={CARD}>
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-100">

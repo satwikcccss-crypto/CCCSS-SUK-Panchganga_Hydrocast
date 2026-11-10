@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const ADMIN_API = process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:8001";
+const ADMIN_API = process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:8000";
 const API_KEY = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || "";
 
 export async function GET() {

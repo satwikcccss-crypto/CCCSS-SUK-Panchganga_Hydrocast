@@ -261,7 +261,7 @@ def compute_pure_metrics(
     else:
         status = "ACCUMULATING_TELEMETRY"
 
-    return {
+    res = {
         "status": status,
         "sample_size_hours": n,
         "matched_pairs": n,
@@ -293,4 +293,8 @@ def compute_pure_metrics(
         "basin_rainfall_accuracy_pct": None,
         "performance_grade": grade,
     }
+    for k, v in list(res.items()):
+        if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+            res[k] = None
+    return res
 

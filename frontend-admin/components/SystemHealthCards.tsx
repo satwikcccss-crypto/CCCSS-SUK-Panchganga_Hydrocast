@@ -40,30 +40,25 @@ export default function SystemHealthCards({
   onRefresh?: () => void;
   isRefreshing?: boolean;
 }) {
-  const cpu = healthData?.cpu_percent ?? 12.4;
-  const ram = healthData?.ram_percent ?? 38.6;
-  const ramUsed = healthData?.ram_used_gb ?? 6.2;
-  const ramTotal = healthData?.ram_total_gb ?? 16.0;
+  const hasData = healthData != null;
+  const cpu = healthData?.cpu_percent ?? null;
+  const ram = healthData?.ram_percent ?? null;
+  const ramUsed = healthData?.ram_used_gb ?? null;
+  const ramTotal = healthData?.ram_total_gb ?? null;
 
-  const diskEUsed = healthData?.disk_e_used_gb ?? 142.5;
-  const diskETotal = healthData?.disk_e_total_gb ?? 512.0;
-  const diskEPct = Math.round((diskEUsed / diskETotal) * 100);
+  const diskEUsed = healthData?.disk_e_used_gb ?? null;
+  const diskETotal = healthData?.disk_e_total_gb ?? null;
+  const diskEPct = diskEUsed != null && diskETotal != null && diskETotal > 0 ? Math.round((diskEUsed / diskETotal) * 100) : null;
 
-  const diskCUsed = healthData?.disk_c_used_gb ?? 88.2;
-  const diskCTotal = healthData?.disk_c_total_gb ?? 256.0;
-  const diskCPct = Math.round((diskCUsed / diskCTotal) * 100);
+  const diskCUsed = healthData?.disk_c_used_gb ?? null;
+  const diskCTotal = healthData?.disk_c_total_gb ?? null;
+  const diskCPct = diskCUsed != null && diskCTotal != null && diskCTotal > 0 ? Math.round((diskCUsed / diskCTotal) * 100) : null;
 
-  const dbLatency = healthData?.db_latency_ms ?? 14;
-  const dbStatus = healthData?.db_status ?? "CONNECTED";
-  const dbTablespace = healthData?.db_tablespace_mb ?? 342.8;
+  const dbLatency = healthData?.db_latency_ms ?? null;
+  const dbStatus = healthData?.db_status ?? null;
+  const dbTablespace = healthData?.db_tablespace_mb ?? null;
 
-  const tableCounts = healthData?.table_counts ?? {
-    forecast_runs: 148,
-    observed_stage: 8642,
-    rain_gauges: 18,
-    ecmwf_forecasts: 1620,
-    cross_sections: 4,
-  };
+  const tableCounts = healthData?.table_counts ?? null;
 
   return (
     <div className="space-y-6">
@@ -101,16 +96,16 @@ export default function SystemHealthCards({
               <Cpu className="w-4 h-4 text-[#0067b8]" />
             </div>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold font-mono text-[#1b1b1b]">{cpu.toFixed(1)}</span>
+              <span className="text-2xl font-bold font-mono text-[#1b1b1b]">{cpu != null ? cpu.toFixed(1) : "—"}</span>
               <span className="text-xs text-[#767676] font-mono">%</span>
             </div>
             <div className="w-full bg-[#e5e5e5] h-2 rounded-full mt-3 overflow-hidden">
               <div
-                className={`h-full rounded-full ${cpu > 80 ? "bg-red-500" : cpu > 50 ? "bg-amber-500" : "bg-[#0067b8]"}`}
-                style={{ width: `${Math.min(100, cpu)}%` }}
+                className={`h-full rounded-full ${cpu != null && cpu > 80 ? "bg-red-500" : cpu != null && cpu > 50 ? "bg-amber-500" : "bg-[#0067b8]"}`}
+                style={{ width: `${Math.min(100, cpu ?? 0)}%` }}
               />
             </div>
-            <div className="mt-2 text-[10px] text-[#767676] font-mono">Multi-threaded HEC-HMS Worker</div>
+            <div className="mt-2 text-[10px] text-[#767676] font-mono">{!hasData ? "Awaiting system query..." : "Multi-threaded HEC-HMS Worker"}</div>
           </div>
 
           {/* Meter 2: RAM */}
@@ -120,17 +115,17 @@ export default function SystemHealthCards({
               <Activity className="w-4 h-4 text-[#0f7b0f]" />
             </div>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold font-mono text-[#1b1b1b]">{ram.toFixed(1)}</span>
+              <span className="text-2xl font-bold font-mono text-[#1b1b1b]">{ram != null ? ram.toFixed(1) : "—"}</span>
               <span className="text-xs text-[#767676] font-mono">%</span>
             </div>
             <div className="w-full bg-[#e5e5e5] h-2 rounded-full mt-3 overflow-hidden">
               <div
-                className={`h-full rounded-full ${ram > 85 ? "bg-red-500" : "bg-[#0f7b0f]"}`}
-                style={{ width: `${Math.min(100, ram)}%` }}
+                className={`h-full rounded-full ${ram != null && ram > 85 ? "bg-red-500" : "bg-[#0f7b0f]"}`}
+                style={{ width: `${Math.min(100, ram ?? 0)}%` }}
               />
             </div>
             <div className="mt-2 text-[10px] text-[#767676] font-mono">
-              {ramUsed.toFixed(1)} GB used of {ramTotal.toFixed(1)} GB
+              {ramUsed != null && ramTotal != null ? `${ramUsed.toFixed(1)} GB used of ${ramTotal.toFixed(1)} GB` : "Awaiting system query..."}
             </div>
           </div>
 
@@ -141,17 +136,17 @@ export default function SystemHealthCards({
               <HardDrive className="w-4 h-4 text-[#9d5d00]" />
             </div>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold font-mono text-[#1b1b1b]">{diskEPct}</span>
+              <span className="text-2xl font-bold font-mono text-[#1b1b1b]">{diskEPct != null ? diskEPct : "—"}</span>
               <span className="text-xs text-[#767676] font-mono">%</span>
             </div>
             <div className="w-full bg-[#e5e5e5] h-2 rounded-full mt-3 overflow-hidden">
               <div
                 className="h-full rounded-full bg-[#9d5d00]"
-                style={{ width: `${Math.min(100, diskEPct)}%` }}
+                style={{ width: `${Math.min(100, diskEPct ?? 0)}%` }}
               />
             </div>
             <div className="mt-2 text-[10px] text-[#767676] font-mono">
-              {diskEUsed.toFixed(0)} GB / {diskETotal.toFixed(0)} GB (DSS/PostgreSQL)
+              {diskEUsed != null && diskETotal != null ? `${diskEUsed.toFixed(0)} GB / ${diskETotal.toFixed(0)} GB (DSS/PostgreSQL)` : "Awaiting system query..."}
             </div>
           </div>
 
@@ -162,17 +157,17 @@ export default function SystemHealthCards({
               <Server className="w-4 h-4 text-[#5c5c5c]" />
             </div>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-2xl font-bold font-mono text-[#1b1b1b]">{diskCPct}</span>
+              <span className="text-2xl font-bold font-mono text-[#1b1b1b]">{diskCPct != null ? diskCPct : "—"}</span>
               <span className="text-xs text-[#767676] font-mono">%</span>
             </div>
             <div className="w-full bg-[#e5e5e5] h-2 rounded-full mt-3 overflow-hidden">
               <div
                 className="h-full rounded-full bg-[#5c5c5c]"
-                style={{ width: `${Math.min(100, diskCPct)}%` }}
+                style={{ width: `${Math.min(100, diskCPct ?? 0)}%` }}
               />
             </div>
             <div className="mt-2 text-[10px] text-[#767676] font-mono">
-              {diskCUsed.toFixed(0)} GB / {diskCTotal.toFixed(0)} GB (Windows)
+              {diskCUsed != null && diskCTotal != null ? `${diskCUsed.toFixed(0)} GB / ${diskCTotal.toFixed(0)} GB (Windows)` : "Awaiting system query..."}
             </div>
           </div>
         </div>
@@ -190,26 +185,30 @@ export default function SystemHealthCards({
               Hydrological state persistence, run ledger, and sensor observation tables
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs font-mono font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded">
-            <span>Pool Latency: {dbLatency}ms</span>
+          <div className={`flex items-center gap-2 text-xs font-mono font-semibold px-3 py-1 rounded ${dbStatus ? "text-emerald-700 bg-emerald-50 border border-emerald-200" : "text-gray-500 bg-gray-50 border border-gray-200"}`}>
+            <span>Pool Latency: {dbLatency != null ? `${dbLatency}ms` : "—"}</span>
             <span>·</span>
-            <span>Status: {dbStatus}</span>
+            <span>Status: {dbStatus ?? "QUERYING..."}</span>
           </div>
         </div>
 
         {/* DB Metrics Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-5">
-          {Object.entries(tableCounts).map(([tableName, count]) => (
+          {tableCounts ? Object.entries(tableCounts).map(([tableName, count]) => (
             <div key={tableName} className="p-3.5 rounded-lg border border-[#e5e5e5] bg-[#fafafa]">
               <div className="text-[10px] text-[#5c5c5c] font-mono font-bold uppercase truncate">
                 {tableName}
               </div>
               <div className="mt-1 text-lg font-mono font-bold text-[#0067b8]">
-                {count.toLocaleString()}
+                {(count as number).toLocaleString()}
               </div>
               <div className="text-[10px] text-[#767676] mt-0.5">Verified Records</div>
             </div>
-          ))}
+          )) : (
+            <div className="col-span-full p-3.5 rounded-lg border border-[#e5e5e5] bg-[#fafafa] text-center">
+              <div className="text-xs text-[#767676]">Click Refresh Counters to query live table row counts</div>
+            </div>
+          )}
         </div>
 
         {/* PostgreSQL Operational Details */}
@@ -220,7 +219,7 @@ export default function SystemHealthCards({
           </div>
           <div>
             <span className="text-[#5c5c5c]">Tablespace Size: </span>
-            <span className="font-bold text-[#0067b8]">{dbTablespace.toFixed(1)} MB</span>
+            <span className="font-bold text-[#0067b8]">{dbTablespace != null ? `${dbTablespace.toFixed(1)} MB` : "—"}</span>
           </div>
           <div>
             <span className="text-[#5c5c5c]">WAL Archiving: </span>

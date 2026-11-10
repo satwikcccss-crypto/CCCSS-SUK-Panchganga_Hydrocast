@@ -115,11 +115,12 @@ export default function CrossSectionViewer({
         time: fc.forecast_time,
       };
     }
-    // Fallback baseline
-    const baseStage = selectedSite === "SHIVAJI_BRIDGE" ? 541.02 : 533.40;
+    // Fallback baseline — use first available forecast point or site zero datum
+    const fallbackStage = siteConfig.forecast[0]?.stage_m ?? siteConfig.siteInfo.zero_datum_m;
+    const fallbackDischarge = selectedSite === "SHIVAJI_BRIDGE" ? 108.0 : 82.0;
     return {
-      stage_m: baseStage,
-      discharge_m3s: selectedSite === "SHIVAJI_BRIDGE" ? 108.0 : 82.0,
+      stage_m: fallbackStage,
+      discharge_m3s: fallbackDischarge,
       alert_level: "NORMAL",
       time: new Date().toISOString(),
     };

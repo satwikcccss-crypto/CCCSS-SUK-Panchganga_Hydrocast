@@ -803,7 +803,7 @@ def build_rating_curve(
 
 
 def discharge_to_stage(q_m3s: float, rating_df: pd.DataFrame) -> float:
-    """Interpolate Water Level Stage (MSL) from discharge Q."""
+    """Interpolate Water Level Stage (MSL) from discharge Q with hydraulic extrapolation beyond HFL."""
     q_col = rating_df["q_m3s"].values
     h_col = rating_df["stage_m"].values
 
@@ -811,13 +811,40 @@ def discharge_to_stage(q_m3s: float, rating_df: pd.DataFrame) -> float:
     q_u = q_col[idx]
     h_u = h_col[idx]
 
+    q_val = max(0.0, float(q_m3s))
+
+    # Low flow clamp to minimum bed stage
+    if q_val <= q_u[0]:
+        return float(h_u[0])
+
+    # Hydraulic extrapolation beyond maximum surveyed rating curve / HFL (Manning's open-channel law)
+    if q_val > q_u[-1]:
+        idx_top_anchor = max(0, len(q_u) - int(max(2, len(q_u) * 0.1)))
+        q_a, h_a = float(q_u[idx_top_anchor]), float(h_u[idx_top_anchor])
+        q_max, h_max = float(q_u[-1]), float(h_u[-1])
+        h_bed = float(h_u[0])
+
+        dh_a = max(0.5, h_a - h_bed)
+        dh_max = max(1.0, h_max - h_bed)
+
+        if q_max > q_a and dh_max > dh_a:
+            beta = np.log(q_max / q_a) / np.log(dh_max / dh_a)
+            beta = float(np.clip(beta, 1.2, 2.5))  # physical Manning exponent range
+        else:
+            beta = 1.67  # standard wide-channel Manning exponent (5/3)
+
+        # (h - h_bed) = (h_max - h_bed) * (Q / q_max)^(1/beta)
+        h_extrapolated = h_bed + dh_max * ((q_val / q_max) ** (1.0 / beta))
+        return float(h_extrapolated)
+
+    # Standard linear interpolation within surveyed rating table
     f_interp = interp1d(q_u, h_u, kind="linear", bounds_error=False,
                         fill_value=(h_u[0], h_u[-1]))
-    return float(f_interp(max(0.0, float(q_m3s))))
+    return float(f_interp(q_val))
 
 
 def stage_to_discharge(stage_m: float, rating_df: pd.DataFrame) -> float:
-    """Interpolate river discharge Q (m3/s) from water stage elevation (m MSL)."""
+    """Interpolate river discharge Q (m3/s) from water stage elevation (m MSL) with hydraulic extrapolation beyond HFL."""
     h_col = rating_df["stage_m"].values
     q_col = rating_df["q_m3s"].values
 
@@ -825,9 +852,35 @@ def stage_to_discharge(stage_m: float, rating_df: pd.DataFrame) -> float:
     h_u = h_col[idx]
     q_u = q_col[idx]
 
+    h_val = float(stage_m)
+
+    # Below bed elevation
+    if h_val <= h_u[0]:
+        return float(q_u[0])
+
+    # Hydraulic extrapolation beyond surveyed HFL (Manning's open-channel law)
+    if h_val > h_u[-1]:
+        idx_top_anchor = max(0, len(h_u) - int(max(2, len(h_u) * 0.1)))
+        q_a, h_a = float(q_u[idx_top_anchor]), float(h_u[idx_top_anchor])
+        q_max, h_max = float(q_u[-1]), float(h_u[-1])
+        h_bed = float(h_u[0])
+
+        dh_a = max(0.5, h_a - h_bed)
+        dh_max = max(1.0, h_max - h_bed)
+
+        if q_max > q_a and dh_max > dh_a:
+            beta = np.log(q_max / q_a) / np.log(dh_max / dh_a)
+            beta = float(np.clip(beta, 1.2, 2.5))
+        else:
+            beta = 1.67
+
+        dh_val = max(dh_max, h_val - h_bed)
+        q_extrapolated = q_max * ((dh_val / dh_max) ** beta)
+        return float(q_extrapolated)
+
     f_interp = interp1d(h_u, q_u, kind="linear", bounds_error=False,
                         fill_value=(q_u[0], q_u[-1]))
-    return float(f_interp(float(stage_m)))
+    return float(f_interp(h_val))
 
 
 def classify_alert(stage_m: float, site_id: str = "SHIVAJI_BRIDGE") -> str:

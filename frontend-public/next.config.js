@@ -1,4 +1,5 @@
 // frontend/next.config.js
+const path = require("path");
 /** @type {import('next').NextConfig} */
 
 const isDev = process.env.NODE_ENV !== "production";
@@ -33,16 +34,49 @@ const securityHeaders = [
   { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
 ];
 
+const BACKEND_ORIGIN = process.env.BACKEND_ORIGIN || "http://localhost:8000";
+
 const nextConfig = {
   reactStrictMode: true,
-  // Do not advertise the framework/version.
   poweredByHeader: false,
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "",
     NEXT_PUBLIC_WS_URL:  process.env.NEXT_PUBLIC_WS_URL  || "ws://localhost:8000/ws/live",
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/v1/:path*",
+        destination: `${BACKEND_ORIGIN}/api/v1/:path*`,
+      },
+      {
+        source: "/api/SUK_hydrocast_v1",
+        destination: `${BACKEND_ORIGIN}/api/SUK_hydrocast_v1`,
+      },
+      {
+        source: "/docs",
+        destination: `${BACKEND_ORIGIN}/docs`,
+      },
+      {
+        source: "/openapi.json",
+        destination: `${BACKEND_ORIGIN}/openapi.json`,
+      },
+      {
+        source: "/redoc",
+        destination: `${BACKEND_ORIGIN}/redoc`,
+      },
+      {
+        source: "/ws/:path*",
+        destination: `${BACKEND_ORIGIN}/ws/:path*`,
+      },
+    ];
+  },
+  webpack: (config) => {
+    config.resolve.alias["@"] = path.resolve(__dirname);
+    return config;
   },
 };
 

@@ -192,6 +192,57 @@ export default function WindowsSettingsConsole() {
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
   const [healthData, setHealthData] = useState<SystemHealthData | undefined>(undefined);
+  const [healthRefreshing, setHealthRefreshing] = useState(false);
+  const [adminTime, setAdminTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setAdminTime(new Date());
+    const clockTimer = setInterval(() => setAdminTime(new Date()), 1000);
+    return () => clearInterval(clockTimer);
+  }, []);
+
+  const fetchSystemHealth = async () => {
+    setHealthRefreshing(true);
+    try {
+      const [sysRes, dbRes] = await Promise.all([
+        fetch("/api/admin/system", { cache: "no-store" }),
+        fetch("/api/v1/db-health", { cache: "no-store" }).catch(() => null),
+      ]);
+      if (!sysRes.ok) return;
+      const data = await sysRes.json();
+      const h = data.host ?? {};
+      const memTotalGB = h.mem_total ? h.mem_total / (1024 ** 3) : null;
+      const memFreeGB = h.mem_free ? h.mem_free / (1024 ** 3) : null;
+      const memUsedGB = memTotalGB != null && memFreeGB != null ? memTotalGB - memFreeGB : null;
+      const memPct = memTotalGB != null && memUsedGB != null && memTotalGB > 0 ? (memUsedGB / memTotalGB) * 100 : null;
+      const disk = h.disk;
+      const diskTotalGB = disk?.total ? disk.total / (1024 ** 3) : null;
+      const diskFreeGB = disk?.free ? disk.free / (1024 ** 3) : null;
+      const diskUsedGB = diskTotalGB != null && diskFreeGB != null ? diskTotalGB - diskFreeGB : null;
+      const tcpDb = data.database ?? {};
+      const dbData = dbRes?.ok ? await dbRes.json() : null;
+      setHealthData({
+        cpu_percent: h.cpu_percent ?? null,
+        ram_percent: memPct != null ? Math.round(memPct * 10) / 10 : undefined,
+        ram_used_gb: memUsedGB != null ? Math.round(memUsedGB * 10) / 10 : undefined,
+        ram_total_gb: memTotalGB != null ? Math.round(memTotalGB * 10) / 10 : undefined,
+        disk_e_used_gb: diskUsedGB != null ? Math.round(diskUsedGB * 10) / 10 : undefined,
+        disk_e_total_gb: diskTotalGB != null ? Math.round(diskTotalGB * 10) / 10 : undefined,
+        db_status: dbData?.ok ? "CONNECTED" : tcpDb.ok ? "TCP_ONLY" : tcpDb.error ?? "UNREACHABLE",
+        db_latency_ms: dbData?.latency_ms ?? tcpDb.ms ?? undefined,
+        db_tablespace_mb: dbData?.tablespace_mb ?? undefined,
+        db_active_conns: dbData?.active_connections ?? undefined,
+        table_counts: dbData?.tables && Object.keys(dbData.tables).length > 0 ? dbData.tables : undefined,
+      });
+    } catch { /* network failure — leave healthData as-is */ }
+    setHealthRefreshing(false);
+  };
+
+  useEffect(() => {
+    if (activeCategory === "system" || activeCategory === "storage") {
+      if (!healthData) fetchSystemHealth();
+    }
+  }, [activeCategory]);
 
   // Live telemetry polling
   const { data: dashData, mutate: refreshAll } = useSWR(
@@ -299,8 +350,8 @@ export default function WindowsSettingsConsole() {
       hfl: bShivaji?.site?.hfl_m ?? 545.33,
     },
   };
-  const shivajiLvl = bShivaji?.forecast?.[0]?.stage_m ?? 533.54;
-  const shivajiPeak = bShivaji?.forecast ? Math.max(...bShivaji.forecast.map((f: any) => f.stage_m)) : 538.45;
+  const shivajiLvl = bShivaji?.forecast?.[0]?.stage_m;
+  const shivajiPeak = bShivaji?.forecast ? Math.max(...bShivaji.forecast.map((f: any) => f.stage_m)) : undefined;
   const shivajiData: GaugeData = {
     waterLevel: shivajiLvl,
     forecastLevel: shivajiPeak,
@@ -322,7 +373,7 @@ export default function WindowsSettingsConsole() {
       hfl: bRajaram?.site?.hfl_m ?? 545.33,
     },
   };
-  const rajaramLvl = bRajaram?.forecast?.[0]?.stage_m ?? 538.86;
+  const rajaramLvl = bRajaram?.forecast?.[0]?.stage_m;
   const rajaramPeak = bRajaram?.forecast ? Math.max(...bRajaram.forecast.map((f: any) => f.stage_m)) : rajaramLvl;
   const rajaramData: GaugeData = {
     waterLevel: rajaramLvl,
@@ -435,13 +486,47 @@ export default function WindowsSettingsConsole() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <img src="/assets/suk-logo-bw.png" alt="Shivaji University" className="w-6 h-6 rounded-full hidden sm:block" />
-            <span className="font-semibold text-[#1a1a1a] hidden sm:inline">HydroCast Server Settings</span>
-            <ChevronRight className="w-3.5 h-3.5 text-[#8c8c8c]" />
-            <span className="font-semibold text-[#0067b8]">{activeCategoryMeta.label}</span>
+            <img 
+              src="/assets/suk-logo-color.webp" 
+              alt="Shivaji University Kolhapur Logo" 
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-[#e5e5e5] shadow-xs p-0.5 bg-white shrink-0 object-contain" 
+            />
+            <div className="flex flex-col">
+              <span className="font-bold text-[#1a1a1a] text-xs sm:text-sm leading-tight">HydroCast Mission Control</span>
+              <span className="text-[10px] text-[#5c5c5c] font-medium leading-none mt-0.5 hidden sm:inline">
+                CCCSS, Shivaji University Kolhapur
+              </span>
+            </div>
+            <ChevronRight className="w-3.5 h-3.5 text-[#8c8c8c] hidden sm:block" />
+            <span className="font-semibold text-[#0067b8] hidden sm:inline">{activeCategoryMeta.label}</span>
           </div>
 
           <div className="flex items-center gap-2.5">
+            {/* Windows 11 Styled Live Real-Time Clock Pill */}
+            <div 
+              className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-[#f9f9f9] border border-[#e5e5e5] rounded-md shadow-xs font-mono text-xs text-[#262626]"
+              title="Real-Time System Clock (Asia/Kolkata IST)"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <Clock className="w-3.5 h-3.5 text-[#0067b8]" />
+              <span className="font-medium">
+                {adminTime ? (
+                  adminTime.toLocaleString("en-IN", {
+                    timeZone: "Asia/Kolkata",
+                    weekday: "short",
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: true,
+                  }) + " IST"
+                ) : (
+                  "..."
+                )}
+              </span>
+            </div>
             {/* Terminal Dock Toggle Button */}
             <button
               onClick={() => setIsTerminalOpen(!isTerminalOpen)}
@@ -559,7 +644,7 @@ export default function WindowsSettingsConsole() {
                   onClick={() => handleDispatch("message_dispatch", "Message Dispatch")}
                   disabled={loadingAction === "Message Dispatch"}
                   className="win-btn"
-                  title="Send CWC and DDMA flood warning broadcast bulletin"
+                  title="Send flood warning broadcast bulletin"
                 >
                   <Send className="w-3.5 h-3.5 text-[#0067b8]" />
                   <span>{loadingAction === "Message Dispatch" ? "Dispatching..." : "Message Dispatch"}</span>
@@ -815,8 +900,8 @@ export default function WindowsSettingsConsole() {
               </div>
               <SystemHealthCards
                 healthData={healthData}
-                onRefresh={() => handleDispatch("db_test", "DB Test")}
-                isRefreshing={loadingAction === "DB Test"}
+                onRefresh={fetchSystemHealth}
+                isRefreshing={healthRefreshing}
               />
               <div className="bg-[#ffffff] border border-[#e5e5e5] rounded-lg p-5 shadow-xs">
                 <SystemPanel pipeline={pipeline} />
@@ -832,8 +917,8 @@ export default function WindowsSettingsConsole() {
               </div>
               <SystemHealthCards
                 healthData={healthData}
-                onRefresh={() => handleDispatch("db_test", "DB Test")}
-                isRefreshing={loadingAction === "DB Test"}
+                onRefresh={fetchSystemHealth}
+                isRefreshing={healthRefreshing}
               />
               <div className="bg-[#ffffff] border border-[#e5e5e5] rounded-lg p-5 shadow-xs">
                 <ProjectInfoPanel />
