@@ -1076,7 +1076,12 @@ def write_dashboard_payload(
                 "discharge_m3s": pt.get("discharge_m3s", 0.0),
                 "surface_runoff_m3s": pt.get("surface_runoff_m3s", 0.0),
                 "baseflow_m3s": pt.get("baseflow_m3s", 0.0),
-                "stage_m": round(532.0 + (pt.get("discharge_m3s", 0.0) / peak_q * (max_peak - 532.0)) if peak_q > 0 else 532.0, 2),
+                "stage_m": round(
+                    convert_discharge_to_stage_manning(
+                        float(pt.get("discharge_m3s", 0.0) or 0.0), "SHIVAJI_BRIDGE"
+                    ),
+                    2,
+                ),
                 "is_peak": pt.get("is_peak", False),
             }
             for pt in hydrograph
