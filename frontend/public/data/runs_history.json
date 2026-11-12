@@ -16,9 +16,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.04,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261111_18z",
@@ -37,9 +37,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.06,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261111_06z",
@@ -58,9 +58,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.08,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261111_00z",
@@ -79,9 +79,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.09,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261110_18z",
@@ -100,9 +100,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.11,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261110_12z",
@@ -121,9 +121,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.12,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261110_06z",
@@ -142,9 +142,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.13,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261110_00z",
@@ -163,9 +163,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.14,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261109_18z",
@@ -184,9 +184,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.16,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261109_06z",
@@ -205,9 +205,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.18,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261108_18z",
@@ -226,9 +226,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.21,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261108_12z",
@@ -247,9 +247,9 @@
     "has_validation": true,
     "spearman_rho": null,
     "nse": null,
-    "rmse": null,
-    "lifecycle_status": "PENDING",
-    "verified_hours": 0
+    "rmse": 0.22,
+    "lifecycle_status": "IN_PROGRESS",
+    "verified_hours": 1
   },
   {
     "cycle_id": "CYC_20261108_06z",
