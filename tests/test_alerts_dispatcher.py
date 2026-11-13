@@ -102,8 +102,9 @@ class TestTelegramSecurity(unittest.TestCase):
 
     @patch.object(telegram_bot, "ALLOWED_CHAT_IDS_ENV", "")
     @patch.object(telegram_bot, "ALLOWED_USERNAMES_ENV", "")
-    def test_open_when_no_allowlist(self):
-        self.assertTrue(is_authorized(_update(chat_id=999)))
+    def test_deny_by_default_when_no_allowlist(self):
+        # Secure-by-default: no allowlist configured means no access.
+        self.assertFalse(is_authorized(_update(chat_id=999)))
 
     @patch.object(telegram_bot, "ALLOWED_USERNAMES_ENV", "")
     @patch.object(telegram_bot, "ALLOWED_CHAT_IDS_ENV", "111,333")
