@@ -5,7 +5,9 @@ Unit tests for API rate limiting, healthcheck probe, and JWT administrative auth
 """
 
 import unittest
+from datetime import datetime, timezone
 from fastapi.testclient import TestClient
+import jwt
 
 from backend.api.main import app
 from backend.api.security import (
@@ -16,6 +18,8 @@ from backend.api.security import (
     ADMIN_USERNAME,
     ADMIN_PASSWORD,
     API_KEY,
+    JWT_SECRET,
+    JWT_ALGORITHM,
 )
 
 
@@ -107,6 +111,21 @@ class TestRateLimitingAndAuth(unittest.TestCase):
         if 429 in responses:
             idx = responses.index(429)
             self.assertEqual(responses[idx], 429)
+
+    def test_jwt_expiration_minutes_env_var(self):
+        """JWT_EXPIRATION_MINUTES env var controls token expiry."""
+        from unittest.mock import patch
+        with patch("backend.api.security.JWT_EXPIRATION_MINUTES", 5):
+            token = create_access_token(subject="test_user", role="admin")
+            payload = jwt.decode(
+                token, JWT_SECRET, algorithms=[JWT_ALGORITHM],
+                issuer="hydrocast-api",
+            )
+            exp = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
+            iat = datetime.fromtimestamp(payload["iat"], tz=timezone.utc)
+            delta = exp - iat
+            # Allow 60s tolerance for test execution time
+            self.assertAlmostEqual(delta.total_seconds(), 300, delta=60)
 
 
 if __name__ == "__main__":
