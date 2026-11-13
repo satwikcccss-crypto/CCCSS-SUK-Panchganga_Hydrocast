@@ -984,8 +984,8 @@ async def ecmwf_hyetograph(request: Request, subbasin_id: Optional[str] = None):
         log.warning("ECMWF hyetograph fallback: %s", e)
         state = _load_pipeline_state()
         if state and state.get("ecmwf"):
-            return state["ecmwf"]
-        return {}
+            return {"data": state["ecmwf"], "degraded": True, "source": "pipeline_state_file", "error": str(e)}
+        return {"degraded": True, "source": "fallback", "error": str(e), "ecmwf": {}}
 
     result: dict[str, list] = {}
     for r in rows:
@@ -1031,8 +1031,8 @@ async def station_selection(request: Request):
         log.warning("Station selection fallback: %s", e)
         state = _load_pipeline_state()
         if state and state.get("stations"):
-            return state["stations"]
-        return []
+            return {"data": state["stations"], "degraded": True, "source": "pipeline_state_file", "error": str(e)}
+        return {"degraded": True, "source": "fallback", "error": str(e), "stations": []}
     return _jsonify(rows)
 
 
@@ -1072,8 +1072,8 @@ async def gauge_hyetographs(request: Request):
         log.warning("Gauge hyetographs fallback: %s", e)
         state = _load_pipeline_state()
         if state and state.get("gauges"):
-            return state["gauges"]
-        return []
+            return {"data": state["gauges"], "degraded": True, "source": "pipeline_state_file", "error": str(e)}
+        return {"degraded": True, "source": "fallback", "error": str(e), "gauges": []}
     return _jsonify(rows)
 
 
@@ -1111,8 +1111,8 @@ async def outlet_hydrograph(request: Request, outlet_node: str = "J_Outlet"):
         log.warning("Outlet hydrograph fallback: %s", e)
         state = _load_pipeline_state()
         if state and state.get("hydrograph"):
-            return state["hydrograph"]
-        return []
+            return {"data": state["hydrograph"], "degraded": True, "source": "pipeline_state_file", "error": str(e)}
+        return {"degraded": True, "source": "fallback", "error": str(e), "hydrograph": []}
     return _jsonify(rows)
 
 
@@ -1189,6 +1189,9 @@ async def runoff_summary(request: Request):
                         "forecast": forecast,
                     })
             return {
+                "degraded": True,
+                "source": "pipeline_state_file",
+                "error": str(e),
                 "outlet": summary.get("outlet", summary) if isinstance(summary, dict) else summary,
                 "summary": summary,
                 "bridges": bridges_data,
@@ -1197,6 +1200,9 @@ async def runoff_summary(request: Request):
                 "recalibration": state.get("recalibration", {}),
             }
         return {
+            "degraded": True,
+            "source": "fallback",
+            "error": str(e),
             "outlet": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
                        "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
             "summary": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
@@ -1208,6 +1214,9 @@ async def runoff_summary(request: Request):
 
     if not last_cycle:
         return {
+            "degraded": True,
+            "source": "no_data",
+            "error": "No computation cycle available",
             "outlet": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
                        "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
             "summary": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
@@ -1378,8 +1387,8 @@ async def bridge_stage_forecast(request: Request, site_id: str):
             json_key = key_map.get(site_id)
             if json_key and state.get(json_key):
                 b = state[json_key]
-                return {"site": b.get("site", {}), "forecast": b.get("forecast", [])}
-        raise HTTPException(status_code=404, detail=f"Bridge site '{site_id}' not found")
+                return {"degraded": True, "source": "pipeline_state_file", "error": str(e), "site": b.get("site", {}), "forecast": b.get("forecast", [])}
+        return {"degraded": True, "source": "fallback", "error": str(e), "site": {}, "forecast": []}
     if not meta:
         raise HTTPException(status_code=404, detail=f"Bridge site '{site_id}' not found")
     return {
@@ -1413,12 +1422,12 @@ async def active_alerts(request: Request):
         if state:
             alerts = state.get("alerts", [])
             if alerts:
-                return alerts
+                return {"degraded": True, "source": "pipeline_state_file", "error": str(e), "alerts": alerts}
             status_info = state.get("status", {})
             last_cycle = status_info.get("last_cycle", {})
             if last_cycle and last_cycle.get("alert_level", "NORMAL") != "NORMAL":
-                return [{"alert_level": last_cycle["alert_level"], "site_id": "SYSTEM", "status": "active"}]
-        return []
+                return {"degraded": True, "source": "pipeline_state_file", "error": str(e), "alerts": [{"alert_level": last_cycle["alert_level"], "site_id": "SYSTEM", "status": "active"}]}
+        return {"degraded": True, "source": "fallback", "error": str(e), "alerts": []}
     return _jsonify(rows)
 
 
@@ -1608,6 +1617,15 @@ async def pipeline_status(request: Request):
                 """)
     except Exception as e:
         log.warning("Pipeline status fallback: %s", e)
+        state = _load_pipeline_state()
+        p = state.get("pipeline", {}) if state else {}
+        return {
+            "degraded": True,
+            "source": "fallback",
+            "error": str(e),
+            "steps": p.get("steps", []),
+            "metrics": p.get("metrics", {}),
+        }
 
     formatted_steps = []
     if rows and len(rows) > 0:
