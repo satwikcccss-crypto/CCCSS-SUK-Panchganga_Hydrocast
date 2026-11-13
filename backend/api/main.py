@@ -644,6 +644,8 @@ async def system_status(request: Request):
     state = _load_pipeline_state()
     if state:
         status_info = state.get("status", {})
+        if not isinstance(status_info, dict):
+            status_info = {}
         last_cycle_info = status_info.get("last_cycle")
         return {
             "system": "operational",
