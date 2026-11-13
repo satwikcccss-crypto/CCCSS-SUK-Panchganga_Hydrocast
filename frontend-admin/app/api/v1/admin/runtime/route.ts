@@ -2,28 +2,25 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const ADMIN_API = process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:8000";
-const API_KEY = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || "";
+const ADMIN_API = process.env.NEXT_PUBLIC_ADMIN_API_URL || process.env.ADMIN_BACKEND_ORIGIN || "http://localhost:8001";
 
-export async function GET() {
+function bearer(req: Request): string | null {
+  const h = req.headers.get("authorization") || "";
+  return h.toLowerCase().startsWith("bearer ") ? h.slice(7).trim() || null : null;
+}
+
+export async function GET(req: Request) {
+  const token = bearer(req);
+  if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
-    const headers: Record<string, string> = { "Cache-Control": "no-store" };
-    if (API_KEY) headers["X-API-Key"] = API_KEY;
     const res = await fetch(`${ADMIN_API}/api/v1/admin/runtime`, {
-      headers,
+      headers: { "Cache-Control": "no-store", Authorization: `Bearer ${token}` },
       cache: "no-store",
       signal: AbortSignal.timeout(5000),
     });
-    if (res.ok) {
-      return NextResponse.json(await res.json());
-    }
-  } catch {}
-
-  return NextResponse.json({
-    last_run_seconds: null,
-    active_workers: 0,
-    pipeline_stage: "BACKEND_OFFLINE",
-    engine: "Pure-Python Vectorized Digital Twin + HEC-HMS 4.13",
-    timestamp: new Date().toISOString(),
-  });
+    return NextResponse.json(await res.json().catch(() => ({})), { status: res.status });
+  } catch {
+    return NextResponse.json({ error: "Admin backend unavailable" }, { status: 503 });
+  }
 }

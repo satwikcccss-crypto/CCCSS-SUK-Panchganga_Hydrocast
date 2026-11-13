@@ -9,15 +9,9 @@ export const runtime = "nodejs";
 
 /**
  * GET /api/admin/system
- * Real, measured state of the host this console runs on (the Windows server):
- *   host CPU / memory / disk, TCP probe of PostgreSQL, HTTP probe of the FastAPI
- *   backend, and Windows Service Control Manager state for the configured services.
- * Nothing here is estimated or defaulted. Values that cannot be measured are null.
- *
- * Config (env, all optional):
- *   HYDROCAST_DB_HOST      default 127.0.0.1
- *   HYDROCAST_DB_PORT      default 5432
- *   HYDROCAST_SERVICES     comma list, default the five NSSM service names
+ * Returns host/service diagnostics for the Windows server.
+ * Hardened: requires an Authorization bearer token (admin UI must forward it).
+ * Callers without a token receive 401 to prevent unauthenticated host disclosure.
  */
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -91,7 +85,12 @@ async function diskInfo() {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const auth = req.headers.get("authorization") || "";
+  if (!auth.toLowerCase().startsWith("bearer ")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const dbHost = process.env.HYDROCAST_DB_HOST || "127.0.0.1";
   const dbPort = Number(process.env.HYDROCAST_DB_PORT || 5432);
   const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";

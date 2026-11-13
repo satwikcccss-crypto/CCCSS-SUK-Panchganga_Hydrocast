@@ -190,7 +190,7 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
 class APIVersionMiddleware(BaseHTTPMiddleware):
     """Add API-Version header to all responses for client version detection."""
 
-    API_VERSION = "1.0.0"
+    API_VERSION = "1.1.0"
 
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)

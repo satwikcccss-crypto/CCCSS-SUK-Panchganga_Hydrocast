@@ -6,6 +6,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-11-13 — Frontend & API Hardening (`windows-v1.1.0`)
+
+Targeted hardening release on `windows-server-production` focused on reducing unsafe trust boundaries in the operator console (Next.js) and tightening admin-facing proxy behavior.
+
+### Security & access control
+- Disabled unsafe legacy Google-to-JWT minting path in the admin frontend (`/api/v1/admin/auth/google` now returns 410) to prevent bypass of backend admin authentication controls.
+- Hardened admin proxy routes to require caller bearer authentication and forward only explicit `Authorization` headers: `/api/admin/system`, `/api/admin/dispatch`, `/api/v1/admin/health-log`, `/api/v1/admin/pipeline`, `/api/v1/admin/runtime`, and `/api/v1/db-health`.
+- Removed server-side fallback/API-key injection from hardened admin proxies (no `NEXT_PUBLIC_API_KEY`/embedded key forwarding) and eliminated fabricated db-health fallback data from the operator console proxy.
+- `dispatch` actions are now restricted/validated and forwarded to the configured admin backend origin; callers must supply valid admin credentials.
+
+### Operator console fixes
+- Updated operator console components (`SystemPanel`, `LiveTelemetryPanel`, `WindowsSettingsConsole`) to send authenticated requests to hardened proxy routes (bearer token from admin session) and removed direct unauthenticated telemetry fetch patterns where applicable.
+- Kept backend API/admin contracts intact while aligning `API-Version`/service metadata to `1.1.0`.
+
+### Verification
+- Backend: **309 passed, 3 skipped** (`py -m pytest tests/ -q --no-header`).
+- Lint: **ruff** checks clean for `backend`, `tests`, `scripts`.
+- Frontend: `frontend-public` and `frontend-admin` TypeScript checks and production builds pass (Next.js 14.2.35).
+
+### Follow-up (planned)
+- `windows-v1.2.0`: deeper ops/observability patchwork (metrics/log correlation, backup/restore drills, watchdog/scheduler reliability).
+- `windows-v1.3.0`: comprehensive narrative documentation and release/operations runbooks.
+
+---
+
 ## [1.0.0] - 2026-11-13 — Windows Server Base Release (`windows-v1.0.0`)
 
 This is the first structured stable release of the **Windows Server edition** on branch `windows-server-production` (maintained separately from `main`). It establishes a deployable, test-verified baseline for on-premises operation at Shivaji University, Kolhapur.
@@ -28,11 +53,6 @@ This is the first structured stable release of the **Windows Server edition** on
 - Backend: **309 passed, 3 skipped** (`py -m pytest tests/ -q --no-header`).
 - Lint: **ruff 0.17.5** checks clean for `backend`, `tests`, `scripts`.
 - Frontend: `frontend-public` and `frontend-admin` TypeScript checks and production builds pass (Next.js 14.2.35).
-
-### Notes for subsequent Windows releases
-- `windows-v1.1.0`: frontend and Next.js API-route hardening, auth/proxy boundary tightening, CSP/header and dependency review.
-- `windows-v1.2.0`: operations/observability patchwork (deeper metrics/log correlation, backup/restore drills, watchdog/scheduler reliability).
-- `windows-v1.3.0`: comprehensive narrative documentation and release/operations runbooks.
 
 ---
 

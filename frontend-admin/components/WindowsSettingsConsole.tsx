@@ -204,9 +204,19 @@ export default function WindowsSettingsConsole() {
   const fetchSystemHealth = async () => {
     setHealthRefreshing(true);
     try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("hydrocast_admin_token") : null;
+      let authHeader: Record<string, string> = {};
+      if (token) {
+        try {
+          const session = JSON.parse(token);
+          if (session?.token) authHeader = { Authorization: `Bearer ${session.token}` };
+        } catch {
+          /* ignore malformed session */
+        }
+      }
       const [sysRes, dbRes] = await Promise.all([
-        fetch("/api/admin/system", { cache: "no-store" }),
-        fetch("/api/v1/db-health", { cache: "no-store" }).catch(() => null),
+        fetch("/api/admin/system", { cache: "no-store", headers: authHeader }),
+        fetch("/api/v1/db-health", { cache: "no-store", headers: authHeader }).catch(() => null),
       ]);
       if (!sysRes.ok) return;
       const data = await sysRes.json();

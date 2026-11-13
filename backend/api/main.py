@@ -1,5 +1,5 @@
-"""
-Rainfall-Runoff System — FastAPI Backend
+﻿"""
+Rainfall-Runoff System â€” FastAPI Backend
 =========================================
 Serves all hydrologic data to:
   - Next.js dashboard (same-host or CORS)
@@ -66,7 +66,7 @@ from backend.api.observability import (
 
 log = logging.getLogger(__name__)
 
-# ── OpenAPI docs visibility ───────────────────────────────────────────────────
+# â”€â”€ OpenAPI docs visibility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # In production, /docs and /openapi.json are disabled so the API surface is
 # not exposed to unautomated reconnaissance. In dev/test they remain available
 # for local development. Override with APP_ENV=dev to keep docs in production.
@@ -74,10 +74,10 @@ _APP_ENV_DOCS = os.getenv("APP_ENV", "production").lower()
 _docs_url = None if _APP_ENV_DOCS == "production" else "/docs"
 _openapi_url = None if _APP_ENV_DOCS == "production" else "/openapi.json"
 
-# ── Rate limiter ──────────────────────────────────────────────────────────────
+# â”€â”€ Rate limiter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # The shared instance lives in backend.api.limits (also used by the admin login).
 app = FastAPI(
-    version="1.0.0",
+    version="1.1.0",
     summary="Rainfall-runoff and river flood intelligence for the Panchganga Basin, Kolhapur.",
     docs_url=_docs_url,
     openapi_url=_openapi_url,
@@ -87,7 +87,7 @@ app = FastAPI(
         "It serves a 90-hour forecast horizon driven by ECMWF IFS quantitative "
         "precipitation forecasts over the Panchganga Basin. Nine gauged subbasins "
         "feed an SCS-CN loss / SCS unit-hydrograph / Muskingum cascade "
-        "(R1–R5), whose outlet discharge is converted to river stage through a "
+        "(R1â€“R5), whose outlet discharge is converted to river stage through a "
         "WRD-anchored PCHIP rating curve at two bridge sites.\n\n"
         "### How to use this reference\n"
         "Everything on this page is generated from the route declarations in "
@@ -100,15 +100,15 @@ app = FastAPI(
         "|:---|:---|\n"
         "| none | `/api/v1/health` only |\n"
         "| `X-API-Key` | all public `/api/v1/*` reads (rate limited) |\n"
-        "| JWT (HS256) | `/api/v1/admin/*` — trigger runs, archive, recalibrate |\n"
+        "| JWT (HS256) | `/api/v1/admin/*` â€” trigger runs, archive, recalibrate |\n"
         "| `X-Internal-Key` | internal broadcast, hidden from this reference |\n\n"
         "### Related documentation\n"
-        "* Architecture Atlas — end-to-end system diagrams\n"
-        "* Real-Time Runoff Modelling — the hydrology behind the numbers\n"
-        "* HEC-HMS Emulator — the calibrated routing engine\n"
-        "* API Reference — Python source reference for every module\n\n"
+        "* Architecture Atlas â€” end-to-end system diagrams\n"
+        "* Real-Time Runoff Modelling â€” the hydrology behind the numbers\n"
+        "* HEC-HMS Emulator â€” the calibrated routing engine\n"
+        "* API Reference â€” Python source reference for every module\n\n"
         "Every response time is in **UTC** unless stated otherwise. Discharge is "
-        "in **m³/s**, rainfall in **mm/hr**, and stage in **metres above mean sea "
+        "in **mÂ³/s**, rainfall in **mm/hr**, and stage in **metres above mean sea "
         "level** on the WRD datum."
     ),
     openapi_tags=[
@@ -151,13 +151,13 @@ app = FastAPI(
         "name": "HydroCast Operations",
         "url": "https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast",
     },
-    license_info={"name": "Academic research use — DST-SERB funded project"},
+    license_info={"name": "Academic research use â€” DST-SERB funded project"},
 )
 
 app.state.limiter = limiter
 
 
-# ── Custom OpenAPI Schema (Public Read-Only Sanitization) ────────────────────
+# â”€â”€ Custom OpenAPI Schema (Public Read-Only Sanitization) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 def custom_openapi():
     """
     Sanitize the public OpenAPI reference.
@@ -169,12 +169,12 @@ def custom_openapi():
         return app.openapi_schema
 
     schema = get_openapi(
-        title="Shivaji University Kolhapur — HydroCast Public Flood Intelligence API",
-        version="1.0.0",
+        title="Shivaji University Kolhapur â€” HydroCast Public Flood Intelligence API",
+        version="1.1.0",
         description=(
             "### Official Free Public Flood Intelligence API\n"
             "Centre for Climate Change and Sustainability Studies (CCCSS), Shivaji University, Kolhapur.\n\n"
-            "**100% Free & Open Access — No API Key Required.**\n\n"
+            "**100% Free & Open Access â€” No API Key Required.**\n\n"
             "Serves real-time 90-hour river stages (Shivaji Bridge & Rajaram Weir), "
             "basin discharge hydrograph, and 20-station rainfall intelligence.\n\n"
             "**Anti-Scraping & Fair Use Protection:**\n"
@@ -228,7 +228,7 @@ async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
     )
 
 
-# ── CORS ──────────────────────────────────────────────────────────────────────
+# â”€â”€ CORS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # NEVER combine a wildcard origin with credentials: Starlette would then echo
 # the request Origin and set Allow-Credentials, letting any site make
 # credentialed cross-origin calls. The dashboard is same-origin (it proxies via
@@ -248,7 +248,7 @@ _cors_wildcard = "*" in _cors_raw
 if _cors_wildcard:
     _sec_log = logging.getLogger(__name__)
     _sec_log.critical(
-        "CORS_ORIGINS contains '*' — wildcard origins are prohibited. Set explicit allowlist in CORS_ORIGINS."
+        "CORS_ORIGINS contains '*' â€” wildcard origins are prohibited. Set explicit allowlist in CORS_ORIGINS."
     )
     sys.exit(1)
 
@@ -290,7 +290,7 @@ REQUIRE_API_KEY = os.getenv("REQUIRE_API_KEY", "true").lower() == "true"
 # while keeping operational freshness. Ignored when REQUIRE_API_KEY is true.
 PUBLIC_CACHE_MAX_AGE = int(os.getenv("PUBLIC_CACHE_MAX_AGE", "300"))
 
-# ── DB pool (asyncpg) ─────────────────────────────────────────────────────────
+# â”€â”€ DB pool (asyncpg) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 _pool: asyncpg.Pool | None = None
 _pool_unavailable: bool = False
@@ -388,7 +388,7 @@ async def startup():
         except Exception as e:
             log.warning("Database initialization failed: %s", e)
     else:
-        log.warning("Database offline — API will serve from JSON pipeline state files")
+        log.warning("Database offline â€” API will serve from JSON pipeline state files")
 
     try:
         from backend.alerts.telegram_bot import build_telegram_application

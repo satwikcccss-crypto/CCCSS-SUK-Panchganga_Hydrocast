@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
@@ -64,7 +64,7 @@ export default function LiveTelemetryPanel({
   const [liveLogs, setLiveLogs] = useState<{ level: string; message: string; timestamp: string }[]>([]);
   const [logsLoading, setLogsLoading] = useState(false);
 
-  // Live sensor values from API / props — no hardcoded fallbacks
+  // Live sensor values from API / props â€” no hardcoded fallbacks
   const rawDistFt = summary?.observed_distance_ft ?? bShivaji?.live_sensor?.distance_ft ?? null;
   const isMonsoon = (() => {
     const m = new Date().getMonth(); // 5 = June, 9 = October
@@ -77,8 +77,8 @@ export default function LiveTelemetryPanel({
   const fetchSensorNetwork = async () => {
     setSensorLoading(true);
     try {
-      const BASE = process.env.NEXT_PUBLIC_API_URL || "";
-      const res = await fetch(`${BASE}/api/v1/sensors/live`, { cache: "no-store" });
+      
+      const res = await fetch(`/api/v1/sensors/live`, { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         setSensorData(Array.isArray(data) ? data : data.stations ?? []);
@@ -103,10 +103,17 @@ export default function LiveTelemetryPanel({
   const fetchLiveLogs = async () => {
     setLogsLoading(true);
     try {
-      const BASE = process.env.NEXT_PUBLIC_API_URL || "";
-      const res = await fetch(`${BASE}/api/v1/admin/health-log`, {
+      let auth: Record<string, string> = {};
+      try {
+        const raw = sessionStorage.getItem("hydrocast_admin_token");
+        if (raw) {
+          const s = JSON.parse(raw);
+          if (s?.token) auth = { Authorization: `Bearer ${s.token}` };
+        }
+      } catch {}
+      const res = await fetch(`/api/v1/admin/health-log`, {
         cache: "no-store",
-        headers: { "Cache-Control": "no-store" },
+        headers: { "Cache-Control": "no-store", ...auth },
       });
       if (res.ok) {
         const data = await res.json();
@@ -139,7 +146,7 @@ export default function LiveTelemetryPanel({
         setTestResult({
           channel: "ThingSpeak Channel 3424513",
           status: "ok",
-          message: `HTTP 200 OK — Acoustic distance ${rawDistFt ?? "—"} ft accepted (within [15.0 ft, 80.0 ft] bounds). Resampled stage ${rawStageM != null ? rawStageM.toFixed(2) : "—"} m MSL.`,
+          message: `HTTP 200 OK â€” Acoustic distance ${rawDistFt ?? "â€”"} ft accepted (within [15.0 ft, 80.0 ft] bounds). Resampled stage ${rawStageM != null ? rawStageM.toFixed(2) : "â€”"} m MSL.`,
           timestamp: new Date().toLocaleTimeString(),
           latencyMs: latency,
         });
@@ -147,7 +154,7 @@ export default function LiveTelemetryPanel({
         setTestResult({
           channel: "Open-Meteo ECMWF IFS Grid",
           status: "ok",
-          message: `HTTP 200 OK — 90-hour forward NWP precipitation ingested for ${stations.length || 18} catchment coordinates. ECMWF IFS 0.25° grid valid.`,
+          message: `HTTP 200 OK â€” 90-hour forward NWP precipitation ingested for ${stations.length || 18} catchment coordinates. ECMWF IFS 0.25Â° grid valid.`,
           timestamp: new Date().toLocaleTimeString(),
           latencyMs: latency + 65,
         });
@@ -166,7 +173,7 @@ export default function LiveTelemetryPanel({
 
   return (
     <div className="space-y-6">
-      {/* ── 1. REAL-TIME DATA INGESTION FEEDS ARCHITECTURE ── */}
+      {/* â”€â”€ 1. REAL-TIME DATA INGESTION FEEDS ARCHITECTURE â”€â”€ */}
       <div className="bg-[#ffffff] border border-[#e5e5e5] rounded-lg p-5 shadow-xs">
         <div className="pb-4 border-b border-[#f0f0f0] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
@@ -187,11 +194,11 @@ export default function LiveTelemetryPanel({
         {!isMonsoon && (
           <div className="mt-4 p-3 bg-blue-50/70 border border-blue-200 rounded-lg text-blue-900 text-xs flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-bold">📡 IoT Sensor: Seasonal Standby (Operates June–Oct)</span>
+              <span className="font-bold">ðŸ“¡ IoT Sensor: Seasonal Standby (Operates Juneâ€“Oct)</span>
               <span>&middot;</span>
               <span>Calibrated Hydrodynamic Baseline Active</span>
             </div>
-            <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[11px] font-mono font-medium">9.10 m³/s Baseflow</span>
+            <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[11px] font-mono font-medium">9.10 mÂ³/s Baseflow</span>
           </div>
         )}
 
@@ -223,7 +230,7 @@ export default function LiveTelemetryPanel({
 
               <h3 className="text-xs font-bold text-[#1b1b1b]">ThingSpeak Channel 3424513</h3>
               <p className="text-[11px] text-[#5c5c5c] mt-0.5">
-                Chhatrapati Shivaji Maharaj Bridge (16.7089°N, 74.2193°E)
+                Chhatrapati Shivaji Maharaj Bridge (16.7089Â°N, 74.2193Â°E)
               </p>
 
               {/* Hardware & Mathematical Benchmark Specs */}
@@ -234,15 +241,15 @@ export default function LiveTelemetryPanel({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#767676]">Air Range (d_air):</span>
-                  <span className="font-bold text-[#0067b8]">{rawDistFt != null ? rawDistFt : "—"} ft</span>
+                  <span className="font-bold text-[#0067b8]">{rawDistFt != null ? rawDistFt : "â€”"} ft</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#767676]">Calculated Stage H:</span>
-                  <span className="font-bold text-emerald-700">{rawStageM != null ? rawStageM.toFixed(2) : "—"} m MSL</span>
+                  <span className="font-bold text-emerald-700">{rawStageM != null ? rawStageM.toFixed(2) : "â€”"} m MSL</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#767676]">Depth Above Zero (y):</span>
-                  <span className="font-bold text-[#1b1b1b]">{wrdDepthM != null ? wrdDepthM.toFixed(2) : "—"} m</span>
+                  <span className="font-bold text-[#1b1b1b]">{wrdDepthM != null ? wrdDepthM.toFixed(2) : "â€”"} m</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#767676]">Bed Thalweg:</span>
@@ -290,7 +297,7 @@ export default function LiveTelemetryPanel({
               <div className="mt-3 pt-3 border-t border-[#ededed] space-y-1.5 text-xs font-mono">
                 <div className="flex justify-between">
                   <span className="text-[#767676]">Atmospheric Model:</span>
-                  <span className="font-bold text-[#1b1b1b]">ECMWF IFS (0.25°/0.1°)</span>
+                  <span className="font-bold text-[#1b1b1b]">ECMWF IFS (0.25Â°/0.1Â°)</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#767676]">Spatial Grid Points:</span>
@@ -398,7 +405,7 @@ export default function LiveTelemetryPanel({
                 <div className="font-bold text-[#1b1b1b] flex items-center gap-2">
                   <span>{testResult.channel}</span>
                   <span className="text-[10px] font-mono text-[#5c5c5c]">
-                    Latency: {testResult.latencyMs}ms · {testResult.timestamp}
+                    Latency: {testResult.latencyMs}ms Â· {testResult.timestamp}
                   </span>
                 </div>
                 <p className="text-[#333333] mt-0.5 font-mono text-[11px]">{testResult.message}</p>
@@ -408,19 +415,19 @@ export default function LiveTelemetryPanel({
               onClick={() => setTestResult(null)}
               className="text-[#767676] hover:text-[#1b1b1b] text-xs font-bold ml-2"
             >
-              ✕
+              âœ•
             </button>
           </div>
         )}
       </div>
 
-      {/* ── MULTI-STATION SENSOR NETWORK ── */}
+      {/* â”€â”€ MULTI-STATION SENSOR NETWORK â”€â”€ */}
       <div className="bg-[#ffffff] border border-[#e5e5e5] rounded-lg p-5 shadow-xs">
         <div className="pb-4 border-b border-[#f0f0f0] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h2 className="text-sm font-bold text-[#1b1b1b] flex items-center gap-2">
               <Layers className="w-4 h-4 text-[#0067b8]" />
-              <span>Panchganga Sensor Network — Live Water Levels</span>
+              <span>Panchganga Sensor Network â€” Live Water Levels</span>
             </h2>
             <p className="text-xs text-[#5c5c5c] mt-0.5">
               Three ultrasonic radar stations across the basin: Shivaji Bridge (SS), Nitawade RWLS (NW), Ichalkaranji (IK)
@@ -507,7 +514,7 @@ export default function LiveTelemetryPanel({
                 </div>
 
                 <div className="mt-3 pt-3 border-t border-[#ededed] flex items-center justify-between text-[11px] font-mono text-[#767676]">
-                  <span>{sensor.latitude.toFixed(3)}°N, {sensor.longitude.toFixed(3)}°E</span>
+                  <span>{sensor.latitude.toFixed(3)}Â°N, {sensor.longitude.toFixed(3)}Â°E</span>
                   {sensor.has_voltage && <Zap className="w-3 h-3 text-[#0067b8]" />}
                 </div>
               </div>
@@ -516,7 +523,7 @@ export default function LiveTelemetryPanel({
         </div>
       </div>
 
-      {/* ── 2. OUTLIER REJECTION & RESAMPLING PIPELINE (telemetry_metrics.py) ── */}
+      {/* â”€â”€ 2. OUTLIER REJECTION & RESAMPLING PIPELINE (telemetry_metrics.py) â”€â”€ */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Outlier Filter Physics */}
         <div className="bg-[#ffffff] border border-[#e5e5e5] rounded-lg p-5 shadow-xs flex flex-col justify-between">
@@ -532,9 +539,9 @@ export default function LiveTelemetryPanel({
             <div className="mt-4 space-y-3 text-xs">
               <div className="p-3 bg-[#fafafa] border border-[#e5e5e5] rounded-md font-mono text-[11px] space-y-1">
                 <div className="text-[#5c5c5c] font-semibold">Physical Acoustic Acceptance Window:</div>
-                <div className="text-sm font-bold text-[#0067b8]">15.0 ft ≤ d_air ≤ 80.0 ft</div>
+                <div className="text-sm font-bold text-[#0067b8]">15.0 ft â‰¤ d_air â‰¤ 80.0 ft</div>
                 <div className="text-[10px] text-[#767676] pt-1 border-t border-[#ededed]">
-                  Converts to stage domain: 524.96 m MSL ≤ H ≤ 544.78 m MSL
+                  Converts to stage domain: 524.96 m MSL â‰¤ H â‰¤ 544.78 m MSL
                 </div>
               </div>
 
@@ -596,7 +603,7 @@ export default function LiveTelemetryPanel({
                   1. Acoustic Distance to Water Stage (m MSL)
                 </div>
                 <div className="text-sm font-bold text-[#1b1b1b] mt-1">
-                  H = 549.35 - (d_air × 0.3048)
+                  H = 549.35 - (d_air Ã— 0.3048)
                 </div>
                 <div className="text-[11px] text-[#5c5c5c] mt-1 font-sans">
                   Where 549.35 m MSL is the surveyed ultrasonic transducer face elevation datum.
@@ -622,7 +629,7 @@ export default function LiveTelemetryPanel({
                   3. Calibrated Stage-Discharge Rating Equation
                 </div>
                 <div className="text-sm font-bold text-[#1b1b1b] mt-1">
-                  Q = 143.5 × (H - 530.18)^1.62 (m³/s)
+                  Q = 143.5 Ã— (H - 530.18)^1.62 (mÂ³/s)
                 </div>
                 <div className="text-[11px] text-[#5c5c5c] mt-1 font-sans">
                   Empirical power rating curve cross-calibrated against WRD ADCP velocity-area measurements.
@@ -638,7 +645,7 @@ export default function LiveTelemetryPanel({
         </div>
       </div>
 
-      {/* ── 3. LIVE INGESTION EVENT STREAM & PIPELINE RUNNER ── */}
+      {/* â”€â”€ 3. LIVE INGESTION EVENT STREAM & PIPELINE RUNNER â”€â”€ */}
       <div className="bg-[#ffffff] border border-[#e5e5e5] rounded-lg p-5 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#f0f0f0] gap-2">
           <div>

@@ -3,15 +3,21 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const ADMIN_API_BASE = process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:8000";
-const API_KEY = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || "dev-internal-bypass-key";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_ORIGIN || "http://localhost:8000";
+const ADMIN_API_BASE = process.env.NEXT_PUBLIC_ADMIN_API_URL || process.env.ADMIN_BACKEND_ORIGIN || API_BASE;
 
-function authHeaders(token?: string): Record<string, string> {
-  const h: Record<string, string> = { "Content-Type": "application/json" };
-  if (token) h["Authorization"] = `Bearer ${token}`;
-  if (API_KEY) h["X-API-Key"] = API_KEY;
-  return h;
+function extractBearer(req: Request, bodyToken?: string): string | null {
+  const header = req.headers.get("authorization") || "";
+  if (header.toLowerCase().startsWith("bearer ")) return header.slice(7).trim() || null;
+  if (bodyToken && bodyToken.trim()) return bodyToken.trim();
+  return null;
+}
+
+function authHeaders(token: string): Record<string, string> {
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
 }
 
 export async function POST(req: Request) {
@@ -21,13 +27,20 @@ export async function POST(req: Request) {
     token?: string;
   };
   const action = body.action || "trigger";
-  const token = body.token;
+  const token = extractBearer(req, body.token);
   const sentAt = new Date().toISOString();
+
+  if (!token) {
+    return NextResponse.json(
+      { ok: false, action, sent_at: sentAt, message: "Unauthorized: admin bearer token required" },
+      { status: 401 }
+    );
+  }
 
   // 1. DATABASE TEST
   if (action === "db_test" || action === "test_db") {
     try {
-      const res = await fetch(`${API_BASE}/api/v1/admin/db-test`, {
+      const res = await fetch(`${ADMIN_API_BASE}/api/v1/admin/db-test`, {
         method: "POST",
         headers: authHeaders(token),
         cache: "no-store",
@@ -79,7 +92,7 @@ export async function POST(req: Request) {
   // 2. MESSAGE DISPATCH
   if (action === "message_dispatch" || action === "dispatch_message") {
     try {
-      const res = await fetch(`${API_BASE}/api/v1/admin/dispatch`, {
+      const res = await fetch(`${ADMIN_API_BASE}/api/v1/admin/dispatch`, {
         method: "POST",
         headers: authHeaders(token),
         cache: "no-store",
@@ -122,7 +135,7 @@ export async function POST(req: Request) {
   // 3. DATABASE BACKUP
   if (action === "backup" || action === "db_backup") {
     try {
-      const res = await fetch(`${API_BASE}/api/v1/admin/backup/trigger`, {
+      const res = await fetch(`${ADMIN_API_BASE}/api/v1/admin/backup/trigger`, {
         method: "POST",
         headers: authHeaders(token),
         cache: "no-store",
@@ -162,9 +175,9 @@ export async function POST(req: Request) {
 
   // 4. PIPELINE TRIGGER, ABORT, RECALIBRATE
   const actionMap: Record<string, string> = {
-    trigger: `${API_BASE}/api/v1/admin/pipeline/trigger`,
-    abort: `${API_BASE}/api/v1/admin/pipeline/abort`,
-    recalibrate: `${API_BASE}/api/v1/admin/recalibrate`,
+    trigger: `${ADMIN_API_BASE}/api/v1/admin/pipeline/trigger`,
+    abort: `${ADMIN_API_BASE}/api/v1/admin/pipeline/abort`,
+    recalibrate: `${ADMIN_API_BASE}/api/v1/admin/recalibrate`,
   };
 
   const targetUrl = actionMap[action] || `${API_BASE}/api/v1/admin/pipeline/trigger`;
