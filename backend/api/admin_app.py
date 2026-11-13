@@ -31,7 +31,17 @@ from typing import Optional
 
 import asyncpg
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Depends, Header, Request, Query, status
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    WebSocket,
+    WebSocketDisconnect,
+    Depends,
+    Header,
+    Request,
+    Query,
+    status,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -48,11 +58,12 @@ log = logging.getLogger(__name__)
 
 app = FastAPI(
     title="HydroCast Panchganga Operator Console API",
-    version="2.0.0",
+    version="1.0.0",
     summary="Operator Console administrative API (Port 8001)",
     description=(
         "**IMPENETRABLE ADMIN CONSOLE** — HydroCast operator control plane.\n\n"
-        "Every route requires authentication. Two credentials are accepted:\n"
+        "Every route requires authentication except the unauthenticated "
+        "`GET /healthz/live` container liveness probe. Two credentials are accepted:\n"
         "| Credential | Grants |\n"
         "|:---|:---|\n"
         "| JWT bearer (HS256) | full admin control |\n"
@@ -68,6 +79,7 @@ app = FastAPI(
         "- `POST /api/v1/admin/pause` — pause/resume scheduler\n"
         "- `POST /api/v1/admin/backup-db` — manual database backup\n"
         "- `GET /api/v1/admin/health` — admin service health\n"
+        "- `GET /healthz/live` — unauthenticated liveness probe\n"
         "- `WS /ws/admin/logs` — streaming operator logs over WebSocket\n\n"
         "This port (8001) is **isolated from the public portal** (Port 8000). "
         "No public read routes are exposed here."
@@ -101,7 +113,12 @@ async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
 # ── CORS (admin console same-origin only) ──────────────────────────────────────
 
 _cors_raw = [o.strip() for o in os.getenv("ADMIN_CORS_ORIGINS", "").split(",") if o.strip()]
-for _default_origin in ("http://localhost:3001", "http://127.0.0.1:3001", "http://localhost:3000", "http://127.0.0.1:3000"):
+for _default_origin in (
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+):
     if _default_origin not in _cors_raw:
         _cors_raw.append(_default_origin)
 if "*" in _cors_raw:
@@ -125,9 +142,13 @@ class AdminSecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("X-Frame-Options", "DENY")
         response.headers.setdefault("Referrer-Policy", "no-referrer")
-        response.headers.setdefault("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
+        response.headers.setdefault(
+            "Permissions-Policy", "geolocation=(), microphone=(), camera=()"
+        )
         response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
-        response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        response.headers.setdefault(
+            "Strict-Transport-Security", "max-age=31536000; includeSubDomains"
+        )
         response.headers.setdefault("Cache-Control", "no-store, no-cache, must-revalidate, private")
         return response
 
@@ -137,10 +158,23 @@ app.add_middleware(AdminSecurityHeadersMiddleware)
 
 # ── Anti-scraping (admin is fully JWT-protected but block bots early) ────────
 _BLOCKED_UA_FRAGMENTS = [
-    "scrapy", "httpclient", "python-requests", "go-http-client",
-    "wget", "curl", "libwww", "java/", "okhttp", "httpx",
-    "node-fetch", "undici", "axios", "got ", "superagent",
+    "scrapy",
+    "httpclient",
+    "python-requests",
+    "go-http-client",
+    "wget",
+    "curl",
+    "libwww",
+    "java/",
+    "okhttp",
+    "httpx",
+    "node-fetch",
+    "undici",
+    "axios",
+    "got ",
+    "superagent",
 ]
+
 
 class AdminAntiScrapingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -174,10 +208,12 @@ _pool: asyncpg.Pool | None = None
 _admin_pool_unavailable: bool = False
 _admin_pool_last_attempt: float = 0.0
 
+
 async def get_pool() -> Optional[asyncpg.Pool]:
     """Return the asyncpg pool with circuit breaker for fast failure."""
     global _pool, _admin_pool_unavailable, _admin_pool_last_attempt
     import asyncio, time as _time
+
     if _pool is not None:
         return _pool
     now = _time.monotonic()
@@ -202,6 +238,7 @@ async def get_pool() -> Optional[asyncpg.Pool]:
 
 # ── Auth Dependency ────────────────────────────────────────────────────────────
 
+
 async def verify_admin_or_key(
     request: Request,
     x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
@@ -213,6 +250,7 @@ async def verify_admin_or_key(
         token = authorization[7:]
         # Use existing security module for JWT verification
         from backend.api.security import decode_access_token
+
         try:
             decode_access_token(token)
             return True
@@ -240,6 +278,22 @@ app.include_router(ws_hub_router)
 
 # ── Admin-Only Routes ──────────────────────────────────────────────────────────
 
+
+@app.get(
+    "/healthz/live",
+    tags=["Admin Health"],
+    summary="Admin liveness probe",
+)
+async def admin_liveness():
+    """Unauthenticated liveness probe for container orchestration."""
+    return {
+        "status": "alive",
+        "service": "hydrocast-admin-console",
+        "version": "1.0.0",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+
 @app.get(
     "/api/v1/admin/health",
     tags=["Admin Health"],
@@ -259,7 +313,7 @@ async def admin_health(request: Request, _: bool = AdminDep):
 
     return {
         "service": "hydrocast-admin-console",
-        "version": "2.0.0",
+        "version": "1.0.0",
         "port": 8001,
         "database": db_status,
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -277,6 +331,7 @@ async def admin_health(request: Request, _: bool = AdminDep):
 )
 async def admin_abort(request: Request, _: bool = AdminDep):
     from backend.service.pipeline_worker import trigger_abort
+
     trigger_abort()
     return {"status": "aborted", "message": "Emergency abort signal issued"}
 
@@ -288,6 +343,7 @@ async def admin_abort(request: Request, _: bool = AdminDep):
 )
 async def admin_pause(pause: bool, request: Request, _: bool = AdminDep):
     from backend.service.scheduler_daemon import scheduler_instance
+
     if pause:
         scheduler_instance.pause()
     else:
@@ -303,6 +359,7 @@ async def admin_pause(pause: bool, request: Request, _: bool = AdminDep):
 async def admin_backup_db(request: Request, _: bool = AdminDep):
     import subprocess
     import shutil
+
     pg_dump = shutil.which("pg_dump")
     if not pg_dump:
         return {"status": "failed", "error": "pg_dump not found on PATH"}
@@ -312,7 +369,9 @@ async def admin_backup_db(request: Request, _: bool = AdminDep):
     try:
         result = subprocess.run(
             [pg_dump, db_url],
-            capture_output=True, text=True, timeout=300,
+            capture_output=True,
+            text=True,
+            timeout=300,
         )
         if result.returncode == 0:
             return {"status": "success", "message": "Database backup completed"}
@@ -322,6 +381,7 @@ async def admin_backup_db(request: Request, _: bool = AdminDep):
 
 
 # ── WebSocket: Admin Logs ──────────────────────────────────────────────────────
+
 
 class AdminWSManager:
     MAX_CONNECTIONS = int(os.getenv("MAX_WS_CONNECTIONS", "50"))
@@ -364,6 +424,7 @@ async def ws_admin_logs(websocket: WebSocket, token: Optional[str] = Query(None)
         return
     try:
         from backend.api.security import decode_access_token
+
         decode_access_token(token)
     except Exception:
         if not (API_KEY and hmac.compare_digest(token, API_KEY)):
@@ -386,6 +447,7 @@ async def ws_admin_telemetry(websocket: WebSocket, token: Optional[str] = Query(
         return
     try:
         from backend.api.security import decode_access_token
+
         decode_access_token(token)
     except Exception:
         if not (API_KEY and hmac.compare_digest(token, API_KEY)):

@@ -23,8 +23,11 @@ services:
       - postgres_password
     volumes:
       - hydrocast_db_data:/var/lib/postgresql/data
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      - ./database/seeds.sql:/docker-entrypoint-initdb.d/02-seeds.sql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      - ./database/seeds.sql:/docker-entrypoint-initdb.d/seeds.sql:ro
+      - ./database/schema:/docker-entrypoint-initdb.d/schema:ro
+      - ./database/seeds:/docker-entrypoint-initdb.d/seeds:ro
+      - ./database/auth:/docker-entrypoint-initdb.d/auth:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U hydrocast -d rainfall_runoff"]
       interval: 10s
@@ -65,7 +68,7 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz/live')"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -100,7 +103,7 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/api/v1/admin/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/healthz/live')"]
       interval: 30s
       timeout: 10s
       retries: 3

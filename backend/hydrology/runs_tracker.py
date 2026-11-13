@@ -18,8 +18,10 @@ log = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RUNS_DIR = PROJECT_ROOT / "data" / "runs"
 
-# Safe run ID pattern: CYC_YYYYMMDD_HHz only
-_RUN_ID_RE = re.compile(r"^CYC_\d{8}_\d{2}z$")
+# Safe run ID pattern. Scheduler emits CYC_YYYYMMDD_HHMM; legacy runs use
+# CYC_YYYYMMDD_HHz and manual triggers append _MANUAL. The 8-digit date is
+# mandatory, so path traversal via the run ID is impossible.
+_RUN_ID_RE = re.compile(r"^CYC_\d{8}_(\d{2}z|\d{4}(_MANUAL)?)$")
 
 
 def _run_path(runs_dir: Path, run_id: str) -> Path:

@@ -79,32 +79,55 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "[WARNING] DB check finished with exit code $LASTEXITCODE" -ForegroundColor Yellow
 }
 
-# 2. Apply Core Schema
+# 2. Apply Core Schema (run from database dir so \ir paths resolve consistently)
+$DbDir = Join-Path $PSScriptRoot "..\database"
 Write-Host "[3/5] Applying core schema (database/schema.sql)..." -ForegroundColor Cyan
-$SchemaFile = Join-Path $PSScriptRoot "..\database\schema.sql"
-& $PsqlBin -h $PgHost -p $PgPort -U $PgUser -d $DbName -f $SchemaFile
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "[ERROR] Failed applying schema.sql" -ForegroundColor Red
-    exit 1
+Push-Location $DbDir
+try {
+    & $PsqlBin -h $PgHost -p $PgPort -U $PgUser -d $DbName -f "schema.sql"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[ERROR] Failed applying schema.sql" -ForegroundColor Red
+        exit 1
+    }
+
+    # 3. Apply Seeds
+    Write-Host "[4/5] Applying catchment seeds (database/seeds.sql)..." -ForegroundColor Cyan
+    & $PsqlBin -h $PgHost -p $PgPort -U $PgUser -d $DbName -f "seeds.sql"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[ERROR] Failed applying seeds.sql" -ForegroundColor Red
+        exit 1
+    }
+} finally {
+    Pop-Location
 }
 
-# 3. Apply Seeds
-Write-Host "[4/5] Applying catchment seeds (database/seeds.sql)..." -ForegroundColor Cyan
-$SeedsFile = Join-Path $PSScriptRoot "..\database\seeds.sql"
-& $PsqlBin -h $PgHost -p $PgPort -U $PgUser -d $DbName -f $SeedsFile
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "[ERROR] Failed applying seeds.sql" -ForegroundColor Red
-    exit 1
+# 4. Apply Admin RBAC schema and upgrades
+Write-Host "[5/6] Applying administrator auth schema (database/auth)..." -ForegroundColor Cyan
+$AuthDir = Join-Path $PSScriptRoot "..\database\auth"
+foreach ($file in @("01_admin_users.sql", "02_admin_users_upgrade.sql")) {
+    $path = Join-Path $AuthDir $file
+    if (Test-Path $path) {
+        & $PsqlBin -h $PgHost -p $PgPort -U $PgUser -d $DbName -f $path
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[ERROR] Failed applying $file" -ForegroundColor Red
+            exit 1
+        }
+    }
 }
 
-# 4. Apply Admin RBAC Accounts
-Write-Host "[5/5] Applying administrator accounts (database/admin_users.sql)..." -ForegroundColor Cyan
-$AdminFile = Join-Path $PSScriptRoot "..\database\admin_users.sql"
-& $PsqlBin -h $PgHost -p $PgPort -U $PgUser -d $DbName -f $AdminFile
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "[ERROR] Failed applying admin_users.sql" -ForegroundColor Red
-    exit 1
+# 5. Optional bootstrap seed (template by default; contains no real credentials)
+$BootstrapFile = Join-Path $AuthDir "03_seed_adm1_users.sql"
+if (Test-Path $BootstrapFile) {
+    Write-Host "[6/6] Applying bootstrap admin template (database/auth/03_seed_adm1_users.sql)..." -ForegroundColor Cyan
+    & $PsqlBin -h $PgHost -p $PgPort -U $PgUser -d $DbName -f $BootstrapFile
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[ERROR] Failed applying 03_seed_adm1_users.sql" -ForegroundColor Red
+        exit 1
+    }
 }
+
+Write-Host "`n[NEXT STEP] Create the first real administrator account (no credentials are committed to git):" -ForegroundColor Yellow
+Write-Host "  python -m backend.scripts.manage_users add --username <admin> --password <password> --role admin --email <email> --name \"<Full Name>\"" -ForegroundColor Yellow
 
 Write-Host "`n[SUCCESS] PostgreSQL Database initialized and ready for production." -ForegroundColor Green
 Write-Host "App Connection URI: postgresql://${AppUser}:${AppPassword}@${PgHost}:${PgPort}/${DbName}" -ForegroundColor Green

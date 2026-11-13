@@ -19,3 +19,4 @@ CREATE TABLE IF NOT EXISTS bridge_stage_forecast (
 );
 
 CREATE INDEX IF NOT EXISTS idx_bsf_site_run ON bridge_stage_forecast (site_id, forecast_run_id);
+CREATE INDEX IF NOT EXISTS idx_bsf_run_site_lead ON bridge_stage_forecast (forecast_run_id, site_id, lead_hours);

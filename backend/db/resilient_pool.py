@@ -38,6 +38,9 @@ log = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 STAGING_DIR = PROJECT_ROOT / "data" / "staging" / "pending_commits"
+# An in-flight replay owns its .processing file. Only reclaim files older than
+# this threshold, which indicates the owning worker crashed mid-replay.
+STAGING_STALE_SECONDS = int(os.getenv("HYDROCAST_STAGING_STALE_SECONDS", "900"))
 STAGING_DIR.mkdir(parents=True, exist_ok=True)
 
 _POOL_LOCK = threading.Lock()
@@ -279,6 +282,20 @@ def replay_staged_transactions(conn=None) -> Dict[str, int]:
     Replay all pending disk-staged transactions once the database is back online.
     Returns summary of replayed vs failed files.
     """
+    # 1. Recover orphaned .processing files from a previous crashed run.
+    # Never steal a file that another worker may still be replaying.
+    cutoff = time.time() - STAGING_STALE_SECONDS
+    for proc_file in STAGING_DIR.glob("staged_*.processing"):
+        orig_name = proc_file.with_suffix("")
+        if orig_name.exists():
+            continue
+        try:
+            if proc_file.stat().st_mtime > cutoff:
+                continue
+            proc_file.rename(orig_name)
+        except OSError:
+            pass
+
     staged_files = sorted(STAGING_DIR.glob("staged_*.json"))
     if not staged_files:
         return {"replayed": 0, "failed": 0, "pending": 0}
@@ -287,51 +304,75 @@ def replay_staged_transactions(conn=None) -> Dict[str, int]:
     replayed = 0
     failed = 0
 
-    def _execute_file(active_conn, file_path: Path) -> bool:
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+    def _execute_file(active_conn, file_path: Path) -> Optional[bool]:
+        # Atomic rename to prevent race condition across concurrent worker/admin replays
+        proc_path = file_path.with_suffix(".json.processing")
+        try:
+            file_path.rename(proc_path)
+        except (FileNotFoundError, OSError):
+            # Another process already picked this file up.
+            return None
 
-        table = data.get("table")
-        records = data.get("records", [])
-        if not table or not records:
-            file_path.unlink()
-            return True
+        try:
+            with open(proc_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
 
-        if table not in ALLOWED_STAGING_TABLES:
-            log.error(
-                "Security check failed: table '%s' in staged file %s not in ALLOWED_STAGING_TABLES whitelist",
-                table,
-                file_path.name,
-            )
-            raise ValueError(f"Table '{table}' is not permitted for replay")
+            table = data.get("table")
+            records = data.get("records", [])
+            if not table or not records:
+                proc_path.unlink(missing_ok=True)
+                return True
 
-        with active_conn.cursor() as cur:
-            for item in records:
-                cols = list(item.keys())
-                for col in cols:
-                    if not _IDENTIFIER_RE.match(col):
-                        log.error(
-                            "Security check failed: invalid column identifier '%s' in staged file %s",
-                            col,
-                            file_path.name,
-                        )
-                        raise ValueError(f"Column identifier '{col}' is invalid")
-
-                vals = [item[c] for c in cols]
-                query = sql.SQL("INSERT INTO {} ({}) VALUES ({}) ON CONFLICT DO NOTHING").format(
-                    sql.Identifier(table),
-                    sql.SQL(", ").join(map(sql.Identifier, cols)),
-                    sql.SQL(", ").join(sql.Placeholder() * len(cols)),
+            if table not in ALLOWED_STAGING_TABLES:
+                log.error(
+                    "Security check failed: table '%s' in staged file %s not in ALLOWED_STAGING_TABLES whitelist",
+                    table,
+                    proc_path.name,
                 )
-                cur.execute(query, vals)
-        active_conn.commit()
-        file_path.unlink()
-        return True
+                raise ValueError(f"Table '{table}' is not permitted for replay")
+
+            with active_conn.cursor() as cur:
+                for item in records:
+                    cols = list(item.keys())
+                    for col in cols:
+                        if not _IDENTIFIER_RE.match(col):
+                            log.error(
+                                "Security check failed: invalid column identifier '%s' in staged file %s",
+                                col,
+                                proc_path.name,
+                            )
+                            raise ValueError(f"Column identifier '{col}' is invalid")
+
+                    vals = [item[c] for c in cols]
+                    query = sql.SQL("INSERT INTO {} ({}) VALUES ({}) ON CONFLICT DO NOTHING").format(
+                        sql.Identifier(table),
+                        sql.SQL(", ").join(map(sql.Identifier, cols)),
+                        sql.SQL(", ").join(sql.Placeholder() * len(cols)),
+                    )
+                    cur.execute(query, vals)
+            active_conn.commit()
+            proc_path.unlink(missing_ok=True)
+            return True
+        except Exception:
+            # Crucial: Roll back PostgreSQL transaction so connection is not left in InFailedSqlTransaction
+            try:
+                if hasattr(active_conn, "rollback"):
+                    active_conn.rollback()
+            except Exception:
+                pass
+            # Restore file so it can be investigated or retried
+            try:
+                if proc_path.exists() and not file_path.exists():
+                    proc_path.rename(file_path)
+            except Exception:
+                pass
+            raise
 
     if conn is not None:
         for f in staged_files:
             try:
-                if _execute_file(conn, f):
+                result = _execute_file(conn, f)
+                if result is True:
                     replayed += 1
             except Exception as err:
                 log.error("Failed to replay staged file %s: %s", f.name, err)
@@ -341,7 +382,8 @@ def replay_staged_transactions(conn=None) -> Dict[str, int]:
             with get_resilient_connection() as active_conn:
                 for f in staged_files:
                     try:
-                        if _execute_file(active_conn, f):
+                        result = _execute_file(active_conn, f)
+                        if result is True:
                             replayed += 1
                     except Exception as err:
                         log.error("Failed to replay staged file %s: %s", f.name, err)

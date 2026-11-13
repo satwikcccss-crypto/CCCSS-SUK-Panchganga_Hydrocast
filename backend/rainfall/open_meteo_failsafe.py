@@ -46,6 +46,33 @@ STATIONS_MAP = {
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CACHE_DIR = PROJECT_ROOT / "data" / "staging" / "weather_cache"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
+CACHE_RETENTION_DAYS = int(os.getenv("HYDROCAST_WEATHER_CACHE_RETENTION_DAYS", "30"))
+
+
+def purge_expired_weather_cache(
+    cache_dir: Path = CACHE_DIR,
+    max_age_days: int = CACHE_RETENTION_DAYS,
+) -> int:
+    """Delete cached audit forecasts older than ``max_age_days``.
+
+    ``latest_successful_weather.json`` and unstamped files are preserved.
+    Returns the number of files removed.
+    """
+    if not cache_dir.exists():
+        return 0
+
+    cutoff = time.time() - (max_age_days * 86400)
+    purged = 0
+    for path in cache_dir.glob("weather_success_*.json"):
+        try:
+            if path.is_file() and path.stat().st_mtime < cutoff:
+                path.unlink(missing_ok=True)
+                purged += 1
+                log.info("Purged expired weather cache file: %s", path.name)
+        except Exception as exc:  # noqa: BLE001 - cleanup must never break a fetch
+            log.warning("Could not purge weather cache file %s: %s", path.name, exc)
+    return purged
+
 
 OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 OPEN_METEO_MODEL = os.getenv("HYDROCAST_OPEN_METEO_MODEL", "ecmwf_ifs025")
@@ -195,6 +222,7 @@ def fetch_tier1_open_meteo(
                 )
 
             log.info("Tier 1 weather fetch successful for %d stations.", len(station_series))
+            purge_expired_weather_cache()
             return result
         except Exception as exc:  # noqa: BLE001 - retry any transport/parse error
             last_err = exc
@@ -255,4 +283,5 @@ __all__ = [
     "STATIONS_MAP",
     "fetch_tier1_open_meteo",
     "get_weather_failsafe",
+    "purge_expired_weather_cache",
 ]

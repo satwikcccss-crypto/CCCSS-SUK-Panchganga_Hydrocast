@@ -70,7 +70,7 @@ async def websocket_telemetry_endpoint(websocket: WebSocket):
 
     try:
         while True:
-            hw = get_hardware_telemetry()
+            hw = await asyncio.to_thread(get_hardware_telemetry)
             sch = scheduler_instance.get_status()
             active_run = dict(ACTIVE_RUN_METADATA)
 

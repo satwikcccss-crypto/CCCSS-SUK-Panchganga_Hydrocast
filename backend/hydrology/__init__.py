@@ -66,7 +66,6 @@ from backend.stage_conversion import post_process as post_process  # noqa: F401
 from backend.ml import ml_calibration as ml_calibration  # noqa: F401
 from backend.validation import realtime_telemetry_validator as realtime_telemetry_validator  # noqa: F401
 from backend.validation import telemetry_metrics as telemetry_metrics  # noqa: F401
-from backend.stage_conversion import stage_converter as stage_converter  # noqa: F401
 from backend.ml import ml_parameter_predictor as ml_parameter_predictor  # noqa: F401
 
 __all__ = [

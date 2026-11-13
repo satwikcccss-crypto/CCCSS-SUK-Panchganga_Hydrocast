@@ -11,6 +11,7 @@ Coverage target: the read endpoints + validation + security middleware, i.e. the
 parts that were previously only reachable in production.
 """
 
+import logging
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
@@ -23,6 +24,7 @@ from backend.hydrology import ml_calibration, runs_tracker
 
 
 # ── asyncpg double ────────────────────────────────────────────────────────────
+
 
 class _Acquire:
     def __init__(self, conn):
@@ -85,6 +87,7 @@ def client(monkeypatch):
 
 # ── health + middleware ───────────────────────────────────────────────────────
 
+
 def test_health_returns_identity_and_security_headers(client):
     r = client.get("/api/v1/health")
     assert r.status_code == 200
@@ -140,6 +143,7 @@ def test_ready_when_db_up_and_cycle_completed(client, monkeypatch):
 def test_not_ready_when_db_down(client, monkeypatch):
     async def fake_get_pool_none():
         return None
+
     monkeypatch.setattr(main, "get_pool", fake_get_pool_none)
     r = client.get("/api/v1/ready")
     assert r.status_code == 503
@@ -157,6 +161,83 @@ def test_not_ready_when_no_completed_cycle(client, monkeypatch):
     assert r.status_code == 503
     body = r.json()
     assert body["status"] == "not_ready"
+
+
+def test_healthz_live_returns_200_without_database(client, monkeypatch):
+    async def no_pool():
+        return None
+
+    monkeypatch.setattr(main, "get_pool", no_pool)
+    r = client.get("/healthz/live")
+    assert r.status_code == 200
+    assert r.json()["status"] == "alive"
+    assert r.headers.get("x-request-id")
+
+
+def test_healthz_ready_returns_503_when_database_down(client, monkeypatch):
+    async def no_pool():
+        return None
+
+    monkeypatch.setattr(main, "get_pool", no_pool)
+    r = client.get("/healthz/ready")
+    assert r.status_code == 503
+    body = r.json()
+    assert body["status"] == "not_ready"
+    assert body["database"] == "unreachable"
+
+
+def test_healthz_ready_returns_200_when_ready(client, monkeypatch):
+    install_pool(
+        monkeypatch,
+        fetchval=[1],
+        fetchrow={"status": "completed", "start_time": "2026-08-22T06:00:00Z"},
+    )
+    r = client.get("/healthz/ready")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["status"] == "ready"
+    assert body["database"] == "connected"
+
+
+def test_request_id_is_generated_and_echoed(client):
+    r = client.get("/api/v1/health")
+    req_id = r.headers.get("x-request-id")
+    assert req_id
+    assert req_id.startswith("req_")
+
+
+def test_valid_client_request_id_is_preserved(client):
+    r = client.get("/api/v1/health", headers={"X-Request-ID": "trace_123.abc-456:789"})
+    assert r.headers["x-request-id"] == "trace_123.abc-456:789"
+
+
+@pytest.mark.parametrize("bad_id", ["bad id!", "x" * 65, "../escape"])
+def test_unsafe_client_request_id_is_replaced(client, bad_id):
+    r = client.get("/api/v1/health", headers={"X-Request-ID": bad_id})
+    req_id = r.headers.get("x-request-id")
+    assert req_id
+    assert req_id != bad_id
+    assert req_id.startswith("req_")
+
+
+def test_error_log_includes_request_id(client, monkeypatch, caplog):
+    monkeypatch.setattr(runs_tracker, "get_computation_run", lambda run_id: None)
+    caplog.set_level(logging.WARNING)
+    r = client.get("/api/v1/runs/does-not-exist")
+    assert r.status_code == 404
+    assert f"request_id={r.headers['x-request-id']}" in caplog.text
+
+
+def test_large_response_is_gzipped(client, monkeypatch):
+    monkeypatch.setattr(
+        runs_tracker,
+        "list_computation_runs",
+        lambda limit=50: [{"cycle_id": f"CYCLE_{i}", "payload": "x" * 200} for i in range(50)],
+    )
+    r = client.get("/api/v1/runs", headers={"Accept-Encoding": "gzip"})
+    assert r.status_code == 200
+    assert r.headers.get("content-encoding") == "gzip"
+    assert len(r.json()) == 50
 
 
 def test_oversized_body_is_rejected(client):
@@ -198,6 +279,7 @@ def test_zero_key_mode_keeps_admin_locked(client):
 
 
 # ── status + visits ───────────────────────────────────────────────────────────
+
 
 def test_status_reports_cycle_and_pipeline_ok(monkeypatch, client):
     install_pool(
@@ -241,13 +323,19 @@ def test_read_visits_does_not_record(monkeypatch, client):
 
 # ── rainfall ──────────────────────────────────────────────────────────────────
 
+
 def test_ecmwf_hyetograph_groups_by_subbasin(monkeypatch, client):
-    install_pool(monkeypatch, fetch=[{
-        "subbasin_id": "S1",
-        "valid_time": datetime(2026, 8, 1, 6, tzinfo=timezone.utc),
-        "lead_hours": 1,
-        "rainfall_mm_hr": 2.5,
-    }])
+    install_pool(
+        monkeypatch,
+        fetch=[
+            {
+                "subbasin_id": "S1",
+                "valid_time": datetime(2026, 8, 1, 6, tzinfo=timezone.utc),
+                "lead_hours": 1,
+                "rainfall_mm_hr": 2.5,
+            }
+        ],
+    )
     body = client.get("/api/v1/rainfall/ecmwf").json()
     assert body["S1"][0]["mm_hr"] == 2.5
     assert body["S1"][0]["hour"] == 1
@@ -264,6 +352,7 @@ def test_gauge_hyetographs_returns_rows(monkeypatch, client):
 
 
 # ── runoff ────────────────────────────────────────────────────────────────────
+
 
 def test_outlet_hydrograph_passes_node_filter(monkeypatch, client):
     conn = install_pool(monkeypatch, fetch=[{"lead_hours": 0, "discharge_m3s": 100.0}])
@@ -317,6 +406,7 @@ def test_stage_forecast_returns_metadata_and_series(monkeypatch, client):
 
 # ── alerts + pipeline ─────────────────────────────────────────────────────────
 
+
 def test_active_alerts_returns_rows(monkeypatch, client):
     install_pool(monkeypatch, fetch=[{"site_id": "shivaji", "alert_level": "WARNING"}])
     assert client.get("/api/v1/alerts").json()[0]["alert_level"] == "WARNING"
@@ -352,8 +442,11 @@ def test_pagination_limit_is_validated(client, limit):
 
 # ── historical runs + accuracy ───────────────────────────────────────────────
 
+
 def test_list_runs_returns_ledger(monkeypatch, client):
-    monkeypatch.setattr(runs_tracker, "list_computation_runs", lambda limit=50: [{"cycle_id": "C1"}])
+    monkeypatch.setattr(
+        runs_tracker, "list_computation_runs", lambda limit=50: [{"cycle_id": "C1"}]
+    )
     assert client.get("/api/v1/runs?limit=5").json()[0]["cycle_id"] == "C1"
 
 
@@ -410,16 +503,19 @@ def test_accuracy_computes_when_validation_missing(monkeypatch, client):
 
 # ── internal broadcast ────────────────────────────────────────────────────────
 
+
 def test_internal_broadcast_fails_closed(monkeypatch, client):
     monkeypatch.delenv("INTERNAL_KEY", raising=False)
     assert client.post("/internal/broadcast", json={}).status_code == 503
 
     monkeypatch.setenv("INTERNAL_KEY", "0123456789abcdef")
-    assert client.post(
-        "/internal/broadcast", json={}, headers={"X-Internal-Key": "wrong"}
-    ).status_code == 403
-    assert client.post(
-        "/internal/broadcast", json={}, headers={"X-Internal-Key": "0123456789abcdef"}
-    ).status_code == 200
-
-
+    assert (
+        client.post("/internal/broadcast", json={}, headers={"X-Internal-Key": "wrong"}).status_code
+        == 403
+    )
+    assert (
+        client.post(
+            "/internal/broadcast", json={}, headers={"X-Internal-Key": "0123456789abcdef"}
+        ).status_code
+        == 200
+    )

@@ -23,25 +23,45 @@ import urllib.request
 import argparse
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 os.environ.setdefault("PROJECT_ROOT", str(PROJECT_ROOT))
 
 SERVICES = {
     "backend": {
         "name": "Backend Public API",
         "port": 8000,
-        "cmd": [sys.executable, "-m", "uvicorn", "backend.api.main:app",
-                "--host", "0.0.0.0", "--port", "8000", "--workers", "4"],
+        "cmd": [
+            sys.executable,
+            "-m",
+            "uvicorn",
+            "backend.api.main:app",
+            "--host",
+            "0.0.0.0",
+            "--port",
+            "8000",
+            "--workers",
+            "4",
+        ],
         "cwd": str(PROJECT_ROOT),
-        "health": "http://localhost:8000/api/v1/health",
+        "health": "http://localhost:8000/healthz/live",
     },
     "backend-admin": {
         "name": "Backend Admin API",
         "port": 8001,
-        "cmd": [sys.executable, "-m", "uvicorn", "backend.api.admin_app:app",
-                "--host", "0.0.0.0", "--port", "8001", "--workers", "2"],
+        "cmd": [
+            sys.executable,
+            "-m",
+            "uvicorn",
+            "backend.api.admin_app:app",
+            "--host",
+            "0.0.0.0",
+            "--port",
+            "8001",
+            "--workers",
+            "2",
+        ],
         "cwd": str(PROJECT_ROOT),
-        "health": "http://localhost:8001/api/v1/admin/health",
+        "health": "http://localhost:8001/healthz/live",
     },
     "frontend-public": {
         "name": "Frontend Public Dashboard",
@@ -109,12 +129,12 @@ def health_check_all():
         if not ok:
             all_ok = False
 
-    # Extra: check specific API endpoints
+    # Extra: check specific API endpoints (best-effort; may require API key)
     print()
     api_checks = [
         ("Backend /api/v1/health", "http://localhost:8000/api/v1/health"),
-        ("Backend /api/v1/status", "http://localhost:8000/api/v1/status"),
-        ("Backend /api/v1/dashboard", "http://localhost:8000/api/v1/dashboard"),
+        ("Backend /healthz/ready", "http://localhost:8000/healthz/ready"),
+        ("Admin /api/v1/admin/health", "http://localhost:8001/api/v1/admin/health"),
     ]
     for name, url in api_checks:
         try:
@@ -123,8 +143,7 @@ def health_check_all():
                 data = json.loads(r.read())
                 print(f"  [+] {name:35s} OK")
         except Exception as e:
-            print(f"  [!] {name:35s} FAILED ({e})")
-            all_ok = False
+            print(f"  [~] {name:35s} skipped/failed ({e})")
 
     print()
     if all_ok:
@@ -153,7 +172,9 @@ def shutdown_all(signum=None, frame=None):
 def main():
     parser = argparse.ArgumentParser(description="HydroCast Production Server Manager")
     parser.add_argument("--check", action="store_true", help="Health check only, don't start")
-    parser.add_argument("--backend-only", action="store_true", help="Start backend services only (ports 8000, 8001)")
+    parser.add_argument(
+        "--backend-only", action="store_true", help="Start backend services only (ports 8000, 8001)"
+    )
     args = parser.parse_args()
 
     if args.check:

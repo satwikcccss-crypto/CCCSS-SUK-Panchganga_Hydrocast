@@ -185,6 +185,7 @@ def _hydrograph(peaks=(120.0, 950.0, 400.0), base=_utc()):
         "peak_q": peak_q,
         "time_of_peak": peak_ts,
         "total_volume_m3": 1_234_567.0,
+        "baseflow_m3s": 45.0,
     }
 
 
@@ -203,14 +204,31 @@ def test_store_all_writes_three_tables_and_commits():
     assert "INSERT INTO runoff_summary" in sql
 
 
-def test_store_hydrograph_surface_runoff_uses_hardcoded_baseflow():
-    # Documents current behaviour (baseflow = 45.0 hardcode in _store_hydrograph).
+def test_store_hydrograph_surface_runoff_uses_supplied_baseflow():
     conn = _Conn()
     store_results._store_hydrograph(conn, "CYC_T", _hydrograph(peaks=(45.0, 145.0)))
     inserts = [p for s, p in conn.sql if s.startswith("INSERT INTO hydrograph_results")]
     # params: (cycle_id, ts, lead, q, surf, baseflow, is_peak)
     assert inserts[0][4] == 0.0        # 45 - 45 -> 0
     assert inserts[1][4] == 100.0      # 145 - 45
+
+
+def test_store_hydrograph_prefers_per_hour_baseflow_array():
+    conn = _Conn()
+    hg = _hydrograph(peaks=(100.0, 200.0))
+    hg["baseflow_array"] = [10.0, 20.0]
+    store_results._store_hydrograph(conn, "CYC_T", hg)
+    inserts = [p for s, p in conn.sql if s.startswith("INSERT INTO hydrograph_results")]
+    assert inserts[0][4] == 90.0       # 100 - 10
+    assert inserts[1][4] == 180.0      # 200 - 20
+
+
+def test_store_hydrograph_refuses_missing_baseflow():
+    conn = _Conn()
+    hg = _hydrograph(peaks=(100.0, 200.0))
+    hg.pop("baseflow_m3s")
+    with pytest.raises(ValueError, match="refusing to fabricate"):
+        store_results._store_hydrograph(conn, "CYC_T", hg)
 
 
 @pytest.mark.parametrize(

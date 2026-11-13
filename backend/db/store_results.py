@@ -28,9 +28,29 @@ def _store_hydrograph(conn, cycle_id: str, hg: dict) -> dict:
             DELETE FROM hydrograph_results
             WHERE run_id=%s AND outlet_node='J_Outlet'
         """, (cycle_id,))
+        # Hydrological separation must use the baseflow computed by the model.
+        # Never invent a fallback constant here: a fabricated baseflow silently
+        # changes surface runoff and can misclassify flood alerts.
+        baseflow_array = hg.get("baseflow_array") or []
+        scalar_raw = hg.get("baseflow_m3s")
+        if scalar_raw is None:
+            scalar_raw = hg.get("baseflow")
+        if scalar_raw is None and not baseflow_array:
+            raise ValueError(
+                f"Hydrograph for {cycle_id} has no baseflow_m3s/baseflow_array; "
+                "refusing to fabricate a baseflow value"
+            )
+        scalar_baseflow = float(scalar_raw) if scalar_raw is not None else None
+
         for lead, (ts, q) in enumerate(hg["hydrograph"], start=1):
             is_peak = (ts == hg["time_of_peak"])
-            baseflow = 45.0
+            idx = lead - 1
+            if idx < len(baseflow_array):
+                baseflow = float(baseflow_array[idx])
+            elif scalar_baseflow is not None:
+                baseflow = scalar_baseflow
+            else:
+                baseflow = float(baseflow_array[-1])
             surf = max(0.0, q - baseflow)
             cur.execute("""
                 INSERT INTO hydrograph_results

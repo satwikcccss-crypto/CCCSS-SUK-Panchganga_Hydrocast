@@ -29,6 +29,7 @@ SUSPICIOUS_PATTERNS = [
     (r"538\.86.*hardcoded", "Hardcoded Rajaram Stage comment/flag"),
 ]
 
+
 def run_audit():
     print("=" * 80)
     print("🚀 STARTING COMPREHENSIVE E2E AUDIT ACROSS ALL PAGES AND TABS")
@@ -63,7 +64,7 @@ def run_audit():
             "total_screenshots": 0,
             "passed_assertions": 0,
             "failed_assertions": 0,
-        }
+        },
     }
 
     def assert_rule(condition: bool, description: str):
@@ -106,18 +107,19 @@ def run_audit():
 
         def on_console(msg):
             if msg.type in ("error", "warning") and "favicon" not in msg.text.lower():
-                report["public_portal"]["console_errors"].append({
-                    "type": msg.type,
-                    "text": msg.text,
-                    "url": msg.location.get("url") if msg.location else ""
-                })
+                report["public_portal"]["console_errors"].append(
+                    {
+                        "type": msg.type,
+                        "text": msg.text,
+                        "url": msg.location.get("url") if msg.location else "",
+                    }
+                )
 
         def on_response(resp):
             if resp.status >= 400 and not resp.url.endswith("/favicon.ico"):
-                report["public_portal"]["network_errors"].append({
-                    "status": resp.status,
-                    "url": resp.url
-                })
+                report["public_portal"]["network_errors"].append(
+                    {"status": resp.status, "url": resp.url}
+                )
 
         page.on("console", on_console)
         page.on("response", on_response)
@@ -154,27 +156,55 @@ def run_audit():
 
             # Tab specific checks
             if tab_id == "dashboard":
-                assert_rule(page.locator("text=HYDROCAST").count() > 0, "Brand header HYDROCAST visible")
+                assert_rule(
+                    page.locator("text=HYDROCAST").count() > 0, "Brand header HYDROCAST visible"
+                )
                 assert_rule(page.locator("text=Shivaji").count() > 0, "Shivaji bridge card visible")
                 assert_rule(page.locator("text=Rajaram").count() > 0, "Rajaram weir card visible")
             elif tab_id == "river-stages":
-                assert_rule(page.locator("canvas, svg, .recharts-surface").count() > 0, "Hydrograph dual-axis chart rendered")
+                assert_rule(
+                    page.locator("canvas, svg, .recharts-surface").count() > 0,
+                    "Hydrograph dual-axis chart rendered",
+                )
             elif tab_id == "rainfall":
-                assert_rule(page.locator("text=Gauging Stations").count() > 0 or page.locator("text=Rainfall").count() > 0, "Rainfall stations visible")
+                assert_rule(
+                    page.locator("text=Gauging Stations").count() > 0
+                    or page.locator("text=Rainfall").count() > 0,
+                    "Rainfall stations visible",
+                )
             elif tab_id == "sensors":
-                assert_rule(page.locator("text=Sensor Network").count() > 0 or page.locator("text=Ultrasonic").count() > 0, "Sensors list visible")
+                assert_rule(
+                    page.locator("text=Sensor Network").count() > 0
+                    or page.locator("text=Ultrasonic").count() > 0,
+                    "Sensors list visible",
+                )
             elif tab_id == "data-sharing":
-                assert_rule(page.locator("text=Interactive OpenAPI Docs").count() == 0, "Swagger docs link completely absent")
-                assert_rule(page.locator("text=Telegram").count() > 0, "Telegram Bot integration visible")
-                assert_rule(page.locator("text=Download 90h Forecast CSV").count() > 0, "CSV download button present")
-                assert_rule(page.locator("img[alt*='Telegram']").count() > 0, "Telegram QR code rendered")
+                assert_rule(
+                    page.locator("text=Interactive OpenAPI Docs").count() == 0,
+                    "Swagger docs link completely absent",
+                )
+                assert_rule(
+                    page.locator("text=Telegram").count() > 0, "Telegram Bot integration visible"
+                )
+                assert_rule(
+                    page.locator("text=Download 90h Forecast CSV").count() > 0,
+                    "CSV download button present",
+                )
+                assert_rule(
+                    page.locator("img[alt*='Telegram']").count() > 0, "Telegram QR code rendered"
+                )
             elif tab_id == "info":
-                assert_rule(page.locator("text=Shivaji University").count() > 0, "Institutional info visible")
+                assert_rule(
+                    page.locator("text=Shivaji University").count() > 0,
+                    "Institutional info visible",
+                )
 
             shot_path = OUTPUT_DIR / f"public_en_{tab_id}.png"
             page.screenshot(path=str(shot_path), full_page=True)
             report["screenshots"].append(str(shot_path))
-            report["public_portal"]["tabs_en"].append({"tab": tab_id, "label": tab_label, "screenshot": str(shot_path)})
+            report["public_portal"]["tabs_en"].append(
+                {"tab": tab_id, "label": tab_label, "screenshot": str(shot_path)}
+            )
             report["summary"]["total_tabs_audited"] += 1
 
         # =====================================================================
@@ -186,7 +216,9 @@ def run_audit():
             mr_btn.click()
             time.sleep(1)
             print("  Switched to Marathi (mr) mode")
-            assert_rule(page.locator("text=हायड्रोकास्ट").count() > 0, "Marathi Title 'हायड्रोकास्ट' active")
+            assert_rule(
+                page.locator("text=हायड्रोकास्ट").count() > 0, "Marathi Title 'हायड्रोकास्ट' active"
+            )
 
             mr_tabs = [
                 ("dashboard", "मुख्य डॅशबोर्ड"),
@@ -209,7 +241,9 @@ def run_audit():
                 shot_path = OUTPUT_DIR / f"public_mr_{tab_id}.png"
                 page.screenshot(path=str(shot_path), full_page=True)
                 report["screenshots"].append(str(shot_path))
-                report["public_portal"]["tabs_mr"].append({"tab": tab_id, "label": mr_label, "screenshot": str(shot_path)})
+                report["public_portal"]["tabs_mr"].append(
+                    {"tab": tab_id, "label": mr_label, "screenshot": str(shot_path)}
+                )
                 report["summary"]["total_tabs_audited"] += 1
                 assert_rule(True, f"Marathi tab {mr_label} verified & rendered")
 
@@ -236,7 +270,9 @@ def run_audit():
             shot_path = OUTPUT_DIR / "public_mobile_menu_open.png"
             mob_page.screenshot(path=str(shot_path))
             report["screenshots"].append(str(shot_path))
-            assert_rule(mob_page.locator("aside").is_visible(), "Mobile sidebar drawer opened smoothly")
+            assert_rule(
+                mob_page.locator("aside").is_visible(), "Mobile sidebar drawer opened smoothly"
+            )
 
         mobile_ctx.close()
 
@@ -249,17 +285,18 @@ def run_audit():
 
         def on_adm_console(msg):
             if msg.type in ("error", "warning") and "favicon" not in msg.text.lower():
-                report["admin_portal"]["console_errors"].append({
-                    "type": msg.type,
-                    "text": msg.text,
-                })
+                report["admin_portal"]["console_errors"].append(
+                    {
+                        "type": msg.type,
+                        "text": msg.text,
+                    }
+                )
 
         def on_adm_response(resp):
             if resp.status >= 400 and not resp.url.endswith("/favicon.ico"):
-                report["admin_portal"]["network_errors"].append({
-                    "status": resp.status,
-                    "url": resp.url
-                })
+                report["admin_portal"]["network_errors"].append(
+                    {"status": resp.status, "url": resp.url}
+                )
 
         adm_page.on("console", on_adm_console)
         adm_page.on("response", on_adm_response)
@@ -269,20 +306,32 @@ def run_audit():
         shot_path = OUTPUT_DIR / "admin_00_login.png"
         adm_page.screenshot(path=str(shot_path), full_page=True)
         report["screenshots"].append(str(shot_path))
-        assert_rule(adm_page.locator("button:has-text('Sign In')").count() > 0 or adm_page.locator("button[type='submit']").count() > 0, "Admin login portal has input credentials form")
+        assert_rule(
+            adm_page.locator("button:has-text('Sign In')").count() > 0
+            or adm_page.locator("button[type='submit']").count() > 0,
+            "Admin login portal has input credentials form",
+        )
 
         # 2. Perform Operator Login with Seeded Administrator Credentials
-        print("  Logging in as Principal System Engineer (DEV.Satwikcccss@Adm1)...")
-        adm_page.locator("input[type='text'], input:not([type='password'])").first.fill("DEV.Satwikcccss@Adm1")
-        adm_page.locator("input[type='password']").first.fill("DEV@hydrocast@Adm1")
+        username = os.environ.get("HYDROCAST_AUDIT_USERNAME", "")
+        password = os.environ.get("HYDROCAST_AUDIT_PASSWORD", "")
+        if not username or not password:
+            print("  [SKIP] HYDROCAST_AUDIT_USERNAME/PASSWORD not set; skipping login.")
+            return
+        print(f"  Logging in as {username}...")
+        adm_page.locator("input[type='text'], input:not([type='password'])").first.fill(username)
+        adm_page.locator("input[type='password']").first.fill(password)
         adm_page.locator("button:has-text('Sign In'), button[type='submit']").first.click()
-        
+
         adm_page.wait_for_timeout(2500)
         adm_page.wait_for_load_state("networkidle")
 
         current_url = adm_page.url
         print(f"  Land URL after login: {current_url}")
-        assert_rule("/admin" in current_url or "/dashboard" in current_url or "/console" in current_url, "Admin Operator Console successfully authenticated")
+        assert_rule(
+            "/admin" in current_url or "/dashboard" in current_url or "/console" in current_url,
+            "Admin Operator Console successfully authenticated",
+        )
 
         admin_nav_items = [
             ("overview", "Home / Basin Overview"),
@@ -314,12 +363,16 @@ def run_audit():
             shot_path = OUTPUT_DIR / f"admin_{cat_id}.png"
             adm_page.screenshot(path=str(shot_path), full_page=True)
             report["screenshots"].append(str(shot_path))
-            report["admin_portal"]["categories"].append({"id": cat_id, "label": cat_label, "screenshot": str(shot_path)})
+            report["admin_portal"]["categories"].append(
+                {"id": cat_id, "label": cat_label, "screenshot": str(shot_path)}
+            )
             report["summary"]["total_tabs_audited"] += 1
             assert_rule(True, f"Admin category '{cat_label}' rendered successfully")
 
         # Test Windows Terminal Dock at bottom
-        term_dock_btn = adm_page.locator("button[title*='Windows Terminal'], button:has-text('Terminal')").first
+        term_dock_btn = adm_page.locator(
+            "button[title*='Windows Terminal'], button:has-text('Terminal')"
+        ).first
         if term_dock_btn.count() > 0:
             term_dock_btn.click()
             time.sleep(0.8)
@@ -347,6 +400,7 @@ def run_audit():
     print("=" * 80)
 
     return report["summary"]["failed_assertions"] == 0
+
 
 if __name__ == "__main__":
     success = run_audit()

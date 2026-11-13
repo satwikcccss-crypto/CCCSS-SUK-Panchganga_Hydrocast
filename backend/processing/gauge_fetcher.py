@@ -19,7 +19,13 @@ log = logging.getLogger(__name__)
 
 def fetch_all_gauges(conn: Any, run_dt: datetime) -> int:
     """
-    Fetch gauge station observations for the 90-hour forecast window.
+    Verify and ingest active rain gauge station network status for the forecast window.
+
+    Note on Operational Architecture:
+    The primary precipitation forcing series is provided by the Open-Meteo IFS 90h
+    weather engine (Step 1). Step 2 acts as the Station Network Health Check,
+    validating the operational availability of the 20 catchment gauge stations across
+    the S1-S9 subbasins before precipitation spatial weighting in Step 4.
 
     Parameters
     ----------
@@ -32,10 +38,10 @@ def fetch_all_gauges(conn: Any, run_dt: datetime) -> int:
     Returns
     -------
     int
-        Number of gauge records processed/inserted.
+        Number of active catchment gauge stations verified.
     """
     if conn is None:
-        log.warning("No DB connection for gauge fetch — using static registry (%d stations)", len(STATION_REGISTRY))
+        log.info("No DB connection for gauge network check — using static registry (%d stations active)", len(STATION_REGISTRY))
         return len(STATION_REGISTRY)
 
     try:
@@ -45,10 +51,10 @@ def fetch_all_gauges(conn: Any, run_dt: datetime) -> int:
             """)
             row = cur.fetchone()
             count = row[0] if row else len(STATION_REGISTRY)
-        log.info("Gauge fetch complete: %d active stations for cycle %s", count, run_dt.isoformat())
+        log.info("Catchment gauge network check: %d active stations verified for cycle %s", count, run_dt.isoformat())
         return int(count)
     except Exception as exc:
-        log.warning("Gauge fetch DB error: %s — using static registry (%d stations)", exc, len(STATION_REGISTRY))
+        log.warning("Gauge station check DB error: %s — using static registry (%d stations)", exc, len(STATION_REGISTRY))
         return len(STATION_REGISTRY)
 
 

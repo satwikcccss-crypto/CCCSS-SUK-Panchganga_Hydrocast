@@ -13,6 +13,7 @@ from backend.rainfall.open_meteo_failsafe import (
     FORECAST_HOURS,
     fetch_tier1_open_meteo,
     get_weather_failsafe,
+    purge_expired_weather_cache,
     WeatherDataUnavailable,
 )
 
@@ -69,3 +70,31 @@ def test_master_failsafe_live_success():
     assert res["tier"] == "tier1_live_api"
     assert "KARVEER" in res["stations"]
     assert len(res["stations"]["KARVEER"]["precipitation_mm_hr"]) == FORECAST_HOURS
+
+
+def test_purge_expired_weather_cache(tmp_path):
+    """Old audit files are purged; the latest pointer and recent files survive."""
+    import os
+    import time
+
+    cache_dir = tmp_path / "weather_cache"
+    cache_dir.mkdir()
+
+    old_file = cache_dir / "weather_success_20260101_0600.json"
+    old_file.write_text("{}", encoding="utf-8")
+    old_mtime = time.time() - (40 * 86400)
+    os.utime(old_file, (old_mtime, old_mtime))
+
+    recent_file = cache_dir / "weather_success_20261112_0600.json"
+    recent_file.write_text("{}", encoding="utf-8")
+
+    latest_file = cache_dir / "latest_successful_weather.json"
+    latest_file.write_text("{}", encoding="utf-8")
+    os.utime(latest_file, (old_mtime, old_mtime))
+
+    purged = purge_expired_weather_cache(cache_dir=cache_dir, max_age_days=30)
+
+    assert purged == 1
+    assert not old_file.exists()
+    assert recent_file.exists()
+    assert latest_file.exists()

@@ -24,7 +24,10 @@ canonical DSS writer (src/dss/writer.py).
 import logging
 import math
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+
+if TYPE_CHECKING:  # pragma: no cover - typing-only import (numpy stays lazy)
+    import numpy as np
 
 log = logging.getLogger(__name__)
 

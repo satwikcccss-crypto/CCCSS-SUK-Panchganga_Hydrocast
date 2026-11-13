@@ -30,8 +30,9 @@ from retry_requests import retry
 
 from backend.rainfall.retry_utils import with_retry
 
-# Setup the Open-Meteo API client with cache and retry on error
-cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
+# Setup the Open-Meteo API client with in-memory cache and retry on error
+# Using memory backend avoids sqlite3.OperationalError: database is locked during concurrent runs
+cache_session = requests_cache.CachedSession(backend='memory', expire_after=3600)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
 openmeteo = openmeteo_requests.Client(session=retry_session)
 

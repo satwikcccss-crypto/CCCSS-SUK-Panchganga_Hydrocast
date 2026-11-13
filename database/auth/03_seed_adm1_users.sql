@@ -1,45 +1,24 @@
 -- ===========================================================================
--- HydroCast Panchganga - Seed @Adm1 Primary Administrator Accounts
--- All @Adm1 users get "admin" role (full control: user mgmt, forecast trigger, DB, logs)
+-- HydroCast Panchganga - Bootstrap administrator account template
+-- ---------------------------------------------------------------------------
+-- This file is a TEMPLATE for first-time production bootstrapping on a server.
+-- It MUST NOT contain a real password hash, because committed hashes can be
+-- attacked offline and a shared bootstrap password would be a backdoor.
+--
+-- Preferred (recommended): create administrators via the CLI, which prompts
+-- for a password and writes a fresh bcrypt hash directly to the database:
+--
+--   python -m backend.scripts.manage_users add --username <admin> --password <password> --role admin --email <email> --name "<Full Name>"
+--
+-- If you must seed via SQL (offline bootstrap), generate a bcrypt hash on the
+-- server (e.g. `python -c "import bcrypt;print(bcrypt.hashpw(b'YOUR_PASSWORD', bcrypt.gensalt(12)).decode())"`),
+-- paste it below, run this file once, then remove the password material from the
+-- shell history. Do NOT commit a file that contains a real hash.
 -- ===========================================================================
-
--- Deactivate legacy email-based accounts (keep for audit trail, do not delete)
-UPDATE admin_users SET is_active = FALSE
-WHERE username IN ('satwikcccss@gmail.com', 'panhalkarsachin@gmail.com', 'gonioelect@gmail.com', 'nikhilpawar6297@gmail.com');
-
--- Seed @Adm1 primary administrators with validated bcrypt hashes (cost=12)
+/*
 INSERT INTO admin_users (username, password_hash, role, display_name, email, is_active, must_change_password)
 VALUES
-  ('DEV.Satwikcccss@Adm1',
-   '$2b$12$8Wy09LwYuAvPMXZDPNa6Pub3VrELJo.1kIXuNFxq90bDro7R8JoxG',
-   'admin',
-   'Er. Satwik K. Udupi',
-   'Satwikudupi@gmail.com',
-   TRUE, FALSE),
-  ('PI.Panhalkarsachin@Adm1',
-   '$2b$12$pdZsj.AxItgq/yoQJr4hVu0QHbBNotG3mPJLsuNfw/xqeg.m3HpJO',
-   'admin',
-   'Dr. Sachin S. Panhalkar',
-   'panhalkarsachin@gmail.com',
-   TRUE, FALSE),
-  ('COPI.Nivhekarganesh@Adm1',
-   '$2b$12$Zv5GBEoGaAFmb8s4XmbKkerCqkXt/k4fFLdKdw4AJqXgbb8wN9vw6',
-   'admin',
-   'Dr. Ganesh S. Nhivekar',
-   'gonioelect@gmail.com',
-   TRUE, FALSE),
-  ('JRF.PawarNikhil@Adm1',
-   '$2b$12$YwCWUDVa//Xc49h9YayEhOWX7a0ZI8053.rhNrKNs.JXyoPvAtUyq',
-   'admin',
-   'Nikhil Pawar',
-   'nikhilpawar6297@gmail.com',
-   TRUE, FALSE),
-  ('Dev.Arunbaby@Adm1',
-   '$2b$12$.TKocUFIZPmLDtw7bp2Prug8I2ZxV0bygmXgzKc/belnBJB7E2KLa',
-   'admin',
-   'Arun Baby',
-   NULL,
-   TRUE, FALSE)
+  ('<admin_username>', '<bcrypt_hash>', 'admin', '<Display Name>', '<email>', TRUE, TRUE)
 ON CONFLICT (username) DO UPDATE SET
   password_hash = EXCLUDED.password_hash,
   role = EXCLUDED.role,
@@ -47,3 +26,4 @@ ON CONFLICT (username) DO UPDATE SET
   email = EXCLUDED.email,
   is_active = EXCLUDED.is_active,
   must_change_password = EXCLUDED.must_change_password;
+*/

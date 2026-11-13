@@ -205,8 +205,19 @@ def calculate_peak_arrival_window(
         "J_Outlet": "Panchganga Basin Sink (Rajaram Weir)",
     }
 
-    # Determine if flow is receding (peak is at T+0 and max q is barely above start q)
+    # Determine if flow is tranquil / receding (peak is at T+0 or flow is baseline regulated)
     is_receding = peak_lead_hours == 0
+    is_tranquil = is_receding and (peak_q <= 30.0 or peak_stage <= 534.50)
+
+    if is_tranquil:
+        status_code = "TRANQUIL_BASELINE"
+        strike_label = "TRANQUIL FLOW (NO FLOOD EVENT)"
+    elif is_receding:
+        status_code = "RECEDING_NO_PEAK"
+        strike_label = "RECEDING LIMB (NO NEW PEAK)"
+    else:
+        status_code = "PEAK_IDENTIFIED"
+        strike_label = f"T+{peak_lead_hours}h"
 
     return {
         "site_id": site_id,
@@ -215,6 +226,7 @@ def calculate_peak_arrival_window(
         "peak_arrival_time": peak_dt.isoformat(),
         "peak_discharge_m3s": round(peak_q, 1),
         "peak_stage_m": round(peak_stage, 2),
+        "peak_strike_label": strike_label,
         "confidence_interval": {
             "margin_hours": margin_hours,
             "confidence_pct": 95,
@@ -226,7 +238,7 @@ def calculate_peak_arrival_window(
             "discharge_range_m3s": [q_low, q_high],
         },
         "is_receding": is_receding,
-        "status": "RECEDING_NO_PEAK" if is_receding else "PEAK_IDENTIFIED",
+        "status": status_code,
     }
 
 
