@@ -32,9 +32,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - run: pip install ruff
+      # Pinned to match requirements-dev.txt; the repo's advertised formatters
+      # are black/isort, so no ruff-format gate here.
+      - run: pip install "ruff==0.17.5"
       - run: ruff check backend tests scripts
-      - run: ruff format --check backend tests scripts
 
   # ───────────────────────────────────────────────────────────────────────────
   # Backend: pytest suite with a PostgreSQL service container

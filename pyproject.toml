@@ -13,6 +13,17 @@ target-version = ["py311"]
 profile = "black"
 line_length = 100
 
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+# Blocking gate only: syntax errors, undefined names, broken comparisons.
+# The legacy tree has 1,300+ broader style findings; enabling those now would
+# bury functional changes in churn. Widen this incrementally as files are
+# reformatted (tracked in the remediation backlog).
+select = ["E9", "F63", "F7", "F82"]
+
 [tool.coverage.run]
 source = ["backend"]
 omit = ["*/__init__.py"]

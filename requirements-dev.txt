@@ -11,6 +11,7 @@
 # ── Static analysis & formatting (mirrored by .pre-commit-config.yaml) ───────
 black>=25.1
 isort>=6.0
+ruff==0.17.5
 mypy>=1.14
 types-requests>=2.32
 pre-commit>=4.0
