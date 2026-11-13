@@ -255,41 +255,12 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 app.add_middleware(SecurityHeadersMiddleware)
 
 
-# ── Anti-scraping / Bot-detection middleware ──────────────────────────────────
-_BLOCKED_UA_FRAGMENTS = [
-    "scrapy", "httpclient", "python-requests", "go-http-client",
-    "wget", "curl", "libwww", "java/", "okhttp", "httpx",
-    "node-fetch", "undici", "axios", "got ", "superagent",
-]
-_ALLOWED_BOT_UAS = ["googlebot", "bingbot", "uptimerobot"]
-
-class AntiScrapingMiddleware(BaseHTTPMiddleware):
-    """Block automated scraping tools from data endpoints."""
-
-    async def dispatch(self, request: Request, call_next):
-        path = request.url.path
-        if not path.startswith("/api/v1/") or path == "/api/v1/health":
-            return await call_next(request)
-
-        ua = (request.headers.get("user-agent") or "").lower()
-        if not ua:
-            return JSONResponse(
-                status_code=403,
-                content={"detail": "Forbidden: missing User-Agent"},
-            )
-
-        is_known_bot = any(frag in ua for frag in _BLOCKED_UA_FRAGMENTS)
-        is_allowed = any(frag in ua for frag in _ALLOWED_BOT_UAS)
-        if is_known_bot and not is_allowed:
-            return JSONResponse(
-                status_code=403,
-                content={"detail": "Automated scraping is prohibited. This is a government early warning system."},
-            )
-
-        return await call_next(request)
 
 
-app.add_middleware(AntiScrapingMiddleware)
+
+# Anti-scraping UA blocking removed: rate limiting + API key auth (slowapi /
+# verify_public_key) already protect data endpoints without breaking legitimate
+# programmatic clients such as the Python SDK, curl, or httpx.
 
 # Mount Administrative & Control Router (protected by JWT & API Key)
 app.include_router(admin_router)
