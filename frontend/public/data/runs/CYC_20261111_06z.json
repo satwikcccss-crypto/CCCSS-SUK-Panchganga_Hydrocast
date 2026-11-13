@@ -23953,7 +23953,7 @@
   ],
   "validation": {
     "cycle_id": "CYC_20261111_06z",
-    "validation_timestamp": "2026-11-12T10:08:11.288344+00:00",
+    "validation_timestamp": "2026-11-13T01:25:23.335416+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -23966,23 +23966,23 @@
       "upstream_weir": "Rajaram K.T. Weir (3,858 m upstream, bed datum +0.648 m)"
     },
     "lifecycle_status": "IN_PROGRESS",
-    "verified_hours": 2,
+    "verified_hours": 3,
     "total_forecast_hours": 90,
-    "completion_pct": 2.2,
+    "completion_pct": 3.3,
     "observation_gap": {
       "is_gap": false,
-      "missing_hours": 88,
+      "missing_hours": 87,
       "hours_past_window": null,
       "grace_hours": 12.0,
       "note": null
     },
     "metrics": {
       "status": "ACCUMULATING_TELEMETRY",
-      "sample_size_hours": 2,
-      "matched_pairs": 2,
-      "observed_stage_std_m": 0.24,
+      "sample_size_hours": 3,
+      "matched_pairs": 3,
+      "observed_stage_std_m": 0.1974,
       "skill_metrics_reliable": false,
-      "rmse_stage_m": 0.4,
+      "rmse_stage_m": 0.375,
       "mae_stage_m": 0.32,
       "nse_stage": null,
       "pbias_stage_pct": -0.06,
@@ -23990,10 +23990,10 @@
       "pearson_r2": null,
       "discharge_metrics_source": "RATING_IMPLIED_DERIVED",
       "discharge_metrics_note": "Observed discharge is derived from the observed stage via the same rating curve used for the forecast; it is NOT an independent discharge measurement.",
-      "rmse_q_m3s": 3.98,
-      "mae_q_m3s": 3.1,
+      "rmse_q_m3s": 3.61,
+      "mae_q_m3s": 2.97,
       "nse_discharge": null,
-      "pbias_discharge_pct": -25.83,
+      "pbias_discharge_pct": -25.28,
       "spearman_rho_q": null,
       "pearson_r2_q": null,
       "baseflow_stage_offset_m": -0.32,
@@ -24016,6 +24016,12 @@
         "predicted_stage": 531.49,
         "lead_hours": 23,
         "actual_distance_ft": 56.76
+      },
+      {
+        "actual_stage": 531.76,
+        "predicted_stage": 531.44,
+        "lead_hours": 43,
+        "actual_distance_ft": 57.7
       }
     ],
     "actual_observed_series": [
@@ -24583,13 +24589,13 @@
         "timestamp": "2026-11-13T01:00:00+00:00",
         "predicted_stage_m": 531.44,
         "predicted_discharge_m3s": 8.5,
-        "observed_stage_m": null,
-        "observed_distance_ft": null,
-        "observed_discharge_m3s": null,
-        "error_delta_m": null,
-        "error_delta_ft": null,
+        "observed_stage_m": 531.76,
+        "observed_distance_ft": 57.7,
+        "observed_discharge_m3s": 11.2,
+        "error_delta_m": -0.32,
+        "error_delta_ft": -1.05,
         "alert_level": "NORMAL",
-        "has_observation": false
+        "has_observation": true
       },
       {
         "lead_hours": 44,

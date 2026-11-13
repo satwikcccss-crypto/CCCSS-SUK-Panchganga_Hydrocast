@@ -1,14 +1,14 @@
 {
-  "last_calibrated_at": "2026-11-12T10:06:45.206479+00:00",
+  "last_calibrated_at": "2026-11-13T01:24:13.609771+00:00",
   "is_recalibrated": true,
-  "trigger_reason": "Offset \u0394t=+2.1h, stage_err=-0.36m",
-  "timing_offset_hours": 2.1,
-  "stage_discrepancy_m": -0.36,
-  "peak_discharge_error_m3s": 5.300000000000001,
-  "alpha_k": 1.157,
-  "alpha_lag": 1.126,
-  "delta_cn": 1.62,
-  "muskingum_x": 0.208,
+  "trigger_reason": "Offset \u0394t=-4.4h, stage_err=+0.28m",
+  "timing_offset_hours": -4.4,
+  "stage_discrepancy_m": 0.28,
+  "peak_discharge_error_m3s": -3.0,
+  "alpha_k": 0.67,
+  "alpha_lag": 0.736,
+  "delta_cn": -1.26,
+  "muskingum_x": 0.338,
   "confidence_pct": 79.0,
   "baseline_sub_models": {
     "S6": {
@@ -92,78 +92,78 @@
     "S6": {
       "name": "Gaganbawda",
       "area_km2": 227.72,
-      "cn": 63.4,
-      "lag_min": 3736.1
+      "cn": 60.52,
+      "lag_min": 2442.1
     },
     "S7": {
       "name": "Garivade",
       "area_km2": 195.39,
-      "cn": 62.9,
-      "lag_min": 3785.9
+      "cn": 60.02,
+      "lag_min": 2474.6
     },
     "S9": {
       "name": "Radhanagari",
       "area_km2": 366.97,
-      "cn": 65.93,
-      "lag_min": 5854.1
+      "cn": 63.05,
+      "lag_min": 3826.5
     },
     "S8": {
       "name": "Beed",
       "area_km2": 177.44,
-      "cn": 67.38,
-      "lag_min": 3813.9
+      "cn": 64.5,
+      "lag_min": 2492.9
     },
     "S4": {
       "name": "Karanjphen",
       "area_km2": 262.0,
-      "cn": 63.51,
-      "lag_min": 3508.1
+      "cn": 60.63,
+      "lag_min": 2293.0
     },
     "S5": {
       "name": "Padasali",
       "area_km2": 106.39,
-      "cn": 62.59,
-      "lag_min": 2383.8
+      "cn": 59.71,
+      "lag_min": 1558.2
     },
     "S3": {
       "name": "Kotoli",
       "area_km2": 261.32,
-      "cn": 66.44,
-      "lag_min": 4501.4
+      "cn": 63.56,
+      "lag_min": 2942.3
     },
     "S2": {
       "name": "Sangarul",
       "area_km2": 153.77,
-      "cn": 67.36,
-      "lag_min": 3551.7
+      "cn": 64.48,
+      "lag_min": 2321.5
     },
     "S1": {
       "name": "Karveer",
       "area_km2": 86.213,
-      "cn": 76.47,
-      "lag_min": 2423.1
+      "cn": 73.59,
+      "lag_min": 1583.8
     }
   },
   "active_reaches": {
     "R5": {
-      "k_hr": 5.344,
-      "x": 0.208
+      "k_hr": 3.095,
+      "x": 0.338
     },
     "R4": {
-      "k_hr": 1.416,
-      "x": 0.208
+      "k_hr": 0.82,
+      "x": 0.338
     },
     "R2": {
-      "k_hr": 13.684,
-      "x": 0.208
+      "k_hr": 7.924,
+      "x": 0.338
     },
     "R3": {
-      "k_hr": 4.43,
-      "x": 0.208
+      "k_hr": 2.565,
+      "x": 0.338
     },
     "R1": {
-      "k_hr": 3.354,
-      "x": 0.208
+      "k_hr": 1.942,
+      "x": 0.338
     }
   },
   "history": [
@@ -195,6 +195,19 @@
       "confidence_pct": 79.0,
       "ml_predictor_state": "UNTRAINED",
       "n_aligned_points": 3
+    },
+    {
+      "timestamp": "2026-11-13T01:24:13.609771+00:00",
+      "timing_offset_hours": -4.4,
+      "stage_error_m": 0.28,
+      "peak_discharge_error_m3s": -3.0,
+      "alpha_k": 0.67,
+      "alpha_lag": 0.736,
+      "delta_cn": -1.26,
+      "muskingum_x": 0.338,
+      "confidence_pct": 79.0,
+      "ml_predictor_state": "UNTRAINED",
+      "n_aligned_points": 2
     }
   ],
   "ia_frac": 0.05,
@@ -212,6 +225,6 @@
     "metric": "peak_stage_acc = 1 - |sim-obs|/(obs-bed); Rajaram bed 529.318, Shivaji bed 528.670",
     "cn_style": "per_subbasin_baseline (differentiated 61-75; AMC-III -> eff 78-87)"
   },
-  "n_aligned_points": 3,
+  "n_aligned_points": 2,
   "fit_used_hydrograph_term": true
 }
