@@ -6,7 +6,7 @@ Serves all hydrologic data to:
   - External consumers via API key and rate-limited public endpoints
   - Disaster management authority administrative endpoints via JWT
 
-Run: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 4
+Run: uvicorn backend.api.main:app --host 0.0.0.0 --port 8000 --workers 4
 
 Endpoints
 ---------
@@ -57,7 +57,7 @@ from fastapi.responses import JSONResponse, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from slowapi.errors import RateLimitExceeded
 
-load_dotenv()  # must run before src modules read os.environ
+load_dotenv()  # must run before backend modules read os.environ
 
 from backend.api.admin import router as admin_router  # noqa: E402
 from backend.api.limits import limiter, RATE_LIMIT_PUBLIC  # noqa: E402
@@ -66,7 +66,7 @@ from backend.api.keys import verify_public_key  # noqa: E402
 log = logging.getLogger(__name__)
 
 # ── Rate limiter ──────────────────────────────────────────────────────────────
-# The shared instance lives in src.api.limits (also used by the admin login).
+# The shared instance lives in backend.api.limits (also used by the admin login).
 app = FastAPI(
     title="HydroCast Panchganga Operational API",
     version="2.0.0",
@@ -81,7 +81,7 @@ app = FastAPI(
         "WRD-anchored PCHIP rating curve at two bridge sites.\n\n"
         "### How to use this reference\n"
         "Everything on this page is generated from the route declarations in "
-        "`src/api/main.py` and `src/api/admin.py`. Use **Authorize** in the top "
+        "`backend/api/main.py` and `backend/api/admin.py`. Use **Authorize** in the top "
         "right corner to attach an `X-API-Key` header for public routes, or a JWT "
         "bearer token for administrative routes, then use **Try it out** to call "
         "the live deployment.\n\n"
@@ -2090,7 +2090,19 @@ async def ws_live(websocket: WebSocket):
     The pipeline orchestrator calls `ws_manager.broadcast()` after step 12.
     Dead connections are detected on send and reaped automatically, so a
     browser that vanishes mid-cycle does not block the remaining subscribers.
+
+    The socket is protected by the same public API key as the REST routes
+    (``X-API-Key`` header or ``?key=`` query param). Unauthenticated clients
+    are rejected with a 4001 close code before the connection is accepted.
     """
+    # ── WebSocket authentication ─────────────────────────────────────────
+    supplied = websocket.headers.get("x-api-key") or websocket.query_params.get("key") or ""
+    if REQUIRE_API_KEY and not verify_public_key(supplied, API_KEY or ""):
+        await websocket.close(code=4001)  # 4001 = custom "unauthorized"
+        log.warning("WebSocket rejected: missing or invalid API key")
+        return
+    # ─────────────────────────────────────────────────────────────────────
+
     if not await ws_manager.connect(websocket):
         return
     try:
