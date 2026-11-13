@@ -102,6 +102,25 @@ def test_cors_never_reflects_arbitrary_origin_with_credentials(client):
         assert r.headers.get("access-control-allow-credentials") != "true"
 
 
+# ── docs visibility ────────────────────────────────────────────────────────────
+
+
+def test_docs_disabled_in_production():
+    """In production (default APP_ENV), /docs and /openapi.json are disabled."""
+    assert main.app.docs_url is None
+    assert main.app.openapi_url is None
+
+
+def test_docs_enabled_in_dev(monkeypatch):
+    """In dev mode, /docs and /openapi.json remain available."""
+    import importlib
+
+    monkeypatch.setenv("APP_ENV", "dev")
+    importlib.reload(main)
+    assert main.app.docs_url == "/docs"
+    assert main.app.openapi_url == "/openapi.json"
+
+
 # ── readiness ──────────────────────────────────────────────────────────────────
 
 

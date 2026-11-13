@@ -65,12 +65,22 @@ from backend.api.keys import verify_public_key  # noqa: E402
 
 log = logging.getLogger(__name__)
 
+# ── OpenAPI docs visibility ───────────────────────────────────────────────────
+# In production, /docs and /openapi.json are disabled so the API surface is
+# not exposed to unautomated reconnaissance. In dev/test they remain available
+# for local development. Override with APP_ENV=dev to keep docs in production.
+_APP_ENV_DOCS = os.getenv("APP_ENV", "production").lower()
+_docs_url = None if _APP_ENV_DOCS == "production" else "/docs"
+_openapi_url = None if _APP_ENV_DOCS == "production" else "/openapi.json"
+
 # ── Rate limiter ──────────────────────────────────────────────────────────────
 # The shared instance lives in backend.api.limits (also used by the admin login).
 app = FastAPI(
     title="HydroCast Panchganga Operational API",
     version="2.0.0",
     summary="Rainfall-runoff and river flood intelligence for the Panchganga Basin, Kolhapur.",
+    docs_url=_docs_url,
+    openapi_url=_openapi_url,
     description=(
         "Operational HTTP and WebSocket API for the **HydroCast** rainfall-runoff "
         "forecasting system.\n\n"
