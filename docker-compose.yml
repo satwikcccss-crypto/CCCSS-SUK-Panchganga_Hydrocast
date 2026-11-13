@@ -18,7 +18,9 @@ services:
     environment:
       POSTGRES_DB: rainfall_runoff
       POSTGRES_USER: hydrocast
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
     volumes:
       - hydrocast_db_data:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
@@ -29,6 +31,11 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    mem_limit: 2g
+    cpus: 1.0
+    user: "999:999"
+    security_opt:
+      - no-new-privileges:true
 
   # ── Backend Public API (Port 8000) ──
   backend:
@@ -43,10 +50,26 @@ services:
     environment:
       # DATABASE_URL is supplied via .env (never committed).
       CORS_ORIGINS: http://localhost:3000,http://localhost:3001,http://frontend:3000,http://frontend-admin:3001
+    secrets:
+      - postgres_password
+      - api_key
+      - jwt_secret
+      - admin_password
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
+    mem_limit: 1.5g
+    cpus: 1.0
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # ── Backend Admin API (Port 8001) ──
   backend-admin:
@@ -61,11 +84,27 @@ services:
     environment:
       # DATABASE_URL is supplied via .env (never committed).
       ADMIN_CORS_ORIGINS: http://localhost:3001,http://frontend-admin:3001,http://localhost:3000,http://frontend:3000
+    secrets:
+      - postgres_password
+      - api_key
+      - jwt_secret
+      - admin_password
     command: ["uvicorn", "backend.api.admin_app:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "2"]
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
+    mem_limit: 1g
+    cpus: 0.5
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/api/v1/admin/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # ── Frontend Public Dashboard (Port 3000) ──
   frontend:
@@ -80,6 +119,17 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    mem_limit: 1g
+    cpus: 0.5
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3000/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # ── Frontend Admin Console (Port 3001) ──
   frontend-admin:
@@ -98,9 +148,30 @@ services:
       - backend
       - backend-admin
     restart: unless-stopped
+    mem_limit: 1g
+    cpus: 0.5
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3001/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 volumes:
   hydrocast_db_data:
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password.txt
+  api_key:
+    file: ./secrets/api_key.txt
+  jwt_secret:
+    file: ./secrets/jwt_secret.txt
+  admin_password:
+    file: ./secrets/admin_password.txt
 
 networks:
   default:

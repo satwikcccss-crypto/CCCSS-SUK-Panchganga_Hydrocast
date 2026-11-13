@@ -66,6 +66,8 @@ MANIFEST
 
 # Environment
 .env
+.env.local
+secrets/
 .venv
 env/
 venv/
