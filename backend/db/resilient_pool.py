@@ -18,6 +18,7 @@ Features:
 import json
 import logging
 import os
+import re
 import threading
 import time
 from contextlib import contextmanager
@@ -27,7 +28,7 @@ from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
 import psycopg2
-from psycopg2 import pool
+from psycopg2 import pool, sql
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 
@@ -44,13 +45,15 @@ _POOL: Optional[pool.ThreadedConnectionPool] = None
 _POOL_UNAVAILABLE = False  # Set True once we know PostgreSQL can't be reached
 
 
-def get_default_db_url() -> str:
-    """Retrieve normalized PostgreSQL database URL."""
-    url = (
-        os.getenv("DATABASE_URL")
-        or os.getenv("LOCAL_DATABASE_URL")
-        or "postgresql://hms_app:hms_secret_2026@127.0.0.1:5432/rainfall_runoff"
-    )
+def get_default_db_url() -> Optional[str]:
+    """Retrieve normalized PostgreSQL database URL.
+
+    Fails closed: returns None when neither DATABASE_URL nor
+    LOCAL_DATABASE_URL is set. No hardcoded credentials are ever used.
+    """
+    url = os.getenv("DATABASE_URL") or os.getenv("LOCAL_DATABASE_URL")
+    if not url:
+        return None
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
     return url
@@ -71,6 +74,13 @@ def init_pool(
             return _POOL
 
         target_url = db_url or get_default_db_url()
+        if target_url is None:
+            log.warning(
+                "No DATABASE_URL or LOCAL_DATABASE_URL configured. "
+                "PostgreSQL pool not initialized; degrading to disk-backed staging."
+            )
+            _POOL_UNAVAILABLE = True
+            return None
         log.info("Initializing HydroCast resilient PostgreSQL connection pool...")
         try:
             _POOL = pool.ThreadedConnectionPool(
@@ -107,6 +117,13 @@ def check_db_health(db_url: Optional[str] = None, timeout: int = 3) -> Dict[str,
     Returns "unreachable" (not an exception) when PostgreSQL is not installed.
     """
     target_url = db_url or get_default_db_url()
+    if target_url is None:
+        return {
+            "status": "unconfigured",
+            "latency_ms": None,
+            "error": "DATABASE_URL / LOCAL_DATABASE_URL not set",
+            "checked_at": datetime.now(timezone.utc).isoformat(),
+        }
     t0 = time.perf_counter()
     try:
         conn = psycopg2.connect(target_url, connect_timeout=timeout)
@@ -238,6 +255,25 @@ def stage_transaction(
     return file_path
 
 
+ALLOWED_STAGING_TABLES = frozenset({
+    "simulation_runs",
+    "bridge_stage_forecast",
+    "hydrograph_results",
+    "rainfall_station_data",
+    "pipeline_step_log",
+    "alert_events",
+    "site_visits",
+    "subbasin_rainfall_ts",
+    "station_selection_log",
+    "peak_discharge_events",
+    "forecast_validation_metrics",
+    "wrd_field_benchmarks",
+    "test_metrics",
+})
+
+_IDENTIFIER_RE = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+
+
 def replay_staged_transactions(conn=None) -> Dict[str, int]:
     """
     Replay all pending disk-staged transactions once the database is back online.
@@ -261,13 +297,32 @@ def replay_staged_transactions(conn=None) -> Dict[str, int]:
             file_path.unlink()
             return True
 
+        if table not in ALLOWED_STAGING_TABLES:
+            log.error(
+                "Security check failed: table '%s' in staged file %s not in ALLOWED_STAGING_TABLES whitelist",
+                table,
+                file_path.name,
+            )
+            raise ValueError(f"Table '{table}' is not permitted for replay")
+
         with active_conn.cursor() as cur:
             for item in records:
                 cols = list(item.keys())
+                for col in cols:
+                    if not _IDENTIFIER_RE.match(col):
+                        log.error(
+                            "Security check failed: invalid column identifier '%s' in staged file %s",
+                            col,
+                            file_path.name,
+                        )
+                        raise ValueError(f"Column identifier '{col}' is invalid")
+
                 vals = [item[c] for c in cols]
-                placeholders = ", ".join(["%s"] * len(cols))
-                col_names = ", ".join(cols)
-                query = f"INSERT INTO {table} ({col_names}) VALUES ({placeholders}) ON CONFLICT DO NOTHING"
+                query = sql.SQL("INSERT INTO {} ({}) VALUES ({}) ON CONFLICT DO NOTHING").format(
+                    sql.Identifier(table),
+                    sql.SQL(", ").join(map(sql.Identifier, cols)),
+                    sql.SQL(", ").join(sql.Placeholder() * len(cols)),
+                )
                 cur.execute(query, vals)
         active_conn.commit()
         file_path.unlink()
