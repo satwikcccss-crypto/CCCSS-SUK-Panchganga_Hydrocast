@@ -212,12 +212,11 @@ async def verify_admin_or_key(
     if authorization and authorization.startswith("Bearer "):
         token = authorization[7:]
         # Use existing security module for JWT verification
-        from backend.api.security import verify_access_token
+        from backend.api.security import decode_access_token
         try:
-            payload = verify_access_token(token)
-            if payload:
-                return True
-        except Exception:
+            decode_access_token(token)
+            return True
+        except HTTPException:
             pass
 
     # Check master API key
