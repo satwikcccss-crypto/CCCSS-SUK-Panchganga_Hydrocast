@@ -158,34 +158,27 @@ def _patch_steps(monkeypatch, calls):
     monkeypatch.setattr(orch, "step12_broadcast", make(12))
 
 
-def test_run_pipeline_executes_twelve_steps_in_order(monkeypatch):
-    conn = _FakeConn()
-    monkeypatch.setattr(orch, "get_conn", lambda: conn)
-    calls = []
-    _patch_steps(monkeypatch, calls)
+def test_run_pipeline_delegates_to_execute_cycle(monkeypatch):
+    """run_pipeline should delegate to execute_cycle and return its result."""
+    expected = {"status": "completed", "cycle_id": "CYC_T", "steps_completed": [1, 2, 3]}
+    monkeypatch.setattr(orch, "execute_cycle", lambda **kwargs: expected)
 
-    orch.run_pipeline(_utc(), cycle_id="CYC_T")
+    result = orch.run_pipeline(_utc(), cycle_id="CYC_T")
 
-    assert calls == _STEP_NAMES
-    assert conn.closed is True
-    assert "STATUS='COMPLETED'" in _joined(conn)
+    assert result == expected
 
 
-def test_run_pipeline_failure_exits_nonzero_and_closes(monkeypatch):
-    conn = _FakeConn()
-    monkeypatch.setattr(orch, "get_conn", lambda: conn)
-
-    def _raise(*args, **kwargs):
+def test_run_pipeline_returns_failure_dict_on_error(monkeypatch):
+    """run_pipeline must never kill the process; it returns a failure dict."""
+    def _raise(**kwargs):
         raise RuntimeError("QC failed")
 
-    monkeypatch.setattr(orch, "step1_download_weather", lambda *a, **k: "ds")
-    monkeypatch.setattr(orch, "step2_fetch_gauges", lambda *a, **k: None)
-    monkeypatch.setattr(orch, "step3_validate", _raise)
+    monkeypatch.setattr(orch, "execute_cycle", _raise)
 
-    with pytest.raises(SystemExit) as exc:
-        orch.run_pipeline(_utc(), cycle_id="CYC_FAIL")
+    result = orch.run_pipeline(_utc(), cycle_id="CYC_FAIL")
 
-    assert exc.value.code == 1
-    assert conn.closed is True
+    assert result["status"] == "failed"
+    assert result["cycle_id"] == "CYC_FAIL"
+    assert "QC failed" in result["error"]
 
 

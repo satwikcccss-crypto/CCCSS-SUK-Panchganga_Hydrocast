@@ -645,100 +645,34 @@ def run_pipeline(
     """
     Execute the full 12-step forecast cycle with connection management.
 
-    This is the legacy test-facing entry point. Each step is executed inside
-    a ``timed_step`` context manager so that failures mark the step as
-    FAILED and abort the cycle with ``sys.exit(1)``.
+    .. deprecated::
+        Use :func:`execute_cycle` directly or via :mod:`backend.service.orchestrator`.
+        This wrapper delegates directly to :func:`execute_cycle`, the canonical 12-step
+        execution path ensuring step checkpointing, PostgreSQL persistence,
+        and dashboard payload generation.
     """
-    import sys
-
-    if run_dt is None:
-        now = datetime.now(timezone.utc)
-        h6 = (now.hour // 6) * 6
-        run_dt = now.replace(hour=h6, minute=0, second=0, microsecond=0)
-
-    if cycle_id is None:
-        cycle_id = f"CYC_{run_dt.strftime('%Y%m%d_%H%M')}"
-
-    conn = get_conn()
+    import warnings
+    warnings.warn(
+        "backend.service.pipeline_worker.run_pipeline is deprecated; use execute_cycle instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     try:
-        create_cycle(conn, cycle_id, run_dt)
-
-        # Load basin parameters once (steps 6-7 need them)
-        from backend.hms.basin_parser import load_immutable_baseline
-        sub_models, reaches = load_immutable_baseline()
-
-        # Step 1: Weather
-        with timed_step(conn, cycle_id, 1, "weather"):
-            weather = step1_download_weather(run_dt, conn)
-
-        # Step 2: Gauges
-        with timed_step(conn, cycle_id, 2, "gauges"):
-            n_gauges = step2_fetch_gauges(run_dt, conn)
-
-        # Step 3: Validation
-        with timed_step(conn, cycle_id, 3, "validate"):
-            step3_validate(run_dt, conn)
-
-        # Step 4: Station selection
-        with timed_step(conn, cycle_id, 4, "stations"):
-            station_results = step4_select_stations(run_dt, conn)
-
-        # Step 5: DSS
-        with timed_step(conn, cycle_id, 5, "dss"):
-            step5_write_dss(station_results, run_dt, conn)
-
-        # Step 6: Params
-        with timed_step(conn, cycle_id, 6, "params"):
-            step6_check_params(conn)
-
-        # Step 7: HMS
-        hg_results = None
-        with timed_step(conn, cycle_id, 7, "hms"):
-            hg_results = step7_run_hms(sub_models, reaches, run_dt, conn)
-
-        # Step 8: Extract
-        extraction = {}
-        with timed_step(conn, cycle_id, 8, "extract"):
-            extraction = step8_extract_results(hg_results) or {}
-
-        # Step 9: Stage conversion
-        peak_q = 0.0
-        if isinstance(extraction, dict):
-            peak_q = extraction.get("peak_q_m3s", 0.0)
-        with timed_step(conn, cycle_id, 9, "stage"):
-            bridge_stages = step9_stage_conversion(peak_q, conn)
-
-        # Step 10: Store
-        with timed_step(conn, cycle_id, 10, "store"):
-            step10_store_db(cycle_id, run_dt, conn)
-
-        # Step 11: Alerts
-        with timed_step(conn, cycle_id, 11, "alerts"):
-            alert_result = step11_alerts(bridge_stages, conn)
-
-        # Step 12: Broadcast
-        with timed_step(conn, cycle_id, 12, "broadcast"):
-            step12_broadcast(alert_result)
-
-        mark_complete(conn, cycle_id)
-        return {"status": "completed", "cycle_id": cycle_id}
-
+        return execute_cycle(
+            run_dt=run_dt,
+            cycle_id=cycle_id,
+            force_all_steps=force_all_steps,
+            single_step=single_step,
+        )
     except Exception as exc:
-        log.exception("Forecast cycle %s failed: %s", cycle_id, exc)
-        try:
-            mark_complete(conn, cycle_id)
-        except Exception:
-            pass
+        # A cycle failure must never kill the API process. Return a structured
+        # failure dict so the caller can report the error and keep serving.
+        log.exception("Forecast cycle %s failed: %s", cycle_id or "auto", exc)
         return {
             "status": "failed",
-            "cycle_id": cycle_id,
+            "cycle_id": cycle_id or "auto",
             "error": str(exc),
         }
-    finally:
-        try:
-            conn.close()
-        except Exception:
-            pass
 
 
 def step_start(conn, cycle_id: str, step_number: int, step_name: str) -> None:
@@ -755,29 +689,29 @@ def step_start(conn, cycle_id: str, step_number: int, step_name: str) -> None:
 
 
 def step_done(conn, cycle_id: str, step_number: int, details: Optional[Dict[str, Any]] = None) -> None:
-    """Mark a pipeline step as SUCCESS with details JSON."""
+    """Mark a pipeline step as success with details JSON."""
     details_json = json.dumps(details) if details else None
     with conn.cursor() as cur:
         cur.execute("""
             UPDATE pipeline_step_log
-            SET status='SUCCESS', details_json=%s, end_time=NOW()
+            SET status='success', details_json=%s, end_time=NOW()
             WHERE cycle_id=%s AND step_number=%s
         """, (details_json, cycle_id, step_number))
     conn.commit()
 
 
 def step_fail(conn, cycle_id: str, step_number: int, error: str) -> None:
-    """Mark a pipeline step as FAILED and flag the run as failed."""
+    """Mark a pipeline step as failed and flag the run as failed."""
     err = (error or "")[:2000]
     with conn.cursor() as cur:
         cur.execute("""
             UPDATE pipeline_step_log
-            SET status='FAILED', error_message=%s, end_time=NOW()
+            SET status='failed', error_message=%s, end_time=NOW()
             WHERE cycle_id=%s AND step_number=%s
         """, (err, cycle_id, step_number))
         cur.execute("""
             UPDATE simulation_runs
-            SET status='FAILED', end_time=NOW()
+            SET status='failed', end_time=NOW()
             WHERE run_id=%s
         """, (cycle_id,))
     conn.commit()
@@ -796,11 +730,11 @@ def create_cycle(conn, cycle_id: str, run_dt: datetime) -> None:
 
 
 def mark_complete(conn, cycle_id: str) -> None:
-    """Mark a simulation run as COMPLETED."""
+    """Mark a simulation run as completed."""
     with conn.cursor() as cur:
         cur.execute("""
             UPDATE simulation_runs
-            SET status='COMPLETED', end_time=NOW()
+            SET status='completed', end_time=NOW()
             WHERE run_id=%s
         """, (cycle_id,))
     conn.commit()
