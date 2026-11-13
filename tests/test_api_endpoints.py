@@ -102,6 +102,44 @@ def test_cors_never_reflects_arbitrary_origin_with_credentials(client):
         assert r.headers.get("access-control-allow-credentials") != "true"
 
 
+# ── readiness ──────────────────────────────────────────────────────────────────
+
+
+def test_ready_when_db_up_and_cycle_completed(client, monkeypatch):
+    conn = install_pool(
+        monkeypatch,
+        fetchval=[1],
+        fetchrow={"status": "completed", "start_time": "2026-08-22T06:00:00Z"},
+    )
+    r = client.get("/api/v1/ready")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["status"] == "ready"
+    assert body["service"] == "hydrocast-backend"
+
+
+def test_not_ready_when_db_down(client, monkeypatch):
+    async def fake_get_pool_none():
+        return None
+    monkeypatch.setattr(main, "get_pool", fake_get_pool_none)
+    r = client.get("/api/v1/ready")
+    assert r.status_code == 503
+    body = r.json()
+    assert body["status"] == "not_ready"
+
+
+def test_not_ready_when_no_completed_cycle(client, monkeypatch):
+    conn = install_pool(
+        monkeypatch,
+        fetchval=[1],
+        fetchrow=None,
+    )
+    r = client.get("/api/v1/ready")
+    assert r.status_code == 503
+    body = r.json()
+    assert body["status"] == "not_ready"
+
+
 def test_oversized_body_is_rejected(client):
     r = client.post("/api/v1/visits/record", content=b"x" * 1_100_000)
     assert r.status_code == 413

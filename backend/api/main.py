@@ -553,6 +553,75 @@ async def health_check():
     }
 
 
+# ── Readiness Probe ────────────────────────────────────────────────────────────
+
+@app.get(
+    "/api/v1/ready",
+    tags=["Health & Probes"],
+    summary="Readiness probe",
+    response_description="Whether the service is ready to serve forecast data (database + pipeline reachable).",
+)
+async def readiness_check():
+    """Readiness probe for container orchestration.
+
+    Unlike ``/api/v1/health`` (liveness), this touches the database and
+    pipeline state. Returns ``200`` only when PostgreSQL is reachable and a
+    forecast cycle has completed successfully; otherwise returns ``503`` so
+    load balancers stop sending traffic until the system recovers.
+    """
+    pool = await get_pool()
+    if pool is None:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "not_ready",
+                "service": "hydrocast-backend",
+                "reason": "PostgreSQL pool unavailable",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            },
+        )
+    try:
+        async with pool.acquire() as conn:
+            await conn.fetchval("SELECT 1")
+            last_cycle = await conn.fetchrow("""
+                SELECT status, start_time
+                FROM simulation_runs
+                ORDER BY start_time DESC LIMIT 1
+            """)
+    except Exception as e:
+        log.warning("Readiness check failed: %s", e)
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "not_ready",
+                "service": "hydrocast-backend",
+                "reason": f"Database query failed: {e}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            },
+        )
+
+    ready = bool(last_cycle) and str(last_cycle["status"] or "") in ("completed", "COMPLETED")
+    if not ready:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "not_ready",
+                "service": "hydrocast-backend",
+                "reason": "No completed forecast cycle found",
+                "last_cycle": dict(last_cycle) if last_cycle else None,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            },
+        )
+
+    return {
+        "status": "ready",
+        "service": "hydrocast-backend",
+        "version": "2.0.0",
+        "last_cycle": dict(last_cycle),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+
 # ── Database Health Endpoint ─────────────────────────────────────────────────
 
 @app.get(
