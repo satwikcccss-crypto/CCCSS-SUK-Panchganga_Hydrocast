@@ -63,12 +63,23 @@ def run_pipeline(
         single_step,
     )
 
-    return execute_cycle(
-        run_dt=run_dt,
-        cycle_id=cycle_id,
-        force_all_steps=force_all_steps,
-        single_step=single_step,
-    )
+    try:
+        return execute_cycle(
+            run_dt=run_dt,
+            cycle_id=cycle_id,
+            force_all_steps=force_all_steps,
+            single_step=single_step,
+        )
+    except Exception as exc:
+        # A cycle failure must never kill the API process. Return a structured
+        # failure dict so the caller (admin endpoint, scheduler, operator) can
+        # report the error and keep serving.
+        log.exception("Forecast cycle %s failed: %s", cycle_id or "auto", exc)
+        return {
+            "status": "failed",
+            "cycle_id": cycle_id or "auto",
+            "error": str(exc),
+        }
 
 
 __all__ = ["run_pipeline", "get_step_checkpoint", "save_step_checkpoint",
