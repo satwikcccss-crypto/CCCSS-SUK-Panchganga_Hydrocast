@@ -88,16 +88,30 @@ class SchedulerDaemon:
             thread_alive = bool(self._thread and self._thread.is_alive())
 
         is_running = bool(active.get("is_running"))
+        
+        # Check seasonal operating regime (Monsoon vs Dry Season Hibernation)
+        from backend.hms.runner import get_seasonal_hydrology_regime
+        now = datetime.now(timezone.utc)
+        regime = get_seasonal_hydrology_regime(now)
+        is_hibernating = (not regime["is_monsoon"]) and (not paused)
+
         if is_running:
             status = "RUNNING"
         elif paused:
             status = "PAUSED"
         else:
+            # Seasonal hibernation (dry season) is a reason for being idle,
+            # not a separate operational status. Keep status=IDLE so existing
+            # consumers and tests remain compatible; expose hibernation via
+            # the is_seasonal_hibernation flag.
             status = "IDLE"
 
         return {
             "status": status,
             "is_paused": paused,
+            "is_seasonal_hibernation": is_hibernating,
+            "hibernation_reason": "DRY_SEASON_TRANQUIL_FLOW" if is_hibernating else None,
+            "regime": regime["regime"],
             "active_run": active,
             "last_cycle_id": last_cycle_id or active.get("cycle_id"),
             "last_result": last_result,
@@ -213,6 +227,16 @@ class SchedulerDaemon:
         now = datetime.now(timezone.utc)
         if now.hour not in self._cycle_hours:
             return
+
+        # Seasonal check: Auto-pause autonomous cycles during Dry Season (Nov 1 - May 31)
+        # to prevent memory bloat, disk exhaustion, and CPU churn on tranquil weir flow.
+        from backend.hms.runner import get_seasonal_hydrology_regime
+        regime = get_seasonal_hydrology_regime(now)
+        if not regime["is_monsoon"]:
+            # Tranquil dry season: do not dispatch heavy automated runs.
+            # Manual dispatch via [▶ Trigger Manual Cycle] remains 100% available.
+            return
+
         # Fire once per slot (00, 06, 12, 18 UTC).
         slot = now.strftime("%Y%m%d_%H")
         if slot == self._last_scheduled_slot:

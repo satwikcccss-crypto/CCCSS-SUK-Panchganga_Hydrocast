@@ -22,6 +22,7 @@ Access model: JWT bearer token (HS256) or master X-API-Key.
 No public read routes are exposed here — those live on the Public API (Port 8000).
 """
 
+import hmac
 import os
 import sys
 import logging
@@ -104,8 +105,7 @@ for _default_origin in ("http://localhost:3001", "http://127.0.0.1:3001", "http:
     if _default_origin not in _cors_raw:
         _cors_raw.append(_default_origin)
 if "*" in _cors_raw:
-    _sec_log = logging.getLogger(__name__)
-    _sec_log.critical("ADMIN_CORS_ORIGINS contains '*' — wildcard origins are prohibited on admin API.")
+    log.critical("ADMIN_CORS_ORIGINS contains '*' — wildcard origins are prohibited on admin API.")
     sys.exit(1)
 
 app.add_middleware(
@@ -219,8 +219,8 @@ async def verify_admin_or_key(
         except HTTPException:
             pass
 
-    # Check master API key
-    if x_api_key and API_KEY and x_api_key == API_KEY:
+    # Check master API key — constant-time comparison to prevent timing attacks
+    if x_api_key and API_KEY and hmac.compare_digest(x_api_key, API_KEY):
         return True
 
     raise HTTPException(
@@ -302,9 +302,16 @@ async def admin_pause(pause: bool, request: Request, _: bool = AdminDep):
 )
 async def admin_backup_db(request: Request, _: bool = AdminDep):
     import subprocess
+    import shutil
+    pg_dump = shutil.which("pg_dump")
+    if not pg_dump:
+        return {"status": "failed", "error": "pg_dump not found on PATH"}
+    db_url = DB_URL or os.getenv("DATABASE_URL", "")
+    if not db_url:
+        return {"status": "failed", "error": "DATABASE_URL not configured"}
     try:
         result = subprocess.run(
-            ["powershell", "-File", "windows/backup_database.ps1"],
+            [pg_dump, db_url],
             capture_output=True, text=True, timeout=300,
         )
         if result.returncode == 0:
@@ -351,16 +358,37 @@ admin_ws_manager = AdminWSManager()
 
 @app.websocket("/ws/admin/logs")
 async def ws_admin_logs(websocket: WebSocket, token: Optional[str] = Query(None)):
-    # Authenticate via JWT token or API key for WebSocket
+    # Authenticate via JWT token or API key BEFORE accepting the connection
     if not token:
         await websocket.close(code=1008)
         return
-    # Accept valid JWT or API key
     try:
         from backend.api.security import decode_access_token
         decode_access_token(token)
     except Exception:
-        if not (API_KEY and token == API_KEY):
+        if not (API_KEY and hmac.compare_digest(token, API_KEY)):
+            await websocket.close(code=1008)
+            return
+    if not await admin_ws_manager.connect(websocket):
+        return
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        admin_ws_manager.disconnect(websocket)
+
+
+@app.websocket("/ws/admin/telemetry")
+async def ws_admin_telemetry(websocket: WebSocket, token: Optional[str] = Query(None)):
+    # Authenticate via JWT token or API key BEFORE accepting the connection
+    if not token:
+        await websocket.close(code=1008)
+        return
+    try:
+        from backend.api.security import decode_access_token
+        decode_access_token(token)
+    except Exception:
+        if not (API_KEY and hmac.compare_digest(token, API_KEY)):
             await websocket.close(code=1008)
             return
     if not await admin_ws_manager.connect(websocket):

@@ -224,6 +224,59 @@ def route_muskingum(
     return cur_in
 
 
+DRY_SEASON_BASEFLOW_M3S = 12.0
+MONSOON_BASEFLOW_M3S = 91.1
+
+
+def get_seasonal_hydrology_regime(
+    run_dt: Optional[datetime] = None,
+    rainfall_24h_mm: float = 0.0,
+    live_stage_m: Optional[float] = None,
+) -> Dict[str, Any]:
+    """
+    Determine the hydrological operating regime for the Panchganga Basin:
+    - Dry Season (Nov 1 - May 31): Regulated channel flow governed by K.T. weirs
+      and upstream dam releases for municipal drinking and sugarcane irrigation.
+      Normal stage: 531.0 - 533.0 m MSL, baseflow ~12.0 m³/s (9-15 m³/s range).
+    - Monsoon Alert Season (June 1 - Oct 31): High-flow flash flood monitoring
+      with monsoonal channel inflow (~91.1 m³/s).
+    - Storm / Level Escalation: Escalates to MONSOON_FLOOD_WATCH during dry season
+      if 24-hr cumulative rainfall >= 20.0 mm or live stage >= 535.00 m MSL.
+    """
+    if run_dt is None:
+        run_dt = datetime.now(timezone.utc)
+    month = run_dt.month
+
+    is_calendar_monsoon = 6 <= month <= 10
+    is_storm_active = (rainfall_24h_mm >= 20.0) or (live_stage_m is not None and live_stage_m >= 535.0)
+
+    if is_calendar_monsoon or is_storm_active:
+        regime = "MONSOON_FLOOD_WATCH"
+        baseflow = float(os.getenv("MONSOON_BASEFLOW", str(MONSOON_BASEFLOW_M3S)))
+        status_label = "FLOOD WATCH ACTIVE"
+        desc = "Monsoon flood early-warning active with channel inflow"
+        shivaji_stage = 533.10
+        rajaram_stage = 533.74
+    else:
+        regime = "DRY_SEASON_REGULATED"
+        baseflow = float(os.getenv("DRY_SEASON_BASEFLOW", str(DRY_SEASON_BASEFLOW_M3S)))
+        status_label = "TRANQUIL · WEIR REGULATED"
+        desc = "Dry season channel flow regulated by K.T. weirs & dam releases"
+        shivaji_stage = 531.80
+        rajaram_stage = 532.70
+
+    return {
+        "regime": regime,
+        "is_monsoon": is_calendar_monsoon or is_storm_active,
+        "is_storm_escalated": not is_calendar_monsoon and is_storm_active,
+        "baseflow_m3s": round(baseflow, 2),
+        "nominal_stage_shivaji_m": shivaji_stage,
+        "nominal_stage_rajaram_m": rajaram_stage,
+        "status_label": status_label,
+        "description": desc,
+    }
+
+
 def compute_emulator_hydrograph(
     sub_models: Dict[str, Dict[str, Any]],
     reaches: Dict[str, Dict[str, Any]],
@@ -359,7 +412,11 @@ def compute_emulator_hydrograph(
             sub_q_direct[sid] = np.pad(varr, (0, max_len - len(varr)))
 
     if baseflow_m3s is None:
-        baseflow_m3s = float(os.getenv("MONSOON_BASEFLOW", "91.1"))
+        mean_rain_24h = float(
+            np.mean([np.sum(p_series[:24]) for p_series in subbasin_hyetographs.values() if len(p_series) > 0])
+        ) if subbasin_hyetographs else 0.0
+        regime_info = get_seasonal_hydrology_regime(run_dt=run_dt, rainfall_24h_mm=mean_rain_24h)
+        baseflow_m3s = regime_info["baseflow_m3s"]
 
     # 3. Muskingum reach routing, network order strictly following Basin_1.basin.
     #    K and X are CONSTANT channel-storage parameters from the basin file —
@@ -464,8 +521,18 @@ def derive_baseflow_m3s(live_stage_m: Optional[float]) -> float:
         )
         return float(baseflow)
 
-    # Sensor offline (summer/winter): use previous cycle's stage from the
-    # persisted pipeline state, converted through the same PCHIP curve.
+    # When live sensor is offline, check seasonal regime first
+    regime = get_seasonal_hydrology_regime()
+    if not regime["is_monsoon"]:
+        # In dry season (Nov–May with no storm), channel flow is strictly controlled by weirs & dams (12 m³/s)
+        baseflow = regime["baseflow_m3s"]
+        log.info(
+            "Dry season channel flow: baseflow set to %.1f m3/s (531–533m MSL weir regulated)",
+            baseflow,
+        )
+        return float(baseflow)
+
+    # Monsoon season: try previous cycle stage from persisted pipeline state
     previous_stage = None
     try:
         if STATE_FILE.exists():
@@ -487,11 +554,11 @@ def derive_baseflow_m3s(live_stage_m: Optional[float]) -> float:
         )
         return float(baseflow)
 
-    baseflow = float(os.getenv("MONSOON_BASEFLOW", "91.1"))
+    baseflow = regime["baseflow_m3s"]
     log.warning(
         "No live stage reading and no previous cycle state; baseflow set to "
-        "fallback %.1f m3/s (WRD monsoon floor is %.1f m3/s)",
-        baseflow, WRD_MONSOON_BASEFLOW_FLOOR_M3S,
+        "seasonal fallback %.1f m3/s (%s)",
+        baseflow, regime["regime"],
     )
     return baseflow
 

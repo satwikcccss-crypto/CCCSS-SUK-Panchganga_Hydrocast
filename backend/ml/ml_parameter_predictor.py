@@ -164,7 +164,12 @@ def extract_stage_features(stage_series: np.ndarray) -> np.ndarray:
     stage_range = float(np.ptp(stage))  # peak-to-peak
     features.append(stage_range)
     features.append(float(np.var(stage)))      # variance
-    features.append(float(np.nanmean([np.stats.skew(stage)])[0]) if len(stage) > 2 and hasattr(np, 'stats') and hasattr(np.stats, 'skew') else 0.0)  # skewness
+    # Skewness via scipy.stats (numpy has no stats module)
+    if len(stage) > 2 and np.std(stage) > 0:
+        from scipy.stats import skew as _skew
+        features.append(float(_skew(stage, nan_policy="omit")))
+    else:
+        features.append(0.0)  # skewness
 
     # 7. Integral of stage (cumulative exposure)
     cumulative_stage = float(np.sum(stage))
