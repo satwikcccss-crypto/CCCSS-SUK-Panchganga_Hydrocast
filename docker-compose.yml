@@ -9,15 +9,16 @@
 
 services:
   # ── PostgreSQL 16 + PostGIS ──
+  # NOTE: DB is NOT exposed to the host (no ports mapping). All credentials
+  # must be supplied via .env (never committed). Postgres requires
+  # POSTGRES_PASSWORD; set it in .env before first deploy.
   db:
     image: postgis/postgis:16-3.4
     container_name: hydrocast-db
     environment:
       POSTGRES_DB: rainfall_runoff
       POSTGRES_USER: hydrocast
-      POSTGRES_PASSWORD: hydrocast_2026
-    ports:
-      - "5432:5432"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - hydrocast_db_data:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
@@ -40,7 +41,7 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql://hydrocast:hydrocast_2026@db:5432/rainfall_runoff
+      # DATABASE_URL is supplied via .env (never committed).
       CORS_ORIGINS: http://localhost:3000,http://localhost:3001,http://frontend:3000,http://frontend-admin:3001
     depends_on:
       db:
@@ -58,7 +59,7 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql://hydrocast:hydrocast_2026@db:5432/rainfall_runoff
+      # DATABASE_URL is supplied via .env (never committed).
       ADMIN_CORS_ORIGINS: http://localhost:3001,http://frontend-admin:3001,http://localhost:3000,http://frontend:3000
     command: ["uvicorn", "backend.api.admin_app:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "2"]
     depends_on:
