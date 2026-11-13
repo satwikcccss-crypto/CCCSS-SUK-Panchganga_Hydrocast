@@ -442,13 +442,19 @@ def derive_baseflow_m3s(live_stage_m: Optional[float]) -> float:
       * The 40.0 m3/s floor previously applied on the live path imposed a
         +1.98 m stage bias over the whole 90-hour window during the dry season.
 
-    When telemetry is unavailable, fall back to the WRD-grounded monsoon figure
-    (``MONSOON_BASEFLOW``, default 91.1 m3/s).
+    When telemetry is unavailable, fall back to the previous cycle's stage
+    from ``data/openmeteo_dss/latest_pipeline_state.json`` (the river holds a
+    near-constant ~531–532 m in summer/winter due to dam discharge for
+    irrigation and drinking water), converted through the WRD PCHIP rating
+    curve.  Only when no previous state exists do we fall back to the
+    ``MONSOON_BASEFLOW`` constant.
     """
     from backend.stage_conversion.stage_converter import (
         convert_stage_to_discharge_manning,
         WRD_MONSOON_BASEFLOW_FLOOR_M3S,
     )
+
+    STATE_FILE = PROJECT_ROOT / "data" / "openmeteo_dss" / "latest_pipeline_state.json"
 
     if live_stage_m is not None:
         baseflow = convert_stage_to_discharge_manning(live_stage_m, "SHIVAJI_BRIDGE")
@@ -458,10 +464,33 @@ def derive_baseflow_m3s(live_stage_m: Optional[float]) -> float:
         )
         return float(baseflow)
 
+    # Sensor offline (summer/winter): use previous cycle's stage from the
+    # persisted pipeline state, converted through the same PCHIP curve.
+    previous_stage = None
+    try:
+        if STATE_FILE.exists():
+            import json
+            state = json.loads(STATE_FILE.read_text(encoding="utf-8"))
+            previous_stage = (
+                state.get("bridgeShivaji", {})
+                .get("forecast", [{}])[0]
+                .get("stage_m")
+            )
+    except Exception as exc:
+        log.warning("Could not read previous cycle stage from %s: %s", STATE_FILE, exc)
+
+    if previous_stage is not None:
+        baseflow = convert_stage_to_discharge_manning(float(previous_stage), "SHIVAJI_BRIDGE")
+        log.info(
+            "Baseflow from previous cycle stage: stage %.2f m -> %.2f m3/s",
+            previous_stage, baseflow,
+        )
+        return float(baseflow)
+
     baseflow = float(os.getenv("MONSOON_BASEFLOW", "91.1"))
     log.warning(
-        "No live stage reading; baseflow set to fallback %.1f m3/s "
-        "(WRD monsoon floor is %.1f m3/s)",
+        "No live stage reading and no previous cycle state; baseflow set to "
+        "fallback %.1f m3/s (WRD monsoon floor is %.1f m3/s)",
         baseflow, WRD_MONSOON_BASEFLOW_FLOOR_M3S,
     )
     return baseflow
