@@ -57,9 +57,20 @@ if (-not $PgDumpBin) {
     exit 1
 }
 
+# Use PGPASSWORD from environment for non-interactive scheduled backups when provided.
+# Prefer .pgpass/managed service credentials in production where possible.
+if (-not $env:PGPASSWORD -and $env:POSTGRES_PASSWORD) {
+    $env:PGPASSWORD = $env:POSTGRES_PASSWORD
+}
+
 $t0 = Get-Date
 & $PgDumpBin -h $PgHost -p $PgPort -U $PgUser -F c -b -v -f $DumpFile $DbName
 $elapsed = [math]::Round(((Get-Date) - $t0).TotalSeconds, 2)
+
+# Best-effort: keep process env clean if we populated it from POSTGRES_PASSWORD.
+if ($env:POSTGRES_PASSWORD -and $env:PGPASSWORD -eq $env:POSTGRES_PASSWORD) {
+    Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
+}
 
 if ($LASTEXITCODE -eq 0 -and (Test-Path $DumpFile)) {
     $SizeMB = [math]::Round((Get-Item $DumpFile).Length / 1MB, 2)
@@ -68,6 +79,7 @@ if ($LASTEXITCODE -eq 0 -and (Test-Path $DumpFile)) {
     $AuditMsg = "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')] OK: Created $DumpFile (${SizeMB}MB in ${elapsed}s) SHA256: $Hash"
     Add-Content -Path $LogFile -Value $AuditMsg
     Write-Host "[SUCCESS] $AuditMsg" -ForegroundColor Green
+    Write-Host "[DRILL] Verify restore on a staging/test database periodically: pg_restore --list `"$DumpFile`"" -ForegroundColor DarkCyan
 } else {
     $AuditMsg = "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')] FAILED: Backup failed with exit code $LASTEXITCODE"
     Add-Content -Path $LogFile -Value $AuditMsg

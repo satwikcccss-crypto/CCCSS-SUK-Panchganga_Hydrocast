@@ -1,6 +1,6 @@
 {
   "name": "hydrocast-dashboard",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -49,3 +49,4 @@
     "typescript": "5.9.3"
   }
 }
+

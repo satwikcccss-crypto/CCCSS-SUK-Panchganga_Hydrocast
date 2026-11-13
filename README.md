@@ -28,8 +28,8 @@
 <!-- TIER 2: REPOSITORY & COMMUNITY HEALTH BADGES                            -->
 <!-- ======================================================================= -->
 <p align="center">
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.1.0">
-    <img src="https://img.shields.io/badge/release-windows--v1.1.0-0284c7?style=for-the-badge&logo=github" alt="Release">
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.2.0">
+    <img src="https://img.shields.io/badge/release-windows--v1.2.0-0284c7?style=for-the-badge&logo=github" alt="Release">
   </a>
   <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/pipeline.yml">
     <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/pipeline.yml?branch=windows-server-production&label=Forecast%20Pipeline&style=for-the-badge&logo=githubactions&logoColor=white" alt="Forecast Pipeline">
@@ -407,7 +407,7 @@ curl http://127.0.0.1:8000/healthz/ready
    ```
 2. Re-run the full installation runbook (Steps 1–7 above). All steps are idempotent.
 3. Verify the new health endpoints `/healthz/live` and `/healthz/ready`.
-4. Confirm the version reported in API responses matches `API-Version: 1.1.0`.
+4. Confirm the version reported in API responses matches `API-Version: 1.2.0`.
 
 ### Rolling back to prior version
 1. Identify the prior tag: `git tag --list | sort -V`.

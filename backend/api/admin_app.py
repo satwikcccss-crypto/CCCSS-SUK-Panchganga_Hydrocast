@@ -1,7 +1,7 @@
 """
 backend/api/admin_app.py
 ========================
-Operator Console FastAPI API for HydroCast Panchganga — Port 8001.
+Operator Console FastAPI API for HydroCast Panchganga â€” Port 8001.
 
 Impenetrable admin console backend. Strictly protected by local PostgreSQL RBAC
 (bcrypt) and HS256 JWT. Features:
@@ -19,7 +19,7 @@ Impenetrable admin console backend. Strictly protected by local PostgreSQL RBAC
   - WS  /ws/admin/logs               streaming operator logs
 
 Access model: JWT bearer token (HS256) or master X-API-Key.
-No public read routes are exposed here — those live on the Public API (Port 8000).
+No public read routes are exposed here â€” those live on the Public API (Port 8000).
 """
 
 import hmac
@@ -58,10 +58,10 @@ log = logging.getLogger(__name__)
 
 app = FastAPI(
     title="HydroCast Panchganga Operator Console API",
-    version="1.1.0",
+    version="1.2.0",
     summary="Operator Console administrative API (Port 8001)",
     description=(
-        "**IMPENETRABLE ADMIN CONSOLE** — HydroCast operator control plane.\n\n"
+        "**IMPENETRABLE ADMIN CONSOLE** â€” HydroCast operator control plane.\n\n"
         "Every route requires authentication except the unauthenticated "
         "`GET /healthz/live` container liveness probe. Two credentials are accepted:\n"
         "| Credential | Grants |\n"
@@ -69,18 +69,18 @@ app = FastAPI(
         "| JWT bearer (HS256) | full admin control |\n"
         "| master X-API-Key | service-to-service automation |\n\n"
         "Routes:\n"
-        "- `POST /api/v1/admin/auth/token` — exchange admin credentials for JWT\n"
-        "- `GET /api/v1/admin/me` — current identity and role claims\n"
-        "- `POST /api/v1/admin/trigger-run` — manually execute forecast cycle\n"
-        "- `POST /api/v1/admin/archive` — cold-storage Parquet archival\n"
-        "- `POST /api/v1/admin/recalibrate` — forced ML recalibration\n"
-        "- `GET /api/v1/admin/pipeline` — 12-step matrix with live status\n"
-        "- `POST /api/v1/admin/abort` — emergency abort\n"
-        "- `POST /api/v1/admin/pause` — pause/resume scheduler\n"
-        "- `POST /api/v1/admin/backup-db` — manual database backup\n"
-        "- `GET /api/v1/admin/health` — admin service health\n"
-        "- `GET /healthz/live` — unauthenticated liveness probe\n"
-        "- `WS /ws/admin/logs` — streaming operator logs over WebSocket\n\n"
+        "- `POST /api/v1/admin/auth/token` â€” exchange admin credentials for JWT\n"
+        "- `GET /api/v1/admin/me` â€” current identity and role claims\n"
+        "- `POST /api/v1/admin/trigger-run` â€” manually execute forecast cycle\n"
+        "- `POST /api/v1/admin/archive` â€” cold-storage Parquet archival\n"
+        "- `POST /api/v1/admin/recalibrate` â€” forced ML recalibration\n"
+        "- `GET /api/v1/admin/pipeline` â€” 12-step matrix with live status\n"
+        "- `POST /api/v1/admin/abort` â€” emergency abort\n"
+        "- `POST /api/v1/admin/pause` â€” pause/resume scheduler\n"
+        "- `POST /api/v1/admin/backup-db` â€” manual database backup\n"
+        "- `GET /api/v1/admin/health` â€” admin service health\n"
+        "- `GET /healthz/live` â€” unauthenticated liveness probe\n"
+        "- `WS /ws/admin/logs` â€” streaming operator logs over WebSocket\n\n"
         "This port (8001) is **isolated from the public portal** (Port 8000). "
         "No public read routes are exposed here."
     ),
@@ -89,8 +89,8 @@ app = FastAPI(
         {"name": "Admin Control", "description": "Pipeline trigger, abort, pause, backup."},
         {"name": "Admin Health", "description": "Operator console service health."},
     ],
-    contact={"name": "HydroCast Operations — Admin"},
-    license_info={"name": "Academic research use — DST-SERB funded project"},
+    contact={"name": "HydroCast Operations â€” Admin"},
+    license_info={"name": "Academic research use â€” DST-SERB funded project"},
 )
 
 app.state.limiter = limiter
@@ -110,7 +110,7 @@ async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
     )
 
 
-# ── CORS (admin console same-origin only) ──────────────────────────────────────
+# â”€â”€ CORS (admin console same-origin only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 _cors_raw = [o.strip() for o in os.getenv("ADMIN_CORS_ORIGINS", "").split(",") if o.strip()]
 for _default_origin in (
@@ -122,7 +122,7 @@ for _default_origin in (
     if _default_origin not in _cors_raw:
         _cors_raw.append(_default_origin)
 if "*" in _cors_raw:
-    log.critical("ADMIN_CORS_ORIGINS contains '*' — wildcard origins are prohibited on admin API.")
+    log.critical("ADMIN_CORS_ORIGINS contains '*' â€” wildcard origins are prohibited on admin API.")
     sys.exit(1)
 
 app.add_middleware(
@@ -156,7 +156,7 @@ class AdminSecurityHeadersMiddleware(BaseHTTPMiddleware):
 app.add_middleware(AdminSecurityHeadersMiddleware)
 
 
-# ── Anti-scraping (admin is fully JWT-protected but block bots early) ────────
+# â”€â”€ Anti-scraping (admin is fully JWT-protected but block bots early) â”€â”€â”€â”€â”€â”€â”€â”€
 _BLOCKED_UA_FRAGMENTS = [
     "scrapy",
     "httpclient",
@@ -192,7 +192,7 @@ class AdminAntiScrapingMiddleware(BaseHTTPMiddleware):
 app.add_middleware(AdminAntiScrapingMiddleware)
 
 
-# ── Config ─────────────────────────────────────────────────────────────────────
+# â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 DB_URL = os.getenv("DATABASE_URL", "")
 API_KEY = os.getenv("API_KEY", "")
@@ -200,9 +200,9 @@ JWT_SECRET = os.getenv("JWT_SECRET", "")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
 
 if not JWT_SECRET:
-    log.warning("JWT_SECRET is not set — JWT authentication will reject all tokens.")
+    log.warning("JWT_SECRET is not set â€” JWT authentication will reject all tokens.")
 if not ADMIN_PASSWORD:
-    log.warning("ADMIN_PASSWORD is not set — admin login will be disabled.")
+    log.warning("ADMIN_PASSWORD is not set â€” admin login will be disabled.")
 
 _pool: asyncpg.Pool | None = None
 _admin_pool_unavailable: bool = False
@@ -236,7 +236,7 @@ async def get_pool() -> Optional[asyncpg.Pool]:
         return None
 
 
-# ── Auth Dependency ────────────────────────────────────────────────────────────
+# â”€â”€ Auth Dependency â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 async def verify_admin_or_key(
@@ -257,7 +257,7 @@ async def verify_admin_or_key(
         except HTTPException:
             pass
 
-    # Check master API key — constant-time comparison to prevent timing attacks
+    # Check master API key â€” constant-time comparison to prevent timing attacks
     if x_api_key and API_KEY and hmac.compare_digest(x_api_key, API_KEY):
         return True
 
@@ -276,7 +276,7 @@ app.include_router(admin_router)
 app.include_router(ws_hub_router)
 
 
-# ── Admin-Only Routes ──────────────────────────────────────────────────────────
+# â”€â”€ Admin-Only Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 @app.get(
@@ -289,7 +289,7 @@ async def admin_liveness():
     return {
         "status": "alive",
         "service": "hydrocast-admin-console",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -313,7 +313,7 @@ async def admin_health(request: Request, _: bool = AdminDep):
 
     return {
         "service": "hydrocast-admin-console",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "port": 8001,
         "database": db_status,
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -380,7 +380,7 @@ async def admin_backup_db(request: Request, _: bool = AdminDep):
         return {"status": "failed", "error": str(e)}
 
 
-# ── WebSocket: Admin Logs ──────────────────────────────────────────────────────
+# â”€â”€ WebSocket: Admin Logs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 class AdminWSManager:
@@ -468,7 +468,7 @@ async def startup():
     if pool is not None:
         log.info("Admin API database pool established")
     else:
-        log.warning("Admin API database offline — degraded mode")
+        log.warning("Admin API database offline â€” degraded mode")
 
 
 @app.on_event("shutdown")
@@ -479,3 +479,4 @@ async def shutdown():
 
 
 __all__ = ["app", "admin_ws_manager"]
+

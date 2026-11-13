@@ -16,6 +16,7 @@ from backend.api.observability import (
     CONTENT_TYPE_LATEST,
     _PROMETHEUS_AVAILABLE,
     generate_latest,
+    refresh_runtime_gauges,
 )
 from backend.api.runtime import (
     PublicDep,
@@ -79,7 +80,7 @@ async def _readiness_snapshot() -> tuple[int, dict]:
         "status": "ready",
         "service": "hydrocast-backend",
         "database": "connected",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "last_cycle": dict(last_cycle),
         "timestamp": timestamp,
     }
@@ -121,13 +122,13 @@ async def health_check():
     """Liveness probe for Docker healthchecks and monitoring.
 
     The only endpoint that requires no credential. It touches no database and no
-    external service, so a `200` here means *the process is up* — not that the
+    external service, so a `200` here means *the process is up* â€” not that the
     forecast pipeline is healthy. Use `/api/v1/status` for pipeline state.
     """
     return {
         "status": "healthy",
         "service": "hydrocast-backend",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -150,6 +151,11 @@ async def metrics():
             status_code=503,
             content={"error": "prometheus_client not installed"},
         )
+    try:
+        await refresh_runtime_gauges()
+    except Exception:
+        # Metrics enrichment is best-effort; scraping must remain available.
+        pass
     return Response(
         content=generate_latest(),
         media_type=CONTENT_TYPE_LATEST,
@@ -345,7 +351,7 @@ async def system_status(request: Request):
 async def record_visit(request: Request):
     """Records a unique visit and returns today's and total visitor counts.
 
-    The client IP is SHA-256 hashed before it touches the database — the raw
+    The client IP is SHA-256 hashed before it touches the database â€” the raw
     address is never stored. De-duplication is per UTC day, so a repeat call
     from the same address on the same day increments nothing.
     """
@@ -422,3 +428,4 @@ async def read_visits(request: Request, response: Response):
         log.warning("Visits fallback: %s", e)
         counts = _file_read_visits()
         return {**counts, "source": "file"}
+

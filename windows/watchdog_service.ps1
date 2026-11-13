@@ -107,6 +107,34 @@ function Restart-BackendService {
     Start-Process -FilePath $py -ArgumentList "-m uvicorn backend.api.main:app --host 0.0.0.0 --port 8000" -WorkingDirectory $WorkingDir -WindowStyle Hidden
 }
 
+function Restart-AdminApiService {
+    Write-WatchdogLog "Initiating self-healing for FastAPI Admin API on Port 8001..." "WARN"
+    $svcNames = @("HydroCast-AdminAPI", "HydroCast-Admin-API", "HydroCast-Backend-Admin")
+    foreach ($name in $svcNames) {
+        $svc = Get-Service -Name $name -ErrorAction SilentlyContinue
+        if ($svc) {
+            try {
+                if ($svc.Status -eq "Running") {
+                    Restart-Service -Name $svc.Name -Force -ErrorAction Stop
+                    Write-WatchdogLog "Restarted $($svc.Name) service." "SUCCESS"
+                } else {
+                    Start-Service -Name $svc.Name -ErrorAction Stop
+                    Write-WatchdogLog "Started $($svc.Name) service." "SUCCESS"
+                }
+                return
+            } catch {
+                Write-WatchdogLog "Failed to restart/start $($svc.Name): $_" "ERROR"
+            }
+        }
+    }
+
+    # Fallback: start admin API directly if deployed as separate app
+    $py = (Get-Command python -ErrorAction SilentlyContinue).Source
+    if (-not $py) { $py = "python" }
+    Write-WatchdogLog "Launching Python Uvicorn admin API process directly..." "INFO"
+    Start-Process -FilePath $py -ArgumentList "-m uvicorn backend.api.admin_app:app --host 0.0.0.0 --port 8001" -WorkingDirectory $WorkingDir -WindowStyle Hidden
+}
+
 function Restart-PublicWebService {
     Write-WatchdogLog "Initiating self-healing for Public Web Portal on Port 3000..." "WARN"
     $svc = Get-Service -Name "HydroCast-PublicWeb" -ErrorAction SilentlyContinue
@@ -181,6 +209,16 @@ function Invoke-HealthCheck {
     } else {
         Write-WatchdogLog "Port 3001 (Admin Console): UNREACHABLE!" "ERROR"
         Restart-AdminWebService
+        $AllHealthy = $false
+    }
+
+    # 5. Port 8001 (Admin API) - monitored when deployed as a separate FastAPI app
+    if (Test-TcpPort -Port 8001) {
+        Write-WatchdogLog "Port 8001 (Admin API): ONLINE" "INFO"
+    } else {
+        Write-WatchdogLog "Port 8001 (Admin API): UNREACHABLE!" "WARN"
+        Restart-AdminApiService
+        # Treat as degraded but do not hard-fail all deployments that colocate admin routes on 8000.
         $AllHealthy = $false
     }
 

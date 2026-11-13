@@ -82,6 +82,88 @@ if _PROMETHEUS_AVAILABLE:
     )
 
 
+_ALERT_LEVEL_MAP = {
+    "NORMAL": 0,
+    "ALERT": 1,
+    "WARNING": 2,
+    "DANGER": 3,
+    "HFL_EXCEEDED": 4,
+}
+
+
+async def refresh_runtime_gauges() -> None:
+    """Best-effort refresh of ops gauges (DB pool, latest cycle, alert levels).
+
+    Called on metrics scrape to keep Prometheus output current without requiring
+    background state mutation in request handlers. Failures are swallowed so
+    scraping remains reliable during partial outages.
+    """
+    if not _PROMETHEUS_AVAILABLE:
+        return
+    try:
+        from backend.api.runtime import get_pool
+    except Exception:
+        return
+
+    # DB pool / cycle status
+    try:
+        pool = await get_pool()
+        if DB_CONNECTIONS is not None:
+            if pool is None:
+                DB_CONNECTIONS.labels(state="available").set(0)
+                DB_CONNECTIONS.labels(state="used").set(0)
+                DB_CONNECTIONS.labels(state="size").set(0)
+            else:
+                size = float(getattr(pool, "get_size", lambda: 0)() or 0)
+                idle = float(getattr(pool, "get_idle_size", lambda: 0)() or 0)
+                used = max(0.0, size - idle)
+                DB_CONNECTIONS.labels(state="available").set(idle)
+                DB_CONNECTIONS.labels(state="used").set(used)
+                DB_CONNECTIONS.labels(state="size").set(size)
+
+        if pool is not None and CYCLE_STATUS is not None:
+            async with pool.acquire() as conn:
+                last = await conn.fetchrow(
+                    "SELECT status FROM simulation_runs ORDER BY start_time DESC LIMIT 1"
+                )
+                status = str((last or {}).get("status") or "").lower()
+                completed = 1.0 if status in ("completed", "success") else 0.0
+                failed = 1.0 if status in ("failed", "error", "aborted") else 0.0
+                running = 1.0 if status in ("running", "in_progress", "started") else 0.0
+                CYCLE_STATUS.labels(status="completed").set(completed)
+                CYCLE_STATUS.labels(status="failed").set(failed)
+                CYCLE_STATUS.labels(status="running").set(running)
+
+                if ALERT_LEVEL is not None:
+                    # Best-effort: latest alert level per site from most recent cycle forecast rows.
+                    try:
+                        rows = await conn.fetch(
+                            """
+                            SELECT DISTINCT ON (site_id)
+                                   site_id,
+                                   COALESCE(alert_level, 'NORMAL') AS alert_level
+                            FROM bridge_stage_forecast
+                            ORDER BY site_id, forecast_time DESC
+                            """
+                        )
+                        seen = set()
+                        for r in rows or []:
+                            site = str(r.get("site_id") or "unknown")
+                            lvl = str(r.get("alert_level") or "NORMAL").upper()
+                            ALERT_LEVEL.labels(site=site).set(float(_ALERT_LEVEL_MAP.get(lvl, 0)))
+                            seen.add(site)
+                        # Ensure known sites always emit a value for dashboards.
+                        for site in ("SHIVAJI_BRIDGE", "RAJARAM_WEIR"):
+                            if site not in seen:
+                                ALERT_LEVEL.labels(site=site).set(0.0)
+                    except Exception:
+                        # Table/schema may vary; do not fail scrape.
+                        pass
+    except Exception:
+        # Never let observability enrichment break /metrics.
+        return
+
+
 class PrometheusMiddleware(BaseHTTPMiddleware):
     """Track HTTP request count, duration, and in-progress gauge for Prometheus."""
 
@@ -92,16 +174,26 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
         endpoint = request.url.path
         REQUESTS_IN_PROGRESS.inc()
         start = time.time()
+        status_code = 500
         try:
             response = await call_next(request)
+            status_code = response.status_code
+            return response
+        except Exception:
+            # Record failed requests so ops dashboards/alerts see error rates even
+            # when downstream handlers raise unexpectedly.
+            raise
         finally:
             REQUESTS_IN_PROGRESS.dec()
             duration = time.time() - start
-            REQUEST_DURATION.labels(method=method, endpoint=endpoint).observe(duration)
-            REQUEST_COUNT.labels(
-                method=method, endpoint=endpoint, status=str(response.status_code)
-            ).inc()
-        return response
+            try:
+                REQUEST_DURATION.labels(method=method, endpoint=endpoint).observe(duration)
+                REQUEST_COUNT.labels(
+                    method=method, endpoint=endpoint, status=str(status_code)
+                ).inc()
+            except Exception:
+                # Metrics must never break request handling.
+                pass
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -190,7 +282,7 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
 class APIVersionMiddleware(BaseHTTPMiddleware):
     """Add API-Version header to all responses for client version detection."""
 
-    API_VERSION = "1.1.0"
+    API_VERSION = "1.2.0"
 
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
@@ -198,3 +290,4 @@ class APIVersionMiddleware(BaseHTTPMiddleware):
         if request.headers.get("Accept-Version"):
             response.headers.setdefault("API-Version-Requested", request.headers["Accept-Version"])
         return response
+

@@ -6,6 +6,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-11-13 — Ops & Observability Patchwork (`windows-v1.2.0`)
+
+Operational reliability and observability release on `windows-server-production`, focused on safer metrics handling, richer scrape-time runtime signals, and improved Windows ops scripts for monitoring and backups.
+
+### Observability & reliability
+- **Prometheus middleware hardening:** request metrics now record safely on exception paths (status labeled as `500` when handlers raise) so error rates and durations remain visible without breaking request handling.
+- **Runtime metrics enrichment (`/metrics`):** added best-effort scrape-time refresh of ops gauges for DB pool state (`available`/`used`/`size`), latest forecast cycle status (`completed`/`failed`/`running`), and latest per-site alert levels when data is available; enrichment failures never break metrics scraping.
+- Preserved existing request tracing and health/readiness behavior (`X-Request-ID`, `/healthz/live`, `/healthz/ready`, `/api/v1/ready`) while aligning service/version metadata to **`1.2.0`**.
+
+### Windows operations scripts
+- **Watchdog (`windows/watchdog_service.ps1`):** added monitoring/recovery handling for **Admin API port 8001** (separate FastAPI admin deployment), including service-name-aware restart attempts and direct-process fallback; continues to supervise DB/public API/public portal/operator console ports.
+- **Backup (`windows/backup_database.ps1`):** improved non-interactive backup support by honoring `PGPASSWORD` / `POSTGRES_PASSWORD` (when provided) for scheduled runs and added a restore-drill hint (`pg_restore --list`) after successful backups (checksum + retention behavior retained).
+
+### Verification
+- Backend: **309 passed, 3 skipped** (`py -m pytest tests/ -q --no-header`).
+- Lint: **ruff** checks clean for `backend`, `tests`, `scripts`.
+- Frontend: `frontend-public` and `frontend-admin` TypeScript checks and production builds pass (Next.js 14.2.35).
+
+### Follow-up (planned)
+- `windows-v1.3.0`: comprehensive narrative documentation and release/operations runbooks.
+
+---
+
 ## [1.1.0] - 2026-11-13 — Frontend & API Hardening (`windows-v1.1.0`)
 
 Targeted hardening release on `windows-server-production` focused on reducing unsafe trust boundaries in the operator console (Next.js) and tightening admin-facing proxy behavior.
@@ -24,10 +47,6 @@ Targeted hardening release on `windows-server-production` focused on reducing un
 - Backend: **309 passed, 3 skipped** (`py -m pytest tests/ -q --no-header`).
 - Lint: **ruff** checks clean for `backend`, `tests`, `scripts`.
 - Frontend: `frontend-public` and `frontend-admin` TypeScript checks and production builds pass (Next.js 14.2.35).
-
-### Follow-up (planned)
-- `windows-v1.2.0`: deeper ops/observability patchwork (metrics/log correlation, backup/restore drills, watchdog/scheduler reliability).
-- `windows-v1.3.0`: comprehensive narrative documentation and release/operations runbooks.
 
 ---
 
