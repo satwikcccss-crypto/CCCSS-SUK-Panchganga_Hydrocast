@@ -56,6 +56,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from slowapi.errors import RateLimitExceeded
+try:
+    from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
+    _PROMETHEUS_AVAILABLE = True
+except ImportError:
+    _PROMETHEUS_AVAILABLE = False
 
 load_dotenv()  # must run before backend modules read os.environ
 
@@ -64,6 +69,60 @@ from backend.api.limits import limiter, RATE_LIMIT_PUBLIC  # noqa: E402
 from backend.api.keys import verify_public_key  # noqa: E402
 
 log = logging.getLogger(__name__)
+
+if _PROMETHEUS_AVAILABLE:
+    REQUEST_COUNT = Counter(
+        "hydrocast_http_requests_total",
+        "Total HTTP requests",
+        ["method", "endpoint", "status"],
+    )
+    REQUEST_DURATION = Histogram(
+        "hydrocast_http_request_duration_seconds",
+        "HTTP request duration in seconds",
+        ["method", "endpoint"],
+    )
+    REQUESTS_IN_PROGRESS = Gauge(
+        "hydrocast_http_requests_in_progress",
+        "HTTP requests currently being processed",
+    )
+    DB_CONNECTIONS = Gauge(
+        "hydrocast_db_connections",
+        "PostgreSQL connection pool status",
+        ["state"],
+    )
+    CYCLE_STATUS = Gauge(
+        "hydrocast_forecast_cycle_status",
+        "Latest forecast cycle status (1=completed, 0=failed/running)",
+        ["status"],
+    )
+    ALERT_LEVEL = Gauge(
+        "hydrocast_alert_level",
+        "Current CWC alert level (0=NORMAL,1=ALERT,2=WARNING,3=DANGER,4=HFL_EXCEEDED)",
+        ["site"],
+    )
+
+
+class PrometheusMiddleware(BaseHTTPMiddleware):
+    """Track HTTP request count, duration, and in-progress gauge for Prometheus."""
+
+    async def dispatch(self, request: Request, call_next):
+        if not _PROMETHEUS_AVAILABLE:
+            return await call_next(request)
+        method = request.method
+        endpoint = request.url.path
+        REQUESTS_IN_PROGRESS.inc()
+        start = time.time()
+        try:
+            response = await call_next(request)
+        finally:
+            REQUESTS_IN_PROGRESS.dec()
+            duration = time.time() - start
+            REQUEST_DURATION.labels(method=method, endpoint=endpoint).observe(duration)
+            REQUEST_COUNT.labels(
+                method=method, endpoint=endpoint, status=str(response.status_code)
+            ).inc()
+        return response
+
 
 # ── OpenAPI docs visibility ───────────────────────────────────────────────────
 # In production, /docs and /openapi.json are disabled so the API surface is
@@ -76,7 +135,6 @@ _openapi_url = None if _APP_ENV_DOCS == "production" else "/openapi.json"
 # ── Rate limiter ──────────────────────────────────────────────────────────────
 # The shared instance lives in backend.api.limits (also used by the admin login).
 app = FastAPI(
-    title="HydroCast Panchganga Operational API",
     version="2.0.0",
     summary="Rainfall-runoff and river flood intelligence for the Panchganga Basin, Kolhapur.",
     docs_url=_docs_url,
@@ -263,6 +321,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(PrometheusMiddleware)
 
 
 
@@ -566,6 +625,30 @@ async def health_check():
         "version": "2.0.0",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
+
+@app.get(
+    "/metrics",
+    tags=["Observability"],
+    summary="Prometheus metrics endpoint",
+    response_description="Prometheus-formatted metrics for scraping.",
+)
+async def metrics():
+    """Prometheus metrics endpoint.
+
+    Returns Prometheus text-format metrics for request count, duration,
+    in-progress gauge, DB connection status, cycle status, and alert level.
+    Scrape this endpoint from Prometheus.
+    """
+    if not _PROMETHEUS_AVAILABLE:
+        return JSONResponse(
+            status_code=503,
+            content={"error": "prometheus_client not installed"},
+        )
+    return Response(
+        content=generate_latest(),
+        media_type=CONTENT_TYPE_LATEST,
+    )
 
 
 @app.get(
