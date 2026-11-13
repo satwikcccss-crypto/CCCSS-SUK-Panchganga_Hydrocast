@@ -8,6 +8,7 @@ evaluation) and backend.api.admin (manual dispatch controls). This shim
 provides the function surface expected by legacy tests.
 """
 
+import os
 import html as _html
 import hmac
 import logging
@@ -17,16 +18,19 @@ from typing import Any, Optional
 
 import requests
 
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
+
 log = logging.getLogger(__name__)
 
 # ── Legacy configuration names referenced by tests ────────────────────────────
-ALLOWED_CHAT_IDS_ENV: Optional[str] = None
-ALLOWED_USERNAMES_ENV: Optional[str] = None
-WEBHOOK_SECRET: Optional[str] = None
-PRIMARY_CHAT_ID: Optional[str] = None
-DDMA_CHATS_ENV: Optional[str] = None
-WEBHOOKS_ENV: Optional[str] = None
-TELEGRAM_TOKEN: Optional[str] = None
+ALLOWED_CHAT_IDS_ENV: Optional[str] = os.getenv("ALLOWED_CHAT_IDS")
+ALLOWED_USERNAMES_ENV: Optional[str] = os.getenv("ALLOWED_USERNAMES")
+WEBHOOK_SECRET: Optional[str] = os.getenv("TELEGRAM_WEBHOOK_SECRET") or os.getenv("WEBHOOK_SECRET")
+PRIMARY_CHAT_ID: Optional[str] = os.getenv("TELEGRAM_CHAT_ID")
+DDMA_CHATS_ENV: Optional[str] = os.getenv("DDMA_CHAT_IDS")
+WEBHOOKS_ENV: Optional[str] = os.getenv("AGENCY_WEBHOOK_URLS")
+TELEGRAM_TOKEN: Optional[str] = os.getenv("TELEGRAM_BOT_TOKEN")
 
 # Rate-limit config
 RATE_LIMIT_MAX = 5
@@ -252,7 +256,8 @@ def is_authorized(chat_id: Any, username: Optional[str] = None) -> bool:
     """Check if a chat/user is authorized.
 
     When no allowlist is configured (both env vars empty/None), all users
-    are authorized (open mode).
+    are authorized (open mode). When allowlists are configured, fails closed:
+    only explicitly authorized chat IDs or usernames are permitted.
     """
     # Extract chat_id and username from update-like objects before
     # reassigning chat_id to its integer value.
@@ -267,23 +272,32 @@ def is_authorized(chat_id: Any, username: Optional[str] = None) -> bool:
         if eu is not None and extracted_username is None:
             extracted_username = getattr(eu, "username", None)
 
-    has_chat_allowlist = bool(ALLOWED_CHAT_IDS_ENV and ALLOWED_CHAT_IDS_ENV.strip())
-    has_user_allowlist = bool(ALLOWED_USERNAMES_ENV and ALLOWED_USERNAMES_ENV.strip())
+    chat_allowlist_raw = ALLOWED_CHAT_IDS_ENV if ALLOWED_CHAT_IDS_ENV is not None else os.getenv("ALLOWED_CHAT_IDS", "")
+    user_allowlist_raw = ALLOWED_USERNAMES_ENV if ALLOWED_USERNAMES_ENV is not None else os.getenv("ALLOWED_USERNAMES", "")
 
-    # Open mode: no allowlists configured
+    has_chat_allowlist = bool(chat_allowlist_raw and chat_allowlist_raw.strip())
+    has_user_allowlist = bool(user_allowlist_raw and user_allowlist_raw.strip())
+
+    # Secure-by-default: deny when no allowlist is configured. Operators must
+    # explicitly opt in via ALLOWED_CHAT_IDS / ALLOWED_USERNAMES env vars.
     if not has_chat_allowlist and not has_user_allowlist:
-        return True
+        return False
+
+    # Fail closed: allowlist configured but no identity provided
+    if extracted_chat_id is None and extracted_username is None:
+        return False
 
     # Check chat allowlist
     if has_chat_allowlist and extracted_chat_id is not None:
-        allowed_chats = [c.strip() for c in ALLOWED_CHAT_IDS_ENV.split(",") if c.strip()]
-        if str(extracted_chat_id) in allowed_chats:
+        allowed_chats = {c.strip() for c in chat_allowlist_raw.split(",") if c.strip()}
+        if str(extracted_chat_id).strip() in allowed_chats:
             return True
 
-    # Check username allowlist
+    # Check username allowlist (strip leading '@' if present for safe normalization)
     if has_user_allowlist and extracted_username is not None:
-        allowed_users = [u.strip() for u in ALLOWED_USERNAMES_ENV.split(",") if u.strip()]
-        if extracted_username in allowed_users:
+        raw_u = str(extracted_username).strip().lstrip("@")
+        allowed_users = {u.strip().lstrip("@") for u in user_allowlist_raw.split(",") if u.strip()}
+        if raw_u in allowed_users:
             return True
 
     return False
@@ -369,24 +383,6 @@ def get_telegram_keyboard_markup(lang: str = "mr") -> dict[str, Any]:
         "one_time_keyboard": False,
     }
 
-
-def handle_telegram_command(command_text: str) -> dict[str, Any]:
-    """Intelligently process incoming Telegram commands and return audience-tailored messages with screen popups."""
-    raw = (command_text or "").strip()
-    cmd = raw.lower()
-    state = load_latest_pipeline_state()
-    summary = state.get("summary", {}) if isinstance(state, dict) else {}
-    q_val = float(summary.get("peak_discharge_m3s", 9.10))
-    bridges = summary.get("bridges", {})
-    if isinstance(bridges, dict):
-        sh_stage = float(bridges.get("shivaji", {}).get("current_stage_m", 531.54))
-        rj_stage = float(bridges.get("rajaram", {}).get("current_stage_m", 532.19))
-    elif isinstance(bridges, list) and len(bridges) > 0:
-        sh_stage = float(bridges[0].get("current_stage_m", 531.54))
-        rj_stage = float(bridges[1].get("current_stage_m", 532.19)) if len(bridges) > 1 else 532.19
-    else:
-        sh_stage = 531.54
-        rj_stage = 532.19
 
 def handle_telegram_command(command_text: str) -> dict[str, Any]:
     """Process Telegram interactions with administrative, government-grade diplomatic bulletins."""
@@ -616,43 +612,71 @@ def handle_telegram_command(command_text: str) -> dict[str, Any]:
     return {"text": text, "reply_markup": get_telegram_keyboard_markup("mr")}
 
 
-class _DummyUpdater:
-    """Stub updater for compatibility with FastAPI startup/shutdown."""
-    def __init__(self, app):
-        self._app = app
+async def _handle_telegram_update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Route an incoming Telegram update to the HydroCast command handler."""
+    message = update.effective_message
+    if not message or not message.text:
+        return
+    chat_id = update.effective_chat.id if update.effective_chat else None
+    username = update.effective_user.username if update.effective_user else None
 
-    async def start_polling(self):
-        log.info("Telegram updater polling (stub)")
+    if not is_authorized(chat_id, username):
+        await message.reply_text("Access Restricted: This bot is for authorized HydroCast operators only.")
+        return
 
-    async def stop(self):
-        log.info("Telegram updater stopped (stub)")
+    result = handle_telegram_command(message.text)
+    text = result.get("text", "") if isinstance(result, dict) else str(result)
+    reply_markup = result.get("reply_markup") if isinstance(result, dict) else None
 
-
-class _DummyBot:
-    """Stub Telegram bot application."""
-    def __init__(self):
-        self.updater = _DummyUpdater(self)
-
-    async def initialize(self):
-        log.info("Telegram bot initialized (stub)")
-
-    async def start(self):
-        log.info("Telegram bot started (stub)")
-
-    async def stop(self):
-        log.info("Telegram bot stopped (stub)")
-
-    async def shutdown(self):
-        log.info("Telegram bot shutdown (stub)")
+    # Telegram message limit is 4096 chars; chunk long bulletins.
+    for i in range(0, len(text), 4000):
+        chunk = text[i:i + 4000]
+        kwargs: dict[str, Any] = {}
+        if reply_markup and i == 0:
+            from telegram import ReplyKeyboardMarkup
+            kwargs["reply_markup"] = ReplyKeyboardMarkup(
+                reply_markup.get("keyboard", []),
+                resize_keyboard=reply_markup.get("resize_keyboard", True),
+                one_time_keyboard=reply_markup.get("one_time_keyboard", False),
+            )
+        await message.reply_text(chunk, **kwargs)
 
 
-def build_telegram_application() -> Optional[_DummyBot]:
+def build_telegram_application() -> Optional[Application]:
     """
-    Build a Telegram bot application (stub for production deployment).
+    Build a real python-telegram-bot Application when TELEGRAM_BOT_TOKEN is set.
+
+    Falls back to None (stub mode) when no token is configured, so the FastAPI
+    backend still starts without Telegram alerting.
     """
     if TELEGRAM_TOKEN is None:
-        log.warning("TELEGRAM_TOKEN not set — Telegram bot running in stub mode")
-    return _DummyBot()
+        log.warning("TELEGRAM_BOT_TOKEN not set — Telegram bot running in stub mode (no alerting)")
+        return None
+
+    application = (
+        Application.builder()
+        .token(TELEGRAM_TOKEN)
+        .concurrent_updates(True)
+        .build()
+    )
+
+    # Any free text goes through the HydroCast command handler (farmer /
+    # citizen / student / research views). Commands are also accepted.
+    application.add_handler(CommandHandler("start", _handle_telegram_update))
+    application.add_handler(CommandHandler("help", _handle_telegram_update))
+    application.add_handler(CommandHandler("forecast", _handle_telegram_update))
+    application.add_handler(CommandHandler("farmer", _handle_telegram_update))
+    application.add_handler(CommandHandler("citizen", _handle_telegram_update))
+    application.add_handler(CommandHandler("student", _handle_telegram_update))
+    application.add_handler(CommandHandler("research", _handle_telegram_update))
+    application.add_handler(CommandHandler("switch", _handle_telegram_update))
+
+    # Catch-all for plain text messages (Marathi / English keywords).
+    from telegram.ext import MessageHandler, filters
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, _handle_telegram_update))
+
+    log.info("Telegram bot application built with real-time command handling")
+    return application
 
 
 __all__ = [
@@ -685,6 +709,4 @@ __all__ = [
     "_guard",
     "load_latest_pipeline_state",
     "build_telegram_application",
-    "_DummyBot",
-    "_DummyUpdater",
 ]
