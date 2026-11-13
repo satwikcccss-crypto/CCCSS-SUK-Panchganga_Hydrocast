@@ -628,7 +628,7 @@ export default function Dashboard() {
                 <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
                   <div className="text-[10px] font-bold text-gray-500 uppercase">{t.shivajiStage}</div>
                   <div className="mt-1 font-mono font-bold text-xl text-sky-700">
-                    {shivajiBridge?.peak_stage_m ? `${shivajiBridge.peak_stage_m.toFixed(2)}m` : `${shivajiLvl.toFixed(2)}m`}
+                    {shivajiBridge?.peak_stage_m ? `${shivajiBridge.peak_stage_m.toFixed(2)}m` : (shivajiLvl != null ? `${shivajiLvl.toFixed(2)}m` : "—")}
                   </div>
                   <div className="text-[10px] text-gray-500 mt-0.5">
                     {t.warning}: {shivajiSensor.dangerLevels.warning.toFixed(2)}m
@@ -638,7 +638,7 @@ export default function Dashboard() {
                 <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
                   <div className="text-[10px] font-bold text-gray-500 uppercase">{t.rajaramStage}</div>
                   <div className="mt-1 font-mono font-bold text-xl text-sky-700">
-                    {rajaramBridge?.peak_stage_m ? `${rajaramBridge.peak_stage_m.toFixed(2)}m` : `${rajaramLvl.toFixed(2)}m`}
+                    {rajaramBridge?.peak_stage_m ? `${rajaramBridge.peak_stage_m.toFixed(2)}m` : (rajaramLvl != null ? `${rajaramLvl.toFixed(2)}m` : "—")}
                   </div>
                   <div className="text-[10px] text-gray-500 mt-0.5">
                     {t.solidCrest}: 535.77m MSL

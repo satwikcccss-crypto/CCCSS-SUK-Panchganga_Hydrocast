@@ -32,7 +32,7 @@ export default function OverviewPanel({
   const { data: bRajaram } = useSWR("bridge-RAJARAM_BRIDGE", api.bridgeRajaram, { refreshInterval: 30000 });
 
   const outlet = summary?.outlet;
-  const noData = !status && !summary;
+  const noData = !summary;
   const lastCycle = status?.last_cycle ?? status?.current_cycle;
 
   // Validation metrics for the executive overview
