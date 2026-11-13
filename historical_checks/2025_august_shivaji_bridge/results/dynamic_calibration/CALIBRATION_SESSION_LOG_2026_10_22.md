@@ -644,7 +644,7 @@ explicit `vertical_datum` caveat: the WRD gauge datum must be aligned to the HEC
 before use. Documented in `docs/integration-hydrosim.md` (MkDocs strict build passes).
 
 **Open-Meteo-style URL.** For a non-programmer, the key can go in the query string
-(`?key=hydrocast_PS_V1_...`). The branded aliases `GET /api/v1/hydrocast/water-levels` and
+(`?key=<READONLY_API_KEY>`). The branded aliases `GET /api/v1/hydrocast/water-levels` and
 `GET /api/v1/water-levels` return the same payload as `/api/v1/hydrosim/water-levels` and the full
 `/api/v1/integration/hydrosim/stage`. The key prefix is fixed (`hydrocast_PS_V1_`) with a random
 suffix; it remains read-only and is never accepted by `/admin`. The read-only variable was renamed

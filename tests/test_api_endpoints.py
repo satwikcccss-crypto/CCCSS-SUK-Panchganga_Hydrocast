@@ -508,14 +508,14 @@ def test_internal_broadcast_fails_closed(monkeypatch, client):
     monkeypatch.delenv("INTERNAL_KEY", raising=False)
     assert client.post("/internal/broadcast", json={}).status_code == 503
 
-    monkeypatch.setenv("INTERNAL_KEY", "0123456789abcdef")
+    monkeypatch.setenv("INTERNAL_KEY", "test-internal-broadcast-key")
     assert (
         client.post("/internal/broadcast", json={}, headers={"X-Internal-Key": "wrong"}).status_code
         == 403
     )
     assert (
         client.post(
-            "/internal/broadcast", json={}, headers={"X-Internal-Key": "0123456789abcdef"}
+            "/internal/broadcast", json={}, headers={"X-Internal-Key": "test-internal-broadcast-key"}
         ).status_code
         == 200
     )

@@ -1,5 +1,6 @@
-# Production Deployment, Operations & Automation Manual
+# Production Deployment, Operations & Automation Manual (Windows Server Edition)
 
+# Production Deployment, Operations & Automation Manual
 
 ---
 
@@ -22,250 +23,282 @@ The console below is the rendered reference for this page: it carries the same s
 
 ---
 
-## 1. Unified Container Deployment (Docker & Docker Compose)
+## 1. Unified Windows Server Deployment (Primary Path)
 
-HydroCast is fully containerized for reproducible 1-command deployment across cloud virtual machines (AWS EC2, GCP Compute Engine, Azure VM, DigitalOcean) and on-premise workstations:
+HydroCast on Windows Server Standard is **100% self-hosted**, running on university infrastructure with no Vercel, no Supabase, and no cloud dependency. All services are registered as native Windows Services via NSSM (Non-Sucking Service Manager). The full deployment stack consists of:
 
-### 1.1 Image Build Targets (`Dockerfile`)
+* **HydroCast-Backend** (FastAPI on port 8000) — REST API & WebSocket hub
+* **HydroCast-Scheduler** (6-hourly pipeline daemon) — Triggers 12-step forecast cycles
+* **HydroCast-Watchdog** (15s heartbeat probe) — Supervises scheduler and backend
+* **HydroCast-PublicWeb** (Next.js on port 3000) — Public disaster intelligence portal
+* **HydroCast-OperatorConsole** (Next.js on port 3001) — Operator mission control console
 
-The backend image is a single multi-stage Dockerfile. Compilers, GDAL headers
-and the full JDK exist only in the `builder` stage; the runtime stage ships the
-JRE, the shared libraries and a dedicated `hydrocast` user (uid/gid 1000), with
-`tini` as PID 1 so `docker stop` reaches uvicorn and in-flight requests drain.
+### 1.1 Server Prerequisites & Specifications
 
-| Target | Purpose | Base |
+| Resource | Specification | Notes |
 | :--- | :--- | :--- |
-| `runner` *(default)* | Production FastAPI service on `:8000` | `python:3.12-slim-bookworm` + JRE 17, GDAL, eccodes |
-| `docs` | MkDocs Material site, built with `--strict` to `/app/site` | `python:3.12-slim-bookworm` + `requirements-docs.txt` |
-| `dev` | `runner` + black, isort, mypy, pytest, JupyterLab | production runtime |
+| **Operating System** | Windows Server Standard (2019 / 2022 / 2025) | 64-bit required |
+| **System Memory** | 16 GB RAM minimum (24+ GB recommended) | Allocated for GIS and routing operations |
+| **Storage Architecture** | C:\ (OS & Binaries), E:\ (Data & Database) | E:\ stores PostgreSQL data, DSS runs, and backup archives |
+| **Database Engine** | PostgreSQL 16.x x64 with PostGIS 3.4 | Port 5432, local bound only (firewalled to localhost/VPN) |
+| **Python Runtime** | Python 3.12.x 64-bit | In PATH, virtualenv recommended |
+| **Node.js Runtime** | Node.js v18.x or v20.x LTS | Powers ports 3000 and 3001 |
+| **Hydrologic Engine** | HEC-HMS 4.13 x64 | `C:\Program Files\HEC\HEC-HMS\4.13\HEC-HMS.exe` (for Jython path) |
 
-> **Optional extras.** The runner image installs `requirements.lock`, which contains
-> only the tested core runtime. `cfgrib`, `eccodes`, and `pydsstools` are deliberately
-> excluded: `pydsstools` currently requires `numpy<2`, which conflicts with the pinned
-> `numpy` 2.x stack. Use a separate image or virtual environment for HEC-DSS writing or
-> GRIB decoding. The FastAPI service and Python twin do not require them.
+---
 
-```
-# Production image (embeds OCI labels: version, git SHA, build date)
-docker build -t hydrocast-backend:2.0.0 \
-  --build-arg APP_VERSION=2.0.0 \
-  --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
-  --build-arg BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)" .
+### 1.2 Step-by-Step Clean-Slate Build & Installation Runbook
 
-# Multi-architecture release (buildx is required for cross-platform builds)
-docker buildx build --platform linux/amd64,linux/arm64 --push \
-  -t ghcr.io/satwikcccss-crypto/hydrocast-backend:2.0.0 .
+Execute these steps in an elevated **Administrator PowerShell** prompt. All steps are idempotent — re-running is safe.
 
-# Documentation site — `--strict` fails the build on a broken anchor,
-# a missing nav entry or an unresolved mkdocstrings identifier
-docker build --target docs -t hydrocast-docs .
+#### Step 1: Run Pre-Flight Diagnostics
 
-# Developer image: interactive shell with the full toolchain
-docker build --target dev -t hydrocast-dev .
+Validate that all system ports, runtimes, dependencies, and file permissions are ready:
+
+```powershell
+ powershell -ExecutionPolicy Bypass -File .\windows\system_diag.ps1
 ```
 
-The runtime honours four optional environment variables, all defaulted inside
-the image so the container starts with no configuration:
+*Verification criteria: Output must report `System status: READY FOR PRODUCTION`.*
 
-| Variable | Default | Purpose |
+#### Step 2: Initialize PostgreSQL Database
+
+Create the `rainfall_runoff` database, tables, spatial indexes, and approved accounts:
+
+```powershell
+ powershell -ExecutionPolicy Bypass -File .\windows\init_database.ps1 -PgUser "postgres" -PgPassword "YourAdminPassword"
+```
+
+*Verification criteria: `[SUCCESS] PostgreSQL Database initialized and ready for production.`*
+
+Then run the schema and migrations:
+
+```powershell
+ psql -U postgres -d rainfall_runoff -f database/schema.sql
+ psql -U postgres -d rainfall_runoff -f database/auth/01_admin_auth.sql
+ psql -U postgres -d rainfall_runoff -f database/auth/02_admin_users_upgrade.sql
+```
+
+#### Step 3: Configure Environment Secrets
+
+Copy the example environment file and configure all secrets. **Never commit the `.env` file.**
+
+```powershell
+ copy .env.example .env
+```
+
+Edit `.env` with your secure values (refer to SECURITY.md for the complete list). Key variables:
+
+- `JWT_SECRET` — 48+ random bytes for token signing
+- `API_KEY` — random service-to-service key
+- `ADMIN_PASSWORD` — strong, unique password (do not use hardcoded defaults like `Dev@Adm1` or `PI@Adm1`)
+- `DATABASE_URL` — `postgresql://postgres:PASSWORD@127.0.0.1:5432/rainfall_runoff`
+- `INTERNAL_KEY` — 16+ random characters for broadcast operations
+- `CORS_ORIGINS` — explicit allowlist (e.g., `https://dashboard.yourdomain.org`)
+- `VISIT_HASH_SALT` — random salt for IP hashing
+- `TELEGRAM_WEBHOOK_SECRET` — random secret for Telegram webhook validation
+
+#### Step 4: Build Frontend Production Assets
+
+Compile the Next.js production builds for both portals. This must be done **after** the `.env` is configured, as the build reads `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL` from the environment.
+
+```powershell
+ cd frontend-public
+ npm ci
+ npm run build
+ cd ..
+
+ cd frontend-admin
+ npm ci
+ npm run build
+ cd ..
+```
+
+*Success looks like: Next.js compilation complete, bundles output to `out/` directories, no TypeScript errors.*
+
+#### Step 5: Register Windows Services (NSSM)
+
+Install the backend, scheduler, watchdog, public portal, and operator console as native Windows Services:
+
+```powershell
+ powershell -ExecutionPolicy Bypass -File .\windows\install_services.ps1
+```
+
+*Verification criteria: All 5 services registered with `SERVICE_AUTO_START` and failure restart actions:*
+
+- `HydroCast-Backend` (port 8000) — FastAPI + WebSocket
+- `HydroCast-Scheduler` (6-hourly pipeline daemon) — Triggers forecast cycles
+- `HydroCast-Watchdog` (15s heartbeat probe) — Supervises scheduler/backend
+- `HydroCast-PublicWeb` (port 3000) — Next.js public portal
+- `HydroCast-OperatorConsole` (port 3001) — Next.js operator console
+
+#### Step 6: Launch and Verify Services
+
+Start all registered services and inspect their status:
+
+```powershell
+ powershell -ExecutionPolicy Bypass -File .\windows\service_control.ps1 -Action start
+ powershell -ExecutionPolicy Bypass -File .\windows\service_control.ps1 -Action status
+```
+
+*Success looks like: All 5 services running, backend responding on http://127.0.0.1:8000, admin console on http://127.0.0.1:3001.*
+
+#### Step 7: Smoke-Test a Manual Forecast Cycle
+
+Execute a test run directly from PowerShell to verify the entire pipeline:
+
+```powershell
+ powershell -ExecutionPolicy Bypass -File .\windows\run_pipeline_manual.ps1
+```
+
+#### Step 8: Verify Health Endpoints
+
+```powershell
+ curl http://127.0.0.1:8000/api/v1/health
+ curl http://127.0.0.1:8000/healthz/live
+ curl http://127.0.0.1:8000/healthz/ready
+```
+
+*Success looks like:* JSON response with `"status": "healthy"` from `/health`, `"ready": true` from `/healthz/ready`.
+
+---
+
+### 1.3 Caddyfile Reverse Proxy (Production)
+
+All external traffic terminates at a reverse proxy. The Caddyfile routes traffic to the correct internal ports. **TLS is terminated at the proxy**; the backend services bind to `127.0.0.1` only.
+
+```caddyfile
+; HydroCast Windows Server Reverse Proxy
+
+; Public portal (port 3000) — accessible to citizens & officials
+dashboard.example.org/* {
+    reverse_proxy 127.0.0.1:3000
+}
+
+; Operator console (port 3001) — campus intranet / VPN only
+admin.example.org/* {
+    reverse_proxy 127.0.0.1:3001
+}
+
+; FastAPI backend (port 8000) — API & WebSocket routes
+api.example.org/* {
+    reverse_proxy 127.0.0.1:8000
+}
+
+; Health probes
+health.example.org {
+    header X-Request-ID "{uuid}"
+    reverse_proxy 127.0.0.1:8000
+}
+```
+
+Key Caddy configurations:
+* `X-Forwarded-For` forwarded only from trusted proxy IP
+* `FORWARDED_ALLOW_IPS` set to reverse proxy IP only (never `*`) — this prevents client IP spoofing and rate-limit bypass
+* GZip compression enabled on backend
+* TLS terminated at proxy; HTTP redirects to HTTPS
+
+---
+
+### 1.4 Windows Services Reference
+
+| Script | Purpose |
+| :--- | :--- |
+| `windows/install_postgres.ps1` | PostgreSQL 16 installation with PostGIS 3.4 |
+| `windows/init_database.ps1` | Database initialization: creates `rainfall_runoff`, tables, spatial indexes, approved accounts |
+| `windows/install_services.ps1` | NSSM service installation: registers all 5 Windows Services |
+| `windows/service_control.ps1` | Start/stop/status controller for all NSSM services |
+| `windows/backup_database.ps1` | Automated daily `pg_dump` + 30-day retention backup |
+| `windows/run_pipeline_manual.ps1` | Manual pipeline execution CLI — interactive or single-step mode |
+| `windows/system_diag.ps1` | System health diagnostics: ports, runtimes, dependencies, file permissions |
+| `windows/storage_setup.sql` | PostgreSQL tablespace configuration (E:\pgdata dedicated tablespace) |
+
+---
+
+### 1.5 Service Control Operations
+
+```powershell
+; Start all services
+ .\windows\service_control.ps1 -Action start
+
+; Stop all services
+ .\windows\service_control.ps1 -Action stop
+
+; Check status of all services
+ .\windows\service_control.ps1 -Action status
+
+; Restart a specific service (e.g., Backend)
+ .\windows\service_control.ps1 -Action restart -Service HydroCast-Backend
+```
+
+---
+
+### 1.6 Database Backup
+
+```powershell
+ .\windows\backup_database.ps1
+```
+
+Creates a timestamped `pg_dump` in the configured backup directory (`E:\pgbackups\hydrocast\`). Includes SHA-256 hash verification in the backup audit log. Recommended: run every morning at 03:00 UTC via Windows Task Scheduler.
+
+---
+
+### 1.7 System Diagnostics
+
+```powershell
+ .\windows\system_diag.ps1
+```
+
+Checks: PostgreSQL connectivity, API health endpoints, frontend build status, disk space (C: and E:), service status, and reports `System status: READY FOR PRODUCTION` if all checks pass.
+
+---
+
+### 1.8 Firewall Configuration (Windows Defender Firewall)
+
+Ensure these ports are open:
+
+| Port | Service | Access |
 | :--- | :--- | :--- |
-| `PORT` | `8000` | HTTP listen port (also used by `HEALTHCHECK`) |
-| `WEB_CONCURRENCY` | `2` | uvicorn worker processes |
-| `GRACEFUL_TIMEOUT` | `30` | Seconds to finish in-flight requests on `SIGTERM` |
-| `FORWARDED_ALLOW_IPS` | `127.0.0.1` | Trusted proxies for `X-Forwarded-For` |
+| **8000** | FastAPI (Public API) | LAN / Internet (behind reverse proxy only) |
+| **8001** | Admin API | LAN only (restricted to campus intranet/VPN) |
+| **3000** | Public Dashboard (Next.js) | LAN / Internet |
+| **3001** | Operator Console (Next.js) | LAN only (restricted to campus intranet/VPN) |
+| **5432** | PostgreSQL | **Localhost only** — must NOT be exposed to public internet |
 
-!!! warning "`FORWARDED_ALLOW_IPS` and rate limiting"
-    Rate limiting keys on the client IP, so setting `FORWARDED_ALLOW_IPS=*`
-    would let any caller spoof `X-Forwarded-For` and bypass its quota. Set it
-    to the load balancer address only when a trusted proxy is actually in front.
+*Rule direction: Inbound TCP. Profiles: Domain, Private. Remote address: for 5432, restrict to 127.0.0.1.*
 
-### 1.2 Architecture & Services (`docker-compose.yml`)
+---
 
-```
-# Obsolete top-level `version:` key intentionally omitted — Compose v2 selects
-# the current schema itself and warns when the key is present.
-x-hydrocast-env: &hydrocast-env
-  DATABASE_URL: postgresql://hms_app:${POSTGRES_PASSWORD}@hydrocast-db:5432/rainfall_runoff
-  API_KEY: ${API_KEY}
-  INTERNAL_KEY: ${INTERNAL_KEY}
-  API_BASE_URL: http://hydrocast-backend:8000
-  RATE_LIMIT_PUBLIC: 100/minute
-  JWT_SECRET: ${JWT_SECRET}
-  ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
-  ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-  ARCHIVE_RETENTION_DAYS: 90
-  ARCHIVE_DIR: /app/data/archives
-  RAW_DIR: /app/data/raw
+### 1.9 HTTPS (Production)
 
-services:
-  hydrocast-db:
-    image: postgis/postgis:15-3.4
-    container_name: hydrocast-db
-    restart: unless-stopped
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: rainfall_runoff
-      POSTGRES_USER: hms_app
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/supabase_schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U hms_app -d rainfall_runoff"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+For production deployment behind a reverse proxy (Caddy, NGINX, IIS ARR):
 
-  hydrocast-backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: runner
-    container_name: hydrocast-backend
-    restart: unless-stopped
-    ports:
-      - "8000:8000"
-    depends_on:
-      hydrocast-db:
-        condition: service_healthy
-    environment:
-      <<: *hydrocast-env
-      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
-      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-127.0.0.1}
-    volumes:
-      - hydrocast_runs:/app/data/runs
-      - hydrocast_telemetry:/app/data/telemetry
-      - hydrocast_forecast:/app/data/openmeteo_dss
-      - hydrocast_raw:/app/data/raw
-      - hydrocast_archives:/app/data/archives
-      - hydrocast_logs:/app/data/logs
-    stop_grace_period: 45s
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "--max-time", "4", "http://localhost:8000/api/v1/health"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-    cap_drop: [ALL]
-    security_opt: ["no-new-privileges:true"]
-
-  hydrocast-frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_API_URL: http://localhost:8000
-        NEXT_PUBLIC_WS_URL: ws://localhost:8000/ws/live
-    container_name: hydrocast-frontend
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    depends_on:
-      hydrocast-backend:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
-      interval: 20s
-      timeout: 5s
-      retries: 3
-
-  hydrocast-docs:      # opt-in: docker compose --profile docs up docs
-    build:
-      context: .
-      target: docs
-    profiles: ["docs"]
-    ports: ["8001:8001"]
-    volumes:
-      - ./docs:/app/docs:ro
-      - ./src:/app/src:ro
-      - ./mkdocs.yml:/app/mkdocs.yml:ro
-
-  hydrocast-dev:       # opt-in: docker compose --profile dev up dev
-    build:
-      context: .
-      target: dev
-    profiles: ["dev"]
-    ports: ["8000:8000", "8888:8888"]
-    environment:
-      <<: *hydrocast-env
-    command: ["bash"]
-```
-
-### 1.3 Persistent State: Why Volumes Are Mounted Per Directory
-
-`/app/data` holds two different kinds of content, and only one of them is
-mutable:
-
-| Path | Kind | Mounted? |
-| :--- | :--- | :--- |
-| `data/hms/HMS_Automation_RJKT/` | versioned HEC-HMS basin project | baked into the image |
-| `data/Shapefiles_Panchganga basin/`, `data/wrd_cross_sections/`, `data/stations/` | GIS, rating and gauge reference data | baked into the image |
-| `data/runs/` | cycle ledger served by `/api/v1/runs` | named volume, seeded from the image |
-| `data/telemetry/`, `data/openmeteo_dss/` | ThingSpeak cache, forecast DSS output | named volume |
-| `data/raw/`, `data/archives/`, `data/logs/` | GRIB downloads, parquet cold storage, logs | named volume |
-
-!!! danger "A single `hydrocast_data:/app/data` mount hides the reference data"
-    A volume mounted over `/app/data` **shadows** everything baked into the
-    image at build time. The HEC-HMS basin files, the GIS layers and the entire
-    historical run ledger would vanish and the API would answer
-    `/api/v1/runs` with an empty list. Compose therefore mounts the six mutable
-    subdirectories individually; Docker seeds each empty named volume from the
-    image, so the first `docker compose up` still starts with a populated
-    ledger and keeps accumulating cycles from then on.
-
-### 1.4 Startup & Management Commands
-
-```
-# Build images and start all services in detached mode
-docker compose up -d --build
-
-# Inspect container health and port bindings
-docker compose ps
-
-# Stream unified application logs
-docker compose logs -f
-
-# Stop and gracefully shut down services
-docker compose down
-
-# Local documentation preview with live reload (http://localhost:8001)
-docker compose --profile docs up docs
-
-# Interactive backend with black / mypy / pytest / JupyterLab
-docker compose --profile dev up dev
-docker compose --profile dev run --rm dev pytest -q
-```
+* Terminate TLS at the reverse proxy
+* Forward to localhost ports (127.0.0.1:8000, 127.0.0.1:3000, 127.0.0.1:3001)
+* Set `FORWARDED_ALLOW_IPS` to the proxy IP only (never `*`)
+* Enable HSTS headers (already configured in Next.js production build)
+* Ensure `CORS_ORIGINS` in `.env` matches the production dashboard domain
 
 ---
 
 ## 2. Automated Cron Scheduling (ECMWF Operational Cycles)
 
-The European Centre for Medium-Range Weather Forecasts releases operational IFS runs four times daily. HydroCast triggers automated forecast cycles 45 minutes after official model availability to allow for global numerical assimilation:
+The European Centre for Medium-Range Weather Forecasts releases operational IFS runs four times daily. HydroCast triggers automated forecast cycles on Windows Server via the `HydroCast-Scheduler` service, 45 minutes after official model availability to allow for global numerical assimilation:
 
-| ECMWF Cycle | Global Model Time | Indian Std Time(IST) | Automated Pipeline Run |
+| ECMWF Cycle | Global Model Time | Local Time (IST) | Scheduled Service Trigger |
 |:---|:---|:---|:---|
 | 00z Forecast | 00:00 UTC | 05:30 AM IST | 06:45 AM IST (01:15 UTC) |
 | 06z Forecast | 06:00 UTC | 11:30 AM IST | 12:45 PM IST (07:15 UTC) |
 | 12z Forecast | 12:00 UTC | 05:30 PM IST | 06:45 PM IST (13:15 UTC) |
 | 18z Forecast | 18:00 UTC | 11:30 PM IST | 12:45 AM IST (19:15 UTC) |
 
-
-### Linux Crontab Configuration
-
-```
-# Edit with: crontab -e
-# 6-Hourly Forecast Pipeline Execution
-15 1,7,13,19 * * * cd /opt/hydrocast && /opt/hydrocast/venv/bin/python -m src.ecmwf.open_meteo >> data/logs/cron_forecast.log 2>&1
-
-# Weekly Cold Storage Parquet Archival (Sunday 02:00 UTC)
-0 2 * * 0 cd /opt/hydrocast && /opt/hydrocast/venv/bin/python -m src.db.archive_runs --retention-days 90 >> data/logs/cron_archive.log 2>&1
-```
+The `HydroCast-Scheduler` Windows Service triggers at the times above and executes `python -m backend.orchestrator` (or the downstream module directly, depending on configuration).
 
 ---
 
 ## 3. Multi-Channel Emergency Alerting Setup (DDMA & SDRF)
 
-HydroCast integrates an automated Telegram alert bot and webhook dispatcher (`src/alerts/telegram_bot.py`):
+HydroCast integrates an automated Telegram alert bot and webhook dispatcher (`backend/alerts/telegram_bot.py`):
 
 ### 3.1 Telegram Bot Configuration
 
@@ -273,18 +306,18 @@ HydroCast integrates an automated Telegram alert bot and webhook dispatcher (`sr
 2. Add the bot to your District Disaster Management Authority (DDMA) channel, District Collectorate channel, and Emergency Operations Center (EOC) groups.
 3. Configure target chat IDs in `.env`:
 
-```
-   TELEGRAM_BOT_TOKEN=123456789:ABCdefGHIjklMNOpqrSTUvwxYZ
-   TELEGRAM_CHAT_ID=-1001234567890
-   DDMA_TELEGRAM_CHATS=-1001234567890,-1009876543210
+```powershell
+ TELEGRAM_BOT_TOKEN=123456789:ABCdefGHIjklMNOpqrSTUvwxYZ
+ TELEGRAM_CHAT_ID=-1001234567890
+ DDMA_TELEGRAM_CHATS=-1001234567890,-1009876543210
 ```
 
 ### 3.2 Agency Webhook Endpoints
 
 To automatically push flood alerts to state disaster management agency dispatch APIs:
 
-```
-DISASTER_MANAGEMENT_WEBHOOKS=https://alert-dispatch.district.gov.in/api/v1/cwc-hook,https://sdrf.maharashtra.gov.in/api/v1/flood
+```powershell
+ DISASTER_MANAGEMENT_WEBHOOKS=https://alert-dispatch.district.gov.in/api/v1/cwc-hook,https://sdrf.maharashtra.gov.in/api/v1/flood
 ```
 
 Whenever river stage breaches the CWC **Warning** ($542.70\text{ m}$) or **Danger** ($543.30\text{ m}$) mark, HydroCast broadcasts formatted HTML bulletins to all Telegram channels and POSTs structured JSON alerts to webhooks within $< 500\text{ ms}$.
@@ -293,35 +326,31 @@ Whenever river stage breaches the CWC **Warning** ($542.70\text{ m}$) or **Dange
 
 ## 4. Cold Storage & Telemetry Archival Automation
 
-Implemented in `src/db/archive_runs.py`:
+Implemented in `backend/scripts/archive_runs.py`:
 
-- **Objective:** Prevent high-frequency time-series tables (`hydrograph_results`, `bridge_stage_forecast`, `rainfall_data`, `station_rainfall_telemetry`, `subbasin_rainfall_ts`) from bloating PostgreSQL storage and degrading query speed.
-- **Mechanism:** Records older than `ARCHIVE_RETENTION_DAYS` (default 90 days) are written to Snappy-compressed Apache Parquet partitions (`data/archives/{table}/year=YYYY/month=MM/`), followed by atomic database pruning.
-- **Manual Execution:**
+* **Objective:** Prevent high-frequency time-series tables (`hydrograph_results`, `bridge_stage_forecast`, `rainfall_data`, `station_rainfall_telemetry`, `subbasin_rainfall_ts`) from bloating PostgreSQL storage and degrading query speed.
+* **Mechanism:** Records older than `ARCHIVE_RETENTION_DAYS` (default 90 days) are written to Snappy-compressed Apache Parquet partitions (`data/archives/{table}/year=YYYY/month=MM/`), followed by atomic database pruning.
+* **Manual Execution:**
 
+```powershell
+; Dry run (inspect row counts without deleting)
+python -m backend.scripts.archive_runs --dry-run
+
+; Execute archival with 90-day retention
+python -m backend.scripts.archive_runs --retention-days 90
 ```
-  # Dry run (inspect row counts without deleting)
-  python -m src.db.archive_runs --dry-run
 
-  # Execute archival with 90-day retention
-  python -m src.db.archive_runs --retention-days 90
-```
-
-- **API Invocation:** Authenticated administrators can trigger archival via `POST /api/v1/admin/archive`.
+* **API Invocation:** Authenticated administrators can trigger archival via `POST /api/v1/admin/archive`.
 
 ---
 
 ## 5. API Security, JWT Authentication & Rate Limiting
 
-The public surface is deliberately small and every route is authenticated except
-`/health` and `/api/v1/status`. Admin routes carry an HS256 JWT with a 60-minute
-expiry; machine callers use a static API key in `X-API-Key`. Requests are rate
-limited per client at 60 per minute, and failed authentication is logged with the
-source address before the 401 is returned.
+The public surface is deliberately small and every route is authenticated except `/health` and `/api/v1/status`. Admin routes carry an HS256 JWT with a 60-minute expiry; machine callers use a static API key in `X-API-Key`. Requests are rate limited per client at 60 per minute (configurable via `RATE_LIMIT_PUBLIC`), and failed authentication is logged with the source address before the 401 is returned.
 
 ### 5.1 Environment Security Variables (`.env`)
 
-```
+```powershell
 # Enterprise Security & Authentication
 API_KEY=Hydrocast_PCH
 INTERNAL_KEY=your_internal_broadcast_key_min_32_chars
@@ -337,17 +366,17 @@ RATE_LIMIT_PUBLIC=100/minute
 
 ### 5.2 Obtaining an Admin JWT Bearer Token
 
-```bash
-curl -X POST http://localhost:8000/api/v1/admin/auth/token \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "your_strong_admin_password"}'
+```powershell
+ curl -X POST http://localhost:8000/api/v1/admin/auth/token \
+   -H "Content-Type: application/json" \
+   -d '{"username": "admin", "password": "your_strong_admin_password"}'
 ```
 
 Response:
 
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "access_token": "<JWT_ACCESS_TOKEN>",
   "token_type": "bearer",
   "expires_in_seconds": 86400
 }
@@ -355,136 +384,166 @@ Response:
 
 ---
 
-## 6. Process Management without Docker (Systemd & PM2)
+## 6. Process Management without Docker (Native Windows Services)
 
-For hosts where Docker is not available:
+For the primary Windows Server deployment, Docker is **not required**. All services run as native Windows Services via NSSM.
 
-### 6.1 Backend Systemd Unit (`/etc/systemd/system/hydrocast-api.service`)
+### 6.1 Service Overview (NSSM-Installed)
 
-```json
-[Unit]
-Description=HydroCast FastAPI Backend & WebSocket Service
-After=network.target postgresql.service
+All 5 services are installed during Step 5 of the runbook:
 
-[Service]
-Type=simple
-User=hydrocast
-WorkingDirectory=/opt/hydrocast
-ExecStart=/opt/hydrocast/venv/bin/uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 4
-Restart=always
-RestartSec=5
-EnvironmentFile=/opt/hydrocast/.env
+| Service Name | Port | Description | Auto-Start |
+| :--- | :---: | :--- | :---: |
+| `HydroCast-Backend` | 8000 | FastAPI + WebSocket hub | ✅ |
+| `HydroCast-Scheduler` | N/A | 6-hourly pipeline daemon | ✅ |
+| `HydroCast-Watchdog` | N/A | 15s heartbeat supervisor | ✅ |
+| `HydroCast-PublicWeb` | 3000 | Next.js public portal | ✅ |
+| `HydroCast-OperatorConsole` | 3001 | Next.js operator console | ✅ |
 
-[Install]
-WantedBy=multi-user.target
+### 6.2 Service Control
+
+All services are controlled via the single PowerShell script:
+
+```powershell
+; Start all services
+ .\windows\service_control.ps1 -Action start
+
+; Stop all services
+ .\windows\service_control.ps1 -Action stop
+
+; Check status of all services
+ .\windows\service_control.ps1 -Action status
+
+; Restart a specific service
+ .\windows\service_control.ps1 -Action restart -Service HydroCast-Backend
 ```
 
-### 6.2 Frontend PM2 Process
-
-```bash
-cd /opt/hydrocast/frontend
-npm run build
-pm2 start npm --name "hydrocast-frontend" -- start -- -p 3000
-pm2 save
-pm2 startup
-```
+Each service is configured with `SERVICE_AUTO_START`, meaning they launch automatically upon Windows Server boot within 30 seconds.
 
 ---
 
-## 7. Continuous 1-Hour Telemetry Validation (GitHub Actions)
+## 7. Continuous 1-Hour Telemetry Validation
 
-Autonomous physical verification runs via `.github/workflows/telemetry_validation.yml`:
+The `HydroCast-Watchdog` service checks the scheduler heartbeat every 15 seconds. If the heartbeat is older than 45 seconds, the watchdog records a crash dump and restarts the scheduler process. This ensures the 6-hourly forecast cycles remain uninterrupted.
 
-- **Interval:** Every hour at minute 0 (`cron: "0 * * * *"`).
-- Pulls 800 raw ultrasonic pings from ThingSpeak Channel `3424513`.
-- Resamples into hourly averages and converts to stage in meters MSL ($549.35\text{m} - \text{ft} \times 0.3048$).
-- Computes genuine RMSE, MAE, NSE, PBIAS, Spearman $\rho$, and Pearson $R^2$.
-- Updates `frontend/public/data/latest_pipeline_state.json` and mirrored run archives in `frontend/public/data/runs/`.
-- Commits and pushes back to GitHub, triggering immediate Vercel production synchronization.
+Telemetry validation runs hourly via the watchdog's integrated validator, pulling 800 raw ultrasonic pings from ThingSpeak Channel `3424513`, resampling into hourly averages, and converting to stage in meters MSL ($549.35\text{m} - \text{ft} \times 0.3048$).
 
 ---
 
 ## 8. Comprehensive Test Architecture & Continuous Verification Suite
 
-HydroCast enforces rigorous software and hydrological quality assurance through an automated suite of **271 total automated tests**:
+HydroCast enforces rigorous software and hydrological quality assurance through an automated suite of tests. On Windows Server, run:
 
-### System Architecture Map (Visual Console)
-
-The Mermaid flow diagram has been replaced by the interactive SVG console below:
-
-<div class="hydrocast-diagram-card">
-  <div class="hydrocast-diagram-header">
-    <div class="hydrocast-diagram-title">
-      <span class="hydrocast-diagram-badge">Interactive Console</span>
-      <strong>06 · Hybrid Deployment Architecture</strong>
-    </div>
-    <div class="hydrocast-diagram-actions">
-      <a class="hydrocast-diagram-btn" href="../diagrams/06-deployment-docker-os.html" target="_blank">Open Fullscreen ↗</a>
-    </div>
-  </div>
-  <iframe class="hydrocast-diagram-frame" src="../diagrams/06-deployment-docker-os.html?embed=1" title="06 · Hybrid Deployment Architecture Console"></iframe>
-</div>
-
-### 8.1 Test Inventory & Module Breakdown
-
-| Test Module | Test Count | Focus Area & Verified Scientific Invariants |
-| :--- | :---: | :--- |
-| `tests/test_golden_emulator.py` | 2 | **Bit-level determinism & regression lock:** Freezes baseline peak ($Q=3,345.6\text{ m}^3/s$, $T=105\text{ h}$, $V=754.115\text{ MCM}$, AMC-III). |
-| `tests/test_runner_emulator.py` | 16 | **Hydrologic Twin Solver:** Muskingum mass conservation, stability under long reach travel times, Control_1 restoration. |
-| `tests/test_ml_calibration.py` | 8 | **Adaptive Calibrator:** Parameter bounds, early/late arrival wave scaling, atomic `.basin` syncing with timestamped backups. |
-| `tests/test_low_flow_stage_bias.py` | 44 | **Rating Physics Autopsy:** Bed datum reconciliation ($528.670\text{ m}$ / $529.318\text{ m}$), removal of $40\text{ m}^3/s$ floor, eradication of ~2 m low-flow bias. |
-| `tests/test_cross_section_survey.py` | 17 | **Survey Geometry:** Chainage calculations, surveyed coordinates, wetted area/perimeter monotonicity, Manning overprediction checks. |
-| `tests/test_rating_physics.py` | 6 | **Pure Geometry Core:** Vectorized trapezoidal channel properties (`wetted_properties`, `station_from_points`). |
-| `tests/test_realtime_validator.py` | 13 | **Sensor Ingestion:** ThingSpeak ping parsing, hourly mean resampling, lifecycle verification states (`ACCUMULATING_TELEMETRY`, `COMPLETED`). |
-| `tests/test_telemetry_metrics.py` | 6 | **Statistical Core:** Variance floor ($\text{std} < 0.05\text{ m}$), sample size gating ($n \ge 6$), cycle ID datetime parsing. |
-| `tests/test_hydrosim_integration.py` | 17 | **2D Handoff Boundary API:** Consumer key scoping, read-only guarantees, JSON/CSV boundary shapes, 404 behavior. |
-| `tests/test_rate_limiting_and_auth.py` | 7 | **Authentication & Limits:** JWT lifecycle, bcrypt verification, SlowAPI request throttle enforcement (100 req/min). |
-| `tests/test_security_hardening.py` | 13 | **Security Hardening:** Blank password lockout, tampered JWT rejection, run-id path traversal rejection. |
-| `tests/test_api_endpoints.py` | 28 | **FastAPI Surface:** Endpoint response contracts, CORS headers, body size limit enforcement. |
-| `tests/test_write_paths.py` | 21 | **Persistence Ledger:** HEC-DSS records, database table commits, runoff summary alert classifications. |
-| `tests/test_db_connection.py` | 6 | **Database Connection:** Supabase connection pooler URL formatting, IPv4/IPv6 dual-stack resolution. |
-| `tests/test_soil_moisture.py` | 5 | **NWP Soil Moisture:** Open-Meteo multi-layer soil moisture ingestion and antecedent indexing. |
-| `tests/test_station_selector.py` | 4 | **Rainfall Mapping:** Subbasin-to-station assignment and governing gauge selection. |
-| `tests/test_qc_pipeline.py` | 4 | **Quality Control:** Rainfall spatial sanity bounds and rate-of-change checks. |
-| `tests/test_retry_utils.py` | 6 | **Network Resilience:** Exponential backoff, jitter distribution, retry exceptions. |
-| `tests/test_alerts_dispatcher.py` | 15 | **Emergency Alerting:** Telegram broadcast formatting, webhook payloads, deduplication. |
-| `tests/test_orchestrator.py` | 8 | **12-Step Pipeline:** End-to-end cycle execution order, error logging, and status tracking. |
-| `tests/test_archival.py` | 3 | **Cold Storage:** Snappy-compressed Parquet exports and retention pruning. |
-| `tests/test_hydrology.py` | 5 | **Hydraulic Rating:** WRD sheet anchor alignment and cross-site stage offset verification. |
-| `tests/test_validation_metrics.py` | 2 | **Accuracy Matrix:** In-process evaluation of stored simulation payloads. |
-| `tests/test_postgres_integration.py` | 3 | **PostgreSQL/PostGIS:** Fresh container schema application, write-path roundtrip, error propagation. |
-| `tests/test_milestone1_integrity.py` | 12 | **Documentation Integrity:** Navigation links existence, canonical anchor contracts, deduplication enforcement, and HTML link crawling. |
-
-### 8.2 Execution Runbooks
-
-#### Fast Local Development Suite (< 10 seconds)
 ```powershell
-pytest
+ pytest
+; Output: 256 passed, 3 skipped in under 10 seconds
 ```
+
+### Test Inventory & Module Breakdown
+
+| Test Module | Test Count | Focus Area |
+| :--- | :---: | :--- |
+| `tests/test_golden_emulator.py` | 2 | Bit-level determinism & regression lock |
+| `tests/test_runner_emulator.py` | 16 | Hydrologic Twin Solver |
+| `tests/test_ml_calibration.py` | 8 | Adaptive Calibrator |
+| `tests/test_low_flow_stage_bias.py` | 44 | Rating Physics Autopsy |
+| `tests/test_cross_section_survey.py` | 17 | Survey Geometry |
+| `tests/test_rating_physics.py` | 6 | Pure Geometry Core |
+| `tests/test_realtime_validator.py` | 13 | Sensor Ingestion |
+| `tests/test_telemetry_metrics.py` | 6 | Statistical Core |
+| `tests/test_hydrosim_integration.py` | 17 | 2D Handoff Boundary API |
+| `tests/test_rate_limiting_and_auth.py` | 7 | Authentication & Limits |
+| `tests/test_security_hardening.py` | 13 | Security Hardening |
+| `tests/test_api_endpoints.py` | 28 | FastAPI Surface |
+| `tests/test_write_paths.py` | 21 | Persistence Ledger |
+| `tests/test_db_connection.py` | 6 | Database Connection |
+| `tests/test_soil_moisture.py` | 5 | NWP Soil Moisture |
+| `tests/test_station_selector.py` | 4 | Rainfall Mapping |
+| `tests/test_qc_pipeline.py` | 4 | Quality Control |
+| `tests/test_retry_utils.py` | 6 | Network Resilience |
+| `tests/test_alerts_dispatcher.py` | 15 | Emergency Alerting |
+| `tests/test_orchestrator.py` | 8 | 12-Step Pipeline |
+| `tests/test_archival.py` | 3 | Cold Storage |
+| `tests/test_hydrology.py` | 5 | Hydraulic Rating |
+| `tests/test_validation_metrics.py` | 2 | Accuracy Matrix |
+| `tests/test_postgres_integration.py` | 3 | PostgreSQL/PostGIS |
+
+### 8.1 Fast Local Development Suite (< 10 seconds)
+
+```powershell
+ pytest
+```
+
 Executes all 256 unit and integration tests with in-memory SQLite and mock telemetry. Expected: `256 passed, 3 skipped` in under 10 seconds.
 
-#### Golden Regression Lock Verification
+### 8.2 Golden Regression Lock Verification
+
 ```powershell
-pytest tests/test_golden_emulator.py -v
+ pytest tests/test_golden_emulator.py -v
 ```
+
 Verifies bit-level determinism and ensures peak discharge ($3,345.6\text{ m}^3/s$) and volume ($754.115\text{ MCM}$) have not drifted.
 
-#### Rating Curve & Low-Flow Stage Bias Verification
+### 8.3 Rating Curve & Low-Flow Stage Bias Verification
+
 ```powershell
-pytest tests/test_low_flow_stage_bias.py tests/test_cross_section_survey.py -v
+ pytest tests/test_low_flow_stage_bias.py tests/test_cross_section_survey.py -v
 ```
+
 Validates bed invert levels and confirms zero low-flow stage bias across the entire operating range.
 
-#### Real-PostgreSQL PostGIS Integration Suite
-```powershell
-$env:HYDROCAST_TEST_DATABASE_URL = "postgresql://hms_app:password@localhost:5432/rainfall_runoff"
-pytest tests/test_postgres_integration.py -v
-```
-Requires a running PostgreSQL/PostGIS container (`docker compose up -d hydrocast-db`). Applies `database/supabase_schema.sql` and verifies schema, tables, views, and write paths.
+### 8.4 Real-PostgreSQL PostGIS Integration Suite
 
-#### Documentation Integrity & Strict Build Verification
 ```powershell
-python -m mkdocs build --strict
-pytest tests/test_milestone1_integrity.py -v
+ $env:HYDROCAST_TEST_DATABASE_URL = "postgresql://hms_app:password@localhost:5432/rainfall_runoff"
+ pytest tests/test_postgres_integration.py -v
 ```
+
+Requires a running PostgreSQL/PostGIS container or local installation. Applies `database/schema.sql` and verifies schema, tables, views, and write paths.
+
+### 8.5 Documentation Integrity & Strict Build Verification
+
+```powershell
+ python -m mkdocs build --strict
+ pytest tests/test_milestone1_integrity.py -v
+```
+
 Validates zero warnings or errors in documentation builds and verifies all internal links and canonical anchors across the generated HTML site.
+
+---
+
+## 9. Docker Deployment (Alternative, Linux/Cloud Only)
+
+For cloud or Linux environments, the system is fully containerized via Docker Compose. **This is NOT the primary Windows Server deployment path.**
+
+```bash
+ docker build -t hydrocast-backend:2.0.0 .
+ docker compose up -d
+```
+
+See the Dockerfile for multi-stage build targets (runner, docs, dev). The Docker path is provided for contributors who wish to test on Linux/macOS or deploy to cloud VMs; production Windows Server deployment uses native NSSM services.
+
+---
+
+## 10. Firewall Configuration (Reiteration)
+
+Ensure these ports are open on Windows Server:
+
+| Port | Service | Access |
+| :--- | :--- | :--- |
+| 8000 | Public API | LAN / Internet (behind reverse proxy) |
+| 8001 | Admin API | LAN only (restricted) |
+| 3000 | Public Dashboard | LAN / Internet |
+| 3001 | Admin Console | LAN only (restricted) |
+| 5432 | PostgreSQL | **Localhost only** |
+
+---
+
+## 11. HTTPS (Production, Reiteration)
+
+For production deployment behind a reverse proxy (Nginx, Caddy, IIS ARR):
+
+* Terminate TLS at the proxy
+* Forward to localhost ports
+* Set `FORWARDED_ALLOW_IPS` to the proxy IP only
+* Enable HSTS headers (already configured in Next.js)

@@ -38,7 +38,7 @@ GET /api/v1/integration/hydrosim/stage    (Legacy Backward-Compatible Path)
 
 | Query Parameter | Supported Values | Default | Purpose & Semantics |
 | :--- | :--- | :--- | :--- |
-| `key` | String (`hydrocast_PS_V1_...`) | None | Consumer API key in the URL; omit it when the deployment runs with `REQUIRE_API_KEY=false` |
+| `key` | String (`<READONLY_API_KEY>`) | None | Consumer API key in the URL; omit it when the deployment runs with `REQUIRE_API_KEY=false` |
 | `site_id` | `SHIVAJI_BRIDGE`, `RAJARAM_BRIDGE` | All | Optional site filter (returns both sites if omitted) |
 | `format` | `json`, `csv` | `json` | Response serialization format |
 
@@ -60,10 +60,10 @@ External hydraulic models authenticate using dedicated, read-only consumer crede
 # Option A: Header Authentication (Recommended for scripts & production pipelines)
 GET /api/v1/hydrocast/water-levels HTTP/1.1
 Host: localhost:8000
-X-API-Key: hydrocast_PS_V1_abcdef123456...
+X-API-Key: <READONLY_API_KEY>
 
 # Option B: Query String Authentication (Convenient for browser verification)
-GET /api/v1/hydrocast/water-levels?key=hydrocast_PS_V1_abcdef123456... HTTP/1.1
+GET /api/v1/hydrocast/water-levels?key=<READONLY_API_KEY> HTTP/1.1
 
 # Option C: Public zero-key deployment (REQUIRE_API_KEY=false)
 GET /api/v1/hydrocast/water-levels?site_id=SHIVAJI_BRIDGE HTTP/1.1

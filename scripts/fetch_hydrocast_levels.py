@@ -106,8 +106,8 @@ def main() -> int:
     key = args.key.strip() or _key_from_env()
     if not key:
         print("ERROR: no Hydrosim key found.", file=sys.stderr)
-        print("  Put HYDROCAST_READONLY_KEY=hydrocast_PS_V1_... in .env,", file=sys.stderr)
-        print("  or run with --key hydrocast_PS_V1_...", file=sys.stderr)
+        print("  Put HYDROCAST_READONLY_KEY=<readonly-api-key> in .env,", file=sys.stderr)
+        print("  or run with --key <readonly-api-key>", file=sys.stderr)
         return 2
 
     url = args.base_url.rstrip("/") + "/api/v1/hydrocast/water-levels"

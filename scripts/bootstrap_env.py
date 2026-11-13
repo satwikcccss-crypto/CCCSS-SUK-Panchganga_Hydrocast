@@ -59,7 +59,7 @@ def build_backend_env(template: str) -> tuple[str, dict[str, str]]:
         "ADMIN_PASSWORD": tok(18),
         "VISIT_HASH_SALT": tok(24),
         "TELEGRAM_WEBHOOK_SECRET": tok(32),
-        "HYDROCAST_READONLY_KEY": "hydrocast_PS_V1_" + tok(24),
+        "HYDROCAST_READONLY_KEY": "hc_ro_" + tok(24),
         "JUPYTER_TOKEN": tok(16),
     }
     s = secrets_map
@@ -183,7 +183,7 @@ def add_missing() -> int:
     for key, nbytes in specs.items():
         if not re.search(rf"(?m)^{re.escape(key)}=", text):
             added[key] = (
-                "hydrocast_PS_V1_" + tok(24)
+                "hc_ro_" + tok(24)
                 if key == "HYDROCAST_READONLY_KEY"
                 else tok(nbytes)
             )

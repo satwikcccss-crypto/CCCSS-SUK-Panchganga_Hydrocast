@@ -8,6 +8,7 @@ Checks for: hardcoded/stale data, console errors, broken links, failed API calls
 import json
 import re
 import sys
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 from playwright.sync_api import sync_playwright
