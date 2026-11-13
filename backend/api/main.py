@@ -324,12 +324,23 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(PrometheusMiddleware)
 
 
+class APIVersionMiddleware(BaseHTTPMiddleware):
+    """Add API-Version header to all responses for client version detection."""
+
+    API_VERSION = "2.0.0"
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers.setdefault("API-Version", self.API_VERSION)
+        if request.headers.get("Accept-Version"):
+            response.headers.setdefault(
+                "API-Version-Requested", request.headers["Accept-Version"]
+            )
+        return response
 
 
+app.add_middleware(APIVersionMiddleware)
 
-# Anti-scraping UA blocking removed: rate limiting + API key auth (slowapi /
-# verify_public_key) already protect data endpoints without breaking legitimate
-# programmatic clients such as the Python SDK, curl, or httpx.
 
 # Mount Administrative & Control Router (protected by JWT & API Key)
 app.include_router(admin_router)
