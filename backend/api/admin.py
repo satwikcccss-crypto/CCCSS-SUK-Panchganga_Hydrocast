@@ -621,8 +621,12 @@ async def trigger_manual_run(
             "message": "Hydrologic simulation cycle queued in background",
         }
     else:
+        # Run the synchronous (psycopg2-based) pipeline in a thread executor
+        # so the FastAPI event loop is not blocked during the forecast cycle.
+        import asyncio
         from backend.service.orchestrator import run_pipeline
-        run_pipeline(run_dt=run_dt, cycle_id=cycle_id)
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, run_pipeline, run_dt, cycle_id)
         return {
             "status": "completed",
             "cycle_id": cycle_id,
