@@ -144,7 +144,7 @@ export async function fetchDashboardData(runId?: string): Promise<any> {
 export const api = {
   status: async () => {
     const data = await fetchStatus();
-    return data.status ?? data;
+    return data?.status ?? data;
   },
   cycleStatus: async () => {
     const data = await fetchStatus();
@@ -166,22 +166,20 @@ export const api = {
   validation: async (runId?: string) => (await fetchAccuracy(runId)) ?? null,
   runoffSummary: async () => {
     const dash = await fetchDashboardData();
-    if (dash?.summary) {
-      const s = dash.summary;
-      return {
-        outlet: {
-          peak_discharge_m3s: s.peak_discharge_m3s ?? 0,
-          lead_hours_to_peak: s.lead_hours_to_peak ?? 0,
-          total_volume_mcm: s.total_volume_mcm ?? 0,
-          alert_level: s.alert_level ?? "NORMAL",
-        },
-        bridges: dash.bridges ?? (await fetchRunoffSummary()).bridges ?? [],
-        hydrograph: dash.hydrograph ?? [],
-        peak_arrival: s.peak_arrival ?? {},
-        recalibration: dash.recalibration ?? {},
-      };
-    }
-    return fetchRunoffSummary();
+    if (!dash?.summary) return null;
+    const s = dash.summary;
+    return {
+      outlet: {
+        peak_discharge_m3s: s.peak_discharge_m3s ?? null,
+        lead_hours_to_peak: s.lead_hours_to_peak ?? null,
+        total_volume_mcm: s.total_volume_mcm ?? null,
+        alert_level: s.alert_level ?? "NORMAL",
+      },
+      bridges: dash.bridges ?? [],
+      hydrograph: dash.hydrograph ?? [],
+      peak_arrival: s.peak_arrival ?? {},
+      recalibration: dash.recalibration ?? {},
+    };
   },
   alerts: async () => await fetchAlerts(),
   bridgeShivaji: async () => await fetchBridgeStage("SHIVAJI_BRIDGE"),
