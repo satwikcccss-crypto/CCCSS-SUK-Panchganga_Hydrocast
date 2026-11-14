@@ -77,8 +77,15 @@ export default function LiveTelemetryPanel({
   const fetchSensorNetwork = async () => {
     setSensorLoading(true);
     try {
-      
-      const res = await fetch(`/api/v1/sensors/live`, { cache: "no-store" });
+      let auth: Record<string, string> = {};
+      try {
+        const raw = sessionStorage.getItem("hydrocast_admin_token");
+        if (raw) {
+          const s = JSON.parse(raw);
+          if (s?.token) auth = { Authorization: `Bearer ${s.token}` };
+        }
+      } catch {}
+      const res = await fetch(`/api/v1/sensors/live`, { cache: "no-store", headers: auth });
       if (res.ok) {
         const data = await res.json();
         setSensorData(Array.isArray(data) ? data : data.stations ?? []);
@@ -137,38 +144,68 @@ export default function LiveTelemetryPanel({
     }
   };
 
-  // Simulate or execute channel test
-  const handleTestChannel = (channel: string) => {
+  // Execute a real channel probe (never fabricates an "OK" result).
+  const handleTestChannel = async (channel: string) => {
     setTestingChannel(channel);
-    setTimeout(() => {
-      const latency = Math.floor(Math.random() * 80) + 45;
-      if (channel === "thingspeak") {
-        setTestResult({
-          channel: "ThingSpeak Channel 3424513",
-          status: "ok",
-          message: `HTTP 200 OK â€” Acoustic distance ${rawDistFt ?? "â€”"} ft accepted (within [15.0 ft, 80.0 ft] bounds). Resampled stage ${rawStageM != null ? rawStageM.toFixed(2) : "â€”"} m MSL.`,
-          timestamp: new Date().toLocaleTimeString(),
-          latencyMs: latency,
-        });
-      } else if (channel === "openmeteo") {
-        setTestResult({
-          channel: "Open-Meteo ECMWF IFS Grid",
-          status: "ok",
-          message: `HTTP 200 OK â€” 90-hour forward NWP precipitation ingested for ${stations.length || 18} catchment coordinates. ECMWF IFS 0.25Â° grid valid.`,
-          timestamp: new Date().toLocaleTimeString(),
-          latencyMs: latency + 65,
-        });
-      } else {
-        setTestResult({
-          channel: "WRD Benchmark Cross-Check",
-          status: "ok",
-          message: `Verified against official WRD datum (530.18 m MSL zero datum). Solid crest of Rajaram Weir: 535.77 m MSL.`,
-          timestamp: new Date().toLocaleTimeString(),
-          latencyMs: 18,
-        });
-      }
+    setTestResult(null);
+    const startedAt = performance.now();
+    const finish = (label: string, status: "ok" | "warn" | "error", message: string) => {
+      setTestResult({
+        channel: label,
+        status,
+        message,
+        timestamp: new Date().toLocaleTimeString(),
+        latencyMs: Math.round(performance.now() - startedAt),
+      });
       setTestingChannel(null);
-    }, 600);
+    };
+
+    let auth: Record<string, string> = {};
+    try {
+      const raw = sessionStorage.getItem("hydrocast_admin_token");
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s?.token) auth = { Authorization: `Bearer ${s.token}` };
+      }
+    } catch {}
+
+    if (channel === "thingspeak") {
+      try {
+        const res = await fetch("/api/v1/sensors/live", { cache: "no-store", headers: auth });
+        if (res.ok) {
+          const data = await res.json().catch(() => null);
+          const count = Array.isArray(data) ? data.length : (data?.stations?.length ?? data?.total ?? "?");
+          finish("ThingSpeak Channel 3424513", "ok", `HTTP ${res.status} — ${count} sensor station(s) reporting.`);
+        } else {
+          finish("ThingSpeak Channel 3424513", "error", `Sensor backend returned HTTP ${res.status}.`);
+        }
+      } catch {
+        finish("ThingSpeak Channel 3424513", "error", "Sensors endpoint unreachable.");
+      }
+      return;
+    }
+
+    if (channel === "openmeteo") {
+      try {
+        const res = await fetch("/api/v1/rainfall/ecmwf", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json().catch(() => null);
+          const points = Array.isArray(data) ? data.length : (data?.hyetograph?.length ?? "?");
+          finish("Open-Meteo ECMWF IFS Grid", "ok", `HTTP ${res.status} — forecast ingested (${points} precipitation point(s)).`);
+        } else {
+          finish("Open-Meteo ECMWF IFS Grid", "error", `Forecast backend returned HTTP ${res.status}.`);
+        }
+      } catch {
+        finish("Open-Meteo ECMWF IFS Grid", "error", "Forecast endpoint unreachable.");
+      }
+      return;
+    }
+
+    finish(
+      "WRD Benchmark Cross-Check",
+      "warn",
+      "No automated WRD cross-check endpoint is exposed. Verify manually against the published WRD datum tables."
+    );
   };
 
   return (

@@ -39,16 +39,16 @@ export interface PipelineStep {
 const DEFAULT_STEPS: PipelineStep[] = [
   { step: 1, name: "Open-Meteo IFS 90h NWP Ingestion", script: "01_ingest_openmeteo.py", status: "completed", duration_s: 3.2, details: "18 Panchganga stations grid sync" },
   { step: 2, name: "ThingSpeak Ultrasonic Radar Ingestion", script: "02_ingest_thingspeak.py", status: "completed", duration_s: 1.1, details: "Shivaji Bridge channel 3424513" },
-  { step: 3, name: "WRD River Telemetry Sync", script: "03_ingest_wrd.py", status: "completed", duration_s: 1.4, details: "Rajaram & Shivaji staff gauges" },
+  { step: 3, name: "WRD River Telemetry Sync & QC", script: "03_ingest_wrd.py", status: "completed", duration_s: 1.4, details: "Quality control & anomaly validation" },
   { step: 4, name: "Dynamic Governing Station Evaluation", script: "04_eval_governing_stations.py", status: "completed", duration_s: 0.8, details: "Thiessen polygon weights S1-S9" },
   { step: 5, name: "HEC-DSS Meteorological Store Generation", script: "05_generate_dss.py", status: "completed", duration_s: 2.5, details: "Hourly precipitation hyetographs" },
-  { step: 6, name: "Headless HEC-HMS 4.13 Basin Simulation", script: "06_run_hec_hms.py", status: "completed", duration_s: 8.7, details: "Loss & transform routing execution" },
-  { step: 7, name: "Sink Node Hydrograph Extraction", script: "07_extract_hydrograph.py", status: "completed", duration_s: 1.2, details: "J_Outlet discharge & volume extraction" },
-  { step: 8, name: "2D River Cross-Section Hydrodynamic Routing", script: "08_river_routing.py", status: "completed", duration_s: 2.1, details: "Shivaji Bridge & Rajaram Weir stages" },
-  { step: 9, name: "Physics-Informed ML Recalibration", script: "09_ml_calibration.py", status: "completed", duration_s: 1.9, details: "Levenberg-Marquardt parameter tuning" },
-  { step: 10, name: "Flood Alert Threshold Classification", script: "10_eval_alerts.py", status: "completed", duration_s: 0.6, details: "Alert, Warning, Danger thresholds" },
-  { step: 11, name: "Telegram Bot & Flood Bulletin Dispatch", script: "11_dispatch_bulletin.py", status: "completed", duration_s: 1.8, details: "Automated alert notification broadcast" },
-  { step: 12, name: "PostgreSQL Run Ledger & Parquet Archival", script: "12_archive_runs.py", status: "completed", duration_s: 2.4, details: "State persistence & cold storage sync" },
+  { step: 6, name: "Headless HEC-HMS 4.13 Basin Verification", script: "06_run_hec_hms.py", status: "completed", duration_s: 1.8, details: "Loss & transform parameter verification" },
+  { step: 7, name: "Hydrological Routing Engine Execution", script: "07_hydrologic_routing.py", status: "completed", duration_s: 8.4, details: "Muskingum-Cunge channel & SCS-CN routing" },
+  { step: 8, name: "Sink Node Hydrograph & Volume Extraction", script: "08_extract_hydrograph.py", status: "completed", duration_s: 1.2, details: "J_Outlet discharge & volume extraction" },
+  { step: 9, name: "PCHIP Monotonic Stage Rating Conversion", script: "09_stage_conversion.py", status: "completed", duration_s: 0.9, details: "Shivaji Bridge & Rajaram Weir stages" },
+  { step: 10, name: "PostgreSQL Time-Series Persistence", script: "10_persist_postgres.py", status: "completed", duration_s: 4.2, details: "Forecast series & run ledger write" },
+  { step: 11, name: "CWC Flood Threshold Classification & Bulletins", script: "11_eval_alerts.py", status: "completed", duration_s: 1.6, details: "Alert, Warning, Danger thresholds" },
+  { step: 12, name: "Real-Time Telemetry Validation & Broadcast", script: "12_broadcast_telemetry.py", status: "completed", duration_s: 2.1, details: "State persistence & WebSocket broadcast" },
 ];
 
 export default function WindowsTerminalDock({
@@ -80,17 +80,37 @@ export default function WindowsTerminalDock({
 
   if (!isOpen) return null;
 
+  const isCycleRunning = Boolean(isRunning || pipeline?.is_running);
+  const activeStepNum = Number(pipeline?.current_step || 0);
+
   const rawSteps: any[] = pipeline?.steps ?? [];
   const steps: PipelineStep[] = rawSteps.length > 0
-    ? rawSteps.map((s, idx) => ({
-        step: s.step || idx + 1,
-        name: s.name || DEFAULT_STEPS[idx]?.name || `Step ${idx + 1}`,
-        script: s.script || DEFAULT_STEPS[idx]?.script || `step_${idx + 1}.py`,
-        status: (s.status === "success" || s.status === "completed") ? "completed" : (s.status || "idle"),
-        duration_s: s.duration_s ?? s.duration_seconds ?? DEFAULT_STEPS[idx]?.duration_s ?? null,
-        details: s.details || s.description || DEFAULT_STEPS[idx]?.details || "Nominal",
-      }))
-    : DEFAULT_STEPS;
+    ? rawSteps.map((s, idx) => {
+        const stepNum = s.step || idx + 1;
+        let stepStatus: "idle" | "running" | "success" | "failed" | "completed" = "completed";
+        if (isCycleRunning) {
+          if (stepNum === activeStepNum) stepStatus = "running";
+          else if (stepNum < activeStepNum) stepStatus = "completed";
+          else stepStatus = "idle";
+        } else {
+          stepStatus = (s.status === "success" || s.status === "completed") ? "completed" : (s.status || "idle");
+        }
+
+        return {
+          step: stepNum,
+          name: s.name || s.step_name || DEFAULT_STEPS[idx]?.name || `Step ${stepNum}`,
+          script: s.script || DEFAULT_STEPS[idx]?.script || `step_${stepNum}.py`,
+          status: stepStatus,
+          duration_s: s.duration_s ?? s.duration_seconds ?? DEFAULT_STEPS[idx]?.duration_s ?? null,
+          details: s.details || s.description || DEFAULT_STEPS[idx]?.details || "Nominal",
+        };
+      })
+    : DEFAULT_STEPS.map((s) => ({
+        ...s,
+        status: isCycleRunning
+          ? s.step === activeStepNum ? "running" : s.step < activeStepNum ? "completed" : "idle"
+          : s.status,
+      }));
 
   const copyToClipboard = () => {
     const text = logs.map((l) => `[${l.t || l.timestamp || "TIME"}] [${l.lv || l.level || "INFO"}] ${l.msg || l.message || ""}`).join("\n");
@@ -237,8 +257,10 @@ export default function WindowsTerminalDock({
                     </div>
 
                     <div className="mt-3 pt-2 border-t border-[#383838] flex items-center justify-between text-[10px] text-[#858585]">
-                      <span>Duration: {st.duration_s?.toFixed(1)}s</span>
-                      <span className="text-white font-mono">Exit Code 0</span>
+                      <span>Duration: {st.duration_s != null ? `${st.duration_s.toFixed(1)}s` : isRunning ? "In progress..." : "Queued"}</span>
+                      <span className={`font-mono ${isSuccess ? "text-emerald-400" : isRunning ? "text-sky-400 font-bold" : "text-[#767676]"}`}>
+                        {isSuccess ? "Exit Code 0" : isRunning ? "PID Active" : "Standby"}
+                      </span>
                     </div>
                   </div>
                 );

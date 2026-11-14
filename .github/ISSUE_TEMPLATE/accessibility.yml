@@ -1,0 +1,148 @@
+name: ♿ Accessibility Issue
+description: Report an accessibility barrier — screen reader, keyboard navigation, colour contrast, ARIA labels, etc.
+title: "[A11y]: "
+labels: ["accessibility", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ♿ Accessibility Issue
+        HydroCast flood alerts reach civil authorities and citizens during emergencies. Accessibility is **safety-critical**, not optional.
+        Kripya neeche di gayi jaankari bharen — har issue jaldi fix ki jaati hai.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 🖥️ Affected Interface
+      description: Kahan accessibility issue hai?
+      options:
+        - Public Portal (flood map / alerts page)
+        - Admin Dashboard (operator control room)
+        - API Response / JSON structure
+        - Email / SMS / Telegram Alert content
+        - Documentation (README, OPERATOR_MANUAL)
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: barrier-type
+    attributes:
+      label: 🚧 Barrier Type
+      description: Kaunsi category ki accessibility problem hai?
+      options:
+        - Screen Reader / ARIA (missing labels, roles, live regions)
+        - Keyboard Navigation (focus traps, missing tab order, no skip links)
+        - Colour Contrast (text or UI element insufficient contrast)
+        - Font Size / Zoom (content breaks at >200% zoom)
+        - Motion / Animation (vestibular — no prefers-reduced-motion support)
+        - Touch Target Size (button/link too small on mobile)
+        - Form / Input Labels (missing label, error association)
+        - Focus Indicator (focus ring not visible)
+        - Language / Reading Level
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Issue Description
+      description: Kya exactly problem hai? Specific element, page, ya flow batayein.
+      placeholder: "Flood alert banner pe screen reader kuch announce nahi karta jab status 'Danger' se 'Warning' hota hai..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Steps to Reproduce
+      description: Kaise reproduce karein?
+      placeholder: |
+        1. Public portal `/alerts` page kholein
+        2. NVDA + Firefox use karein
+        3. Alert status badge pe focus karein
+        4. Alert level change hone par koi announcement nahi milta
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Accessible Behavior
+      description: WCAG 2.1 / 2.2 ke anusaar kya hona chahiye?
+      placeholder: "aria-live='assertive' region alert level change announce kare"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: wcag
+    attributes:
+      label: 📐 WCAG Criterion (if known)
+      description: Konsa WCAG guideline violate ho rahi hai?
+      options:
+        - "1.1.1 Non-text Content (Level A)"
+        - "1.3.1 Info and Relationships (Level A)"
+        - "1.3.3 Sensory Characteristics (Level A)"
+        - "1.4.1 Use of Colour (Level A)"
+        - "1.4.3 Contrast Minimum (Level AA)"
+        - "1.4.4 Resize Text (Level AA)"
+        - "1.4.10 Reflow (Level AA)"
+        - "1.4.11 Non-text Contrast (Level AA)"
+        - "1.4.12 Text Spacing (Level AA)"
+        - "2.1.1 Keyboard (Level A)"
+        - "2.1.2 No Keyboard Trap (Level A)"
+        - "2.4.3 Focus Order (Level A)"
+        - "2.4.7 Focus Visible (Level AA)"
+        - "3.3.1 Error Identification (Level A)"
+        - "4.1.2 Name, Role, Value (Level A)"
+        - "4.1.3 Status Messages (Level AA)"
+        - Not sure / Other
+    validations:
+      required: true
+
+  - type: input
+    id: assistive-tech
+    attributes:
+      label: 🛠️ Assistive Technology Used
+      description: "Screen reader, magnifier, switch access, etc. + version"
+      placeholder: "NVDA 2024.1 + Firefox 125, or VoiceOver + Safari on iOS 17"
+
+  - type: input
+    id: browser-os
+    attributes:
+      label: 🌐 Browser + OS
+      placeholder: "Firefox 125 / Windows 11"
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: 📸 Screenshots / Screen Recording
+      description: Screenshot ya recording attach karein (drag & drop works)
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 🚨 Severity
+      description: Emergency mein koi affected user is barrier se kitna block hoga?
+      options:
+        - Critical — Completely blocks a user from accessing flood alerts
+        - High — Significantly impairs core functionality
+        - Medium — Workaround exists but experience is poor
+        - Low — Minor polish / enhancement
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Pre-submission Checklist
+      options:
+        - label: Maine existing accessibility issues search ki hain — duplicate nahi hai
+          required: true
+        - label: Maine actual assistive technology se test kiya hai (not just automated scan)
+          required: true

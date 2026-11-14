@@ -4,6 +4,7 @@
 import { useState, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import { api } from "@/lib/api";
+import { isOperator } from "@/lib/auth";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -92,12 +93,22 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
     } catch {}
     return fetch("/api/v1/db-health", { cache: "no-store", headers: auth }).then((r) => (r.ok ? r.json() : null));
   }, { refreshInterval: 15000 });
-  const { data: sensorsData } = useSWR("sensorsLive", () =>
-    fetch("/api/v1/sensors/live", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null))
-  , { refreshInterval: 15000 });
-  const { data: publicHealth } = useSWR("publicHealth", () =>
-    fetch("/api/v1/public-health", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null))
-  , { refreshInterval: 15000 });
+  const { data: sensorsData } = useSWR("sensorsLive", () => {
+    let auth: Record<string, string> = {};
+    try {
+      const raw = sessionStorage.getItem("hydrocast_admin_token");
+      if (raw) { const s = JSON.parse(raw); if (s?.token) auth = { Authorization: `Bearer ${s.token}` }; }
+    } catch {}
+    return fetch("/api/v1/sensors/live", { cache: "no-store", headers: auth }).then((r) => (r.ok ? r.json() : null));
+  }, { refreshInterval: 15000 });
+  const { data: publicHealth } = useSWR("publicHealth", () => {
+    let auth: Record<string, string> = {};
+    try {
+      const raw = sessionStorage.getItem("hydrocast_admin_token");
+      if (raw) { const s = JSON.parse(raw); if (s?.token) auth = { Authorization: `Bearer ${s.token}` }; }
+    } catch {}
+    return fetch("/api/v1/public-health", { cache: "no-store", headers: auth }).then((r) => (r.ok ? r.json() : null));
+  }, { refreshInterval: 15000 });
 
   const [isTriggering, setIsTriggering] = useState(false);
   const [isAborting, setIsAborting] = useState(false);
@@ -324,7 +335,8 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
           </p>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons — hidden for official/viewer accounts */}
+        {isOperator() && (
         <div className="flex items-center gap-2.5 flex-wrap">
           <button
             onClick={() => handleDispatch("trigger")}
@@ -367,6 +379,7 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
             ⚡ Recalibrate
           </button>
         </div>
+        )}
       </div>
 
       {/* Action Notification Toast */}

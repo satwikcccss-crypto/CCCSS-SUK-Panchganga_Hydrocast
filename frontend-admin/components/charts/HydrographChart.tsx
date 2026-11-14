@@ -2,6 +2,7 @@
 import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement,
   LineElement, Filler, Title, Tooltip, Legend,
+  LineController, BarController,
 } from "chart.js";
 import annotationPlugin from "chartjs-plugin-annotation";
 import { Line } from "react-chartjs-2";
@@ -9,6 +10,7 @@ import { Line } from "react-chartjs-2";
 ChartJS.register(
   CategoryScale, LinearScale, PointElement, LineElement,
   Filler, Title, Tooltip, Legend, annotationPlugin,
+  LineController, BarController,
 );
 
 interface HydrographProps {

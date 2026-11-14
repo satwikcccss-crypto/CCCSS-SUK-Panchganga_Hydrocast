@@ -13,10 +13,11 @@ from backend.api.security import hash_password, verify_admin_auth
 router = APIRouter()
 
 _ALLOWED_EMAIL_DOMAINS = {"unishivaji.ac.in", "gov.in"}
-_DEVELOPER_EXCEPTION_DOMAINS = {"gmail.com"}
+# No developer/gmail exceptions: only institutional domains are permitted.
+_DEVELOPER_EXCEPTION_DOMAINS: set[str] = set()
 
 def _validate_email_domain(email: str) -> bool:
-    """Check email domain is in the allowed institutional list or developer exception."""
+    """Check email domain is in the allowed institutional list."""
     if not email or "@" not in email:
         return False
     domain = email.rsplit("@", 1)[1].lower()
@@ -29,7 +30,7 @@ def _validate_email_domain(email: str) -> bool:
 class CreateUserRequest(BaseModel):
     username: str = Field(..., min_length=3, max_length=64)
     password: str = Field(..., min_length=8)
-    role: str = Field(default="govt", pattern=r"^(admin|dev|govt|pi|co_pi|jrf)$")
+    role: str = Field(default="viewer", pattern=r"^(admin|viewer|dev|govt|pi|co_pi|jrf)$")
     display_name: Optional[str] = Field(None, max_length=128)
     email: Optional[str] = Field(None, max_length=256)
 
@@ -109,7 +110,7 @@ async def create_admin_user(
     if req.email and not _validate_email_domain(req.email):
         raise HTTPException(
             status_code=400,
-            detail="Email domain not allowed. Permitted: gov.in, unishivaji.ac.in (developer exceptions apply).",
+            detail="Email domain not allowed. Permitted: gov.in, unishivaji.ac.in.",
         )
 
     pool = getattr(request.app.state, "db_pool", None)

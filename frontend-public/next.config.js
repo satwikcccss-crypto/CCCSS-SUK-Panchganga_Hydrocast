@@ -11,12 +11,13 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   // Leaflet and Next both set inline styles; Google Fonts CSS is external.
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
+  "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
   "font-src 'self' https://fonts.gstatic.com data:",
   // Basemaps used by BasinMap: OpenStreetMap + Esri World Topo/Imagery.
-  "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://server.arcgisonline.com",
+  "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://server.arcgisonline.com https://unpkg.com",
   // API connects to backend on localhost:8000 or custom host; live pushes use WebSocket.
-  "connect-src 'self' ws: wss: http: https:",
+  "connect-src 'self' ws: wss:",
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",

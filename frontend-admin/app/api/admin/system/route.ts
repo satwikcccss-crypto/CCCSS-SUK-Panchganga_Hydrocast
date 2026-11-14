@@ -3,6 +3,7 @@ import os from "os";
 import net from "net";
 import fs from "fs";
 import { execFile } from "child_process";
+import { isAdminUnlocked, getAdminClaims } from "@/lib/server/admin_auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -86,9 +87,18 @@ async function diskInfo() {
 }
 
 export async function GET(req: Request) {
-  const auth = req.headers.get("authorization") || "";
-  if (!auth.toLowerCase().startsWith("bearer ")) {
+  const verdict = await getAdminClaims(req);
+  if (verdict.status === "unauthorized") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (verdict.status === "unavailable") {
+    return NextResponse.json({ error: "Admin service unavailable" }, { status: 503 });
+  }
+  if (!isAdminUnlocked(verdict.claims)) {
+    return NextResponse.json(
+      { error: "Official/viewer accounts have read-only access. Admin privilege required." },
+      { status: 403 }
+    );
   }
 
   const dbHost = process.env.HYDROCAST_DB_HOST || "127.0.0.1";

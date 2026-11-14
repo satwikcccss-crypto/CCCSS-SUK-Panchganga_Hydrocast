@@ -48,17 +48,17 @@ export function getToken(): string | null {
 
 /**
  * Roles:
- *  - "govt"  → read-only viewer (gov.in / unishivaji.ac.in officials)
- *  - "dev"   → operator (researchers with trigger/DB/log access)
- *  - "admin" → superadmin (full control including user management)
+ *  - "admin"  → operator (full control incl. DB, trigger, dispatch, services)
+ *  - "viewer" → official/university read-only (dashboard + export only)
+ * Anything not "admin" is treated as viewer (fail closed).
  */
-const OPERATOR_ROLES = new Set(["dev", "admin"]);
+const OPERATOR_ROLES = new Set(["admin"]);
 
 export function isOperator(): boolean {
-  if (typeof window === "undefined") return true;
+  if (typeof window === "undefined") return false;
   const session = getSession();
-  if (!session) return true; // Default full operator rights on dedicated localhost:3001 control room
-  return OPERATOR_ROLES.has(session.role) || session.role === "admin" || session.role === "dev" || session.role === "operator";
+  if (!session) return false; // fail closed: no session => no admin actions
+  return OPERATOR_ROLES.has(session.role);
 }
 
 export function isViewer(): boolean {

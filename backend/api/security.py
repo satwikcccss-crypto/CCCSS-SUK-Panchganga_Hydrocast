@@ -19,7 +19,7 @@ from typing import Optional, Dict, Any
 import bcrypt
 import jwt
 from dotenv import load_dotenv
-from fastapi import HTTPException, Header, Security, Depends, status
+from fastapi import HTTPException, Header, Security, Depends, Request, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 load_dotenv()  # local dev: pick up .env before reading secrets
@@ -198,22 +198,94 @@ def decode_access_token(token: str) -> Dict[str, Any]:
 
 
 async def verify_admin_auth(
+    request: Request,
     credentials: Optional[HTTPAuthorizationCredentials] = Security(security_bearer),
     x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
 ) -> Dict[str, Any]:
     """
     Unified security dependency for administrative endpoints.
     Accepts EITHER:
-      1. Valid JWT in Authorization: Bearer <token>
-      2. Valid master key in X-API-Key: <key>
+      1. Valid JWT in Authorization: Bearer <token> with role == "admin"
+      2. Valid master key in X-API-Key: <key> (maps to admin)
+
+    Any non-admin role (e.g. viewer, govt) is rejected with 403 and the
+    attempt is recorded in admin_audit_log as VIEWER_BLOCKED.
     """
     # 1. Check Bearer token
     if credentials and credentials.credentials:
         token = credentials.credentials
-        return decode_access_token(token)
+        claims = decode_access_token(token)
+        _require_admin_role(claims, request)
+        return claims
 
     # 2. Check X-API-Key fallback. Fail closed when no key is configured so an
     #    empty configured key can never authorise an empty/extra header.
+    if API_KEY and x_api_key and hmac.compare_digest(x_api_key.encode("utf-8"), API_KEY.encode("utf-8")):
+        return {"sub": "system_api_key", "role": "admin"}
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Unauthorized. Provide a valid Bearer JWT token or X-API-Key header.",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+
+def _require_admin_role(claims: Dict[str, Any], request: Optional[Request]) -> None:
+    """Enforce admin role (official/viewer accounts must not perform actions)."""
+    role = str(claims.get("role", "")).lower()
+    if role == "admin":
+        return
+    _sec_log.warning(
+        "Admin endpoint blocked for role=%r subject=%r path=%s",
+        role,
+        claims.get("sub"),
+        getattr(request, "url", None).path if request is not None and getattr(request, "url", None) else "unknown",
+    )
+    try:
+        from backend.api.admin_routes.shared import record_admin_audit
+
+        if request is not None and getattr(request, "url", None) is not None:
+            path = request.url.path
+        else:
+            path = "unknown"
+        # Fire-and-forget persistent record of the blocked official action.
+        import asyncio as _asyncio
+
+        try:
+            loop = _asyncio.get_running_loop()
+            loop.create_task(
+                record_admin_audit(
+                    action="VIEWER_BLOCKED",
+                    admin_user=str(claims.get("sub", "unknown")),
+                    parameters={"path": path, "method": getattr(request, "method", "unknown") if request else "unknown"},
+                    status="BLOCKED",
+                    output={"reason": "role mismatch: viewer/govt requires admin"},
+                )
+            )
+        except RuntimeError:
+            pass
+    except Exception as exc:  # pragma: no cover - audit must never mask the 403
+        _sec_log.debug("viewer-blocked audit skipped: %s", exc)
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Official/viewer accounts have read-only access. Admin privilege required.",
+    )
+
+
+async def verify_viewer_auth(
+    request: Request,
+    credentials: Optional[HTTPAuthorizationCredentials] = Security(security_bearer),
+    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
+) -> Dict[str, Any]:
+    """
+    Read-only console dependency. Accepts ANY valid admin-realm JWT (viewer, official,
+    operator) and the master API key. Use only for identity/health endpoints — never
+    for actions, database access, or export of sensitive operational state.
+    """
+    if credentials and credentials.credentials:
+        token = credentials.credentials
+        return decode_access_token(token)
+
     if API_KEY and x_api_key and hmac.compare_digest(x_api_key.encode("utf-8"), API_KEY.encode("utf-8")):
         return {"sub": "system_api_key", "role": "admin"}
 

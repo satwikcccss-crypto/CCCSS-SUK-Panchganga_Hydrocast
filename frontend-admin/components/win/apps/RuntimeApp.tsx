@@ -2,12 +2,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend, BarController } from "chart.js";
 import annotationPlugin from "chartjs-plugin-annotation";
 import { fetchDashboardData } from "@/lib/api";
 import { Group, Tag, dash, fmtTimeIST } from "../ui";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend, annotationPlugin);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend, BarController, annotationPlugin);
 
 const SLA_S = 60; // SLA stated on the public Pipeline Health page
 

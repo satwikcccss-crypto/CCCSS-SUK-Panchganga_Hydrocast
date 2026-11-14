@@ -53,12 +53,16 @@ from backend.api.admin import router as admin_router  # noqa: E402
 from backend.api.websocket_hub import router as ws_hub_router  # noqa: E402
 from backend.api.limits import limiter, RATE_LIMIT_LOGIN  # noqa: E402
 from backend.api.security import verify_admin_auth  # noqa: E402
+from backend.api.observability import (
+    APIVersionMiddleware,
+    RequestIDMiddleware,
+)  # noqa: E402
 
 log = logging.getLogger(__name__)
 
 app = FastAPI(
     title="HydroCast Panchganga Operator Console API",
-    version="1.2.0",
+    version="1.3.0",
     summary="Operator Console administrative API (Port 8001)",
     description=(
         "**IMPENETRABLE ADMIN CONSOLE** â€” HydroCast operator control plane.\n\n"
@@ -190,6 +194,9 @@ class AdminAntiScrapingMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(AdminAntiScrapingMiddleware)
+# Align operator-console middleware semantics with the public API (trace + version).
+app.add_middleware(RequestIDMiddleware)
+app.add_middleware(APIVersionMiddleware)
 
 
 # â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -272,7 +279,7 @@ AdminDep = Depends(verify_admin_or_key)
 
 # Mount the admin router (all routes under /api/v1/admin)
 app.include_router(admin_router)
-# Mount real-time WebSocket hub (admin logs + telemetry streams)
+# Mount real-time WebSocket hub (admin logs + telemetry streams, token-authenticated)
 app.include_router(ws_hub_router)
 
 
@@ -289,7 +296,7 @@ async def admin_liveness():
     return {
         "status": "alive",
         "service": "hydrocast-admin-console",
-        "version": "1.2.0",
+        "version": "1.3.0",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -313,7 +320,7 @@ async def admin_health(request: Request, _: bool = AdminDep):
 
     return {
         "service": "hydrocast-admin-console",
-        "version": "1.2.0",
+        "version": "1.3.0",
         "port": 8001,
         "database": db_status,
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -380,7 +387,10 @@ async def admin_backup_db(request: Request, _: bool = AdminDep):
         return {"status": "failed", "error": str(e)}
 
 
-# â”€â”€ WebSocket: Admin Logs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# -- WebSocket: Admin Logs/Telemetry ------------------------------------------
+# Admin log/telemetry streaming endpoints are provided by backend.api.websocket_hub
+# (mounted above) with token authentication enforced before accept. Duplicate
+# app-level stub handlers were removed to avoid route precedence conflicts.
 
 
 class AdminWSManager:
@@ -414,52 +424,6 @@ class AdminWSManager:
 
 
 admin_ws_manager = AdminWSManager()
-
-
-@app.websocket("/ws/admin/logs")
-async def ws_admin_logs(websocket: WebSocket, token: Optional[str] = Query(None)):
-    # Authenticate via JWT token or API key BEFORE accepting the connection
-    if not token:
-        await websocket.close(code=1008)
-        return
-    try:
-        from backend.api.security import decode_access_token
-
-        decode_access_token(token)
-    except Exception:
-        if not (API_KEY and hmac.compare_digest(token, API_KEY)):
-            await websocket.close(code=1008)
-            return
-    if not await admin_ws_manager.connect(websocket):
-        return
-    try:
-        while True:
-            await websocket.receive_text()
-    except WebSocketDisconnect:
-        admin_ws_manager.disconnect(websocket)
-
-
-@app.websocket("/ws/admin/telemetry")
-async def ws_admin_telemetry(websocket: WebSocket, token: Optional[str] = Query(None)):
-    # Authenticate via JWT token or API key BEFORE accepting the connection
-    if not token:
-        await websocket.close(code=1008)
-        return
-    try:
-        from backend.api.security import decode_access_token
-
-        decode_access_token(token)
-    except Exception:
-        if not (API_KEY and hmac.compare_digest(token, API_KEY)):
-            await websocket.close(code=1008)
-            return
-    if not await admin_ws_manager.connect(websocket):
-        return
-    try:
-        while True:
-            await websocket.receive_text()
-    except WebSocketDisconnect:
-        admin_ws_manager.disconnect(websocket)
 
 
 @app.on_event("startup")

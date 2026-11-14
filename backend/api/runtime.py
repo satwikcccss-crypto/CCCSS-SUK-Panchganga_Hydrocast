@@ -166,3 +166,134 @@ def _row_get(row, key: str, default=None):
         return row[key]
     except (KeyError, TypeError):
         return default
+
+
+# ── Conditional responses / field filtering ──────────────────────────────────
+
+import hashlib
+from fastapi.responses import JSONResponse, Response
+
+
+def compute_etag(payload) -> str:
+    """Return a weak ETag for a JSON-serializable payload."""
+    try:
+        body = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
+    except Exception:
+        body = repr(payload)
+    digest = hashlib.sha256(body.encode("utf-8")).hexdigest()[:32]
+    return f'W/"{digest}"'
+
+
+def etag_matches(request: Request, etag: str) -> bool:
+    inm = (request.headers.get("if-none-match") or "").strip()
+    if not inm:
+        return False
+    if inm == "*":
+        return True
+    # Support multiple ETags in If-None-Match
+    candidates = [p.strip() for p in inm.split(",") if p.strip()]
+    return etag in candidates
+
+
+def maybe_not_modified(request: Request, payload, cache_control: str = "no-cache") -> Response | None:
+    """Return 304 Response when If-None-Match matches payload ETag, else None."""
+    etag = compute_etag(payload)
+    if etag_matches(request, etag):
+        return Response(
+            status_code=304,
+            headers={"ETag": etag, "Cache-Control": cache_control},
+        )
+    return None
+
+
+def json_with_etag(request: Request, payload, cache_control: str = "no-cache", status_code: int = 200) -> Response:
+    """Return JSON with ETag and conditional 304 support."""
+    etag = compute_etag(payload)
+    not_modified = maybe_not_modified(request, payload, cache_control=cache_control)
+    if not_modified is not None:
+        return not_modified
+    try:
+        from fastapi.encoders import jsonable_encoder
+        content = jsonable_encoder(payload)
+    except Exception:
+        content = json.loads(json.dumps(payload, default=str))
+    resp = JSONResponse(content=content, status_code=status_code)
+    resp.headers["ETag"] = etag
+    resp.headers["Cache-Control"] = cache_control
+    return resp
+
+
+def filter_fields(payload, fields_param: str | None):
+    """Filter response payload by comma-separated fields/aliases.
+
+    Backward-compatible: returns original payload when fields_param is empty.
+    Supports top-level keys and a small alias set for runoff summary widgets.
+    """
+    if not fields_param or not isinstance(payload, dict):
+        return payload
+    requested = [f.strip() for f in str(fields_param).split(",") if f.strip()]
+    if not requested:
+        return payload
+
+    def _pick(path: str, obj):
+        cur = obj
+        for part in path.split("."):
+            if not isinstance(cur, dict) or part not in cur:
+                return None
+            cur = cur[part]
+        return cur
+
+    out = {}
+    for key in requested:
+        k = key.lower()
+        # Direct top-level key
+        if key in payload:
+            out[key] = payload[key]
+            continue
+        # Common aliases
+        if k in ("peak_q", "peak_discharge_m3s", "peak_discharge"):
+            v = _pick("summary.peak_discharge_m3s", payload)
+            if v is None:
+                v = _pick("outlet.peak_discharge_m3s", payload)
+            out["peak_q"] = v
+        elif k in ("stage_m", "current_stage_m", "stages"):
+            bridges = payload.get("bridges") or []
+            stages = []
+            for b in bridges if isinstance(bridges, list) else []:
+                if not isinstance(b, dict):
+                    continue
+                stages.append({
+                    "site_id": b.get("site_id"),
+                    "site_name": b.get("site_name"),
+                    "current_stage_m": b.get("current_stage_m", b.get("stage_m")),
+                    "peak_stage_m": b.get("peak_stage_m"),
+                    "alert_level": b.get("alert_level"),
+                })
+            out["stage_m"] = stages
+        elif k in ("alert_level", "alert"):
+            v = _pick("summary.alert_level", payload)
+            if v is None:
+                v = _pick("outlet.alert_level", payload)
+            out["alert_level"] = v
+        elif k in ("lead_hours", "lead_hours_to_peak"):
+            v = _pick("summary.lead_hours_to_peak", payload)
+            if v is None:
+                v = _pick("outlet.lead_hours_to_peak", payload)
+            out["lead_hours_to_peak"] = v
+        elif k in ("total_volume_mcm", "volume_mcm"):
+            v = _pick("summary.total_volume_mcm", payload)
+            if v is None:
+                v = _pick("outlet.total_volume_mcm", payload)
+            out["total_volume_mcm"] = v
+        elif k in ("cycle_id", "run_id"):
+            # best-effort passthrough from common locations
+            for candidate in ("cycle_id", "run_id"):
+                if candidate in payload:
+                    out[candidate] = payload[candidate]
+                    break
+        else:
+            # Try case-insensitive top-level match
+            match = next((pk for pk in payload.keys() if str(pk).lower() == k), None)
+            if match is not None:
+                out[match] = payload[match]
+    return out if out else payload

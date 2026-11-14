@@ -65,14 +65,21 @@ async def _readiness_snapshot() -> tuple[int, dict]:
             "timestamp": timestamp,
         }
 
-    ready = bool(last_cycle) and str(last_cycle["status"] or "") in ("completed", "COMPLETED")
+    last_cycle_dict = dict(last_cycle) if last_cycle else None
+    if last_cycle_dict is not None:
+        start = last_cycle_dict.get("start_time")
+        if isinstance(start, datetime):
+            last_cycle_dict["start_time"] = start.isoformat()
+
+    ready = bool(last_cycle) and str(last_cycle["status"] or "") in ("completed",
+"COMPLETED")
     if not ready:
         return 503, {
             "status": "not_ready",
             "service": "hydrocast-backend",
             "database": "connected",
             "reason": "No completed forecast cycle found",
-            "last_cycle": dict(last_cycle) if last_cycle else None,
+            "last_cycle": last_cycle_dict,
             "timestamp": timestamp,
         }
 
@@ -80,8 +87,8 @@ async def _readiness_snapshot() -> tuple[int, dict]:
         "status": "ready",
         "service": "hydrocast-backend",
         "database": "connected",
-        "version": "1.2.0",
-        "last_cycle": dict(last_cycle),
+        "version": "1.3.0",
+        "last_cycle": last_cycle_dict,
         "timestamp": timestamp,
     }
 
@@ -128,7 +135,7 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "hydrocast-backend",
-        "version": "1.2.0",
+        "version": "1.3.0",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 

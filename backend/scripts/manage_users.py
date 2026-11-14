@@ -8,7 +8,7 @@ Usage:
     python -m backend.scripts.manage_users setpwd  --username USER --password NEWPASS
     python -m backend.scripts.manage_users toggle  --username USER --active true|false
 
-Roles: admin, dev, pi, co_pi, jrf, govt
+Roles: admin, viewer, dev, pi, co_pi, jrf, govt
 """
 
 import argparse
@@ -27,8 +27,9 @@ load_dotenv()
 from backend.api.security import hash_password  # noqa: E402
 
 DB_URL = os.getenv("DATABASE_URL", "")
-VALID_ROLES = {"admin", "dev", "pi", "co_pi", "jrf", "govt"}
-ALLOWED_EMAIL_DOMAINS = {"unishivaji.ac.in", "gov.in", "gmail.com"}
+VALID_ROLES = {"admin", "viewer", "dev", "pi", "co_pi", "jrf", "govt"}
+# Institutional domains only. Personal mail domains (e.g. gmail.com) are not allowed.
+ALLOWED_EMAIL_DOMAINS = {"unishivaji.ac.in", "gov.in"}
 
 
 async def get_conn() -> asyncpg.Connection:
@@ -158,7 +159,7 @@ def main():
     p_add = sub.add_parser("add", help="Add or update a user")
     p_add.add_argument("--username", required=True)
     p_add.add_argument("--password", required=True)
-    p_add.add_argument("--role", default="govt", choices=sorted(VALID_ROLES))
+    p_add.add_argument("--role", default="viewer", choices=sorted(VALID_ROLES))
     p_add.add_argument("--email", default=None)
     p_add.add_argument("--name", default=None, help="Display name")
 

@@ -13,6 +13,7 @@ from backend.api.security import (
     create_access_token,
     hash_password,
     verify_admin_auth,
+    verify_viewer_auth,
     verify_admin_credentials_db,
 )
 
@@ -209,11 +210,11 @@ async def reset_password_with_code(request: Request, req: ResetPasswordRequest):
     summary="Current administrator identity",
     response_description="The authenticated subject and role from the token claims.",
 )
-async def get_current_admin(auth: Dict[str, Any] = Depends(verify_admin_auth)):
+async def get_current_admin(auth: Dict[str, Any] = Depends(verify_viewer_auth)):
     """Return identity and claims for the authenticated administrator.
 
     Useful as a cheap token check: a `200` here means the credential is still
-    valid and carries the `admin` role.
+    valid and carries the `admin` or `viewer` role.
     """
     return {
         "user": auth.get("sub"),

@@ -4,17 +4,19 @@ import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS, CategoryScale, LinearScale,
   BarElement, PointElement, LineElement, Title, Tooltip, Legend, Filler,
+  LineController, BarController,
 } from "chart.js";
 import useSWR from "swr";
 import { api } from "@/lib/api";
 
 ChartJS.register(
   CategoryScale, LinearScale, BarElement, PointElement,
-  LineElement, Title, Tooltip, Legend, Filler
+  LineElement, Title, Tooltip, Legend, Filler,
+  LineController, BarController
 );
 
 export default function DischargeDetailsCard({ siteId = "RAJARAM_BRIDGE" }: { siteId?: string }) {
-  const [activeTab, setActiveTab] = useState<"forecast" | "logs">("forecast");
+  const [activeTab, setActiveTab] = useState<"stage" | "discharge" | "logs">("stage");
   const { data: bData } = useSWR(`bridge-${siteId}`, () => api.bridgeStage(siteId), { refreshInterval: 60000 });
 
   const site = bData?.site;
@@ -22,27 +24,40 @@ export default function DischargeDetailsCard({ siteId = "RAJARAM_BRIDGE" }: { si
 
   const noData = !site || forecast.length === 0;
 
-  const forecastChart = useMemo(() => ({
-    labels: forecast.map((p: any, i: number) => `+${p.lead_hours ?? i}h`),
-    datasets: [
-      {
-        type: "line" as const,
-        label: "Forecast Stage (m MSL)",
-        data: forecast.map((p: any) => p.stage_m),
-        borderColor: "#333",
-        backgroundColor: "rgba(0,0,0,0)",
-        borderWidth: 1.5,
-        pointRadius: 0,
-        tension: 0.1,
-      },
-    ],
-  }), [forecast]);
+  const currentStage = forecast[0]?.stage_m ?? site?.current_stage_m ?? 533.10;
+  const currentDischarge = forecast[0]?.discharge_m3s ?? 12.0;
+
+  const chartData = useMemo(() => {
+    const isStage = activeTab === "stage";
+    return {
+      labels: forecast.map((p: any, i: number) => `+${p.lead_hours ?? i}h`),
+      datasets: [
+        {
+          type: "line" as const,
+          label: isStage ? "Forecast Stage (m MSL)" : "Forecast Discharge (m³/s)",
+          data: forecast.map((p: any) => isStage ? p.stage_m : p.discharge_m3s),
+          borderColor: isStage ? "#0284c7" : "#4f46e5",
+          backgroundColor: isStage ? "rgba(2, 132, 199, 0.08)" : "rgba(79, 70, 229, 0.08)",
+          fill: true,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.2,
+        },
+      ],
+    };
+  }, [forecast, activeTab]);
 
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx: any) => `${ctx.parsed.y.toFixed(2)} ${activeTab === "stage" ? "m MSL" : "m³/s"}`,
+        },
+      },
     },
     scales: {
       x: { grid: { display: false }, ticks: { font: { size: 10 } } },
@@ -133,23 +148,41 @@ export default function DischargeDetailsCard({ siteId = "RAJARAM_BRIDGE" }: { si
         </div>
       </div>
 
+      {/* Live Reading Badges */}
+      <div className="flex items-center gap-3 mb-3 text-xs">
+        <div className="px-2.5 py-1 bg-sky-50 border border-sky-200 rounded text-sky-800 font-mono">
+          <span className="text-gray-500 font-sans mr-1">Current WSE:</span>
+          <strong>{currentStage.toFixed(2)} m MSL</strong>
+        </div>
+        <div className="px-2.5 py-1 bg-indigo-50 border border-indigo-200 rounded text-indigo-800 font-mono">
+          <span className="text-gray-500 font-sans mr-1">Current Q:</span>
+          <strong>{currentDischarge.toFixed(1)} m³/s</strong>
+        </div>
+      </div>
+
       <div className="flex gap-4 mb-4 border-b border-gray-100 pb-2">
         <button
-          onClick={() => setActiveTab("forecast")}
-          className={`text-sm ${activeTab === "forecast" ? "text-black font-medium border-b-2 border-black" : "text-gray-500"}`}
+          onClick={() => setActiveTab("stage")}
+          className={`text-sm ${activeTab === "stage" ? "text-sky-700 font-semibold border-b-2 border-sky-600 pb-1" : "text-gray-500"}`}
         >
-          Forecast (90h)
+          Water Stage (90h)
+        </button>
+        <button
+          onClick={() => setActiveTab("discharge")}
+          className={`text-sm ${activeTab === "discharge" ? "text-indigo-700 font-semibold border-b-2 border-indigo-600 pb-1" : "text-gray-500"}`}
+        >
+          Discharge Flow (90h)
         </button>
         <button
           onClick={() => setActiveTab("logs")}
-          className={`text-sm ${activeTab === "logs" ? "text-black font-medium border-b-2 border-black" : "text-gray-500"}`}
+          className={`text-sm ${activeTab === "logs" ? "text-black font-semibold border-b-2 border-black pb-1" : "text-gray-500"}`}
         >
           Alert Log
         </button>
       </div>
 
       <div style={{ height: 200 }} className="w-full">
-        {activeTab === "forecast" && <Line data={forecastChart} options={chartOptions as any} />}
+        {(activeTab === "stage" || activeTab === "discharge") && <Line data={chartData} options={chartOptions as any} />}
         {activeTab === "logs" && (
           <div className="overflow-y-auto h-full text-sm text-gray-700">
             {alertEvents.length === 0 ? (

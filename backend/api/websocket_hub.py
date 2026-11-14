@@ -9,11 +9,12 @@ Endpoints:
 """
 
 import asyncio
-import json
+import hmac
 import logging
-from typing import List, Set
+import os
+from typing import Optional, Set
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
 from backend.service.pipeline_worker import get_live_logs, ACTIVE_RUN_METADATA
 from backend.service.scheduler_daemon import scheduler_instance
@@ -28,11 +29,63 @@ _LOG_CLIENTS: Set[WebSocket] = set()
 _TELEMETRY_CLIENTS: Set[WebSocket] = set()
 
 
+def _ws_admin_authorized(token: Optional[str]) -> bool:
+    """Authenticate admin WS using JWT bearer token or master API key (query param).
+
+    The JWT must carry role == "admin" (operator). Official/viewer accounts
+    holding authenticated console tokens cannot open operator WS streams;
+    a rejected viewer attempt is recorded in admin_audit_log.
+    """
+    if not token:
+        return False
+    try:
+        from backend.api.security import decode_access_token
+
+        claims = decode_access_token(token)
+        role = str(claims.get("role", "")).lower()
+        if role == "admin":
+            return True
+        _log_viewer_block(claims, "/ws/admin")
+        return False
+    except Exception:
+        api_key = os.getenv("API_KEY", "")
+        return bool(api_key and hmac.compare_digest(token, api_key))
+
+
+def _log_viewer_block(claims: dict, path: str) -> None:
+    """Best-effort record of a blocked official action (never raises)."""
+    try:
+        import asyncio
+
+        from backend.api.admin_routes.shared import record_admin_audit
+
+        try:
+            loop = asyncio.get_running_loop()
+            loop.create_task(
+                record_admin_audit(
+                    action="VIEWER_BLOCKED",
+                    admin_user=str(claims.get("sub", "unknown")),
+                    parameters={"path": path},
+                    status="BLOCKED",
+                    output={"reason": "role mismatch: viewer/govt requires admin"},
+                )
+            )
+        except RuntimeError:
+            pass
+    except Exception as exc:  # pragma: no cover - audit must never mask close
+        log.debug("viewer-blocked audit skipped: %s", exc)
+
+
 @router.websocket("/ws/admin/logs")
-async def websocket_logs_endpoint(websocket: WebSocket):
+async def websocket_logs_endpoint(websocket: WebSocket, token: Optional[str] = Query(None)):
     """
     Streams live orchestrator & system log events directly to the Operator Console.
+    Requires admin JWT or master API key via `?token=`.
     """
+    if not _ws_admin_authorized(token):
+        await websocket.close(code=1008)
+        return
+
     await websocket.accept()
     _LOG_CLIENTS.add(websocket)
     log.info("Operator Console connected to live log WebSocket stream.")
@@ -60,10 +113,15 @@ async def websocket_logs_endpoint(websocket: WebSocket):
 
 
 @router.websocket("/ws/admin/telemetry")
-async def websocket_telemetry_endpoint(websocket: WebSocket):
+async def websocket_telemetry_endpoint(websocket: WebSocket, token: Optional[str] = Query(None)):
     """
     Streams live hardware telemetry, scheduler heartbeat and active pipeline state every 2 seconds.
+    Requires admin JWT or master API key via `?token=`.
     """
+    if not _ws_admin_authorized(token):
+        await websocket.close(code=1008)
+        return
+
     await websocket.accept()
     _TELEMETRY_CLIENTS.add(websocket)
     log.info("Operator Console connected to live telemetry WebSocket stream.")

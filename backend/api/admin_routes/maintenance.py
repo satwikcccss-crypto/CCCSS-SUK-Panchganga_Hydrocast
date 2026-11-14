@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 from datetime import datetime, timezone
 from pathlib import Path
@@ -16,6 +17,51 @@ from backend.api.security import verify_admin_auth
 from backend.db.archive_runs import run_archival
 
 router = APIRouter()
+
+log = logging.getLogger(__name__)
+
+
+async def _latest_bridge_telemetry():
+    """Read the latest cycle's per-bridge (lead_hours=1) telemetry from PostgreSQL.
+
+    Returns a dict with keys ``run_id``, ``alert_level``, ``shivaji`` and ``rajaram``,
+    or ``None`` when the database / latest forecast cycle is unavailable. Callers
+    must refuse to broadcast when this returns ``None`` — never fall back to
+    static nominal stage values, which are not live telemetry.
+    """
+    from backend.api.main import get_pool
+
+    pool = await get_pool()
+    if pool is None:
+        return None
+    try:
+        async with pool.acquire() as conn:
+            run = await conn.fetchrow(
+                "SELECT run_id, alert_level FROM simulation_runs ORDER BY start_time DESC LIMIT 1"
+            )
+            if not run:
+                return None
+            rows = await conn.fetch(
+                "SELECT site_id, stage_m, discharge_m3s FROM bridge_stage_forecast"
+                " WHERE forecast_run_id = $1 AND lead_hours = 1",
+                run["run_id"],
+            )
+    except Exception as exc:
+        log.warning("Latest bridge telemetry lookup failed: %s", exc)
+        return None
+
+    stages = {r["site_id"]: r for r in rows}
+    shi = stages.get("SHIVAJI_BRIDGE")
+    raj = stages.get("RAJARAM_BRIDGE")
+    if not shi or not raj:
+        return None
+    return {
+        "run_id": str(run["run_id"]),
+        "alert_level": str(run["alert_level"] or "NORMAL"),
+        "shivaji": {"stage_m": float(shi["stage_m"]), "discharge_m3s": float(shi["discharge_m3s"])},
+        "rajaram": {"stage_m": float(raj["stage_m"]), "discharge_m3s": float(raj["discharge_m3s"])},
+    }
+
 
 
 class ArchiveRequest(BaseModel):
@@ -122,7 +168,6 @@ async def trigger_recalibration(
         synced = calibrator.sync_to_hec_hms_basin(cal_params)
 
     admin_user = auth.get("sub", "system")
-    hh_mm_ss = datetime.now().strftime("%H:%M:%S")
     audit_id = await record_admin_audit(
         action="THRESHOLD_SAVE",
         admin_user=admin_user,
@@ -138,7 +183,7 @@ async def trigger_recalibration(
     return {
         "status": "RECALIBRATED",
         "audit_id": audit_id,
-        "message": f"Saved to Database (Audit ID: #{audit_id}) at {hh_mm_ss} — Model calibration thresholds updated.",
+        "message": f"Model calibration thresholds updated (basin_file_synced={synced}).",
         "triggered_by": admin_user,
         "timing_offset_hours": req.timing_offset_hours,
         "stage_error_m": req.stage_error_m,
@@ -268,31 +313,54 @@ async def admin_trigger_backup(
 async def admin_dispatch_alert(
     auth: Dict[str, Any] = Depends(verify_admin_auth),
 ):
-    """Dispatch alert message to WRD, DDMA, and Telegram and record audit entry."""
+    """Dispatch alert message to Telegram channel and record audit entry.
+
+    Sends the CURRENT measured/forecast values pulled from PostgreSQL — never
+    the library defaults (which are static nominal constants, not live data).
+    If the database or latest forecast cycle is unavailable, returns 503 and
+    sends nothing rather than broadcasting fabricated telemetry.
+    """
     from backend.alerts.telegram_bot import send_hourly_heartbeat
 
     admin_user = auth.get("sub", "system")
-    hh_mm_ss = datetime.now().strftime("%H:%M:%S")
 
-    hb = send_hourly_heartbeat()
+    telemetry = await _latest_bridge_telemetry()
+    if telemetry is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Current bridge telemetry unavailable — refusing to dispatch fabricated values.",
+        )
+
+    hb = send_hourly_heartbeat(
+        shivaji_stage=telemetry["shivaji"]["stage_m"],
+        shivaji_q=telemetry["shivaji"]["discharge_m3s"],
+        rajaram_stage=telemetry["rajaram"]["stage_m"],
+        rajaram_q=telemetry["rajaram"]["discharge_m3s"],
+        alert_level=telemetry["alert_level"],
+        cycle_id=telemetry["run_id"],
+    )
+
+    hb_delivered = int(hb.get("delivered", 0)) if isinstance(hb, dict) else 0
 
     audit_id = await record_admin_audit(
         action="MESSAGE_DISPATCH",
         admin_user=admin_user,
-        parameters={"channels": ["WRD Kolhapur Division", "DDMA Kolhapur", "@Hydrocast_SUK_bot"]},
-        status="SUCCESS",
+        parameters={"channels": ["Telegram broadcast"]},
+        status="SUCCESS" if hb_delivered else "FAILED",
         output=hb,
     )
 
     return {
-        "ok": True,
-        "status": "dispatched",
+        "ok": hb_delivered > 0,
+        "status": "dispatched" if hb_delivered > 0 else "send_failed",
         "audit_id": audit_id,
         "broadcast": {
-            "channels": ["WRD Kolhapur Division", "DDMA Kolhapur", "@Hydrocast_SUK_bot"],
-            "delivered": hb.get("delivered", 1),
+            "channels": ["Telegram broadcast"],
+            "delivered": hb_delivered,
         },
-        "message": f"Saved to Database (Audit ID: #{audit_id}) at {hh_mm_ss} — Flood bulletin dispatched to WRD, district authorities, and Telegram channels.",
+        "message": f"Telegram telemetry broadcast sent to {hb_delivered} recipient(s)."
+        if hb_delivered
+        else "Telegram broadcast failed — check TELEGRAM_BOT_TOKEN and subscriber list.",
     }
 
 
@@ -328,7 +396,21 @@ async def admin_list_audit_logs(limit: int = Query(50, ge=1, le=200)):
 async def admin_telegram_heartbeat():
     from backend.alerts.telegram_bot import send_hourly_heartbeat
 
-    return send_hourly_heartbeat()
+    telemetry = await _latest_bridge_telemetry()
+    if telemetry is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Current bridge telemetry unavailable — refusing to dispatch fabricated values.",
+        )
+
+    return send_hourly_heartbeat(
+        shivaji_stage=telemetry["shivaji"]["stage_m"],
+        shivaji_q=telemetry["shivaji"]["discharge_m3s"],
+        rajaram_stage=telemetry["rajaram"]["stage_m"],
+        rajaram_q=telemetry["rajaram"]["discharge_m3s"],
+        alert_level=telemetry["alert_level"],
+        cycle_id=telemetry["run_id"],
+    )
 
 
 @router.post(
@@ -337,12 +419,12 @@ async def admin_telegram_heartbeat():
     dependencies=[Depends(verify_admin_auth)],
 )
 async def admin_telegram_alert(
-    site_name: str = Query("Shivaji Bridge"),
-    site_id: str = Query("SHIVAJI_BRIDGE"),
-    current_stage: float = Query(543.50),
-    danger_stage: float = Query(543.30),
-    peak_stage: float = Query(544.10),
-    lead_hours: int = Query(4),
+    site_name: str = Query(..., description="Human-readable site name (e.g. 'Shivaji Bridge')"),
+    site_id: str = Query(..., description="Station identifier (e.g. 'SHIVAJI_BRIDGE')"),
+    current_stage: float = Query(..., description="Measured current stage in metres MSL — required, no default"),
+    danger_stage: float = Query(..., description="Danger threshold for the site in metres MSL"),
+    peak_stage: float = Query(..., description="Forecast peak stage in metres MSL"),
+    lead_hours: int = Query(..., description="Lead time to peak in hours"),
 ):
     from backend.alerts.telegram_bot import send_emergency_alert
 

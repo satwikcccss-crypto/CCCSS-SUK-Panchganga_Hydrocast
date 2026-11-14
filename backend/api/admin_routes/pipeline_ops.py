@@ -60,8 +60,8 @@ def _execute_pipeline_task(run_dt: Optional[datetime], cycle_id: Optional[str]):
     response_description="Queued acknowledgement, or the completed run when `async_mode` is false.",
 )
 async def trigger_manual_run(
-    req: TriggerRunRequest,
-    background_tasks: BackgroundTasks,
+    req: Optional[TriggerRunRequest] = None,
+    background_tasks: BackgroundTasks = BackgroundTasks(),
     auth: Dict[str, Any] = Depends(verify_admin_auth),
 ):
     """Manually trigger a full 12-step hydrologic and hydraulic simulation cycle.
@@ -74,6 +74,8 @@ async def trigger_manual_run(
 
     :raises HTTPException 400: if `date` and `hour` are given but malformed.
     """
+    if req is None:
+        req = TriggerRunRequest()
     now = datetime.now(timezone.utc)
     run_dt = None
     if req.date and req.hour is not None:
@@ -88,14 +90,25 @@ async def trigger_manual_run(
         run_dt = now.replace(hour=h6, minute=0, second=0, microsecond=0)
 
     cycle_id = req.cycle_id or f"CYC_{run_dt.strftime('%Y%m%d_%H%M')}_MANUAL"
+    admin_user = auth.get("sub", "admin")
 
     if req.async_mode:
-        background_tasks.add_task(_execute_pipeline_task, run_dt, cycle_id)
+        from backend.service.scheduler_daemon import scheduler_instance
+
+        res = scheduler_instance.trigger_cycle(run_dt=run_dt, cycle_id=cycle_id)
+        audit_id = await record_admin_audit(
+            action="TRIGGER_RUN",
+            admin_user=admin_user,
+            parameters={"cycle_id": cycle_id, "run_dt": run_dt.isoformat(), "async_mode": True},
+            status="SUCCESS",
+            output=res,
+        )
         return {
-            "status": "queued",
+            "status": res.get("status", "queued"),
             "cycle_id": cycle_id,
             "forecast_dt": run_dt.isoformat(),
-            "triggered_by": auth.get("sub"),
+            "triggered_by": admin_user,
+            "audit_id": audit_id,
             "message": "Hydrologic simulation cycle queued in background",
         }
     else:
@@ -106,11 +119,19 @@ async def trigger_manual_run(
 
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, run_pipeline, run_dt, cycle_id)
+        audit_id = await record_admin_audit(
+            action="TRIGGER_RUN",
+            admin_user=admin_user,
+            parameters={"cycle_id": cycle_id, "run_dt": run_dt.isoformat(), "async_mode": False},
+            status="SUCCESS",
+            output={"status": "completed", "cycle_id": cycle_id},
+        )
         return {
             "status": "completed",
             "cycle_id": cycle_id,
             "forecast_dt": run_dt.isoformat(),
-            "triggered_by": auth.get("sub"),
+            "triggered_by": admin_user,
+            "audit_id": audit_id,
         }
 
 
@@ -127,7 +148,7 @@ async def admin_runtime(request: Request):
     active_run = sch_status.get("active_run", {})
 
     return {
-        "last_run_seconds": 12.4,
+        "last_run_seconds": None,  # not yet persisted in a scrapeable gauge; null rather than fabricated
         "active_workers": 1 if active_run.get("is_running") else 0,
         "pipeline_stage": "RUNNING"
         if active_run.get("is_running")
@@ -206,10 +227,6 @@ async def admin_system_health():
     "/pipeline/trigger",
     summary="Trigger cycle via local Windows Scheduler",
 )
-@router.post(
-    "/trigger-run",
-    summary="Trigger cycle (alias)",
-)
 async def admin_trigger_pipeline(
     req: Optional[TriggerRunRequest] = None,
     auth: Dict[str, Any] = Depends(verify_admin_auth),
@@ -235,7 +252,6 @@ async def admin_trigger_pipeline(
 
     cycle_id = (req.cycle_id if req else None) or f"CYC_{run_dt.strftime('%Y%m%d_%H%M')}_MANUAL"
     res = scheduler_instance.trigger_cycle(run_dt=run_dt, cycle_id=cycle_id)
-    hh_mm_ss = datetime.now().strftime("%H:%M:%S")
 
     audit_id = await record_admin_audit(
         action="FORCE_RUN",
@@ -250,7 +266,7 @@ async def admin_trigger_pipeline(
         "status": res.get("status", "started"),
         "audit_id": audit_id,
         "cycle_id": cycle_id,
-        "message": f"Saved to Database (Audit ID: #{audit_id}) at {hh_mm_ss} — Forecast cycle {cycle_id} initiated.",
+        "message": f"Forecast cycle {cycle_id} initiated.",
     }
 
 
@@ -323,7 +339,6 @@ async def admin_db_test(
             "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'"
         )
     latency_ms = round((time.time() - t0) * 1000, 2)
-    hh_mm_ss = datetime.now().strftime("%H:%M:%S")
 
     audit_id = await record_admin_audit(
         action="DB_TEST",
@@ -344,5 +359,5 @@ async def admin_db_test(
             "host": "localhost:5432",
             "tables_count": tbl_count,
         },
-        "message": f"Saved to Database (Audit ID: #{audit_id}) at {hh_mm_ss} — Database connection verified healthy ({latency_ms}ms latency).",
+        "message": f"Database connection verified ({latency_ms}ms latency, {tbl_count} tables).",
     }

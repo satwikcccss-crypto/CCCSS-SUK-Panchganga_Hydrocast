@@ -80,6 +80,18 @@ async def sensor_network_live(request: Request):
     }
 
 @router.get(
+    "/api/v1/sensors/registry",
+    dependencies=[PublicDep],
+    tags=["Sensors"],
+    summary="Sensor station metadata registry",
+)
+@limiter.limit(RATE_LIMIT_PUBLIC)
+async def sensor_registry(request: Request):
+    """Return station metadata (coordinates, datum, zero level) without fetching live data."""
+    from backend.thingspeak.multi_station import get_station_registry
+    return {"stations": get_station_registry()}
+
+@router.get(
     "/api/v1/sensors/{station_id}",
     dependencies=[PublicDep],
     tags=["Sensors"],
@@ -93,18 +105,6 @@ async def sensor_station_live(request: Request, station_id: str):
     if result is None:
         raise HTTPException(status_code=404, detail=f"Station '{station_id}' not found. Valid: SS, NW, IK")
     return result
-
-@router.get(
-    "/api/v1/sensors/registry",
-    dependencies=[PublicDep],
-    tags=["Sensors"],
-    summary="Sensor station metadata registry",
-)
-@limiter.limit(RATE_LIMIT_PUBLIC)
-async def sensor_registry(request: Request):
-    """Return station metadata (coordinates, datum, zero level) without fetching live data."""
-    from backend.thingspeak.multi_station import get_station_registry
-    return {"stations": get_station_registry()}
 
 @router.post("/internal/broadcast", include_in_schema=False)
 async def internal_broadcast(payload: dict, x_internal_key: str = Header(None)):

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isAdminUnlocked, getAdminClaims } from "@/lib/server/admin_auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -6,10 +7,9 @@ export const runtime = "nodejs";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_ORIGIN || "http://localhost:8000";
 const ADMIN_API_BASE = process.env.NEXT_PUBLIC_ADMIN_API_URL || process.env.ADMIN_BACKEND_ORIGIN || API_BASE;
 
-function extractBearer(req: Request, bodyToken?: string): string | null {
+function extractBearer(req: Request): string | null {
   const header = req.headers.get("authorization") || "";
   if (header.toLowerCase().startsWith("bearer ")) return header.slice(7).trim() || null;
-  if (bodyToken && bodyToken.trim()) return bodyToken.trim();
   return null;
 }
 
@@ -27,15 +27,29 @@ export async function POST(req: Request) {
     token?: string;
   };
   const action = body.action || "trigger";
-  const token = extractBearer(req, body.token);
   const sentAt = new Date().toISOString();
 
-  if (!token) {
+  // Validate the caller is an operator (DB role admin) with a fresh /me check.
+  const verdict = await getAdminClaims(req);
+  if (verdict.status === "unauthorized") {
     return NextResponse.json(
       { ok: false, action, sent_at: sentAt, message: "Unauthorized: admin bearer token required" },
       { status: 401 }
     );
   }
+  if (verdict.status === "unavailable") {
+    return NextResponse.json(
+      { ok: false, action, sent_at: sentAt, message: "Admin service unavailable" },
+      { status: 503 }
+    );
+  }
+  if (!isAdminUnlocked(verdict.claims)) {
+    return NextResponse.json(
+      { ok: false, action, sent_at: sentAt, message: "Official/viewer accounts have read-only access" },
+      { status: 403 }
+    );
+  }
+  const token = extractBearer(req) as string;
 
   // 1. DATABASE TEST
   if (action === "db_test" || action === "test_db") {
@@ -60,25 +74,12 @@ export async function POST(req: Request) {
         });
       }
 
-      // Standby fallback check
-      const healthRes = await fetch(`${API_BASE}/api/v1/health`, {
-        cache: "no-store",
-        signal: AbortSignal.timeout(5000),
-      }).catch(() => null);
-      const isUp = healthRes && healthRes.ok;
-      const hhMmSs = new Date().toLocaleTimeString([], { hour12: false });
       return NextResponse.json({
-        ok: true,
+        ok: false,
         action: "db_test",
         sent_at: sentAt,
-        latency_ms: 1.5,
-        database: {
-          status: isUp ? "CONNECTED" : "STANDBY",
-          engine: "PostgreSQL 16 (rainfall_runoff)",
-          host: "localhost:5432",
-        },
-        message: `Saved to Database (Audit ID: #DB-${Date.now().toString().slice(-4)}) at ${hhMmSs} — Database verified healthy.`,
-      });
+        message: "Database test unavailable from admin backend",
+      }, { status: res?.status && res.status >= 400 ? res.status : 503 });
     } catch (err: any) {
       return NextResponse.json({
         ok: false,
@@ -111,17 +112,12 @@ export async function POST(req: Request) {
         });
       }
 
-      const hhMmSs = new Date().toLocaleTimeString([], { hour12: false });
       return NextResponse.json({
-        ok: true,
+        ok: false,
         action: "message_dispatch",
         sent_at: sentAt,
-        broadcast: {
-          channels: ["WRD Kolhapur Division", "District Administration", "Telegram Bot"],
-          delivered: 1,
-        },
-        message: `Saved to Database (Audit ID: #DSP-${Date.now().toString().slice(-4)}) at ${hhMmSs} — Flood bulletin dispatched to WRD, district authorities, and Telegram channels.`,
-      });
+        message: "Message dispatch unavailable from admin backend",
+      }, { status: res?.status && res.status >= 400 ? res.status : 503 });
     } catch (err: any) {
       return NextResponse.json({
         ok: false,
@@ -156,13 +152,12 @@ export async function POST(req: Request) {
         });
       }
 
-      const hhMmSs = new Date().toLocaleTimeString([], { hour12: false });
       return NextResponse.json({
-        ok: true,
+        ok: false,
         action: "backup",
         sent_at: sentAt,
-        message: `Saved to Database (Audit ID: #BKP-${Date.now().toString().slice(-4)}) at ${hhMmSs} — Backup script dispatched to E:\\Hydrocast Windows Server\\data\\backups.`,
-      });
+        message: "Backup request unavailable from admin backend",
+      }, { status: res?.status && res.status >= 400 ? res.status : 503 });
     } catch (err: any) {
       return NextResponse.json({
         ok: false,
@@ -193,23 +188,29 @@ export async function POST(req: Request) {
 
     if (res && res.ok) {
       const data = await res.json().catch(() => ({}));
-      const hhMmSs = new Date().toLocaleTimeString([], { hour12: false });
       return NextResponse.json({
         ok: true,
         backend_status: res.status,
         sent_at: sentAt,
         data,
-        message: data.message || `Saved to Database (Audit ID: #${data.audit_id || 'OK'}) at ${hhMmSs} — Command '${action}' completed successfully.`,
+        message: data.message || `Command '${action}' completed successfully.`,
       });
     }
 
-    const hhMmSs = new Date().toLocaleTimeString([], { hour12: false });
+    const status = res?.status && res.status >= 400 ? res.status : 503;
+    const errPayload = res ? await res.json().catch(() => null) : null;
+    const detail =
+      errPayload && typeof errPayload.detail === "string"
+        ? errPayload.detail
+        : errPayload && typeof errPayload.message === "string"
+          ? errPayload.message
+          : `Command '${action}' unavailable`;
     return NextResponse.json({
-      ok: true,
-      backend_status: res ? res.status : 200,
+      ok: false,
+      backend_status: res ? res.status : null,
       sent_at: sentAt,
-      message: `Saved to Database (Audit ID: #CMD-${Date.now().toString().slice(-4)}) at ${hhMmSs} — Command '${action}' registered with background scheduler.`,
-    });
+      message: detail,
+    }, { status });
   } catch (err: any) {
     return NextResponse.json({
       ok: false,

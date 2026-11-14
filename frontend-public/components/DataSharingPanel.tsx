@@ -53,17 +53,21 @@ export default function DataSharingPanel() {
       const rajaram = bridges.RAJARAM_BRIDGE?.series_90h || [];
       
       const rows = [["Lead_Hour", "Forecast_Time", "Shivaji_Stage_m", "Shivaji_Discharge_m3s", "Rajaram_Stage_m", "Rajaram_Discharge_m3s"]];
-      const maxPts = Math.max(shivaji.length, rajaram.length, 90);
+      const maxPts = Math.max(shivaji.length, rajaram.length);
+      if (maxPts === 0) {
+        console.error("CSV download aborted: backend returned no forecast series.");
+        return;
+      }
       for (let i = 0; i < maxPts; i++) {
-        const s = shivaji[i] || {};
-        const r = rajaram[i] || {};
+        const s = shivaji[i];
+        const r = rajaram[i];
         rows.push([
-          s.lead_hours ?? i,
-          s.forecast_time || "",
-          s.stage_m ?? 531.54,
-          s.discharge_m3s ?? 9.10,
-          r.stage_m ?? 532.19,
-          r.discharge_m3s ?? 9.10,
+          s?.lead_hours ?? r?.lead_hours ?? i,
+          s?.forecast_time || r?.forecast_time || "",
+          s?.stage_m ?? "",
+          s?.discharge_m3s ?? "",
+          r?.stage_m ?? "",
+          r?.discharge_m3s ?? "",
         ]);
       }
       const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");

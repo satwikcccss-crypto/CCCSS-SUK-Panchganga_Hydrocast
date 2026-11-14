@@ -31,7 +31,7 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
-      setSession(data.access_token, data.role || "admin", username.trim());
+      setSession(data.access_token, data.role || "viewer", username.trim());
       router.replace("/admin");
     } catch {
       setError("Cannot reach authentication server. Is the backend running?");

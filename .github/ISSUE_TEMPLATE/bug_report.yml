@@ -1,0 +1,117 @@
+name: 🐛 Bug Report
+description: Report a bug in HydroCast — wrong forecast, broken API, UI glitch, etc.
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report
+        Dhanyavaad bug report karne ke liye! Kripya neeche di gayi jaankari bharen taaki hum jaldi fix kar sakein.
+        > ⚠️ Security vulnerabilities ke liye Issue mat kholein — seedha **`satwikcccss@gmail.com`** pe bhejein ya [SECURITY.md](../SECURITY.md) padhein.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 🧩 Affected Component
+      description: Konsa component affected hai?
+      options:
+        - Backend / FastAPI
+        - Hydrologic Engine (DSS / Physics Model)
+        - Flood Forecast API
+        - Alert & Notification System
+        - Frontend (Public Portal)
+        - Frontend (Admin Dashboard)
+        - Database / Alembic Migrations
+        - Docker / Deployment
+        - CI/CD Workflows
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Bug Description
+      description: Kya hua? Clearly describe the bug.
+      placeholder: "Gauge station XYZ ka water level update nahi ho raha tha jab..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Steps to Reproduce
+      description: Exact steps jo bug trigger karte hain
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Behavior
+      description: Kya hona chahiye tha?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: ❌ Actual Behavior
+      description: Kya hua actually?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📋 Logs / Traceback
+      description: Relevant error logs, stack traces, ya API responses paste karein
+      render: shell
+
+  - type: input
+    id: forecast-station
+    attributes:
+      label: 🌊 Gauge Station / River (if applicable)
+      description: "Example: Rajaram Weir, Panchganga at Kolhapur"
+      placeholder: "Rajaram Weir"
+
+  - type: input
+    id: environment
+    attributes:
+      label: 🖥️ Environment
+      description: "OS, Python version, Node version, Docker tag"
+      placeholder: "Windows 11, Python 3.11, Node 20, Docker tag: latest"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 🚨 Severity
+      description: Kitna critical hai?
+      options:
+        - Critical — Forecast/Alert system down (lives at risk)
+        - High — Major feature broken
+        - Medium — Partial functionality affected
+        - Low — Minor/cosmetic issue
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Pre-submission Checklist
+      options:
+        - label: Maine existing issues search ki hain — yeh duplicate nahi hai
+          required: true
+        - label: Maine latest `main` branch pe reproduce kiya hai
+          required: true
+        - label: Logs/traceback attach kiya hai (if applicable)

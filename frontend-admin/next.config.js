@@ -7,10 +7,10 @@ const isDev = process.env.NODE_ENV !== "production";
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
   "font-src 'self' https://fonts.gstatic.com data:",
-  "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://server.arcgisonline.com",
-  "connect-src 'self' ws: wss: http: https:",
+  "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://server.arcgisonline.com https://unpkg.com",
+  "connect-src 'self' ws: wss:",
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",

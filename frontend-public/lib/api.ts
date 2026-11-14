@@ -3,7 +3,6 @@
 // No hardcoded fallbacks, no Supabase, no stale data.
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || "";
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "";
 
 // ── Stale-data guard ──────────────────────────────────────────────────────────
 // Data is considered stale if older than STALE_THRESHOLD_MS. The UI shows a
@@ -24,9 +23,6 @@ function _headers(skipAuth: boolean = false): HeadersInit {
     "Cache-Control": "no-store, no-cache, must-revalidate",
     "Pragma": "no-cache",
   };
-  if (!skipAuth && API_KEY) {
-    (h as Record<string, string>)["X-API-Key"] = API_KEY;
-  }
   return h;
 }
 
@@ -151,8 +147,14 @@ export const api = {
     return data.status ?? data;
   },
   ecmwfHyetograph: async () => (await fetchRainfall()),
-  stationSelection: async () => (await fetchStations()),
-  gaugeHyetographs: async () => (await fetchStations()),
+  stationSelection: async () => {
+    const data = await fetchStations();
+    return Array.isArray(data) ? data : (data?.data ?? data?.stations ?? []);
+  },
+  gaugeHyetographs: async () => {
+    const data = await fetchStations();
+    return Array.isArray(data) ? data : (data?.data ?? data?.stations ?? []);
+  },
   runoffHydrograph: async () => (await fetchRunoffHydrograph()),
   outletHydrograph: async () => (await fetchRunoffHydrograph()),
   pipeline: async () => (await fetchPipeline()),

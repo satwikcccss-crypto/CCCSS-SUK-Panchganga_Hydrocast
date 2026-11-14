@@ -1,35 +1,25 @@
 import { NextResponse } from "next/server";
-import crypto from "crypto";
 import fs from "fs";
 import path from "path";
+import { bearer, getAdminClaims } from "@/lib/server/admin_auth";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// Constant-time comparison so the API key cannot be recovered byte-by-byte
-// through response-timing differences.
-function safeEqual(a: string | null, b: string | null): boolean {
-  if (!a || !b) return false;
-  const ab = Buffer.from(a);
-  const bb = Buffer.from(b);
-  return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
-}
-
 export async function GET(req: Request) {
-  // 1. Verify the API Key
-  const apiKeyHeader = req.headers.get("x-api-key");
-  const validApiKey = process.env.API_KEY;
-
-  if (!validApiKey) {
-    // Generic message: do not reveal server configuration state to callers.
-    return NextResponse.json({ error: "Export endpoint unavailable" }, { status: 503 });
-  }
-
-  if (!safeEqual(apiKeyHeader, validApiKey)) {
+  const token = bearer(req);
+  if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const verdict = await getAdminClaims(req);
+  if (verdict.status === "unauthorized") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (verdict.status === "unavailable") {
+    return NextResponse.json({ error: "Admin service unavailable" }, { status: 503 });
+  }
 
-  // 2. Fetch the latest pipeline state
+  // Fetch the latest pipeline state from local workspace artifacts (admin-only).
   const candidates = [
     path.join(process.cwd(), "public", "data", "latest_pipeline_state.json"),
     path.join(process.cwd(), "..", "data", "openmeteo_dss", "latest_pipeline_state.json"),

@@ -417,10 +417,10 @@ export function convertDischargeToStage(targetQ: number, siteId: string): number
   let data: [number, number, number][];
   let minStage = 0;
   
-  if (siteId === "SHIVAJI_BRIDGE") {
+  if (siteId === "SHIVAJI_BRIDGE" || siteId.includes("SHIVAJI")) {
     data = SHIVAJI_DATA;
     minStage = Math.min(...SHIVAJI_DATA.map(d => d[2]));
-  } else if (siteId === "RAJARAM_WEIR") {
+  } else if (siteId === "RAJARAM_WEIR" || siteId === "RAJARAM_BRIDGE" || siteId.includes("RAJARAM")) {
     data = RAJARAM_DATA;
     minStage = Math.min(...RAJARAM_DATA.map(d => d[2]));
   } else {

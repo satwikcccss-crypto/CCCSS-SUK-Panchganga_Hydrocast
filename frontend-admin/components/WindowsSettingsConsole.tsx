@@ -313,10 +313,18 @@ export default function WindowsSettingsConsole() {
     if (action === "trigger") {
       setIsTerminalOpen(true);
     }
+    let authHeader: Record<string, string> = {};
+    try {
+      const raw = sessionStorage.getItem("hydrocast_admin_token");
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s?.token) authHeader = { Authorization: `Bearer ${s.token}` };
+      }
+    } catch {}
     try {
       const res = await fetch("/api/admin/dispatch", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeader },
         body: JSON.stringify({ action, body: payload }),
       });
       const data = await res.json();

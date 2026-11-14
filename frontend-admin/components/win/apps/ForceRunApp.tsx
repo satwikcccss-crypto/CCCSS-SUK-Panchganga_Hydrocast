@@ -6,8 +6,19 @@ import { Group, Tag, dash, fmtTimeIST } from "../ui";
 type Snap = { cycle: string | null; stage: string | null; steps: any[]; lastStart: string | null; nextMins: number | null; avg: number | null; success: number | null };
 type Req = { at: string; http: string; ok: boolean; text: string };
 
+function adminAuthHeaders(): Record<string, string> {
+  try {
+    const raw = sessionStorage.getItem("hydrocast_admin_token");
+    if (!raw) return {};
+    const s = JSON.parse(raw);
+    return s?.token ? { Authorization: `Bearer ${s.token}` } : {};
+  } catch {
+    return {};
+  }
+}
+
 async function readState(): Promise<Snap> {
-  const r = await fetch("/api/v1/dashboard", { cache: "no-store" });
+  const r = await fetch("/api/v1/dashboard", { cache: "no-store", headers: adminAuthHeaders() });
   if (!r.ok) throw new Error(`dashboard HTTP ${r.status}`);
   const d = await r.json();
   const p = d.pipeline ?? {};
@@ -66,7 +77,7 @@ export default function ForceRunApp() {
     try {
       const res = await fetch("/api/admin/dispatch", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-hydrocast-console": "1" },
+        headers: { "Content-Type": "application/json", ...adminAuthHeaders() },
         body: JSON.stringify({ action: "trigger" }),
       });
       const j = await res.json().catch(() => ({}));

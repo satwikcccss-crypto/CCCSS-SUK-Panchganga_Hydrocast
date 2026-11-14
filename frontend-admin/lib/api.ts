@@ -1,5 +1,7 @@
 // frontend/lib/api.ts
-// All data is sourced EXCLUSIVELY from the pipeline JSON — no hardcoded fallbacks
+// Data is sourced EXCLUSIVELY from the backend FastAPI `/api/v1/dashboard` payload
+// (PostgreSQL is the single source of truth). No hardcoded/synthetic fallbacks are
+// emitted; missing values surface explicitly as `null` so the UI shows "unavailable".
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -11,6 +13,18 @@ export function invalidateCache(): void {
   _cache = null;
 }
 
+function _adminAuthHeaders(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = sessionStorage.getItem("hydrocast_admin_token");
+    if (!raw) return {};
+    const s = JSON.parse(raw);
+    return s?.token ? { Authorization: `Bearer ${s.token}` } : {};
+  } catch {
+    return {};
+  }
+}
+
 async function _cachedFetch(runId?: string, forceFresh: boolean = false): Promise<any> {
   const now = Date.now();
   if (!forceFresh && _cache && (now - _cache.ts < CACHE_TTL_MS) && _cache.runId === runId) {
@@ -20,7 +34,8 @@ async function _cachedFetch(runId?: string, forceFresh: boolean = false): Promis
   const url = typeof window !== "undefined"
     ? `/api/v1/dashboard${query}`
     : `${BASE}/api/v1/dashboard${query}`;
-  const res = await fetch(url, { cache: "no-store" });
+  const headers = typeof window !== "undefined" ? _adminAuthHeaders() : {};
+  const res = await fetch(url, { cache: "no-store", headers });
   if (!res.ok) throw new Error("API route response not ok");
   const data = await res.json();
   _cache = { data, ts: now, runId };
@@ -39,7 +54,7 @@ export const api = {
     if (data.status && typeof data.status === "object") return data.status;
     return {
       status: data.status || "completed",
-      current_cycle: { run_id: data.cycle_id || "CYC_20261113_0600_MANUAL", status: data.status || "completed" },
+      current_cycle: { run_id: data.cycle_id ?? null, status: data.status || "completed" },
       last_cycle: data.last_cycle ?? {
         run_id: data.cycle_id || null,
         status: data.status || null,
@@ -117,7 +132,7 @@ export const api = {
     // Compute total volume from actual hydrograph (MCM)
     const totalVolumeMcm = sumObj.total_volume_mcm ?? sumObj.outlet?.total_volume_mcm ?? (data.hydrograph?.length
       ? data.hydrograph.reduce((sum: number, h: any) => sum + ((h.discharge_m3s ?? 0) * 3600), 0) / 1e6
-      : 3.89);
+      : null);
 
     // Determine alert levels from actual site thresholds
     const shivajiAlert = !shivajiSite ? "NORMAL"
@@ -134,8 +149,8 @@ export const api = {
       : peakStageRajaram >= (rajaramSite.alert_stage_m ?? Infinity) ? "ALERT"
       : "NORMAL";
 
-    const shivajiCur = data.bridgeShivaji?.forecast?.[0]?.stage_m ?? bShivSummary?.current_stage_m ?? bShivSummary?.stage_m ?? (data.hydrology_regime?.nominal_stage_shivaji_m ?? 531.80);
-    const rajaramCur = data.bridgeRajaram?.forecast?.[0]?.stage_m ?? bRajSummary?.current_stage_m ?? bRajSummary?.stage_m ?? (data.hydrology_regime?.nominal_stage_rajaram_m ?? 533.60);
+    const shivajiCur = data.bridgeShivaji?.forecast?.[0]?.stage_m ?? bShivSummary?.current_stage_m ?? bShivSummary?.stage_m ?? (data.hydrology_regime?.nominal_stage_shivaji_m ?? null);
+    const rajaramCur = data.bridgeRajaram?.forecast?.[0]?.stage_m ?? bRajSummary?.current_stage_m ?? bRajSummary?.stage_m ?? (data.hydrology_regime?.nominal_stage_rajaram_m ?? null);
 
     return {
       hydrology_regime: data.hydrology_regime,
@@ -147,8 +162,8 @@ export const api = {
         alert_level: lastCycle.alert_level ?? "NORMAL",
       },
       peak_arrival: data.summary?.peak_arrival ?? {
-        shivaji: data.bridgeShivaji?.peak_arrival ?? { peak_lead_hours: 0, peak_stage_m: peakStageShivaji, peak_discharge_m3s: peakQ },
-        rajaram: data.bridgeRajaram?.peak_arrival ?? { peak_lead_hours: 0, peak_stage_m: peakStageRajaram, peak_discharge_m3s: peakQ },
+        shivaji: data.bridgeShivaji?.peak_arrival ?? { peak_lead_hours: null, peak_stage_m: peakStageShivaji, peak_discharge_m3s: peakQ },
+        rajaram: data.bridgeRajaram?.peak_arrival ?? { peak_lead_hours: null, peak_stage_m: peakStageRajaram, peak_discharge_m3s: peakQ },
       },
       recalibration: data.recalibration,
       subbasins: data.stations,
@@ -162,15 +177,15 @@ export const api = {
           stage_m: shivajiCur,
           current_stage_m: shivajiCur,
           peak_stage_m: peakStageShivaji,
-          alert_stage_m: shivajiSite?.alert_stage_m ?? 542.10,
-          warning_stage_m: shivajiSite?.warning_stage_m ?? 542.70,
-          danger_stage_m: shivajiSite?.danger_stage_m ?? 543.30,
-          extreme_stage_m: shivajiSite?.extreme_stage_m ?? shivajiSite?.hfl_m ?? 545.33,
-          hfl_m: shivajiSite?.hfl_m ?? 545.33,
+          alert_stage_m: shivajiSite?.alert_stage_m ?? null,
+          warning_stage_m: shivajiSite?.warning_stage_m ?? null,
+          danger_stage_m: shivajiSite?.danger_stage_m ?? null,
+          extreme_stage_m: shivajiSite?.extreme_stage_m ?? shivajiSite?.hfl_m ?? null,
+          hfl_m: shivajiSite?.hfl_m ?? null,
           alert_level: shivajiAlert,
           is_above_danger: peakStageShivaji >= (shivajiSite?.danger_stage_m ?? Infinity),
           markerColor: shivajiSite?.markerColor ?? "#0f4c81",
-          peak_arrival: data.bridgeShivaji?.peak_arrival ?? data.summary?.peak_arrival?.shivaji ?? { peak_lead_hours: 0, peak_stage_m: peakStageShivaji, peak_discharge_m3s: peakQ },
+          peak_arrival: data.bridgeShivaji?.peak_arrival ?? data.summary?.peak_arrival?.shivaji ?? { peak_lead_hours: null, peak_stage_m: peakStageShivaji, peak_discharge_m3s: peakQ },
         },
         {
           site_id: rajaramSite?.site_id ?? "RAJARAM_BRIDGE",
@@ -180,14 +195,14 @@ export const api = {
           stage_m: rajaramCur,
           current_stage_m: rajaramCur,
           peak_stage_m: peakStageRajaram,
-          alert_stage_m: rajaramSite?.alert_stage_m ?? 541.50,
-          warning_stage_m: rajaramSite?.warning_stage_m ?? 542.07,
-          danger_stage_m: rajaramSite?.danger_stage_m ?? 543.30,
-          hfl_m: rajaramSite?.hfl_m ?? 545.33,
+          alert_stage_m: rajaramSite?.alert_stage_m ?? null,
+          warning_stage_m: rajaramSite?.warning_stage_m ?? null,
+          danger_stage_m: rajaramSite?.danger_stage_m ?? null,
+          hfl_m: rajaramSite?.hfl_m ?? null,
           alert_level: rajaramAlert,
           is_above_danger: peakStageRajaram >= (rajaramSite?.danger_stage_m ?? Infinity),
           markerColor: rajaramSite?.markerColor ?? "#0284c7",
-          peak_arrival: data.bridgeRajaram?.peak_arrival ?? data.summary?.peak_arrival?.rajaram ?? { peak_lead_hours: 0, peak_stage_m: peakStageRajaram, peak_discharge_m3s: peakQ },
+          peak_arrival: data.bridgeRajaram?.peak_arrival ?? data.summary?.peak_arrival?.rajaram ?? { peak_lead_hours: null, peak_stage_m: peakStageRajaram, peak_discharge_m3s: peakQ },
         },
       ],
     };

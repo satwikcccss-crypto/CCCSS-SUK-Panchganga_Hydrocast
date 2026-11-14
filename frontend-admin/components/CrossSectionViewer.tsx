@@ -53,11 +53,11 @@ export default function CrossSectionViewer({
         rawPoints: SHIVAJI_SURVEY_POINTS,
         bankLeftStation: 124.29,
         bankRightStation: 261.66,
-        alertStage: site.alert_stage_m ?? 542.10,
-        warningStage: site.warning_stage_m ?? 542.70,
-        dangerStage: site.danger_stage_m ?? 543.30,
-        extremeStage: site.extreme_stage_m ?? 544.00,
-        hflStage: site.hfl_m ?? 545.33,
+        alertStage: site.alert_stage_m ?? null,
+        warningStage: site.warning_stage_m ?? null,
+        dangerStage: site.danger_stage_m ?? null,
+        extremeStage: site.extreme_stage_m ?? null,
+        hflStage: site.hfl_m ?? null,
         sensorDeckElevation: 549.35,
         forecast: bridgeShivaji?.forecast ?? [],
         siteInfo: site,
@@ -72,11 +72,11 @@ export default function CrossSectionViewer({
         rawPoints: RAJARAM_SURVEY_POINTS,
         bankLeftStation: 79.87,
         bankRightStation: 342.96,
-        alertStage: site.alert_stage_m ?? 541.50,
-        warningStage: site.warning_stage_m ?? 542.07,
-        dangerStage: site.danger_stage_m ?? 543.30,
-        extremeStage: site.extreme_stage_m ?? 544.00,
-        hflStage: site.hfl_m ?? 545.33,
+        alertStage: site.alert_stage_m ?? null,
+        warningStage: site.warning_stage_m ?? null,
+        dangerStage: site.danger_stage_m ?? null,
+        extremeStage: site.extreme_stage_m ?? null,
+        hflStage: site.hfl_m ?? null,
         forecast: bridgeRajaram?.forecast ?? [],
         siteInfo: site,
       };
@@ -115,14 +115,13 @@ export default function CrossSectionViewer({
         time: fc.forecast_time,
       };
     }
-    // Fallback baseline — use first available forecast point or site zero datum
-    const fallbackStage = siteConfig.forecast[0]?.stage_m ?? siteConfig.siteInfo.zero_datum_m;
-    const fallbackDischarge = selectedSite === "SHIVAJI_BRIDGE" ? 108.0 : 82.0;
+    // No selected forecast point — surface explicit missing state instead of fabricating a stage.
+    const fc0 = siteConfig.forecast[0];
     return {
-      stage_m: fallbackStage,
-      discharge_m3s: fallbackDischarge,
-      alert_level: "NORMAL",
-      time: new Date().toISOString(),
+      stage_m: fc0?.stage_m ?? siteConfig.siteInfo.current_stage_m ?? null,
+      discharge_m3s: fc0?.discharge_m3s ?? null,
+      alert_level: "UNKNOWN",
+      time: null,
     };
   }, [siteConfig, selectedHour, selectedSite]);
 
@@ -136,7 +135,7 @@ export default function CrossSectionViewer({
     const minX = Math.min(...xs);
     const maxX = Math.max(...xs);
     const minY = Math.floor(Math.min(...ys) - 1.5);
-    const maxY = Math.ceil(Math.max(...ys, siteConfig.hflStage + 1.0));
+    const maxY = Math.ceil(Math.max(...ys, (siteConfig.hflStage ?? 536) + 1.0));
     return { minX, maxX, minY, maxY };
   }, [crossSectionPoints, siteConfig]);
 
@@ -175,7 +174,7 @@ export default function CrossSectionViewer({
   // Water Polygon Fill calculation for current water stage
   const waterPolygonD = useMemo(() => {
     const wse = currentForecast.stage_m;
-    if (crossSectionPoints.length === 0) return "";
+    if (wse == null || crossSectionPoints.length === 0) return "";
 
     // Find intersection segments where ground elevation is below water surface
     const wetSegments: Array<Array<[number, number]>> = [];
@@ -229,6 +228,16 @@ export default function CrossSectionViewer({
   // Hydraulic Metrics for Current Water Level
   const hydraulicStats = useMemo(() => {
     const wse = currentForecast.stage_m;
+    if (wse == null) {
+      return {
+        minBed: 0,
+        maxDepth: null,
+        topWidth: null,
+        wettedArea: null,
+        freeboardWarning: null,
+        freeboardDanger: null,
+      };
+    }
     let minBed = 9999;
     let wettedArea = 0;
     let topWidth = 0;
@@ -259,8 +268,8 @@ export default function CrossSectionViewer({
     }
 
     const maxDepth = Math.max(0, wse - minBed);
-    const freeboardWarning = siteConfig.warningStage - wse;
-    const freeboardDanger = siteConfig.dangerStage - wse;
+    const freeboardWarning = siteConfig.warningStage != null ? siteConfig.warningStage - wse : null;
+    const freeboardDanger = siteConfig.dangerStage != null ? siteConfig.dangerStage - wse : null;
 
     return {
       minBed: minBed === 9999 ? 0 : minBed,
@@ -275,19 +284,23 @@ export default function CrossSectionViewer({
   // Alert Badge Style
   const alertBadge = useMemo(() => {
     const wse = currentForecast.stage_m;
-    if (wse >= siteConfig.hflStage) {
+    if (wse == null) {
+      return { label: "NO DATA", bg: "bg-gray-50", text: "text-gray-500", border: "border-gray-200" };
+    }
+    if (siteConfig.hflStage != null && wse >= siteConfig.hflStage) {
       return { label: "HFL EXCEEDED", bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200" };
     }
-    if (wse >= siteConfig.extremeStage) {
+    if (siteConfig.extremeStage != null && wse >= siteConfig.extremeStage) {
       return { label: "EXTREME FLOOD", bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200" };
     }
-    if (wse >= siteConfig.dangerStage) {
+    if (siteConfig.dangerStage != null && wse >= siteConfig.dangerStage) {
       return { label: "DANGER LEVEL", bg: "bg-red-50", text: "text-red-700", border: "border-red-200" };
     }
-    if (wse >= siteConfig.warningStage) {
+    if (siteConfig.warningStage != null && wse >= siteConfig.warningStage) {
       return { label: "WARNING LEVEL", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" };
     }
-    if (wse >= (siteConfig.alertStage ?? siteConfig.warningStage - 2.0)) {
+    const alarm = siteConfig.alertStage ?? (siteConfig.warningStage != null ? siteConfig.warningStage - 2.0 : null);
+    if (alarm != null && wse >= alarm) {
       return { label: "ALERT STAGE", bg: "bg-yellow-50", text: "text-yellow-800", border: "border-yellow-200" };
     }
     return { label: "NORMAL STAGE", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" };
@@ -311,7 +324,13 @@ export default function CrossSectionViewer({
     };
   }, [siteConfig.forecast]);
 
-  const hflSafetyMargin = siteConfig.hflStage - currentForecast.stage_m;
+  const hflSafetyMargin =
+    siteConfig.hflStage != null && currentForecast.stage_m != null
+      ? siteConfig.hflStage - currentForecast.stage_m
+      : null;
+
+  const fmt = (v: number | null | undefined, digits = 2) =>
+    v == null || Number.isNaN(v) ? "—" : v.toFixed(digits);
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden font-sans text-gray-800 mb-6">
@@ -381,19 +400,19 @@ export default function CrossSectionViewer({
         <div className="flex flex-wrap items-center gap-2">
           <div className="px-2.5 py-1 bg-yellow-50 border border-yellow-200 rounded-md flex items-center gap-1.5">
             <span className="text-[10px] font-bold text-yellow-800 uppercase">Alert</span>
-            <span className="font-extrabold text-yellow-900 font-mono-code">{siteConfig.alertStage.toFixed(2)}m</span>
+            <span className="font-extrabold text-yellow-900 font-mono-code">{fmt(siteConfig.alertStage)}m</span>
           </div>
           <div className="px-2.5 py-1 bg-amber-50 border border-amber-200 rounded-md flex items-center gap-1.5">
             <span className="text-[10px] font-bold text-amber-800 uppercase">Warning</span>
-            <span className="font-extrabold text-amber-900 font-mono-code">{siteConfig.warningStage.toFixed(2)}m</span>
+            <span className="font-extrabold text-amber-900 font-mono-code">{fmt(siteConfig.warningStage)}m</span>
           </div>
           <div className="px-2.5 py-1 bg-rose-50 border border-rose-200 rounded-md flex items-center gap-1.5">
             <span className="text-[10px] font-bold text-rose-800 uppercase">Danger</span>
-            <span className="font-extrabold text-rose-900 font-mono-code">{siteConfig.dangerStage.toFixed(2)}m</span>
+            <span className="font-extrabold text-rose-900 font-mono-code">{fmt(siteConfig.dangerStage)}m</span>
           </div>
           <div className="px-2.5 py-1 bg-purple-50 border border-purple-200 rounded-md flex items-center gap-1.5">
             <span className="text-[10px] font-bold text-purple-800 uppercase">HFL</span>
-            <span className="font-extrabold text-purple-900 font-mono-code">{siteConfig.hflStage.toFixed(2)}m</span>
+            <span className="font-extrabold text-purple-900 font-mono-code">{fmt(siteConfig.hflStage)}m</span>
           </div>
         </div>
 
@@ -403,10 +422,10 @@ export default function CrossSectionViewer({
             <span className="text-gray-500 font-medium">HFL Clearance:</span>
             <span
               className={`font-extrabold font-mono-code ${
-                hflSafetyMargin <= 0 ? "text-rose-600" : hflSafetyMargin <= 1.5 ? "text-amber-600" : "text-emerald-600"
+                hflSafetyMargin == null ? "text-gray-500" : hflSafetyMargin <= 0 ? "text-rose-600" : hflSafetyMargin <= 1.5 ? "text-amber-600" : "text-emerald-600"
               }`}
             >
-              {hflSafetyMargin <= 0 ? `+${Math.abs(hflSafetyMargin).toFixed(2)}m (BREACHED)` : `${hflSafetyMargin.toFixed(2)}m`}
+              {hflSafetyMargin == null ? "—" : hflSafetyMargin <= 0 ? `+${Math.abs(hflSafetyMargin).toFixed(2)}m (BREACHED)` : `${hflSafetyMargin.toFixed(2)}m`}
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-gray-600">
@@ -423,43 +442,45 @@ export default function CrossSectionViewer({
         <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
           <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">Water Stage (WSE)</div>
           <div className="text-base font-bold text-blue-600 mt-0.5">
-            {currentForecast.stage_m.toFixed(2)} <span className="text-[11px] font-normal text-gray-400">m MSL</span>
+            {fmt(currentForecast.stage_m)} <span className="text-[11px] font-normal text-gray-400">m MSL</span>
           </div>
         </div>
         <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
           <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">River Discharge (Q)</div>
           <div className="text-base font-bold text-indigo-600 mt-0.5">
-            {currentForecast.discharge_m3s.toFixed(1)} <span className="text-[11px] font-normal text-gray-400">m³/s</span>
+            {fmt(currentForecast.discharge_m3s, 1)} <span className="text-[11px] font-normal text-gray-400">m³/s</span>
           </div>
         </div>
         <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
           <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">Max Water Depth</div>
           <div className="text-base font-bold text-cyan-600 mt-0.5">
-            {hydraulicStats.maxDepth.toFixed(2)} <span className="text-[11px] font-normal text-gray-400">m</span>
+            {fmt(hydraulicStats.maxDepth)} <span className="text-[11px] font-normal text-gray-400">m</span>
           </div>
         </div>
         <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
           <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">Top Surface Width</div>
           <div className="text-base font-bold text-teal-600 mt-0.5">
-            {hydraulicStats.topWidth.toFixed(1)} <span className="text-[11px] font-normal text-gray-400">m</span>
+            {fmt(hydraulicStats.topWidth, 1)} <span className="text-[11px] font-normal text-gray-400">m</span>
           </div>
         </div>
         <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
           <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">Wetted Flow Area</div>
           <div className="text-base font-bold text-amber-600 mt-0.5">
-            {hydraulicStats.wettedArea.toFixed(0)} <span className="text-[11px] font-normal text-gray-400">m²</span>
+            {fmt(hydraulicStats.wettedArea, 0)} <span className="text-[11px] font-normal text-gray-400">m²</span>
           </div>
         </div>
         <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-xs">
           <div className="text-[10px] text-gray-500 font-sans font-semibold uppercase">Warning Clearance</div>
           <div
             className={`text-base font-extrabold mt-0.5 ${
-              hydraulicStats.freeboardWarning <= 0 ? "text-rose-600" : "text-emerald-600"
+              hydraulicStats.freeboardWarning == null ? "text-gray-500" : hydraulicStats.freeboardWarning <= 0 ? "text-rose-600" : "text-emerald-600"
             }`}
           >
-            {hydraulicStats.freeboardWarning <= 0
-              ? `+${Math.abs(hydraulicStats.freeboardWarning).toFixed(2)}m`
-              : `-${hydraulicStats.freeboardWarning.toFixed(2)}m`}
+            {hydraulicStats.freeboardWarning == null
+              ? "—"
+              : hydraulicStats.freeboardWarning <= 0
+                ? `+${Math.abs(hydraulicStats.freeboardWarning).toFixed(2)}m`
+                : `-${hydraulicStats.freeboardWarning.toFixed(2)}m`}
           </div>
         </div>
       </div>
@@ -799,8 +820,8 @@ export default function CrossSectionViewer({
               fontWeight="bold"
               fontFamily="monospace"
             >
-              WS (T+{selectedHour}h): {currentForecast.stage_m.toFixed(2)}m MSL | Q:{" "}
-              {currentForecast.discharge_m3s.toFixed(1)} m³/s
+              WS (T+{selectedHour}h): {fmt(currentForecast.stage_m)}m MSL | Q:{" "}
+              {fmt(currentForecast.discharge_m3s, 1)} m³/s
             </text>
           </g>
 

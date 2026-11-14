@@ -4,14 +4,16 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Query, Request, Response
 
 from backend.api.limits import RATE_LIMIT_PUBLIC, limiter
 from backend.api.runtime import (
     PublicDep,
     _jsonify,
     _load_pipeline_state,
+    filter_fields,
     get_pool,
+    json_with_etag,
     log,
 )
 
@@ -157,6 +159,8 @@ async def outlet_hydrograph(request: Request, outlet_node: str = "J_Outlet"):
     * `baseflow_m3s` — exponential recession, floored at the WRD monsoon value
     * `stage_m` — the same discharge pushed through the PCHIP rating curve
     * `is_peak` — `true` on the single `argmax` of total discharge
+
+    Supports conditional requests via `ETag` / `If-None-Match` (HTTP 304).
     """
     try:
         pool = await get_pool()
@@ -168,13 +172,15 @@ async def outlet_hydrograph(request: Request, outlet_node: str = "J_Outlet"):
                 WHERE outlet_node=$1
                 ORDER BY timestamp
             """, outlet_node)
+        payload = _jsonify(rows)
     except Exception as e:
         log.warning("Outlet hydrograph fallback: %s", e)
         state = _load_pipeline_state()
         if state and state.get("hydrograph"):
-            return {"data": state["hydrograph"], "degraded": True, "source": "pipeline_state_file", "error": str(e)}
-        return {"degraded": True, "source": "fallback", "error": str(e), "hydrograph": []}
-    return _jsonify(rows)
+            payload = {"data": state["hydrograph"], "degraded": True, "source": "pipeline_state_file", "error": str(e)}
+        else:
+            payload = {"degraded": True, "source": "fallback", "error": str(e), "hydrograph": []}
+    return json_with_etag(request, payload)
 
 @router.get(
     "/api/v1/runoff/summary",
@@ -184,7 +190,10 @@ async def outlet_hydrograph(request: Request, outlet_node: str = "J_Outlet"):
     response_description="Outlet peak statistics, per-bridge forecast series, peak arrival window, and calibration state.",
 )
 @limiter.limit(RATE_LIMIT_PUBLIC)
-async def runoff_summary(request: Request):
+async def runoff_summary(
+    request: Request,
+    fields: Optional[str] = Query(None, description="Comma-separated fields/aliases to return (e.g. peak_q,stage_m,alert_level)."),
+):
     """Peak Q, Tp, volume, flood alert for the latest run with peak arrival confidence intervals.
 
     Returns data shaped for the frontend dashboard:
@@ -193,6 +202,9 @@ async def runoff_summary(request: Request):
     - bridges: per-bridge stage forecast with thresholds and forecast series
     - hydrograph: 90-hour discharge hydrograph points
     - peak_arrival: calibrated peak arrival times per bridge
+
+    Supports conditional requests via `ETag` / `If-None-Match` (HTTP 304) and
+    optional partial responses via `?fields=...`.
     """
     try:
         pool = await get_pool()
@@ -248,7 +260,7 @@ async def runoff_summary(request: Request):
                         "alert_level": forecast[0].get("alert_level", "NORMAL") if forecast else "NORMAL",
                         "forecast": forecast,
                     })
-            return {
+            payload = {
                 "degraded": True,
                 "source": "pipeline_state_file",
                 "error": str(e),
@@ -259,21 +271,24 @@ async def runoff_summary(request: Request):
                 "peak_arrival": state.get("peak_arrival", summary.get("peak_arrival", {})),
                 "recalibration": state.get("recalibration", {}),
             }
-        return {
-            "degraded": True,
-            "source": "fallback",
-            "error": str(e),
-            "outlet": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
-                       "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
-            "summary": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
-                        "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
-            "bridges": [],
-            "hydrograph": [],
-            "peak_arrival": {},
-        }
+        else:
+            payload = {
+                "degraded": True,
+                "source": "fallback",
+                "error": str(e),
+                "outlet": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
+                           "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
+                "summary": {"peak_discharge_m3s": 0.0, "lead_hours_to_peak": 0,
+                            "total_volume_mcm": 0.0, "alert_level": "NORMAL"},
+                "bridges": [],
+                "hydrograph": [],
+                "peak_arrival": {},
+            }
+        payload = filter_fields(payload, fields)
+        return json_with_etag(request, payload)
 
     if not last_cycle:
-        return {
+        payload = {
             "degraded": True,
             "source": "no_data",
             "error": "No computation cycle available",
@@ -285,14 +300,12 @@ async def runoff_summary(request: Request):
             "hydrograph": [],
             "peak_arrival": {},
         }
+        payload = filter_fields(payload, fields)
+        return json_with_etag(request, payload)
 
     # Build bridge objects with full stage data
     bridges_by_site = {}
     for r in bridge_rows:
-        sid = r["site_id"]
-        if sid not in bridges_by_site:
-            # First row's stage_m is the T+0 current stage
-            first_stage = None
         sid = r["site_id"]
         if sid not in bridges_by_site:
             first_stage = float(r["stage_m"]) if r.get("stage_m") else None
@@ -348,7 +361,8 @@ async def runoff_summary(request: Request):
     except Exception:
         calibration_state = {}
 
-    return {
+    payload = {
+        "run_id": last_cycle.get("run_id") if last_cycle else None,
         "outlet": {
             "peak_discharge_m3s": float(last_cycle.get("peak_discharge_m3s") or 0),
             "lead_hours_to_peak": int(last_cycle.get("lead_hours_to_peak") or 0),
@@ -373,6 +387,8 @@ async def runoff_summary(request: Request):
         "peak_arrival": peak_arrival,
         "recalibration": calibration_state,
     }
+    payload = filter_fields(payload, fields)
+    return json_with_etag(request, payload)
 
 @router.get(
     "/api/v1/runoff/calibration",
@@ -533,6 +549,151 @@ async def flood_bulletin(request: Request):
         "disclaimer":     "Scientific research digital twin by CCCSS, Shivaji University Kolhapur (DST-SERB). For official flood warnings, evacuation notices, and civil alerts, refer to competent government authorities (District Administration / DDMA / CWC).",
         "sites":          _jsonify(rows),
     }
+
+
+def _escape_pdf_text(text: str) -> str:
+    return (
+        str(text)
+        .replace("\\", "\\\\")
+        .replace("(", "\\(")
+        .replace(")", "\\)")
+        .replace("\r", " ")
+        .replace("\n", " ")
+    )
+
+
+def _build_simple_pdf(title: str, subtitle: str, lines: list[str]) -> bytes:
+    """Build a minimal, dependency-free single-page PDF (A4-ish, Helvetica)."""
+    content_lines = [
+        "BT",
+        "/F1 16 Tf",
+        "50 800 Td",
+        f"({_escape_pdf_text(title)}) Tj",
+        "0 -22 Td",
+        "/F1 10 Tf",
+        f"({_escape_pdf_text(subtitle)}) Tj",
+        "0 -18 Td",
+    ]
+    y_steps = 0
+    for line in lines:
+        if y_steps >= 58:  # keep single-page simple
+            content_lines.extend(["T*", "(...) Tj"])
+            break
+        content_lines.extend(["T*", f"({_escape_pdf_text(line)}) Tj"])
+        y_steps += 1
+    content_lines.append("ET")
+    stream = "\n".join(content_lines).encode("latin-1", errors="replace")
+
+    objects: list[bytes] = []
+    def add_obj(body: bytes | str) -> int:
+        if isinstance(body, str):
+            body = body.encode("latin-1", errors="replace")
+        objects.append(body)
+        return len(objects)
+
+    add_obj("<< /Type /Catalog /Pages 2 0 R >>")
+    add_obj("<< /Type /Pages /Kids [3 0 R] /Count 1 >>")
+    add_obj("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>")
+    add_obj("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>")
+    add_obj(b"<< /Length " + str(len(stream)).encode("ascii") + b" >>\nstream\n" + stream + b"\nendstream")
+
+    out = bytearray(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
+    xref_positions = [0]
+    for i, obj in enumerate(objects, start=1):
+        xref_positions.append(len(out))
+        out.extend(f"{i} 0 obj\n".encode("latin-1"))
+        out.extend(obj)
+        out.extend(b"\nendobj\n")
+    xref_start = len(out)
+    out.extend(f"xref\n0 {len(objects)+1}\n".encode("latin-1"))
+    out.extend(b"0000000000 65535 f \n")
+    for pos in xref_positions[1:]:
+        out.extend(f"{pos:010d} 00000 n \n".encode("latin-1"))
+    out.extend(f"trailer\n<< /Size {len(objects)+1} /Root 1 0 R >>\nstartxref\n{xref_start}\n%%EOF".encode("latin-1"))
+    return bytes(out)
+
+
+@router.get(
+    "/api/v1/alerts/bulletin/pdf",
+    dependencies=[PublicDep],
+    tags=["Alerts"],
+    summary="Academic flood simulation bulletin (PDF)",
+    response_description="Printable PDF bulletin generated from the latest flood bulletin payload.",
+)
+@limiter.limit(RATE_LIMIT_PUBLIC)
+async def flood_bulletin_pdf(request: Request):
+    """Generate and stream a simple PDF bulletin for the latest forecast state.
+
+    Uses the same source data as `/api/v1/alerts/bulletin` and includes the
+    academic/research disclaimer. Designed for on-prem Windows deployment without
+    external PDF rendering dependencies.
+    """
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT b.site_id, b.site_name,
+                       b.alert_stage_m, b.warning_stage_m, b.danger_stage_m, b.hfl_m,
+                       f.stage_m AS current_stage,
+                       f.discharge_m3s AS current_q,
+                       f.alert_level,
+                       f.arrival_time,
+                       p.peak_discharge_m3s,
+                       p.time_of_peak,
+                       p.total_runoff_volume_m3
+                FROM bridge_sites b
+                LEFT JOIN bridge_stage_forecast f ON f.site_id=b.site_id
+                    AND f.lead_hours=1
+                    AND f.forecast_run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+                LEFT JOIN peak_discharge_events p ON p.outlet_node='J_Outlet'
+                    AND p.run_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
+                ORDER BY b.site_id
+            """)
+    except Exception as e:
+        log.warning("Flood bulletin PDF fallback: %s", e)
+        rows = []
+
+    issued_at = datetime.now(timezone.utc).isoformat()
+    payload_rows = _jsonify(rows)
+    lines = [
+        "HydroCast Panchganga - Academic Simulation Bulletin (CCCSS, Shivaji University Kolhapur)",
+        f"Issued at (UTC): {issued_at}    Valid for: 90 hours",
+        "Disclaimer: Scientific research simulation. Not an official flood warning/evacuation notice.",
+        "-" * 95,
+    ]
+    if not payload_rows:
+        lines.append("No bulletin data available for the latest cycle.")
+    for r in payload_rows:
+        site = r.get("site_name") or r.get("site_id") or "Unknown site"
+        alert = r.get("alert_level") or "NORMAL"
+        cur_stage = r.get("current_stage")
+        cur_q = r.get("current_q")
+        peak_q = r.get("peak_discharge_m3s")
+        t_peak = r.get("time_of_peak") or r.get("arrival_time")
+        lines.append(f"Site: {site} | Alert: {alert}")
+        lines.append(
+            f"  Current stage (m): {cur_stage if cur_stage is not None else 'N/A'} | "
+            f"Current Q (m3/s): {cur_q if cur_q is not None else 'N/A'} | "
+            f"Peak Q (m3/s): {peak_q if peak_q is not None else 'N/A'}"
+        )
+        lines.append(
+            f"  Thresholds (m) Alert/Warn/Danger/HFL: "
+            f"{r.get('alert_stage_m','N/A')}/{r.get('warning_stage_m','N/A')}/{r.get('danger_stage_m','N/A')}/{r.get('hfl_m','N/A')} | "
+            f"Peak/Arrival: {t_peak if t_peak is not None else 'N/A'}"
+        )
+        lines.append("")
+
+    pdf_bytes = _build_simple_pdf(
+        title="HydroCast Panchganga Flood Advisory Bulletin",
+        subtitle="Academic & scientific simulation output (not an official warning)",
+        lines=lines,
+    )
+    filename = f"hydrocast_flood_bulletin_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="{filename}"'},
+    )
 
 @router.api_route(
     "/api/v1/research/hydrological-summary",

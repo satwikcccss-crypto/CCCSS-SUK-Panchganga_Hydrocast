@@ -207,6 +207,7 @@ def execute_cycle(
     station_selection: Dict[str, Dict[str, Any]] = {}
     hg_results: Dict[str, Any] = {}
     bridge_stages: Dict[str, Any] = {}
+    alert_result: Dict[str, Any] = {}
 
     step_records: List[Dict[str, Any]] = []
 

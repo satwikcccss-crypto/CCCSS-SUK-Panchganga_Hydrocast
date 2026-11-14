@@ -5,6 +5,8 @@ Unit tests for pipeline worker, step checkpointing, and abort controls.
 """
 
 from datetime import datetime, timezone
+import threading
+import time
 import pytest
 from backend.service.pipeline_worker import (
     save_step_checkpoint,
@@ -13,6 +15,9 @@ from backend.service.pipeline_worker import (
     ABORT_EVENT,
     check_abort,
     CycleAbortedException,
+    execute_cycle,
+    ACTIVE_RUN_LOCK,
+    ACTIVE_RUN_METADATA,
 )
 
 
@@ -52,4 +57,40 @@ def test_emergency_abort_signal():
         check_abort(cycle_id)
 
     ABORT_EVENT.clear()
+
+
+def test_single_step_execution_isolation():
+    """Verify single-step retry executes only the designated step and handles state safely."""
+    cycle_id = "CYC_TEST_SINGLE_STEP_4"
+    res = execute_cycle(cycle_id=cycle_id, single_step=4)
+    assert res.get("status") == "completed"
+    assert res.get("steps_completed") == [4]
+    assert not ACTIVE_RUN_LOCK.locked()
+    assert not ACTIVE_RUN_METADATA["is_running"]
+
+
+def test_active_run_lock_prevents_concurrent_runs():
+    """Verify that ACTIVE_RUN_LOCK rejects overlapping execution attempts."""
+    with ACTIVE_RUN_LOCK:
+        with pytest.raises(RuntimeError, match="Another forecast cycle is currently running"):
+            execute_cycle(cycle_id="CYC_CONCURRENT_BLOCKED")
+
+
+def test_cycle_aborts_cleanly_during_execution():
+    """Verify that an abort event triggered during cycle execution cleanly stops the cycle."""
+    cycle_id = "CYC_TEST_ABORT_RUN"
+
+    def _trigger_delayed_abort():
+        time.sleep(0.3)
+        trigger_abort()
+
+    t = threading.Thread(target=_trigger_delayed_abort)
+    t.start()
+    res = execute_cycle(cycle_id=cycle_id)
+    t.join()
+
+    assert res.get("status") == "aborted"
+    assert not ACTIVE_RUN_LOCK.locked()
+    assert not ACTIVE_RUN_METADATA["is_running"]
+
 

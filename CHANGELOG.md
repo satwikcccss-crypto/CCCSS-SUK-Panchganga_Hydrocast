@@ -6,6 +6,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2026-11-14 — API Upgrades & Security Hardening (`windows-v1.3.0`)
+
+Release on `windows-server-production` focused on bandwidth-efficient APIs (ETag/304, partial responses, PDF bulletin), official vs operator role-based access control with a database-backed audit trail, and a cleaner, more honest operator-console surface — while keeping all backend/frontend contracts on `1.3.0`.
+
+### API upgrades
+- **Conditional requests (ETag/304):** `If-None-Match` support added to `/api/v1/runoff/summary`, `/api/v1/runoff/hydrograph`, and `/api/v1/dashboard`; JSON responses now carry `ETag` and `Cache-Control: no-cache`, and matching validators return `304 Not Modified`.
+- **Partial responses:** `GET /api/v1/runoff/summary?fields=a,b,...` returns only requested top-level keys plus a small alias set (e.g. `peak_q`, `stage_m`, `alert_level`, `lead_hours_to_peak`, `total_volume_mcm`, `cycle_id`/`run_id`); empty/unknown fields are safe and the full payload is preserved when no fields match.
+- **PDF bulletin:** new `GET /api/v1/alerts/bulletin/pdf` streams a dependency-free, on-premise-friendly `application/pdf` advisory bulletin generated from the latest forecast cycle data.
+- **OpenAPI / SDK readiness:** `scripts/export_openapi.py` exports the public/admin OpenAPI schema; `docs/openapi-sdk.md` documents export, client generation, and integration examples (no packaged PyPI SDK yet).
+
+### Security hardening
+- **Official (viewer) vs operator (admin) role-based access:** the operator console now enforces DB roles end-to-end. `verify_viewer_auth` (any valid admin-realm JWT) guards identity/health checks; `verify_admin_auth` now requires `role == "admin"` on all operator-action routes; admin WebSocket streams require an admin role claim. All admin proxies gate by role (dashboard/export/history/sensors = console JWT viewer-ok; db-health/system/runtime/pipeline/health-log/dispatch = admin-only 403 for officials).
+- **Admin audit trail:** blocked official attempts are persisted in `admin_audit_log` as `VIEWER_BLOCKED`; operator actions continue via `record_admin_audit`; official logins retained in `admin_login_log`.
+- **Official account provisioning:** institutional domains only (`unishivaji.ac.in`, `gov.in`) — `gmail.com` removed everywhere; `viewer` role supported and is the default; only `admin` retains full (DB, trigger, dispatch, backup) access.
+- **Admin WebSocket auth:** `/ws/admin/logs` and `/ws/admin/telemetry` (in `backend/api/websocket_hub.py`) now require admin JWT with `role=admin` or master API key via `?token=` before the connection is accepted (close code `1008` otherwise); removed duplicate/stub admin WS handlers in `backend/api/admin_app.py` to eliminate route-precedence conflicts.
+- **Admin login proxy (`frontend-admin`):** single trusted upstream (`ADMIN_BACKEND_ORIGIN`, default `http://127.0.0.1:8001`); removed multi-target/localhost fallback chain, added input validation/size limits, per-IP rate limiting (`429`), and sanitized non-leaking error responses.
+- **Admin proxy/API surface:** bearer-gated `dashboard`, `export`, `history` proxies now require an admin session token; `sensors/live` route added with bearer auth and sanitized proxying; callers (`SystemPanel`, `LiveTelemetryPanel`, `ForceRunApp`, `lib/api.ts`) send the admin token.
+- **Dispatch honesty:** admin dispatch route no longer fabricates “Saved to Database / verified healthy / backup dispatched” success responses when the admin backend is unavailable—returns explicit `ok: false` with `4xx/503` status.
+- **Admin visits ledger simplified:** removed Supabase/Upstash multi-ledger complexity and server-side env dependency from the operator console; it now proxies the canonical backend (with minimal local fallback).
+- **Admin Telegram webhook disabled** on the operator console (`410`) to remove duplicate filesystem-coupled bot handling.
+- **Tests:** added `tests/test_admin_ws_auth.py` (WS rejection with close code `1008` for missing/invalid token).
+
+### Database & migrations
+- **Alembic:** `alembic.ini` `version_locations` fixed to `alembic/versions` and `version_path_separator=os`; env normalizes `postgresql://` → `postgresql+psycopg2://` for migrator compatibility.
+- **New migration `002_add_forecast_run_indexes`:** composite index `idx_bsf_run_site_lead` on `bridge_stage_forecast(forecast_run_id, site_id, lead_hours)`.
+
+### Verification
+- Backend: **319 passed, 3 skipped** (`py -m pytest tests/ -q --no-header`), incl. `tests/test_admin_ws_auth.py`.
+- Lint: **ruff** clean for `backend`, `tests`, `scripts`.
+- Frontend: `frontend-admin` and `frontend-public` `npx tsc --noEmit` and production `next build` pass.
+
+### Known gaps / pending (tracked, not fixed in this release)
+- CSP `connect-src` still broad (`'self' ws: wss:`); WS origin allowlist pending; live-dashboard and integration verification pending after restart with the new code/version metadata.
+
+---
+
 ## [1.2.0] - 2026-11-13 — Ops & Observability Patchwork (`windows-v1.2.0`)
 
 Operational reliability and observability release on `windows-server-production`, focused on safer metrics handling, richer scrape-time runtime signals, and improved Windows ops scripts for monitoring and backups.

@@ -11,7 +11,6 @@ import {
   LayersControl,
   useMap,
 } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
 import {
   Search,
   Layers,
@@ -168,12 +167,20 @@ export default function BasinMap({
       .catch(() => {});
   }, []);
 
+  const safeStations: any[] = useMemo(() => {
+    if (Array.isArray(stations)) return stations;
+    if (stations && typeof stations === "object") {
+      return (stations as any).data ?? (stations as any).stations ?? [];
+    }
+    return [];
+  }, [stations]);
+
   function getSubRainfall(subId: string) {
     if (ecmwf && ecmwf[subId] && ecmwf[subId].length > 0) {
       const sum = ecmwf[subId].reduce((acc: number, p: any) => acc + (p.mm_hr ?? 0), 0);
       return parseFloat(sum.toFixed(1));
     }
-    const stMatch = stations?.find((s: any) => s.subbasin_id === subId);
+    const stMatch = safeStations.find((s: any) => s.subbasin_id === subId);
     if (stMatch && stMatch.cumulative_90h_mm !== undefined) {
       return stMatch.cumulative_90h_mm;
     }
@@ -183,7 +190,7 @@ export default function BasinMap({
   // Unified stations list with real live precipitation data
   const enrichedStations = useMemo(() => {
     return ALL_GAUGE_STATIONS.map((g) => {
-      const stMatch = stations?.find(
+      const stMatch = safeStations.find(
         (s: any) =>
           s.station_id === g.id ||
           s.station_name?.toLowerCase().includes(g.name.split(" ")[0].toLowerCase())

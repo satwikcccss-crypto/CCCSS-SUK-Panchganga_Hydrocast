@@ -12,6 +12,7 @@ from backend.api.runtime import (
     _jsonify,
     _load_pipeline_state,
     get_pool,
+    json_with_etag,
     log,
 )
 
@@ -173,7 +174,7 @@ async def get_dashboard_payload(request: Request, run_id: Optional[str] = None):
         run_data = get_computation_run(run_id)
         if run_data:
             run_data["runs_history"] = list_computation_runs(limit=100)
-            return run_data
+            return json_with_etag(request, run_data)
         raise HTTPException(status_code=404, detail=f"Run '{run_id}' not found")
         
     latest_state = project_root / "data" / "openmeteo_dss" / "latest_pipeline_state.json"
@@ -214,7 +215,9 @@ async def get_dashboard_payload(request: Request, run_id: Optional[str] = None):
                     if "summary" not in data:
                         data["summary"] = {}
                     data["summary"]["peak_discharge_m3s"] = db_peak_q
-                    data["summary"]["baseflow_m3s"] = db_peak_q
+                    # Do NOT overwrite baseflow_m3s with peak discharge here.
+                    # baseflow must derive from ThingSpeak live stage -> previous
+                    # cycle -> MONSOON_BASEFLOW (see backend/hms/runner.py).
                     data["summary"]["total_volume_mcm"] = db_volume
                     data["summary"]["lead_hours_to_peak"] = db_lead
                     data["summary"]["alert_level"] = db_alert
@@ -368,7 +371,7 @@ async def get_dashboard_payload(request: Request, run_id: Optional[str] = None):
                     else:
                         s["status"] = "idle"
 
-    return data
+    return json_with_etag(request, data)
 
 @router.get(
     "/api/v1/runs",

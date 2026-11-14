@@ -45,7 +45,9 @@ export default function OverviewPanel({
   const completionPct = validationData?.completion_pct ?? 0;
 
   // Basin Rainfall Volume Calculations
-  const stationsList: any[] = stations ?? [];
+  const stationsList: any[] = Array.isArray(stations)
+    ? stations
+    : (stations?.data ?? stations?.stations ?? []);
   const totalBasinRainVolMcm = stationsList.length > 0
     ? ((stationsList.reduce((acc: number, s: any) => acc + (s.cumulative_90h_mm ?? 0), 0) / stationsList.length) * 2140.0) / 1000.0
     : (lastCycle?.total_rainfall_volume_mcm ?? 0);

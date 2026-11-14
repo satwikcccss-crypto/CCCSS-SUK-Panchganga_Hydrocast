@@ -4,7 +4,8 @@ This directory contains **GitHub-standard release notes** for the Windows Server
 
 | Release | Tag | Date | Status | Notes |
 |:--|:--|:--|:--|:--|
-| **v1.2.0** | [`windows-v1.2.0`](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.2.0) | 2026-11-13 | ✅ Current | [windows-v1.2.0.md](./windows-v1.2.0.md) |
+| **v1.3.0** | [`windows-v1.3.0`](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.3.0) | 2026-11-14 | 🛠️ Prepared (not committed) | [windows-v1.3.0.md](./windows-v1.3.0.md) |
+| **v1.2.0** | [`windows-v1.2.0`](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.2.0) | 2026-11-13 | ✅ Current (shipped) | [windows-v1.2.0.md](./windows-v1.2.0.md) |
 | **v1.1.0** | [`windows-v1.1.0`](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.1.0) | 2026-11-13 | 🔒 Hardening | [windows-v1.1.0.md](./windows-v1.1.0.md) |
 | **v1.0.0** | [`windows-v1.0.0`](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.0.0) | 2026-11-13 | 🧱 Baseline | [windows-v1.0.0.md](./windows-v1.0.0.md) |
 

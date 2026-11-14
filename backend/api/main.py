@@ -77,7 +77,7 @@ _openapi_url = None if _APP_ENV_DOCS == "production" else "/openapi.json"
 # â”€â”€ Rate limiter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # The shared instance lives in backend.api.limits (also used by the admin login).
 app = FastAPI(
-    version="1.2.0",
+    version="1.3.0",
     summary="Rainfall-runoff and river flood intelligence for the Panchganga Basin, Kolhapur.",
     docs_url=_docs_url,
     openapi_url=_openapi_url,
@@ -170,7 +170,7 @@ def custom_openapi():
 
     schema = get_openapi(
         title="Shivaji University Kolhapur â€” HydroCast Public Flood Intelligence API",
-        version="1.2.0",
+        version="1.3.0",
         description=(
             "### Official Free Public Flood Intelligence API\n"
             "Centre for Climate Change and Sustainability Studies (CCCSS), Shivaji University, Kolhapur.\n\n"

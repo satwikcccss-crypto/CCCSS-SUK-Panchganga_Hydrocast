@@ -1,0 +1,89 @@
+name: ✨ Feature Request
+description: Naya feature suggest karein — hydrologic model, sensor integration, UI improvement, ya kuch bhi
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+        HydroCast ko better banana chahte hain? Hamare saath share karein apna idea!
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 🗂️ Feature Area
+      description: Yeh feature kahan fit hoga?
+      options:
+        - Hydrologic Routing / Physics Model
+        - Flood Forecast & Alert Engine
+        - Sensor / Gauge Data Ingestion
+        - REST API / Backend
+        - Public Portal UI
+        - Admin Dashboard UI
+        - Alerting & Notifications (WhatsApp, SMS, Email)
+        - Reporting & Analytics
+        - Data Export / Integration
+        - DevOps / CI-CD
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 🎯 Problem Statement
+      description: Kaunsi problem solve ho jayegi is feature se?
+      placeholder: "Abhi hume manually check karna padta hai ki Panchganga ka level warning threshold cross hua ya nahi..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 💡 Proposed Solution
+      description: Aap kya implement karna chahte hain?
+      placeholder: "Ek automated Telegram bot jo har 15 minute mein gauge reading check kare aur..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 Alternatives Considered
+      description: Koi aur approach sochi thi? Kyun reject ki?
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 📊 Priority / Impact
+      description: Kitne logon ko benefit hoga?
+      options:
+        - High — Flood safety / core forecasting (direct life impact)
+        - Medium — Operational efficiency improvement
+        - Low — Nice-to-have / quality of life
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: ✅ Acceptance Criteria
+      description: Kaise verify karein ki feature complete hai? (bullet points mein)
+      placeholder: |
+        - [ ] API endpoint `/api/v1/alerts/telegram` available hai
+        - [ ] 15-min polling correctly works
+        - [ ] Tests cover happy path aur error cases
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Pre-submission Checklist
+      options:
+        - label: Maine existing issues/discussions mein search ki — yeh duplicate nahi hai
+          required: true
+        - label: Yeh CONTRIBUTING.md ke scope ke andar hai
+          required: true

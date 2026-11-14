@@ -1,0 +1,80 @@
+name: 📊 Data Quality Issue
+description: Gauge data, historical records, or forecast values mein koi anomaly ya inaccuracy report karein
+title: "[Data]: "
+labels: ["data-quality", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Data Quality Issue
+        Panchganga basin ke liye accurate data critical hai. Koi anomaly milne par yahan report karein.
+
+  - type: dropdown
+    id: data-type
+    attributes:
+      label: 📂 Data Type
+      description: Kaunsa data affected hai?
+      options:
+        - Real-time Gauge Readings (CWC/IMDPS)
+        - Historical Discharge Records
+        - Rainfall / IMD Grid Data
+        - Flood Forecast Output
+        - Stage-Discharge Rating Curve
+        - Alert Threshold Values
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: station
+    attributes:
+      label: 🌊 Station / Location
+      description: Kaunsa gauge station ya region affected hai?
+      placeholder: "Rajaram Weir, Panchganga at Kolhapur (CWC ID: ...)"
+    validations:
+      required: true
+
+  - type: input
+    id: timerange
+    attributes:
+      label: 🗓️ Affected Time Range
+      description: "Start aur end datetime (IST preferred)"
+      placeholder: "2024-07-15 06:00 IST to 2024-07-16 18:00 IST"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Issue Description
+      description: Kya exactly galat hai? Spikes, missing data, unit mismatch, etc.
+      placeholder: "Rajaram Weir ka level 2024-07-15 ke baad 999.99 m show ho raha hai jo clearly sensor error hai..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-values
+    attributes:
+      label: ✅ Expected / Correct Values
+      description: Agar pata ho to correct values ya source batayein
+      placeholder: "CWC daily bulletin ke anusaar value ~8.5 m honi chahiye thi"
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: 🚨 Downstream Impact
+      description: Is data error se forecast ya alert mein koi galat output toh nahi aaya?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✔️ Pre-submission Checklist
+      options:
+        - label: Maine CWC/IMD source se cross-check kiya hai
+          required: true
+        - label: Exact timestamps IST mein note ki hain
+          required: true

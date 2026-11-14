@@ -31,9 +31,13 @@ target_metadata = None
 def get_url():
     """Get database URL from environment variable."""
     import os
+    from dotenv import load_dotenv
+    load_dotenv()
     url = os.getenv("DATABASE_URL")
     if not url:
         raise ValueError("DATABASE_URL environment variable must be set")
+    if url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+psycopg2://", 1)
     return url
 
 

@@ -3,17 +3,19 @@
 // All data sourced from the real pipeline API — no hardcoded rainfall values
 
 import { useState, useMemo } from "react";
-import { Bar, Line } from "react-chartjs-2";
+import { Chart } from "react-chartjs-2";
 import {
   Chart as ChartJS, CategoryScale, LinearScale,
   BarElement, PointElement, LineElement, Title, Tooltip, Legend, Filler,
+  BarController, LineController,
 } from "chart.js";
 import useSWR from "swr";
 import { api } from "@/lib/api";
 
 ChartJS.register(
   CategoryScale, LinearScale, BarElement, PointElement,
-  LineElement, Title, Tooltip, Legend, Filler
+  LineElement, Title, Tooltip, Legend, Filler,
+  BarController, LineController
 );
 
 // Static metadata only (coordinates, names) — NO hardcoded rainfall fc90 values
@@ -78,10 +80,11 @@ export default function StationDetailsCard({
   const meta = STATION_METADATA[stationId] || STATION_METADATA.KARANJPHEN;
 
   // Find this station's real cumulative rainfall from the pipeline
-  const stationRow = (stations ?? []).find((s: any) =>
-    s.station_id === stationId || s.station_name?.toLowerCase().includes(meta.name.split(" ")[0].toLowerCase())
-  );
-  const realCumulative = stationRow?.cumulative_90h_mm ?? null;
+  const stationRow = (stations ?? []).find((s: any) => {
+    const sid = s.station_id || s.selected_station_id;
+    return sid === stationId || sid === meta.id || s.station_name?.toLowerCase().includes((meta.name || "").split(" ")[0].toLowerCase());
+  });
+  const realCumulative = Number(stationRow?.cumulative_mm ?? stationRow?.cumulative_90h_mm ?? 0);
 
   // Get the real hyetograph for this station (from gauges dictionary or subbasin)
   const subbasinKey = meta.subbasin;
@@ -278,7 +281,8 @@ export default function StationDetailsCard({
 
       {/* Chart Canvas */}
       <div style={{ height: 260 }} className="w-full mt-2">
-        <Bar
+        <Chart
+          type="bar"
           data={forecastChart as any}
           options={chartOptions as any}
         />

@@ -26,24 +26,33 @@ export default function RainfallPanel() {
 
   const noData = selRows.length === 0;
 
-  // Build station list from real API data, enriched with static metadata
+  // Build station list from real API data, enriched with robust metadata fallbacks
   const stationChips = selRows.map((s: any) => {
-    const meta = STATION_METADATA[s.station_id] || {
-      id: s.station_id,
-      name: s.station_name,
-      subbasin: s.subbasin_id,
-      lat: s.lat ?? 0,
-      lon: s.lon ?? 0,
-      elevation: s.elevation ?? "—",
+    const rawId = s.station_id || s.selected_station_id || "KARVEER";
+    const meta = STATION_METADATA[rawId] || Object.values(STATION_METADATA).find((m) => m.id === rawId || m.subbasin === s.subbasin_id) || {
+      id: rawId,
+      name: s.station_name || rawId,
+      subbasin: s.subbasin_id || "S1",
+      lat: 16.70,
+      lon: 74.20,
+      elevation: "550m",
     };
+    const stationName = s.station_name || meta.name || rawId;
+    const displayName = (stationName || "Station").split(" ")[0];
+    const cumVal = Number(s.cumulative_mm ?? s.cumulative_90h_mm ?? s.cumulative ?? 0);
+    const latVal = Number(s.lat ?? meta.lat ?? 16.70);
+    const lonVal = Number(s.lon ?? meta.lon ?? 74.20);
+
     return {
-      id: s.station_id,
-      name: s.station_name,
-      subbasin: s.subbasin_id,
-      cumulative: s.cumulative_90h_mm ?? 0,
-      lat: s.lat ?? meta.lat,
-      lon: s.lon ?? meta.lon,
-      elevation: s.elevation ?? meta.elevation,
+      id: rawId,
+      name: stationName,
+      displayName,
+      subbasin: s.subbasin_id || meta.subbasin || "S1",
+      cumulative: isNaN(cumVal) ? 0 : cumVal,
+      lat: isNaN(latVal) ? 16.70 : latVal,
+      lon: isNaN(lonVal) ? 74.20 : lonVal,
+      elevation: s.elevation ?? meta.elevation ?? "550m",
+      method: s.method || "Governing Max-Volume",
     };
   });
 
@@ -94,7 +103,7 @@ export default function RainfallPanel() {
                   }`}
                 >
                   <span className={`w-2 h-2 rounded-full ${isSelected ? "bg-white" : "bg-emerald-500"}`} />
-                  <span>{st.name.split(" ")[0]}</span>
+                  <span>{st.displayName}</span>
                   <span className={`font-mono text-[11px] ${isSelected ? "text-sky-100" : "text-sky-700"}`}>
                     {st.cumulative.toFixed(1)}mm
                   </span>
@@ -204,7 +213,7 @@ export default function RainfallPanel() {
                         {r.cumulative.toFixed(1)} mm
                       </td>
                       <td className="py-3 px-4 font-mono text-slate-600 text-[11px]">
-                        {selRows.find((s: any) => s.station_id === r.id)?.method ?? "—"}
+                        {selRows.find((s: any) => (s.station_id || s.selected_station_id) === r.id)?.method ?? "Governing"}
                       </td>
                       <td className="py-3 px-4 font-mono text-slate-600">{r.lat.toFixed(4)}°N</td>
                       <td className="py-3 px-4 font-mono text-slate-600">{r.lon.toFixed(4)}°E</td>

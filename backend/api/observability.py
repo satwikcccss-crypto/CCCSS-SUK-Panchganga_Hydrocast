@@ -282,7 +282,7 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
 class APIVersionMiddleware(BaseHTTPMiddleware):
     """Add API-Version header to all responses for client version detection."""
 
-    API_VERSION = "1.2.0"
+    API_VERSION = "1.3.0"
 
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
