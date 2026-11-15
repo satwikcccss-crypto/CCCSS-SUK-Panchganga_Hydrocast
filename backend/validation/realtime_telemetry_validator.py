@@ -51,6 +51,14 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
+try:
+    from dotenv import load_dotenv
+    _env_file = ROOT_DIR / ".env"
+    if _env_file.exists():
+        load_dotenv(_env_file, override=False)
+except ImportError:
+    pass
+
 log = logging.getLogger(__name__)
 from backend.validation.telemetry_metrics import (  # pure metrics, re-exported
     SHIVAJI_DATUM_MSL,
@@ -64,7 +72,7 @@ from backend.validation.telemetry_metrics import (  # pure metrics, re-exported
 )
 
 THINGSPEAK_CHANNEL_ID = os.getenv("THINGSPEAK_CHANNEL_ID", "3424513")
-THINGSPEAK_API_KEY = os.getenv("THINGSPEAK_API_KEY", "")
+THINGSPEAK_API_KEY = os.getenv("THINGSPEAK_READ_API_KEY") or os.getenv("THINGSPEAK_API_KEY", "")
 
 
 # A cycle whose forecast window has fully elapsed but which still has missing
@@ -130,7 +138,7 @@ def fetch_thingspeak_feeds(
 
     base_url = f"https://api.thingspeak.com/channels/{channel_id}/feeds.json"
     params = {"results": min(results, 8000)}
-    if api_key:
+    if api_key and "REPLACE_ME" not in api_key and "change-this" not in api_key:
         params["api_key"] = api_key
     if start:
         params["start"] = start

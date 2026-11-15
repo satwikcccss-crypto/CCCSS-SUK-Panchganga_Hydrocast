@@ -162,9 +162,9 @@ export default function SystemPanel({ pipeline }: { pipeline?: any }) {
     {
       name: "Telegram Bot & Emergency Alert Dispatcher",
       type: "Serverless Webhook & Flood Bulletins",
-      status: "online",
-      lag: "<500ms",
-      qc: 100,
+      status: "maintenance",
+      lag: "Paused",
+      qc: 0,
     },
     {
       name: "Parquet Cold Storage & Archival Engine",

@@ -15,8 +15,17 @@ import logging
 import os
 import urllib.request
 import urllib.error
+from pathlib import Path
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
+
+try:
+    from dotenv import load_dotenv
+    _env_file = Path(__file__).resolve().parent.parent.parent / ".env"
+    if _env_file.exists():
+        load_dotenv(_env_file, override=False)
+except ImportError:
+    pass
 
 log = logging.getLogger(__name__)
 
@@ -27,7 +36,9 @@ STATIONS: List[Dict[str, Any]] = [
         "full_name": "Chhatrapati Shivaji Maharaj Bridge, Kolhapur",
         "river": "Panchganga",
         "type": "ultrasonic_radar",
+        "unit": "feet",
         "channel_id_env": "THINGSPEAK_CHANNEL_ID",
+        "default_channel_id": "3424513",
         "api_key_env": "THINGSPEAK_READ_API_KEY",
         "fields_env": "THINGSPEAK_FIELDS",
         "sensor_datum_m": 549.35,
@@ -35,7 +46,8 @@ STATIONS: List[Dict[str, Any]] = [
         "latitude": 16.6950,
         "longitude": 74.2275,
         "has_voltage": True,
-        "field_map": {"distance_ft": "field1", "voltage": "field2"},
+        "has_signal_strength": True,
+        "field_map": {"distance": "field1", "voltage": "field2", "signal_strength": "field3"},
     },
     {
         "station_id": "NW",
@@ -43,15 +55,18 @@ STATIONS: List[Dict[str, Any]] = [
         "full_name": "Nitawade River Water Level Station",
         "river": "Panchganga",
         "type": "ultrasonic_radar",
+        "unit": "meters",
         "channel_id_env": "THINGSPEAK_NITAWADE_CHANNEL_ID",
+        "default_channel_id": "3417870",
         "api_key_env": "THINGSPEAK_NITAWADE_READ_API_KEY",
         "fields_env": "THINGSPEAK_NITAWADE_FIELDS",
         "sensor_datum_m": 552.80,
         "zero_level_m": 528.00,
         "latitude": 16.7200,
         "longitude": 74.2050,
-        "has_voltage": True,
-        "field_map": {"distance_ft": "field1", "voltage": "field2"},
+        "has_voltage": False,
+        "has_signal_strength": False,
+        "field_map": {"distance": "field1", "level": "field2", "altitude": "field3"},
     },
     {
         "station_id": "IK",
@@ -59,7 +74,9 @@ STATIONS: List[Dict[str, Any]] = [
         "full_name": "Ichalkaranji Water Level Station",
         "river": "Panchganga",
         "type": "ultrasonic_radar",
+        "unit": "meters",
         "channel_id_env": "THINGSPEAK_ICHALKARANJI_CHANNEL_ID",
+        "default_channel_id": "3417872",
         "api_key_env": "THINGSPEAK_ICHALKARANJI_READ_API_KEY",
         "fields_env": "THINGSPEAK_ICHALKARANJI_FIELDS",
         "sensor_datum_m": 543.71,
@@ -67,14 +84,15 @@ STATIONS: List[Dict[str, Any]] = [
         "latitude": 16.6910,
         "longitude": 74.4610,
         "has_voltage": False,
-        "field_map": {"distance_ft": "field1"},
+        "has_signal_strength": False,
+        "field_map": {"distance": "field1"},
     },
 ]
 
 
 def _fetch_latest(channel_id: str, api_key: str, timeout: int = 10) -> Optional[Dict]:
     url = f"https://api.thingspeak.com/channels/{channel_id}/feeds/last.json"
-    if api_key:
+    if api_key and "REPLACE_ME" not in api_key and "change-this" not in api_key:
         url += f"?api_key={api_key}"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "HydroCast/2.0"})
@@ -85,16 +103,20 @@ def _fetch_latest(channel_id: str, api_key: str, timeout: int = 10) -> Optional[
         return None
 
 
-def _compute_stage(raw_feet: float, datum_m: float) -> float:
-    return round(datum_m - (raw_feet * 0.3048), 2)
+def _compute_stage(raw_distance: Optional[float], datum_m: float, unit: str = "meters") -> Optional[float]:
+    if raw_distance is None:
+        return None
+    dist_m = raw_distance * 0.3048 if unit == "feet" else raw_distance
+    return round(datum_m - dist_m, 2)
 
 
 def fetch_all_stations() -> List[Dict[str, Any]]:
     """Fetch live readings from all configured ThingSpeak sensor stations."""
     results = []
     for station in STATIONS:
-        channel_id = os.getenv(station["channel_id_env"], "")
+        channel_id = os.getenv(station["channel_id_env"], "") or station.get("default_channel_id", "")
         api_key = os.getenv(station["api_key_env"], "")
+        unit = station.get("unit", "meters")
 
         if not channel_id:
             results.append({
@@ -115,7 +137,7 @@ def fetch_all_stations() -> List[Dict[str, Any]]:
             })
             continue
 
-        distance_field = station["field_map"].get("distance_ft", "field1")
+        distance_field = station["field_map"].get("distance", station["field_map"].get("distance_ft", "field1"))
         voltage_field = station["field_map"].get("voltage", "field2")
 
         raw_val = None
@@ -135,6 +157,16 @@ def fetch_all_stations() -> List[Dict[str, Any]]:
             except (ValueError, TypeError):
                 pass
 
+        signal_strength = None
+        signal_field = station["field_map"].get("signal_strength")
+        if signal_field:
+            try:
+                sig_str = data.get(signal_field)
+                if sig_str is not None and sig_str != "":
+                    signal_strength = int(float(sig_str))
+            except (ValueError, TypeError):
+                pass
+
         if raw_val is None:
             results.append({
                 **_station_meta(station),
@@ -144,7 +176,7 @@ def fetch_all_stations() -> List[Dict[str, Any]]:
             })
             continue
 
-        stage_m = _compute_stage(raw_val, station["sensor_datum_m"])
+        stage_m = _compute_stage(raw_val, station["sensor_datum_m"], unit=unit)
         ts_str = data.get("created_at")
         status = "ONLINE"
         if ts_str:
@@ -155,12 +187,20 @@ def fetch_all_stations() -> List[Dict[str, Any]]:
                     status = "STALE"
             except (ValueError, TypeError):
                 pass
+
+        dist_ft = round(raw_val if unit == "feet" else raw_val / 0.3048, 2)
+        dist_m = round(raw_val * 0.3048 if unit == "feet" else raw_val, 2)
+
         results.append({
             **_station_meta(station),
             "status": status,
             "stage_m": stage_m,
-            "raw_distance_ft": round(raw_val, 2),
+            "raw_distance": round(raw_val, 2),
+            "raw_unit": "ft" if unit == "feet" else "m",
+            "raw_distance_ft": dist_ft,
+            "raw_distance_m": dist_m,
             "voltage": voltage,
+            "signal_strength": signal_strength,
             "timestamp": ts_str,
             "entry_id": data.get("entry_id"),
             **({"stale_since": ts_str} if status == "STALE" else {}),
@@ -187,11 +227,13 @@ def _station_meta(station: Dict) -> Dict[str, Any]:
         "full_name": station["full_name"],
         "river": station["river"],
         "type": station["type"],
+        "unit": station.get("unit", "meters"),
         "sensor_datum_m": station["sensor_datum_m"],
         "zero_level_m": station["zero_level_m"],
         "latitude": station["latitude"],
         "longitude": station["longitude"],
         "has_voltage": station.get("has_voltage", False),
+        "has_signal_strength": station.get("has_signal_strength", False),
     }
 
 

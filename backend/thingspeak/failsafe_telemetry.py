@@ -97,7 +97,7 @@ def fetch_thingspeak_failsafe(
     import urllib.error
 
     ch_id = channel_id or os.getenv("THINGSPEAK_CHANNEL_ID", "3424513")
-    key = api_key or os.getenv("THINGSPEAK_API_KEY", "")
+    key = api_key or os.getenv("THINGSPEAK_READ_API_KEY") or os.getenv("THINGSPEAK_API_KEY", "")
 
     url = f"https://api.thingspeak.com/channels/{ch_id}/feeds.json?results={max_results}"
     if key:

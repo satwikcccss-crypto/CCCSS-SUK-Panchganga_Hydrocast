@@ -692,7 +692,7 @@ export default function Dashboard() {
                         </div>
                         <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
                           <div className="flex justify-between"><span className="text-gray-500">Sensor Datum</span><span className="font-mono text-gray-700">{s.sensor_datum_m} m</span></div>
-                          <div className="flex justify-between"><span className="text-gray-500">Raw Distance</span><span className="font-mono text-gray-700">{s.raw_distance_ft ?? "—"} ft</span></div>
+                          <div className="flex justify-between"><span className="text-gray-500">Raw Distance</span><span className="font-mono text-gray-700">{s.raw_distance ?? s.raw_distance_ft ?? "—"} {s.raw_unit || (s.station_id === "SS" ? "ft" : "m")}</span></div>
                           {s.voltage != null && <div className="flex justify-between"><span className="text-gray-500">Battery</span><span className="font-mono text-gray-700">{s.voltage} V</span></div>}
                           <div className="flex justify-between"><span className="text-gray-500">Coordinates</span><span className="font-mono text-gray-700">{s.latitude?.toFixed(4)}°N</span></div>
                         </div>

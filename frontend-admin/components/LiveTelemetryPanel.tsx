@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import {
@@ -32,8 +32,11 @@ interface SensorReading {
   has_voltage: boolean;
   status: string;
   stage_m: number | null;
+  raw_distance?: number;
+  raw_unit?: string;
   raw_distance_ft?: number;
   voltage?: number | null;
+  signal_strength?: number | null;
   timestamp?: string;
   entry_id?: number;
 }
@@ -525,16 +528,24 @@ export default function LiveTelemetryPanel({
                         <span className="font-bold text-[#1b1b1b]">{depthM.toFixed(2)} m</span>
                       </div>
                     )}
-                    {sensor.raw_distance_ft != null && (
+                    {(sensor.raw_distance != null || sensor.raw_distance_ft != null) && (
                       <div className="flex justify-between">
                         <span className="text-[#767676]">Air distance:</span>
-                        <span className="font-bold text-[#0067b8]">{sensor.raw_distance_ft} ft</span>
+                        <span className="font-bold text-[#0067b8]">
+                          {sensor.raw_distance ?? sensor.raw_distance_ft} {sensor.raw_unit || (sensor.station_id === "SS" ? "ft" : "m")}
+                        </span>
                       </div>
                     )}
                     {sensor.has_voltage && sensor.voltage != null && (
                       <div className="flex justify-between">
                         <span className="text-[#767676]">Battery:</span>
                         <span className={`font-bold ${sensor.voltage > 11 ? "text-emerald-700" : "text-amber-600"}`}>{sensor.voltage} V</span>
+                      </div>
+                    )}
+                    {sensor.signal_strength != null && (
+                      <div className="flex justify-between">
+                        <span className="text-[#767676]">SIM Signal:</span>
+                        <span className="font-bold text-emerald-700">{sensor.signal_strength}%</span>
                       </div>
                     )}
                     <div className="flex justify-between">

@@ -28,10 +28,9 @@ CREATE TABLE IF NOT EXISTS admin_login_log (
 CREATE INDEX IF NOT EXISTS idx_admin_login_log_username ON admin_login_log (username);
 CREATE INDEX IF NOT EXISTS idx_admin_login_log_attempted_at ON admin_login_log (attempted_at DESC);
 
--- Approved SUK Official Accounts with Bcrypt Hashes (Cost 12)
-INSERT INTO admin_users (username, password_hash, role) VALUES
-    ('satwikcccss@gmail.com', '$2b$12$5hno8ira5Zx5lzk3vX4EJOtuX3xpLJfWA3GO4tLC3jJ2t/tHTZbE2', 'dev'),
-    ('panhalkarsachin@gmail.com', '$2b$12$UMfPS2hcdnEecFkm6xH1KemlQNWf0q7E.LMirJ1MqBucibOMkui5.', 'pi'),
-    ('gonioelect@gmail.com', '$2b$12$03ioLRLwrnZPNOewfMSXduX6e4zh78LCeLn4QD8BBLPe5Nz5rqUUi', 'co_pi'),
-    ('nikhilpawar6297@gmail.com', '$2b$12$JBzCM.wyS45SlSr78Jg2wuPj7vea7zJDtqEDNshbnQkgTQyYFfl1W', 'jrf')
-ON CONFLICT (username) DO NOTHING;
+-- Approved SUK Official Accounts (Provision via CLI)
+-- Bootstrap administrator accounts are NOT seeded from this file.
+-- Provision them with the CLI so no password hash is ever committed:
+--   python -m backend.scripts.manage_users add --username <username> --password <password> --role admin --name "<Full Name>"
+-- For offline bootstrap, copy database/auth/03_seed_adm1_users.sql and fill
+-- the placeholders locally; never commit the filled file.

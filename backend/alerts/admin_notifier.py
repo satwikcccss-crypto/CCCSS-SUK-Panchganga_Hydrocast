@@ -9,65 +9,90 @@ Features:
   3. Password Reset Dispatcher: Cryptographic time-limited link sent directly to admin inbox.
 
 Target Recipients:
-  - Lead Developer: satwikcccss@gmail.com
-  - Plus any configured secondary admin emails.
+  - Configured lead administrator.
+  - Plus any configured secondary administrator recipients.
 """
 
 import os
 import smtplib
 import logging
+from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timezone, timedelta
 
+try:
+    from dotenv import load_dotenv
+    _env_file = Path(__file__).resolve().parent.parent.parent / ".env"
+    if _env_file.exists():
+        load_dotenv(_env_file, override=False)
+except ImportError:
+    pass
+
 log = logging.getLogger(__name__)
 
-# Lead Developer & Admin configuration
-LEAD_ADMIN_EMAIL = os.environ.get("LEAD_ADMIN_EMAIL", "satwikcccss@gmail.com")
-ADMIN_EMAILS = [
-    email.strip() for email in os.environ.get(
-        "ADMIN_EMAILS",
-        f"{LEAD_ADMIN_EMAIL},admin@unishivaji.ac.in"
-    ).split(",") if email.strip()
-]
+def get_lead_admin_email() -> str:
+    raw = os.environ.get("LEAD_ADMIN_EMAIL", "").strip()
+    if not raw or "REPLACE_ME" in raw:
+        log.warning("LEAD_ADMIN_EMAIL is not configured; admin email notifications are disabled.")
+        return ""
+    return raw.split(",")[0].strip()
 
-# SMTP Configuration (Standard Free Gmail or University Server)
-SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
-SMTP_USER = os.environ.get("SMTP_USER", "")
-SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")  # Free 16-character Google App Password
+def get_admin_emails() -> list[str]:
+    lead = get_lead_admin_email()
+    raw = os.environ.get("ADMIN_EMAILS", "").strip()
+    if not raw or "REPLACE_ME" in raw:
+        return [lead] if lead else []
+    emails = [e.strip() for e in raw.split(",") if e.strip() and "REPLACE_ME" not in e]
+    if lead and lead not in emails:
+        emails.insert(0, lead)
+    return emails
 
+LEAD_ADMIN_EMAIL = get_lead_admin_email()
+ADMIN_EMAILS = get_admin_emails()
+
+def get_smtp_config():
+    host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
+    port = int(os.environ.get("SMTP_PORT", "587"))
+    user = os.environ.get("SMTP_USER", "").strip()
+    password = os.environ.get("SMTP_PASSWORD", "").strip()
+    return host, port, user, password
 
 def _send_email_smtp(to_addrs: list[str], subject: str, html_body: str) -> bool:
     """Send an HTML email via standard Python smtplib with STARTTLS."""
-    if not SMTP_USER or not SMTP_PASSWORD:
+    if not to_addrs:
+        log.warning("No administrator email recipients configured; notification logged but not sent.")
+        return False
+
+    smtp_host, smtp_port, smtp_user, smtp_password = get_smtp_config()
+
+    if not smtp_user or not smtp_password or "REPLACE_ME" in smtp_user or "REPLACE_ME" in smtp_password:
         log.warning(
-            "SMTP credentials not configured (SMTP_USER/SMTP_PASSWORD empty). "
-            "Email to %s was logged but not dispatched over SMTP.",
+            "SMTP credentials are not configured; email to %s was logged but not sent.",
             to_addrs
         )
         return False
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"] = f"HydroCast SUK Alerts <{SMTP_USER}>"
+    msg["From"] = f"HydroCast SUK Alerts <{smtp_user}>"
     msg["To"] = ", ".join(to_addrs)
 
     part = MIMEText(html_body, "html")
     msg.attach(part)
 
     try:
-        server = smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10)
+        server = smtplib.SMTP(smtp_host, smtp_port, timeout=12)
         server.ehlo()
         server.starttls()
         server.ehlo()
-        server.login(SMTP_USER, SMTP_PASSWORD)
-        server.sendmail(SMTP_USER, to_addrs, msg.as_string())
+        server.login(smtp_user, smtp_password)
+        server.sendmail(smtp_user, to_addrs, msg.as_string())
         server.quit()
         log.info("Successfully sent admin notification email to %s", to_addrs)
         return True
     except Exception as e:
-        log.error("Failed to send admin notification email: %s", e)
+        log.error("Failed to send admin notification email to %s: %s", to_addrs, e)
         return False
 
 
@@ -197,4 +222,51 @@ def send_password_reset_email(to_email: str, reset_token: str, admin_name: str =
     </html>
     """
     return _send_email_smtp([to_email], subject, html)
+
+
+def send_flood_alert_to_admin(
+    site_id: str,
+    classification: str,
+    stage_m: float,
+    peak_forecast_m: float = 0.0,
+    cycle_id: str = "Live",
+) -> dict:
+    """Send an urgent flood alert email to lead developer and admins."""
+    admin_emails = get_admin_emails()
+    now_ist = (datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M %p IST")
+    subject = f"⚠️ [HydroCast Alert] {classification}: {site_id} Stage at {stage_m:.2f}m"
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"></head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; padding: 20px; color: #1e293b;">
+        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div style="background: {'#dc2626' if classification in ['DANGER', 'HISTORIC_PEAK'] else '#f59e0b'}; color: white; padding: 16px 24px;">
+                <h2 style="margin: 0; font-size: 18px; font-weight: 700;">HydroCast Flood Alert Notification</h2>
+                <div style="font-size: 12px; opacity: 0.9;">Panchganga Basin Early Warning System · Shivaji University Kolhapur</div>
+            </div>
+            <div style="padding: 24px;">
+                <p style="font-size: 14px; margin-top: 0;">An active hydrometric threshold alert has been evaluated:</p>
+                <div style="background: {'#fef2f2' if classification in ['DANGER', 'HISTORIC_PEAK'] else '#fffbeb'}; border-left: 4px solid {'#ef4444' if classification in ['DANGER', 'HISTORIC_PEAK'] else '#f59e0b'}; padding: 12px 16px; border-radius: 4px; margin-bottom: 20px;">
+                    <div style="font-weight: 700; color: #1e293b; font-size: 15px;">Site: {site_id} — Classification: {classification}</div>
+                    <div style="color: #475569; font-size: 13px; margin-top: 4px;">Current Stage: <strong>{stage_m:.2f} m AMSL</strong> | Projected Peak: <strong>{peak_forecast_m:.2f} m AMSL</strong></div>
+                </div>
+                <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+                    <tr><td style="padding: 6px 0; color: #64748b;">Timestamp (IST):</td><td style="padding: 6px 0; font-weight: 600;">{now_ist}</td></tr>
+                    <tr><td style="padding: 6px 0; color: #64748b;">Simulation Cycle:</td><td style="padding: 6px 0; font-weight: 600; font-family: monospace;">{cycle_id}</td></tr>
+                    <tr><td style="padding: 6px 0; color: #64748b;">Lead Developer:</td><td style="padding: 6px 0; font-weight: 600;">{get_lead_admin_email()}</td></tr>
+                </table>
+                <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b;">
+                    Live Public Portal: <a href="http://localhost:3000" style="color: #0284c7; text-decoration: none;">http://localhost:3000</a><br>
+                    Admin Console: <a href="http://localhost:3001" style="color: #0284c7; text-decoration: none;">http://localhost:3001</a>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    delivered = _send_email_smtp(admin_emails, subject, html)
+    return {"status": "dispatched" if delivered else "logged", "recipients": admin_emails, "site": site_id}
+
 

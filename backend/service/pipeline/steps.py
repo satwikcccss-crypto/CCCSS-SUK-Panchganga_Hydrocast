@@ -1,8 +1,11 @@
 """The twelve pipeline step adapters and their pure helpers."""
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
+
+log = logging.getLogger(__name__)
 
 from backend.service.pipeline.db import create_cycle, get_conn, mark_complete
 
@@ -88,10 +91,28 @@ def step11_alerts(bridge_stages: Dict[str, Any], conn=None) -> Dict[str, Any]:
     return evaluate_alerts(bridge_stages)
 
 def step12_broadcast(alert_result: Dict[str, Any]) -> Dict[str, Any]:
-    """Step 12: Broadcast alerts via Telegram and dashboard WebSocket."""
+    """Step 12: Broadcast alerts via Telegram and admin developer email."""
     from backend.alerts.telegram_bot import dispatch_agency_webhooks
-    dispatch_agency_webhooks(alert_result.get("sites", {}))
-    return {"alerts_issued": alert_result.get("alerts_issued", 0)}
+    from backend.alerts.admin_notifier import send_flood_alert_to_admin
+
+    sites = alert_result.get("sites", {}) if alert_result else {}
+    dispatch_agency_webhooks(sites)
+
+    # Dispatch email notification to configured administrators on non-normal stages
+    for site_id, site_data in sites.items():
+        classification = site_data.get("classification", "NORMAL")
+        if classification in ("ALERT", "WARNING", "DANGER", "HISTORIC_PEAK"):
+            try:
+                send_flood_alert_to_admin(
+                    site_id=site_id,
+                    classification=classification,
+                    stage_m=float(site_data.get("stage_m", 0.0)),
+                    peak_forecast_m=float(site_data.get("peak_forecast_m", 0.0))
+                )
+            except Exception as exc:
+                log.warning("Could not send admin flood alert email for %s: %s", site_id, exc)
+
+    return {"alerts_issued": alert_result.get("alerts_issued", 0) if alert_result else 0}
 
 def _as_float_list(value: Any) -> List[float]:
     """Safely coerce an optional sequence/numpy array to a plain float list."""

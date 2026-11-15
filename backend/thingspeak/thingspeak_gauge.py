@@ -17,7 +17,7 @@ from typing import Optional, Dict, Any
 
 log = logging.getLogger(__name__)
 
-THINGSPEAK_API_KEY = os.getenv("THINGSPEAK_API_KEY", "")
+THINGSPEAK_API_KEY = os.getenv("THINGSPEAK_READ_API_KEY") or os.getenv("THINGSPEAK_API_KEY", "")
 THINGSPEAK_CHANNEL_ID = os.getenv("THINGSPEAK_CHANNEL_ID", "3424513")
 SHIVAJI_SENSOR_DATUM_M = 549.35  # Elevation of sensor in meters MSL
 
@@ -61,28 +61,43 @@ def fetch_shivaji_live_telemetry(
         if not data:
             return {"status": "NO_DATA", "stage_m": None}
 
-        # Scan fields for numerical sensor reading (distance in feet)
+        # Field 1: Ultrasonic water surface distance in feet (Shivaji Bridge)
         raw_val = None
-        for field_name in ["field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8"]:
-            val_str = data.get(field_name)
-            if val_str is not None:
-                try:
-                    val = float(val_str)
-                    raw_val = val
-                    break
-                except (ValueError, TypeError):
-                    continue
+        val_str = data.get("field1")
+        if val_str is not None:
+            try:
+                raw_val = float(val_str)
+            except (ValueError, TypeError):
+                pass
 
         if raw_val is None:
-            log.warning("No numeric field found in ThingSpeak feed: %s", data)
+            log.warning("No numeric distance reading found in field1 of ThingSpeak feed: %s", data)
             return {"status": "NO_NUMERIC_FIELD", "stage_m": None, "raw_data": data}
+
+        # Field 2: Sensor battery voltage (V)
+        voltage = None
+        v_str = data.get("field2")
+        if v_str is not None:
+            try:
+                voltage = float(v_str)
+            except (ValueError, TypeError):
+                pass
+
+        # Field 3: SIM Signal Strength % (SS)
+        signal_strength = None
+        ss_str = data.get("field3")
+        if ss_str is not None:
+            try:
+                signal_strength = int(float(ss_str))
+            except (ValueError, TypeError):
+                pass
 
         # Water level calculation: Datum (549.35m MSL) - Distance down (raw_val in feet * 0.3048)
         distance_m = raw_val * 0.3048
         stage_m = round(datum_msl - distance_m, 2)
 
-        log.info("✓ ThingSpeak Shivaji Live Telemetry: Distance=%.2f ft (%.2f m) -> Water Level=%.2f m MSL (Datum: %.2f m)", 
-                 raw_val, distance_m, stage_m, datum_msl)
+        log.info("✓ ThingSpeak Shivaji Live Telemetry: Distance=%.2f ft (%.2f m) -> Water Level=%.2f m MSL (Datum: %.2f m, V=%s, SS=%s)", 
+                 raw_val, distance_m, stage_m, datum_msl, voltage, signal_strength)
 
         return {
             "status": "SUCCESS",
@@ -90,6 +105,9 @@ def fetch_shivaji_live_telemetry(
             "timestamp": data.get("created_at"),
             "entry_id": data.get("entry_id"),
             "raw_feet": raw_val,
+            "distance_m": round(distance_m, 2),
+            "voltage": voltage,
+            "signal_strength": signal_strength,
             "sensor_datum_msl": datum_msl,
             "stage_m": stage_m,
         }

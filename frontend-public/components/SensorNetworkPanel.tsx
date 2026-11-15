@@ -71,16 +71,24 @@ export default function SensorNetworkPanel() {
                     <span className="font-mono text-gray-700">{aboveZero} m</span>
                   </div>
                 )}
-                {s.raw_distance_ft != null && (
+                {(s.raw_distance != null || s.raw_distance_ft != null) && (
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-500">Raw Distance</span>
-                    <span className="font-mono text-gray-700">{s.raw_distance_ft} ft</span>
+                    <span className="font-mono text-gray-700">
+                      {s.raw_distance != null ? `${s.raw_distance} ${s.raw_unit || (s.station_id === "SS" ? "ft" : "m")}` : `${s.raw_distance_ft} ft`}
+                    </span>
                   </div>
                 )}
                 {s.voltage != null && (
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-500">Battery Voltage</span>
                     <span className="font-mono text-gray-700">{s.voltage} V</span>
+                  </div>
+                )}
+                {s.signal_strength != null && (
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500">SIM Signal Strength</span>
+                    <span className="font-mono text-emerald-700 font-semibold">{s.signal_strength}%</span>
                   </div>
                 )}
                 <div className="flex justify-between text-xs">

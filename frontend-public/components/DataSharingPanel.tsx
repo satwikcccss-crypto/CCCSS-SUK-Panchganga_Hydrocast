@@ -233,81 +233,43 @@ curl -X GET "${publicApiUrl}"`;
 
       {/* ── DUAL QR CODE SHOWCASE (LIGHT CARDS) ───────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* QR Code Card 1: Telegram Scientific Research Bot */}
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs hover:border-sky-300 transition-all flex flex-col justify-between">
+        {/* QR Code Card 1: Telegram Broadcast Bot (Temporarily Disabled) */}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 shadow-xs flex flex-col justify-between opacity-85">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-slate-200 text-slate-500 border border-slate-300 flex items-center justify-center">
                   <Send className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-slate-900">Telegram Scientific Information Bot</h2>
+                  <h2 className="text-sm font-bold text-slate-700">Telegram Flood Broadcast Bot</h2>
                   <span className="text-[11px] text-slate-500">Official Channel: @Hydrocast_SUK_bot</span>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-sky-600 animate-pulse" />
-                ACADEMIC INTELLIGENCE
+              <span className="px-2.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                TEMPORARILY OFFLINE
               </span>
             </div>
 
             <p className="text-xs text-slate-600 mb-4 leading-relaxed">
-              Automated hydrological research intelligence for Panchganga basin. Features <b>on-screen popup buttons</b> tailored for farmers, citizens, and researchers — no typing required.
+              The automated Telegram broadcast bot is currently <b>unoperational and undergoing scheduled maintenance</b>. Direct push notifications are temporarily suspended. Please use this web portal or the live JSON API below for real-time river stages.
             </p>
 
-            {/* Audience-Specific Screen Buttons Showcase */}
-            <div className="grid grid-cols-2 gap-2 mb-4 p-3 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px]">
-              <div className="p-2 bg-white rounded border border-slate-200">
-                <span className="font-bold text-slate-800 block">👨‍🌾 शेतकरी माहिती</span>
-                <span className="text-[10px] text-slate-500">बंधारे स्थिती, शेतीपंप व विसर्ग</span>
-              </div>
-              <div className="p-2 bg-white rounded border border-slate-200">
-                <span className="font-bold text-slate-800 block">🏙️ नागरिक पूर स्थिती</span>
-                <span className="text-[10px] text-slate-500">शिवाजी पूल, घाट व सुरक्षितता</span>
-              </div>
-              <div className="p-2 bg-white rounded border border-slate-200">
-                <span className="font-bold text-slate-800 block">🔬 विद्यार्थी/संशोधक</span>
-                <span className="text-[10px] text-slate-500">Q (m³/s), MSL पातळी व मॉडेल्स</span>
-              </div>
-              <div className="p-2 bg-white rounded border border-slate-200">
-                <span className="font-bold text-slate-800 block">📈 ९० तास अंदाज</span>
-                <span className="text-[10px] text-slate-500">ECMWF हायड्रोग्राफ प्रक्षेप</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-xl bg-slate-50 border border-slate-200/80 mb-5">
-              <div className="p-2 bg-white rounded-lg border border-slate-200 shadow-xs shrink-0">
-                {telegramQr ? (
-                  <img src={telegramQr} alt="Scan for Telegram Research Bot" className="w-32 h-32 rounded" />
-                ) : (
-                  <div className="w-32 h-32 flex items-center justify-center text-xs text-slate-400">Loading QR...</div>
-                )}
-              </div>
-              <div className="space-y-2 text-xs">
-                <div className="flex items-center gap-1.5 font-bold text-slate-900">
-                  <Smartphone className="w-4 h-4 text-sky-600" />
-                  <span>Scan with Phone Camera</span>
-                </div>
-                <p className="text-[11px] text-slate-600 leading-normal">
-                  Scan to launch Telegram and access live government-grade bulletins in Marathi and English.
-                </p>
-                <div className="pt-1 text-[11px] font-medium text-slate-500">
-                  <b>Quick Commands:</b> <code className="bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-800">/start</code>, <code className="bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-800">/status</code>, <code className="bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-800">/forecast</code>, <code className="bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-800">/marathi</code>
-                </div>
-              </div>
+            <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200 mb-5 text-xs text-amber-900">
+              <p className="font-semibold leading-relaxed">
+                📢 <b>नागरिकांसाठी सूचना:</b> टेलिग्राम बॉट सेवा सध्या तांत्रिक देखभालीसाठी तात्पुरती स्थगित करण्यात आली आहे. अधिकृत पूर माहिती व ९० तासांच्या अंदाजासाठी या वेब पोर्टलचा वापर करावा.
+              </p>
             </div>
           </div>
 
-          <a
-            href={telegramBotUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-lg transition-colors shadow-xs"
+          <button
+            disabled
+            className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-200 text-slate-500 font-bold text-xs rounded-lg cursor-not-allowed shadow-none"
           >
             <Send className="w-4 h-4" />
-            Open in Telegram (@Hydrocast_SUK_bot)
-          </a>
+            Service Temporarily Disabled
+          </button>
         </div>
 
         {/* QR Code Card 2: Mobile Public API Feed */}

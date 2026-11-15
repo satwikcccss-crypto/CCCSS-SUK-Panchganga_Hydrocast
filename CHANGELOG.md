@@ -6,6 +6,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.0] - 2026-11-15 — IoT Sensor Corrections & Telemetry Integrity (`windows-v1.4.0`)
+
+Release on `windows-server-production` focused on critical IoT sensor physics bugs, ThingSpeak multi-station data integrity, SIM signal-strength telemetry surfacing, exception safety, and runtime metadata alignment.
+
+### Bug Fixes (Critical)
+
+- **`NameError: 'log' is not defined` in `steps.py:110`** *(was crashing pipeline exception handler)*
+  - `backend/service/pipeline/steps.py`: Added `import logging` and `log = logging.getLogger(__name__)` — missing logger caused unhandled `NameError` in the pipeline exception path.
+
+- **All 3 ThingSpeak stations returned `NOT_CONFIGURED`** *(no live telemetry)*
+  - `backend/thingspeak/multi_station.py`: Added environment auto-load; added explicit `default_channel_id` fallbacks (`3424513`, `3417870`, `3417872`). The module was reading configurations before environment initialization, so all channels appeared unconfigured.
+
+- **CRITICAL — Sensor unit physics bug: Nitawade & Ichalkaranji stages were nonsensical**
+  - Root cause: ALL 3 stations were applying feet→meters conversion (`× 0.3048`), but only Shivaji Bridge (SS) sends data in feet; Nitawade (NW) and Ichalkaranji (IK) send **meters** directly.
+  - `backend/thingspeak/multi_station.py`: Added `"unit": "feet"` to SS and `"unit": "meters"` to NW/IK. Updated `_compute_stage()` to branch on unit: `dist_m = raw * 0.3048 if unit=="feet" else raw`.
+  - **Before fix:** NW stage ≈ 4.16 m MSL (impossible — river bottom), IK stage similarly wrong.
+  - **After fix:** SS = 531.63 m MSL ✓, NW = 548.16 m MSL ✓ (matches ThingSpeak precomputed field2), IK = 527.84 m MSL ✓
+
+- **NW (Nitawade) `voltage` field showing 548.16 V** *(impossible value — was actually precomputed river stage)*
+  - ThingSpeak Channel 3417870: `field2 = Level (m MSL precomputed)`, NOT voltage.
+  - `backend/thingspeak/multi_station.py`: Changed NW `has_voltage: False`, removed voltage from field map; NW `field_map` updated to `{distance: field1, level: field2, altitude: field3}`.
+
+- **`realtime_telemetry_validator.py` initialization when run standalone**
+  - Added environment auto-load at top of file; added validation guard on API parameters to prevent querying ThingSpeak with placeholder tokens.
+
+- **`admin_notifier.py` lead email failure when `LEAD_ADMIN_EMAIL` has multiple emails**
+  - `backend/alerts/admin_notifier.py`: `get_lead_admin_email()` now splits on comma and returns the first valid address; previously would use the whole multi-email string as a single address, causing mail delivery rejection.
+
+- **Environment variable & field1 harmonization across telemetry gauge readers**
+  - Harmonized `THINGSPEAK_READ_API_KEY` with fallback to `THINGSPEAK_API_KEY` across `thingspeak_gauge.py`, `failsafe_telemetry.py`, and `realtime_telemetry_validator.py`.
+  - Pinned `field1` extraction in `thingspeak_gauge.py` to prevent reading sensor battery voltage or SIM signal strength as water distance.
+
+### Features
+
+- **Signal Strength (SIM) for Shivaji Bridge sensor** — ThingSpeak Channel 3424513 `field3` label = "SS" = SIM signal strength (0–100%).
+  - `backend/thingspeak/multi_station.py`: Added `"signal_strength": "field3"` to SS `field_map`; parsed as `int`; `has_signal_strength: True`.
+  - `frontend-public/components/SensorNetworkPanel.tsx`: Added SIM Signal row with signal-bar icon.
+  - `frontend-public/app/dashboard/page.tsx`: Raw Distance display now shows correct unit per station (ft for SS, m for NW/IK).
+  - `frontend-admin/components/LiveTelemetryPanel.tsx`: Added `signal_strength` field row in admin live telemetry panel.
+  - **Live value:** `signal_strength: 84%` confirmed from ThingSpeak.
+
+- **Nitawade altitude/datum field mapped** — `field3=552.80` (sensor altitude) now available in NW data response; can be used as a live sanity check against hardcoded `sensor_datum_m: 552.80`.
+
+- **Version Metadata Alignment:**
+  - Backend runtime (`main.py`, `admin_app.py`, `observability.py`, `health.py`) and frontends (`frontend-public`, `frontend-admin`) bumped to **`1.4.0`**.
+
+### Sensor Architecture (Documented)
+
+| Station | Channel ID | field1 | field2 | field3 | Unit | Datum (m MSL) |
+|---------|-----------|--------|--------|--------|------|---------------|
+| Shivaji Bridge (SS) | 3424513 | Distance (ft) | Sensor Voltage (V) | SIM Signal % | **feet** | 549.35 |
+| Nitawade RWLS (NW) | 3417870 | Radar distance (m) | Level precomputed (m MSL) | Sensor altitude (m) | **meters** | 552.80 |
+| Ichalkaranji (IK) | 3417872 | Level distance (m) | — | — | **meters** | 543.71 |
+
+### Verification
+
+- Backend: **325 passed, 3 skipped** (`py -m pytest tests/ -q --no-header`), including new unit regression suite (`tests/test_thingspeak_units.py`).
+- Ruff: `ruff check backend/ tests/ scripts/` clean.
+- Frontend: `frontend-public` and `frontend-admin` `npm run build` pass with 0 errors.
+- ThingSpeak live fetch: all 3 stations returning valid stage values.
+
+### Known Gaps / Pending
+
+- Domain cutover pending from Shivaji University IT: `hydrocast.unishivaji.ac.in` and `hydrocast-admin.unishivaji.ac.in`. Caddyfile reverse proxy is pre-configured and ready.
+
+---
+
 ## [1.3.0] - 2026-11-14 — API Upgrades & Security Hardening (`windows-v1.3.0`)
 
 Release on `windows-server-production` focused on bandwidth-efficient APIs (ETag/304, partial responses, PDF bulletin), official vs operator role-based access control with a database-backed audit trail, and a cleaner, more honest operator-console surface — while keeping all backend/frontend contracts on `1.3.0`.

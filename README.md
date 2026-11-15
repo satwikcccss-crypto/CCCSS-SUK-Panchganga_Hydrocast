@@ -28,8 +28,11 @@
 <!-- TIER 2: REPOSITORY & COMMUNITY HEALTH BADGES                            -->
 <!-- ======================================================================= -->
 <p align="center">
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.2.0">
-    <img src="https://img.shields.io/badge/release-windows--v1.2.0-0284c7?style=for-the-badge&logo=github" alt="Release">
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.4.0">
+    <img src="https://img.shields.io/badge/release-windows--v1.4.0-0284c7?style=for-the-badge&logo=github" alt="Release">
+  </a>
+  <a href="ISSUES.md">
+    <img src="https://img.shields.io/badge/Issues%20Tracked-26%20Documented-8b5cf6?style=for-the-badge&logo=githubissues" alt="Issues">
   </a>
   <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/pipeline.yml">
     <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/pipeline.yml?branch=windows-server-production&label=Forecast%20Pipeline&style=for-the-badge&logo=githubactions&logoColor=white" alt="Forecast Pipeline">

@@ -87,7 +87,7 @@ async def _readiness_snapshot() -> tuple[int, dict]:
         "status": "ready",
         "service": "hydrocast-backend",
         "database": "connected",
-        "version": "1.3.0",
+        "version": "1.4.0",
         "last_cycle": last_cycle_dict,
         "timestamp": timestamp,
     }
@@ -135,7 +135,7 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "hydrocast-backend",
-        "version": "1.3.0",
+        "version": "1.4.0",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
