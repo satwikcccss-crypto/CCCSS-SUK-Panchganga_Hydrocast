@@ -215,7 +215,7 @@ fetchHydrocastFeed();
 
 ## 5. Contact & Institutional Attribution
 * **Institution:** Centre for Collaborative Cyber Security Studies (CCCSS), Shivaji University, Kolhapur
-* **Lead Developer:** Satwik (`satwikcccss@gmail.com`)
+* **Lead Developer:** HydroCast maintainers
 * **Funding Agency:** DST-SERB, Govt. of India
 * **Web Portal:** [http://localhost:3000](http://localhost:3000)
 * **Telegram Bot:** [@Hydrocast_SUK_bot](https://t.me/Hydrocast_SUK_bot)

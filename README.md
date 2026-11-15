@@ -329,7 +329,7 @@ copy .env.example .env
 Edit `.env` with your secure values:
 - `JWT_SECRET` — 48+ random bytes for token signing
 - `API_KEY` — random service-to-service key
-- `ADMIN_PASSWORD` — strong, unique password (do not use hardcoded defaults like `Dev@Adm1` or `PI@Adm1`)
+- `ADMIN_PASSWORD` — strong, unique password (do not use hardcoded defaults like `[redacted-passkey]` or `[redacted-passkey]`)
 - `DATABASE_URL` — `postgresql://postgres:PASSWORD@127.0.0.1:5432/rainfall_runoff`
 - `INTERNAL_KEY` — 16+ random characters for broadcast operations
 - `CORS_ORIGINS` — explicit allowlist (e.g., `https://dashboard.yourdomain.org`)

@@ -186,8 +186,8 @@ This is the first structured stable release of the **Windows Server edition** on
 * **Vectorized Digital Twin Simulation Engine:** Introduced pure-Python kinematic wave and Muskingum-Cunge routing providing instantaneous, zero-dependency hydrologic modeling alongside official USACE HEC-HMS 4.13 runtime execution.
 * **Operator Control Room (`/admin`):** Integrated operational control dashboard with live 12-step pipeline inspection, runtime telemetry metrics, and asynchronous cloud pipeline dispatch via GitHub Actions.
 * **Enterprise Dual-Auth Architecture:** 
-  * Supabase Google OAuth with strict project allowlist verification (`satwikcccss@gmail.com`, `panhalkarsachin@gmail.com`, `gonioelect@gmail.com`, `nikhilpawar6297@gmail.com`).
-  * Bcrypt salted operational passkeys for offline and field operator access (`Dev@Adm1`, `PI@Adm1`, `COPI@Adm1`, `JRF@Adm1`).
+  * Supabase Google OAuth with strict project allowlist verification (`[redacted-email]`, `[redacted-email]`, `[redacted-email]`, `[redacted-email]`).
+  * Bcrypt salted operational passkeys for offline and field operator access (`[redacted-passkey]`, `[redacted-passkey]`, `[redacted-passkey]`, `[redacted-passkey]`).
 * **Live Mechanical Odometer & Telemetry:** Real-time visitor counter with persistent database synchronization and fallback ledger preventing stale or zero-count anomalies.
 * **12-Step Forecast Pipeline:** Automated cyclical execution with per-step retry and emergency abort capabilities.
 

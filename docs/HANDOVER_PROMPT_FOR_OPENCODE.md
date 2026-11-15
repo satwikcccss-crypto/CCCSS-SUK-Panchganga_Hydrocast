@@ -51,7 +51,7 @@ The repository is strictly structured into single-responsibility domains:
 3. `database/`:
    - `schema.sql`: PostgreSQL 16 + PostGIS production schema (subbasins, stations, bridges, runs, metrics, logs).
    - `seeds.sql`: Official Panchganga subbasins (S1-S9), 20 stations, and 19 WRD field benchmarks.
-   - `admin_users.sql`: Approved SUK accounts (`satwikcccss@gmail.com`, `panhalkarsachin@gmail.com`, `gonioelect@gmail.com`, `nikhilpawar6297@gmail.com`) and login audit trail.
+   - `admin_users.sql`: Approved SUK accounts (`<approved-account>`, `<approved-account>`, `<approved-account>`, `<approved-account>`) and login audit trail.
    - `storage_setup.sql`: 3512 GB dedicated tablespace configuration for E:\ drive.
 
 4. `windows/`:

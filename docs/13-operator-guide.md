@@ -110,13 +110,13 @@ For command-line user management:
 python -m backend.scripts.manage_users list
 
 # Add a user
-python -m backend.scripts.manage_users add --username user@unishivaji.ac.in --password TempPass123 --role govt --email user@unishivaji.ac.in
+python -m backend.scripts.manage_users add --username <operator-username> --password <temporary-password> --role govt --email <operator-username>
 
 # Generate reset code
 python -m backend.scripts.manage_users reset --username DEV.Satwikcccss@Adm1
 
 # Toggle active status
-python -m backend.scripts.manage_users toggle --username user@unishivaji.ac.in
+python -m backend.scripts.manage_users toggle --username <operator-username>
 ```
 
 ## Understanding Forecast Accuracy

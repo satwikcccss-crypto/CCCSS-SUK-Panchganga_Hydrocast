@@ -38,7 +38,7 @@ export default function AuthCallbackPage() {
           await supabase.auth.signOut();
           setErrorMsg(
             data.detail ||
-            "Unauthorized. Only the four approved email accounts may access HydroCast Operations Control. Please contact satwikcccss@gmail.com for access."
+            "Unauthorized. Only the four approved email accounts may access HydroCast Operations Control. Please contact an administrator for access."
           );
           return;
         }

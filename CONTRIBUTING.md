@@ -6,7 +6,7 @@ Thank you for your interest in contributing to **HydroCast**! We welcome contrib
 
 ## Code of Conduct
 
-By participating in this project, you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md). Please report any unacceptable behavior to **`satwikcccss@gmail.com`**.
+By participating in this project, you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md). Please report any unacceptable behavior via GitHub Issues.
 
 ---
 

@@ -109,7 +109,7 @@ async def login_for_access_token(request: Request, req: TokenRequest):
         else:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Unauthorized. Please contact satwikcccss@gmail.com for access.",
+                detail="Unauthorized. Please contact an administrator for access.",
                 headers={"WWW-Authenticate": "Bearer"},
             )
 

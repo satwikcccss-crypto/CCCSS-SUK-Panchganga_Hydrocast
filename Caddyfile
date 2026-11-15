@@ -6,7 +6,8 @@
 {
     # Global options
     admin off
-    email cccss@unishivaji.ac.in
+    # ACME account contact is supplied at deploy time, never committed.
+    email {$ACME_EMAIL}
 }
 
 # 1. Official Institutional Production Domain (HydroCast & CCCSS)
