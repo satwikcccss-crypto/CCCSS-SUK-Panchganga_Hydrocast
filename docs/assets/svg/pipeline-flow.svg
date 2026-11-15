@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 200" width="860" height="200" role="img" aria-label="HydroCast architecture pipeline diagram">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+
+    <!-- Node gradients -->
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0369a1"/><stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669"/><stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+    <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d97706"/><stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="g5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dc2626"/><stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+
+    <!-- Animated gradient for data flow line -->
+    <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#0ea5e9" stop-opacity="0"/>
+      <stop offset="40%"  stop-color="#38bdf8" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+      <animateTransform attributeName="gradientTransform" type="translate" values="-1,0;1,0;-1,0" dur="2.5s" repeatCount="indefinite"/>
+    </linearGradient>
+
+    <filter id="glow2">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+
+    <clipPath id="clip2"><rect width="860" height="200" rx="14"/></clipPath>
+
+    <!-- Arrow marker -->
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 Z" fill="#38bdf8" opacity="0.8"/>
+    </marker>
+  </defs>
+
+  <g clip-path="url(#clip2)">
+    <rect width="860" height="200" fill="url(#bg)" rx="14"/>
+
+    <!-- Grid lines (subtle) -->
+    <g stroke="#1e3a5f" stroke-width="0.5" stroke-opacity="0.3">
+      <line x1="0" y1="50"  x2="860" y2="50"/>
+      <line x1="0" y1="100" x2="860" y2="100"/>
+      <line x1="0" y1="150" x2="860" y2="150"/>
+    </g>
+
+    <!-- === SECTION LABEL === -->
+    <text x="430" y="22" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" font-weight="600"
+          fill="#94a3b8" text-anchor="middle" letter-spacing="3">
+      FORECAST PIPELINE ARCHITECTURE
+    </text>
+
+    <!-- ============ NODE 1: ECMWF NWP ============ -->
+    <g transform="translate(55, 100)" filter="url(#shadow)">
+      <rect x="-50" y="-40" width="100" height="80" rx="10" fill="url(#g1)" opacity="0.9"/>
+      <!-- Pulse ring -->
+      <circle cx="0" cy="0" r="52" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-opacity="0.4">
+        <animate attributeName="r"       values="45;58;45" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.4;0;0.4"  dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="20" text-anchor="middle" y="-8" fill="white">🌩</text>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle" y="8" fill="white">ECMWF</text>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="7"   font-weight="400" text-anchor="middle" y="20" fill="#c4b5fd">IFS HRES QPF</text>
+      <animate attributeName="opacity" values="0;1" dur="0.6s" fill="freeze"/>
+    </g>
+
+    <!-- ============ NODE 2: Rainfall Runoff ============ -->
+    <g transform="translate(220, 100)" filter="url(#shadow)">
+      <rect x="-50" y="-40" width="100" height="80" rx="10" fill="url(#g2)" opacity="0.9"/>
+      <circle cx="0" cy="0" r="52" fill="none" stroke="#0ea5e9" stroke-width="1.5" stroke-opacity="0.4">
+        <animate attributeName="r"       values="45;58;45" dur="3.4s" begin="0.4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.4;0;0.4"  dur="3.4s" begin="0.4s" repeatCount="indefinite"/>
+      </circle>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="20" text-anchor="middle" y="-8" fill="white">🌧</text>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle" y="8" fill="white">SCS-CN</text>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="7"   font-weight="400" text-anchor="middle" y="20" fill="#bae6fd">Rainfall–Runoff</text>
+      <animate attributeName="opacity" values="0;1" dur="0.6s" begin="0.3s" fill="freeze"/>
+    </g>
+
+    <!-- ============ NODE 3: HEC-HMS ============ -->
+    <g transform="translate(385, 100)" filter="url(#shadow)">
+      <rect x="-50" y="-40" width="100" height="80" rx="10" fill="url(#g3)" opacity="0.9"/>
+      <circle cx="0" cy="0" r="52" fill="none" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.4">
+        <animate attributeName="r"       values="45;58;45" dur="3.8s" begin="0.8s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.4;0;0.4"  dur="3.8s" begin="0.8s" repeatCount="indefinite"/>
+      </circle>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="20" text-anchor="middle" y="-8" fill="white">🔬</text>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle" y="8" fill="white">HEC-HMS</text>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="7"   font-weight="400" text-anchor="middle" y="20" fill="#a7f3d0">Muskingum-Cunge</text>
+      <animate attributeName="opacity" values="0;1" dur="0.6s" begin="0.6s" fill="freeze"/>
+    </g>
+
+    <!-- ============ NODE 4: ML Recalibration ============ -->
+    <g transform="translate(550, 100)" filter="url(#shadow)">
+      <rect x="-50" y="-40" width="100" height="80" rx="10" fill="url(#g4)" opacity="0.9"/>
+      <circle cx="0" cy="0" r="52" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-opacity="0.4">
+        <animate attributeName="r"       values="45;58;45" dur="4.2s" begin="1.2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.4;0;0.4"  dur="4.2s" begin="1.2s" repeatCount="indefinite"/>
+      </circle>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="20" text-anchor="middle" y="-8" fill="white">🤖</text>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle" y="8" fill="white">ML Telemetry</text>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="7"   font-weight="400" text-anchor="middle" y="20" fill="#fde68a">PCHIP + IoT</text>
+      <animate attributeName="opacity" values="0;1" dur="0.6s" begin="0.9s" fill="freeze"/>
+    </g>
+
+    <!-- ============ NODE 5: Alert Engine ============ -->
+    <g transform="translate(715, 100)" filter="url(#shadow)">
+      <rect x="-50" y="-40" width="100" height="80" rx="10" fill="url(#g5)" opacity="0.9"/>
+      <!-- Warning pulse -->
+      <circle cx="0" cy="0" r="52" fill="none" stroke="#ef4444" stroke-width="2" stroke-opacity="0.5">
+        <animate attributeName="r"       values="45;60;45" dur="1.8s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.5;0;0.5"  dur="1.8s" repeatCount="indefinite"/>
+      </circle>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="20" text-anchor="middle" y="-8" fill="white">🚨</text>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle" y="8" fill="white">Alert Engine</text>
+      <text font-family="'Segoe UI', system-ui, sans-serif" font-size="7"   font-weight="400" text-anchor="middle" y="20" fill="#fca5a5">CWC · DDMA</text>
+      <animate attributeName="opacity" values="0;1" dur="0.6s" begin="1.2s" fill="freeze"/>
+    </g>
+
+    <!-- ============ FLOW CONNECTORS ============ -->
+    <!-- Data flow animated dots -->
+    <g filter="url(#glow2)">
+      <!-- Line 1-2 -->
+      <line x1="105" y1="100" x2="170" y2="100" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.3" stroke-dasharray="4,4"/>
+      <circle r="5" fill="#38bdf8">
+        <animateMotion dur="1.5s" repeatCount="indefinite" path="M105,100 L170,100"/>
+      </circle>
+      <!-- Line 2-3 -->
+      <line x1="270" y1="100" x2="335" y2="100" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.3" stroke-dasharray="4,4"/>
+      <circle r="5" fill="#38bdf8">
+        <animateMotion dur="1.5s" begin="0.3s" repeatCount="indefinite" path="M270,100 L335,100"/>
+      </circle>
+      <!-- Line 3-4 -->
+      <line x1="435" y1="100" x2="500" y2="100" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.3" stroke-dasharray="4,4"/>
+      <circle r="5" fill="#38bdf8">
+        <animateMotion dur="1.5s" begin="0.6s" repeatCount="indefinite" path="M435,100 L500,100"/>
+      </circle>
+      <!-- Line 4-5 -->
+      <line x1="600" y1="100" x2="665" y2="100" stroke="#f87171" stroke-width="1.5" stroke-opacity="0.3" stroke-dasharray="4,4"/>
+      <circle r="5" fill="#f87171">
+        <animateMotion dur="1.5s" begin="0.9s" repeatCount="indefinite" path="M600,100 L665,100"/>
+      </circle>
+    </g>
+
+    <!-- Bottom label -->
+    <text x="430" y="185" font-family="'Segoe UI', system-ui, sans-serif" font-size="9" fill="#475569"
+          text-anchor="middle" letter-spacing="1">
+      QPF FORCING → RUNOFF MODELLING → CHANNEL ROUTING → ML CALIBRATION → FLOOD ALERT
+    </text>
+
+    <!-- Border -->
+    <rect width="860" height="200" rx="14" fill="none" stroke="#334155" stroke-width="1.5"/>
+  </g>
+</svg>
