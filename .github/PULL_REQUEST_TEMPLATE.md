@@ -1,126 +1,101 @@
-## 📋 Summary
+## 🌊 HydroCast Pull Request Benchmark
 
-<!-- Ek line mein batayein: yeh PR kya karta hai? -->
+<!-- ======================================================================= -->
+<!-- HYDROCAST ENGINEERING & SCIENTIFIC CONTRIBUTIONS TEMPLATE               -->
+<!-- Standards: Shivaji University CCCSS Flood Intelligence Platform         -->
+<!-- ======================================================================= -->
 
-
-
-## 🔗 Related Issue(s)
-
-<!-- Closes #<issue_number> ya Fixes #<issue_number> -->
-Closes #
-
----
-
-## 🧩 Type of Change
-
-<!-- Jo applicable ho usse ✅ karein -->
-
-- [ ] 🐛 Bug fix (non-breaking change)
-- [ ] ✨ New feature (non-breaking change)
-- [ ] 💥 Breaking change (existing functionality affected)
-- [ ] 🔧 Refactor / Code cleanup (no functional change)
-- [ ] 📊 Data / Model update (hydrologic params, rating curves, thresholds)
-- [ ] 📝 Documentation update
-- [ ] 🔒 Security fix
-- [ ] ⚙️ CI/CD / DevOps change
-
----
-
-## 🌊 Hydrologic Impact Assessment
-
-<!-- Kya is change se forecast accuracy, alert thresholds, ya physics model affect hota hai? -->
-
-- [ ] No hydrologic impact (UI/infra only)
-- [ ] Hydrologic model affected → explain below:
-
-<!-- Agar model affected hai to briefly explain: -->
-
+### 📋 Executive Summary
+<!-- Provide a clear, concise summary of the rationale, architecture, and behavioral impact of this change -->
 
 
 ---
 
-## 🧪 Testing
+### 🔗 Related Issues & Tracking
+<!-- Link related issues from ISSUES.md or GitHub issue tracker. Use keywords: Closes #XX, Fixes #XX, Resolves #XX -->
+- Closes #
+- References [ISSUES.md](ISSUES.md) entry: 
 
-### Tests Run
+---
 
-```bash
-# Commands jo run kiye
-pytest tests/ -v
-ruff check .
-ruff format . --check
+### 🧩 Scope & Categorization
+<!-- Select all applicable change types by marking [x] -->
+- [ ] 🐛 **Bug Fix:** Non-breaking defect correction (logic, routing, error recovery)
+- [ ] 📡 **IoT Telemetry:** Sensor field mappings, units (feet/meters), or ThingSpeak sync
+- [ ] 🌊 **Hydrology & Physics:** Rating curves, Manning survey, baseflow derivation, HEC-HMS
+- [ ] ✨ **New Feature:** Non-breaking functionality or architectural extension
+- [ ] 🔒 **Security & RBAC:** Auth hardening, JWT claims, role boundary, credential protection
+- [ ] 🖥️ **Public Portal (`frontend-public`):** Citizen dashboard, flood maps, RTDAS displays
+- [ ] 🛡️ **Operator Console (`frontend-admin`):** SRE controls, dispatch, database health, audit log
+- [ ] 🗄️ **Database & Migrations:** PostgreSQL schema change, Alembic migration, PostGIS
+- [ ] ⚙️ **Windows Server & Ops:** NSSM daemon, Watchdog service, Caddy reverse proxy, backups
+- [ ] 📝 **Documentation:** System architecture, scientific manuals, API guides
+
+---
+
+### 🌊 Hydrologic Safety & Operational Assessment
+<!-- Critical: HydroCast governs municipal flood warnings for the Panchganga Basin -->
+- **Does this change alter simulated water levels or peak discharge?**
+  - [ ] **No:** Strictly operational/UI/infrastructure change.
+  - [ ] **Yes:** Hydrological simulation or hydraulic rating equations modified.
+    - *Explanation of hydrologic validation:* 
+    - *Nash-Sutcliffe Efficiency ($NSE$) / Peak Stage deviation ($cm$):* 
+
+- **Does this change alter sensor datums or physical units?**
+  - [ ] **No:** Datums preserved (Shivaji: `549.35 m MSL`, Nitawade: `552.80 m MSL`, Ichalkaranji: `543.71 m MSL`).
+  - [ ] **Yes:** Requires explicit WRD GTS survey cross-check.
+
+---
+
+### 🧪 Verification, Testing & Quality Gates
+
+#### 1. Backend Test Suite (`pytest`)
+```powershell
+# Run backend test suite
+pytest tests/ -q --no-header
 ```
+- [ ] **All tests passing:** `... passed, ... skipped, 0 failures`
 
-### Test Results
-
-<!-- Pass/fail summary paste karein -->
-
+#### 2. Static Analysis & Linting (`ruff`)
+```powershell
+# Verify syntax, undefined variables, and imports
+ruff check backend tests scripts
 ```
-# Example:
-# 286 passed, 0 failed, 0 warnings
+- [ ] **Ruff clean:** Zero fatal errors (`F821`, `F822`, `F823`)
+
+#### 3. Frontend Production Builds (`Next.js 14`)
+```powershell
+# Public Portal Verification
+cd frontend-public; npm run build; cd ..
+
+# Operator Console Verification
+cd frontend-admin; npm run build; cd ..
 ```
-
-### New Tests Added?
-
-- [ ] Yes — new test cases add kiye (describe below)
-- [ ] No — kyun? (explain below)
-
-<!-- Describe new tests OR explain why no tests: -->
-
-
+- [ ] `frontend-public` production build passed cleanly (8/8 routes)
+- [ ] `frontend-admin` production build passed cleanly (11/11 routes)
 
 ---
 
-## 📸 Screenshots / Demo (UI changes ke liye)
+### 📸 Visual Evidence (Frontend / Dashboard Changes)
+<!-- If this PR modifies visual dashboard components, please include screenshots or before/after comparison -->
 
-<!-- Frontend changes hain to before/after screenshots ya screen recording attach karein -->
-
-| Before | After |
-|--------|-------|
-| _(screenshot)_ | _(screenshot)_ |
-
----
-
-## 📝 Changelog Entry
-
-<!-- CHANGELOG.md ke `[Unreleased]` section mein kya add kiya? Copy-paste karein: -->
-
-```markdown
-### Added / Fixed / Changed
-- ...
-```
+| Prior Baseline | Proposed Enhancement |
+|:---:|:---:|
+| _(Attach Screenshot)_ | _(Attach Screenshot)_ |
 
 ---
 
-## ✅ PR Checklist
-
-<!-- Merge se pehle sabhi items check karein -->
-
-**Code Quality**
-- [ ] `ruff check .` — zero linting errors
-- [ ] `ruff format . --check` — code properly formatted hai
-- [ ] Type hints added/updated jahan zaroorat thi
-
-**Testing**
-- [ ] `pytest tests/ -v` — sab tests pass hain (286+ suite)
-- [ ] New functionality ke liye tests likhe hain
-- [ ] Edge cases aur error paths cover hain
-
-**Documentation**
-- [ ] Docstrings updated hain (functions/classes)
-- [ ] `CHANGELOG.md` update kiya hai `[Unreleased]` section mein
-- [ ] README / ARCHITECTURE update kiya hai (agar relevant ho)
-- [ ] `python -m mkdocs build --strict` — zero warnings
-
-**General**
-- [ ] PR ek logical change pe focused hai (mega-PR nahi hai)
-- [ ] Breaking changes clearly documented hain
-- [ ] Sensitive data (keys, passwords, PII) commit mein nahi hai
-- [ ] Self-review kiya hai apne code ka
+### 🗄️ Database & Environment Impact
+- [ ] **Requires Alembic Migration:** New migration added under `alembic/versions/`
+- [ ] **Requires Environment Variables:** Documented in `.env.example`
+- [ ] **Windows Services Restart Required:** List affected NSSM services (`hydrocast-api`, `hydrocast-admin`, etc.)
 
 ---
 
-## 🗒️ Additional Notes for Reviewer
-
-<!-- Koi bhi context jo reviewer ko help kare — design decisions, known limitations, follow-up issues, etc. -->
-
-
+### ✅ Contributor Quality & Security Checklist
+- [ ] **No Committed Secrets:** Verified that `.env`, passwords, JWT secrets, and private keys are NOT committed.
+- [ ] **Data Honesty:** No fabricated synthetic mock responses or fake DB health payloads.
+- [ ] **RBAC Enforced:** Privileged administrative actions strictly require `role == "admin"`.
+- [ ] **Changelog Updated:** Entry added to [CHANGELOG.md](CHANGELOG.md) under the active release.
+- [ ] **Issues Register Updated:** Corresponding entry updated in [ISSUES.md](ISSUES.md).
+- [ ] **Self-Reviewed:** I have conducted an end-to-end self-review of all changed lines.
