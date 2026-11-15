@@ -86,4 +86,4 @@ docker compose up -d hydrocast-frontend
 
 ## Version
 
-Windows Server Edition — version 1.4.0 aligned with the `windows-v1.4.0` release tag.
+Windows Server Edition — version 1.4.1 aligned with the `windows-v1.4.1` release tag.

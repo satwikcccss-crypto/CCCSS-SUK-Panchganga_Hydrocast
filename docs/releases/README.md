@@ -4,6 +4,7 @@ This directory contains **GitHub-standard release notes** for the Windows Server
 
 | Release | Tag | Date | Status | Notes |
 |:--|:--|:--|:--|:--|
+| **v1.4.1** | [`windows-v1.4.1`](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.4.1) | 2026-11-15 | 🟡 Ready for publication | [windows-v1.4.1.md](./windows-v1.4.1.md) |
 | **v1.4.0** | [`windows-v1.4.0`](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.4.0) | 2026-11-15 | ✅ Shipped | [windows-v1.4.0.md](./windows-v1.4.0.md) |
 | **v1.3.0** | [`windows-v1.3.0`](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.3.0) | 2026-11-14 | ✅ Shipped | [windows-v1.3.0.md](./windows-v1.3.0.md) |
 | **v1.2.0** | [`windows-v1.2.0`](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.2.0) | 2026-11-13 | ✅ Shipped | [windows-v1.2.0.md](./windows-v1.2.0.md) |

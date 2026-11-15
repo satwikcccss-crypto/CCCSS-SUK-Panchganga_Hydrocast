@@ -6,6 +6,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.1] - 2026-11-15 — Stable Repository & Documentation Consolidation (`windows-v1.4.1`)
+
+Stable patch release on `windows-server-production` consolidating documentation, repository hygiene, community standards, and operational tooling. No hydrology or telemetry algorithm changes.
+
+### Documentation
+
+- Consolidated the legacy documentation set into 27 maintained engineering manuals.
+- Preserved 18 legacy documents and 2 source modules not present in `main`.
+- Removed 57 superseded Markdown files and 26 unused legacy `src/` modules after verifying they remain available in `main`.
+- Added a public API documentation page and validated local documentation links with 0 missing targets.
+
+### Repository Hygiene
+
+- Ignored generated caches, screenshots, coverage artifacts, and local raw telemetry exports.
+- Stopped committing generated runtime snapshots; runtime JSON files remain local/generated.
+- Kept `graphify-out/` on disk but out of Git.
+- Added community health files, issue templates, accessibility guidance, and `AGENTS.md`.
+- Redacted personal contact details and legacy credential examples from tracked documentation and source comments.
+
+### Verification
+
+- Backend tests: **325 passed, 3 skipped**.
+- Ruff: **clean**.
+- Frontend production builds: **`frontend-public` and `frontend-admin` passed**.
+- Documentation local-link check: **0 missing targets**.
+- No changes to `main`; no live credentials or personal contacts in release documentation.
+
+### Notes
+
+- v1.4.0 IoT sensor corrections and telemetry integrity fixes remain included.
+- GitHub Release publication is handled separately; tag `windows-v1.4.1` targets `windows-server-production`.
+
+---
+
 ## [1.4.0] - 2026-11-15 — IoT Sensor Corrections & Telemetry Integrity (`windows-v1.4.0`)
 
 Release on `windows-server-production` focused on critical IoT sensor physics bugs, ThingSpeak multi-station data integrity, SIM signal-strength telemetry surfacing, exception safety, and runtime metadata alignment.

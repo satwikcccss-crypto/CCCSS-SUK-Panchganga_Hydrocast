@@ -32,24 +32,24 @@ class TestDatabaseConnection(unittest.TestCase):
         url = build_pooler_url(
             project_ref="oaranobpxwstubkxrzuu",
             user="postgres",
-            password="mysecretpassword",
+            password="testpassword",
             region="ap-south-1",
             port=6543,
             dbname="postgres",
         )
-        expected = "postgresql://postgres.oaranobpxwstubkxrzuu:mysecretpassword@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require"
+        expected = "postgresql://postgres.oaranobpxwstubkxrzuu:testpassword@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require"
         self.assertEqual(url, expected)
 
     def test_build_pooler_url_user_already_has_ref(self):
         url = build_pooler_url(
             project_ref="oaranobpxwstubkxrzuu",
             user="postgres.oaranobpxwstubkxrzuu",
-            password="mysecretpassword",
+            password="testpassword",
             region="ap-south-1",
             port=5432,
             dbname="postgres",
         )
-        expected = "postgresql://postgres.oaranobpxwstubkxrzuu:mysecretpassword@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require"
+        expected = "postgresql://postgres.oaranobpxwstubkxrzuu:testpassword@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require"
         self.assertEqual(url, expected)
 
     def test_get_db_connection_none_when_no_env(self):

@@ -14,7 +14,7 @@
 ### 🔗 Related Issues & Tracking
 <!-- Link related issues from ISSUES.md or GitHub issue tracker. Use keywords: Closes #XX, Fixes #XX, Resolves #XX -->
 - Closes #
-- References [ISSUES.md](ISSUES.md) entry: 
+- References [ISSUES.md](../ISSUES.md) entry:
 
 ---
 
@@ -96,6 +96,6 @@ cd frontend-admin; npm run build; cd ..
 - [ ] **No Committed Secrets:** Verified that `.env`, passwords, JWT secrets, and private keys are NOT committed.
 - [ ] **Data Honesty:** No fabricated synthetic mock responses or fake DB health payloads.
 - [ ] **RBAC Enforced:** Privileged administrative actions strictly require `role == "admin"`.
-- [ ] **Changelog Updated:** Entry added to [CHANGELOG.md](CHANGELOG.md) under the active release.
-- [ ] **Issues Register Updated:** Corresponding entry updated in [ISSUES.md](ISSUES.md).
+- [ ] **Changelog Updated:** Entry added to [CHANGELOG.md](../CHANGELOG.md) under the active release.
+- [ ] **Issues Register Updated:** Corresponding entry updated in [ISSUES.md](../ISSUES.md).
 - [ ] **Self-Reviewed:** I have conducted an end-to-end self-review of all changed lines.
