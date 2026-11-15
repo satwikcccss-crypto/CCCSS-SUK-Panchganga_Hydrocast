@@ -109,6 +109,8 @@ logs/
 node_modules/
 package-lock.json
 package.json
+# Application lockfiles are required for reproducible CI installs (`npm ci`).
+!frontend-public/package-lock.json
 *.docx
 docs_site/
 *.log
@@ -130,6 +132,7 @@ OPENCODE_HANDOVER_CONTEXT.md
 # Python test / coverage artifacts
 .coverage
 .coverage.*
+coverage.xml
 .htmlcov/
 .pytest_cache/
 test-results/
@@ -137,3 +140,17 @@ tests/test-results/
 reports/
 *credentials.txt
 *passwords.txt
+
+# Generated knowledge graph and local audit artifacts
+graphify-out/
+tests/screenshots/
+
+# Local tool caches
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.eslintcache
+*.tmp
+*.temp
+*.pid
+.DS_Store
