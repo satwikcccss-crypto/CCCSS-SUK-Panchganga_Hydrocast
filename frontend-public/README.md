@@ -1,22 +1,20 @@
-# HydroCast Frontend Dashboard
+# HydroCast Frontend Dashboard (Windows Server Edition)
 
 <p align="center">
   <img src="public/assets/hydrocast_main_banner.jpg" alt="HydroCast Operational Continuum" width="100%">
 </p>
 
-Modern, real-time hydrometric flood warning and basin intelligence dashboard built with Next.js 14 App Router, Tailwind CSS, Leaflet GIS, and WebSockets.
+Modern, real-time hydrometric flood warning and basin intelligence dashboard built with Next.js 14 App Router, Tailwind CSS, Leaflet GIS, and WebSockets. Deployed on Windows Server Standard at Shivaji University, Kolhapur — 100% self-hosted, no Vercel dependency.
 
 ## Technology & Frontend Stack
 
 | Area | Tool |
 | :--- | :--- |
-| **OS** | ![Linux](https://img.shields.io/badge/OS-Linux-FCC624?style=flat&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/OS-macOS-000000?style=flat&logo=apple&logoColor=white) ![Windows](https://img.shields.io/badge/OS-Windows-0078D6?style=flat&logo=windows&logoColor=white) |
+| **OS** | ![Windows](https://img.shields.io/badge/OS-Windows-0078D6?style=flat&logo=windows&logoColor=white) |
 | **Languages** | ![TypeScript](https://img.shields.io/badge/Code-TypeScript_5-3178C6?style=flat&logo=typescript&logoColor=white) ![JavaScript](https://img.shields.io/badge/Code-JavaScript_ES6+-F7DF1E?style=flat&logo=javascript&logoColor=black) ![CSS3](https://img.shields.io/badge/Code-CSS3-1572B6?style=flat&logo=css3&logoColor=white) ![HTML5](https://img.shields.io/badge/Code-HTML5-E34F26?style=flat&logo=html5&logoColor=white) |
 | **Frameworks** | ![Next.js](https://img.shields.io/badge/Code-Next.js_14-000000?style=flat&logo=nextdotjs&logoColor=white) ![React](https://img.shields.io/badge/Code-React_18-61DAFB?style=flat&logo=react&logoColor=black) ![Tailwind](https://img.shields.io/badge/Code-Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white) ![Lucide](https://img.shields.io/badge/Icons-Lucide_React-F56565?style=flat&logo=feather&logoColor=white) |
 | **Visualization** | ![Leaflet](https://img.shields.io/badge/Map-Leaflet-199900?style=flat&logo=leaflet&logoColor=white) ![Chart.js](https://img.shields.io/badge/Chart-Chart.js-FF6384?style=flat&logo=chartdotjs&logoColor=white) ![Recharts](https://img.shields.io/badge/Chart-Recharts-22B5BF?style=flat&logo=d3dotjs&logoColor=white) |
-| **Deployment** | ![Docker](https://img.shields.io/badge/Containers-Docker-2496ED?style=flat&logo=docker&logoColor=white) ![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?style=flat&logo=vercel&logoColor=white) ![Node.js](https://img.shields.io/badge/Runtime-Node.js_20-339933?style=flat&logo=nodedotjs&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/CICD-GitHub_Actions-2088FF?style=flat&logo=githubactions&logoColor=white) |
-
----
+| **Deployment** | ![Docker](https://img.shields.io/badge/Containers-Docker-2496ED?style=flat&logo=docker&logoColor=white) ![NSSM](https://img.shields.io/badge/Services-NSSM-8B5CF6?style=flat&logo=windows-server&logoColor=white) ![Node.js](https://img.shields.io/badge/Runtime-Node.js_20-339933?style=flat&logo=nodedotjs&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/CICD-GitHub_Actions-2088FF?style=flat&logo=githubactions&logoColor=white) |
 
 ## Key Features
 
@@ -49,9 +47,32 @@ Modern, real-time hydrometric flood warning and basin intelligence dashboard bui
    npm run start
    ```
 
-### Docker Production Startup
+### Windows Server Production Deployment
+
+The production frontend deployment on Windows Server follows the NSSM-installed service model. See the full deployment runbook in `docs/12-deployment.md`.
+
+1. **Build the production assets** (already done during installation):
+   ```powershell
+   cd frontend-public
+   npm ci
+   npm run build
+   cd ..
+   cd frontend-admin
+   npm ci
+   npm run build
+   cd ..
+   ```
+
+2. **The build outputs** are served by the reverse proxy (Caddyfile) to:
+   - Port 3000: Public Portal (`HydroCast-PublicWeb` Windows Service)
+   - Port 3001: Operator Console (`HydroCast-OperatorConsole` Windows Service)
+
+3. **No Vercel deployment required.** All assets are built locally and served via the native Windows Services stack.
+
+### Docker Production Startup (Optional, Linux/Cloud only)
 
 Build and launch the lightweight, multi-stage production container:
+
 ```bash
 # Standalone Docker
 docker build -t hydrocast-frontend .
@@ -61,3 +82,8 @@ docker run -p 3000:3000 hydrocast-frontend
 docker compose up -d hydrocast-frontend
 ```
 
+---
+
+## Version
+
+Windows Server Edition — version 1.4.0 aligned with the `windows-v1.4.0` release tag.
