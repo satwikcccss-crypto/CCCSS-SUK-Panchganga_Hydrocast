@@ -77,6 +77,7 @@ venv.bak/
 
 # Data and Cache
 data/raw/
+data/telemetry/*.csv
 data/openmeteo_dss/csv/
 data/openmeteo_dss/dss/
 data/openmeteo_dss_centroids/
