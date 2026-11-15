@@ -10,6 +10,7 @@ All issues correspond directly to the official GitHub Issue tracker at [satwikcc
 
 | Milestone | Tag | Issues Closed | Issues Open | Focus Area |
 |:---|:---|:---:|:---:|:---|
+| **windows-v1.4.1** | `windows-v1.4.1` | 4 | 0 | Repository Hygiene, Docs Consolidation, 100% Community Health Benchmark |
 | **windows-v1.4.0** | `windows-v1.4.0` | 8 | 1 | IoT Sensor Physics, SIM Signal Strength, Pipeline Exceptions, Auth Restoration |
 | **windows-v1.3.0** | `windows-v1.3.0` | 6 | 0 | Role-Based Access Control (RBAC), ETag / 304, PDF Advisory Bulletin, WS Security |
 | **windows-v1.2.0** | `windows-v1.2.0` | 3 | 0 | Prometheus Observability, Windows Watchdog recovery, Backup Automation |
@@ -27,6 +28,36 @@ All issues correspond directly to the official GitHub Issue tracker at [satwikcc
 ---
 
 ## 📦 Closed / Resolved Issues & Features Register
+
+### Release: `windows-v1.4.1` (2026-11-15)
+
+#### [#47](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/issues/47) — [Documentation]: Consolidate 27 maintained engineering manuals and validate internal navigation links
+- **Category:** `documentation`, `maintenance`
+- **Severity:** 🟢 **Standard**
+- **Impact:** Consolidated the legacy fragmented documentation set into 27 maintained engineering manuals categorized into modular directories (`docs/01_architecture/`, `docs/02_hydrology_and_science/`, `docs/03_operations_and_runbooks/`, `docs/04_developer_and_api/`).
+- **Resolution:** Validated all local markdown links (0 missing targets) and provided a unified documentation index with architecture diagrams.
+- **Status:** 🟢 **CLOSED**
+
+#### [#48](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/issues/48) — [Hygiene]: Remove 26 unused legacy src/ modules and establish production .gitignore rules
+- **Category:** `refactor`, `cleanup`
+- **Severity:** 🟡 **Medium**
+- **Impact:** Deprecated development files in `src/` cluttered the repository and caused import ambiguity with `backend/`.
+- **Resolution:** Removed 26 superseded `src/` modules, established clean `.gitignore` rules for runtime JSON and graphify caches, and left working tree 100% clean.
+- **Status:** 🟢 **CLOSED**
+
+#### [#49](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/issues/49) — [Community]: Establish 100% health community standards, issue templates, and accessibility guidelines
+- **Category:** `community`, `governance`
+- **Severity:** 🟡 **Medium**
+- **Impact:** Repository lacked standardized issue templates, accessibility statement, and formal PR checklist required for institutional benchmarks.
+- **Resolution:** Added 5 specialized issue templates, PR template with 3-tier testing checklists, and WCAG 2.1 AA `ACCESSIBILITY.md`. GitHub Community Profile verified at 100% health.
+- **Status:** 🟢 **CLOSED**
+
+#### [#50](https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/issues/50) — [Security]: Redact legacy credentials, hashes, and personal contact paths from tracked documentation
+- **Category:** `security`, `hardening`
+- **Severity:** 🔴 **Critical**
+- **Impact:** Legacy examples and personal emails in documentation comments could leak sensitive context.
+- **Resolution:** Redacted all legacy database password hash examples, tokens, and personal email addresses; replaced with GitHub Security Advisory reporting channels.
+- **Status:** 🟢 **CLOSED**
 
 ### Release: `windows-v1.4.0` (2026-11-15)
 
