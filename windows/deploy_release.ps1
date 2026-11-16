@@ -95,13 +95,13 @@ Write-Host "============================================================" -Foreg
 # ─────────────────────────────────────────────────────────────────────────────
 Write-Step "1/7  Pre-flight checks"
 
-Assert-Command "git"  "Install Git for Windows."
-Assert-Command "python" "Install Python 3.12 x64 and add it to PATH."
-Assert-Command "npm"  "Install Node.js 20 LTS."
-
 # A folder-copy deployment has no .git directory. That is supported; we simply
 # skip revision tracking and the source-tree cleanliness gate.
 $hasGit = Test-Path (Join-Path $ProjectRoot ".git")
+if ($hasGit) {
+    Assert-Command "git"  "Install Git for Windows."
+}
+Assert-Command "python" "Install Python 3.12 x64 and add it to PATH."
 
 $pyVersion = & python -c "import sys; print('%d.%d' % sys.version_info[:2])"
 if ($pyVersion -notmatch '^(3\.1[2-9])$') {
@@ -109,19 +109,26 @@ if ($pyVersion -notmatch '^(3\.1[2-9])$') {
 }
 Write-Ok "Python $pyVersion"
 
-$nodeVersion = (& node -v).TrimStart('v')
-$nodeMajor = [int]($nodeVersion.Split('.')[0])
-if ($nodeMajor -lt 20) {
-    Fail "Node $nodeVersion detected; Next.js 14 requires Node 20 or newer."
-}
-if ($nodeMajor -gt 24) {
-    Write-Warn "Node $nodeVersion is newer than the validated 20.x LTS line."
+if ($SkipFrontend) {
+    Write-Ok "Node/npm checks skipped (-SkipFrontend)"
 } else {
-    Write-Ok "Node $nodeVersion"
-}
+    Assert-Command "node" "Install Node.js 20 LTS (includes npm)."
+    Assert-Command "npm"  "Install Node.js 20 LTS (includes npm)."
 
-$npmVersion = (& npm -v).Trim()
-Write-Ok "npm $npmVersion"
+    $nodeVersion = (& node -v).TrimStart('v')
+    $nodeMajor = [int]($nodeVersion.Split('.')[0])
+    if ($nodeMajor -lt 20) {
+        Fail "Node $nodeVersion detected; Next.js 14 requires Node 20 or newer."
+    }
+    if ($nodeMajor -gt 24) {
+        Write-Warn "Node $nodeVersion is newer than the validated 20.x LTS line."
+    } else {
+        Write-Ok "Node $nodeVersion"
+    }
+
+    $npmVersion = (& npm -v).Trim()
+    Write-Ok "npm $npmVersion"
+}
 
 if (-not (Test-Path (Join-Path $ProjectRoot ".env"))) {
     Fail ".env is missing. Copy .env.example to .env and fill in the production secrets."
