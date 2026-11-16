@@ -1,9 +1,16 @@
-import subprocess, time, json, urllib.request, sys
+import json
+import subprocess
+import sys
+import time
+import urllib.request
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 # Start the server
 proc = subprocess.Popen(
     [sys.executable, '-m', 'uvicorn', 'backend.api.main:app', '--host', '0.0.0.0', '--port', '8000'],
-    cwd=r'E:\Hydrocast Windows Server',
+    cwd=str(PROJECT_ROOT),
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL
 )

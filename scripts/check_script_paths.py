@@ -1,7 +1,8 @@
 import os
 import re
+from pathlib import Path
 
-scripts_dir = "E:/Hydrocast Windows Server/scripts"
+scripts_dir = str(Path(__file__).resolve().parent)
 issues = []
 
 for f in os.listdir(scripts_dir):

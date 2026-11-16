@@ -316,7 +316,7 @@ def main():
     }
 
     # Write report
-    report_path = Path("E:/Hydrocast Windows Server/playwright_audit_report.json")
+    report_path = Path(__file__).resolve().parents[1] / "playwright_audit_report.json"
     with open(report_path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
 

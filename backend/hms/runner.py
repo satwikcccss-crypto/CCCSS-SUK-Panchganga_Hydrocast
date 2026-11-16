@@ -364,13 +364,19 @@ def compute_emulator_hydrograph(
         cum_p = np.cumsum(p_series)
         cum_q = np.zeros(sim_hours, dtype=np.float32)
 
-        for h in range(sim_hours):
-            impervious_q = cum_p[h] * 0.02
-            cn_q = 0.0
-            if cum_p[h] > ia:
-                cn_q = ((cum_p[h] - ia) ** 2) / (cum_p[h] - ia + s_ret)
-            cum_q[h] = cn_q + impervious_q
+        # ── Vectorized SCS-CN loss computation (replaces pure Python for‑loop) ─────────
+        # impervious fraction: 2% of cumulative precipitation
+        impervious_q = cum_p * 0.02
 
+        # Runoff from SCS-CN method, only when precipitation exceeds initial abstraction
+        mask = cum_p > ia
+        with np.errstate(invalid="ignore", divide="ignore"):
+            cn_q = np.zeros_like(cum_p)
+            cn_q[mask] = ((cum_p[mask] - ia) ** 2) / (cum_p[mask] - ia + s_ret)
+
+        cum_q = cn_q + impervious_q
+
+        # excess = cumulative runoff difference (effective rainfall)
         excess_p = np.diff(cum_q, prepend=0.0)
         excess_p = np.maximum(0.0, excess_p)
         if len(excess_p) < sim_hours:

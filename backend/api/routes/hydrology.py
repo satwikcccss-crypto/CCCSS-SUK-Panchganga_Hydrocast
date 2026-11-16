@@ -7,13 +7,12 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query, Request, Response
 
 from backend.api.limits import RATE_LIMIT_PUBLIC, limiter
+from backend.api.cache import cached_json_response, load_pipeline_state_async
 from backend.api.runtime import (
     PublicDep,
     _jsonify,
-    _load_pipeline_state,
     filter_fields,
     get_pool,
-    json_with_etag,
     log,
 )
 
@@ -35,23 +34,65 @@ async def ecmwf_hyetograph(request: Request, subbasin_id: Optional[str] = None):
 
     :param subbasin_id: Optional filter. Omit it to return all nine subbasins.
     """
-    try:
+    async def _load_ecmwf():
+        """Latest-cycle hyetograph: materialized view first, base table second.
+
+        ``latest_cycle_summary`` is an optional database optimisation. Older or
+        freshly-initialised databases may not have it, so a missing view must
+        degrade to the original query rather than blanking the endpoint.
+        """
         pool = await get_pool()
         async with pool.acquire() as conn:
-            # Always fetch latest cycle; optional subbasin filter below
-            where = "WHERE forecast_run_time = (SELECT MAX(forecast_run_time) FROM subbasin_rainfall_ts)"
             params: list = []
+            where = ""
             if subbasin_id is not None:
-                where += f" AND subbasin_id = ${len(params) + 1}"
                 params.append(subbasin_id)
-            query = f"SELECT subbasin_id, valid_time, lead_hours, rainfall_mm_hr FROM subbasin_rainfall_ts {where} ORDER BY subbasin_id, lead_hours"
-            rows = await conn.fetch(query, *params)
+                where = "WHERE subbasin_id = $1"
+
+            try:
+                rows = await conn.fetch(
+                    f"""
+                    SELECT subbasin_id, valid_time, lead_hours, rainfall_mm_hr
+                    FROM latest_cycle_summary
+                    {where}
+                    ORDER BY subbasin_id, lead_hours
+                    """,
+                    *params,
+                )
+                if rows:
+                    return rows
+            except Exception as exc:
+                log.debug("latest_cycle_summary unavailable, using base table: %s", exc)
+
+            base_where = (
+                "WHERE forecast_run_time = "
+                "(SELECT MAX(forecast_run_time) FROM subbasin_rainfall_ts)"
+            )
+            if subbasin_id is not None:
+                base_where += " AND subbasin_id = $1"
+
+            return await conn.fetch(
+                f"""
+                SELECT subbasin_id, valid_time, lead_hours, rainfall_mm_hr
+                FROM subbasin_rainfall_ts
+                {base_where}
+                ORDER BY subbasin_id, lead_hours
+                """,
+                *params,
+            )
+
+    try:
+        rows = await _load_ecmwf()
     except Exception as e:
-        log.warning("ECMWF hyetograph fallback: %s", e)
-        state = _load_pipeline_state()
+        log.warning("ECMWF hyetograph DB fallback: %s", e)
+        rows = None
+
+    if rows is None:
+        # fallback to pipeline state file (degraded mode)
+        state = await load_pipeline_state_async()
         if state and state.get("ecmwf"):
-            return {"data": state["ecmwf"], "degraded": True, "source": "pipeline_state_file", "error": str(e)}
-        return {"degraded": True, "source": "fallback", "error": str(e), "ecmwf": {}}
+            return cached_json_response(request, {"data": state["ecmwf"], "degraded": True, "source": "pipeline_state_file"}, cache_key="ecmwf")
+        return cached_json_response(request, {"degraded": True, "source": "fallback", "error": "ECMWF unavailable", "ecmwf": {}}, cache_key="ecmwf")
 
     result: dict[str, list] = {}
     for r in rows:
@@ -61,7 +102,7 @@ async def ecmwf_hyetograph(request: Request, subbasin_id: Optional[str] = None):
             "time":    r["valid_time"].isoformat(),
             "mm_hr":   r["rainfall_mm_hr"],
         })
-    return result
+    return cached_json_response(request, result, cache_key="ecmwf")
 
 @router.get(
     "/api/v1/rainfall/stations",
@@ -174,13 +215,14 @@ async def outlet_hydrograph(request: Request, outlet_node: str = "J_Outlet"):
             """, outlet_node)
         payload = _jsonify(rows)
     except Exception as e:
-        log.warning("Outlet hydrograph fallback: %s", e)
-        state = _load_pipeline_state()
+        log.warning("Outlet hydrograph DB fallback: %s", e)
+        state = await load_pipeline_state_async()
         if state and state.get("hydrograph"):
             payload = {"data": state["hydrograph"], "degraded": True, "source": "pipeline_state_file", "error": str(e)}
         else:
             payload = {"degraded": True, "source": "fallback", "error": str(e), "hydrograph": []}
-    return json_with_etag(request, payload)
+
+    return cached_json_response(request, payload, cache_key="hydrograph")
 
 @router.get(
     "/api/v1/runoff/summary",
@@ -236,8 +278,8 @@ async def runoff_summary(
                 ORDER BY lead_hours ASC
             """)
     except Exception as e:
-        log.warning("Runoff summary fallback: %s", e)
-        state = _load_pipeline_state()
+        log.warning("Runoff summary DB fallback: %s", e)
+        state = await load_pipeline_state_async()
         if state:
             summary = state.get("summary", {})
             bridges_data = []
@@ -285,7 +327,7 @@ async def runoff_summary(
                 "peak_arrival": {},
             }
         payload = filter_fields(payload, fields)
-        return json_with_etag(request, payload)
+        return cached_json_response(request, payload, cache_key="runoff_summary")
 
     if not last_cycle:
         payload = {
@@ -301,7 +343,7 @@ async def runoff_summary(
             "peak_arrival": {},
         }
         payload = filter_fields(payload, fields)
-        return json_with_etag(request, payload)
+        return cached_json_response(request, payload, cache_key="runoff_summary")
 
     # Build bridge objects with full stage data
     bridges_by_site = {}
@@ -316,7 +358,7 @@ async def runoff_summary(
                 "warning_stage_m": float(r.get("warning_stage_m") or 0),
                 "danger_stage_m": float(r.get("danger_stage_m") or 0),
                 "hfl_m": float(r.get("hfl_m") or 0),
-                "peak_stage_m": 0.0,  # will compute after loop
+                "peak_stage_m": 0.0,  # computed after the loop
                 "alert_level": r.get("alert_level") or "NORMAL",
                 "current_stage_m": first_stage if first_stage is not None else 0.0,
                 "forecast": [],
@@ -388,7 +430,7 @@ async def runoff_summary(
         "recalibration": calibration_state,
     }
     payload = filter_fields(payload, fields)
-    return json_with_etag(request, payload)
+    return cached_json_response(request, payload, cache_key="runoff_summary")
 
 @router.get(
     "/api/v1/runoff/calibration",

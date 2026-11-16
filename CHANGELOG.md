@@ -6,6 +6,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.2] - 2026-11-16 — Production Deployment Hardening (`windows-v1.4.2`)
+
+Fixes that made a fresh Windows Server deployment fail, plus dependency and
+configuration synchronisation with the validated build environment.
+
+### Fixed
+
+- **Boot blocker:** `backend/api/cache.py` imported `cachetools` unguarded. A
+  server installing only `requirements.txt` could not start the API at all.
+  `cachetools` and `orjson` are now declared and the module degrades to a local
+  TTL cache when they are absent.
+- **Cache correctness:** response cache keys ignored the query string, so
+  `?subbasin_id=X` could be served a payload cached for an unfiltered request.
+  Keys now include path + sorted query, ETag/304 is implemented, and oversized
+  bodies are not retained.
+- **HAND engine:** missing `numpy` import (`NameError` on every call), a
+  `src_cr` typo that silently returned unprojected coordinates, inverted raster
+  masking, and a per-polygon depth taken from pixel `(0, 0)` instead of the
+  polygon itself. All fixed; the endpoint still reports `available: false`
+  without the optional geospatial stack.
+- **Hydrology routes:** removed a duplicated bridge-building block that
+  discarded its own result; restored field filtering on degraded paths; the
+  ECMWF endpoint falls back to the base table when the optional
+  `latest_cycle_summary` materialized view does not exist.
+- **Deprecated API:** dropped the `ORJSONResponse` default response class
+  (deprecated in current FastAPI); hot endpoints still serialise via orjson.
+- **NSSM:** services now prefer `.venv\Scripts\python.exe`; previously they
+  used the system interpreter, which does not carry the locked dependencies.
+  Log directories are created before stdout redirection is configured.
+- **Path portability:** nine scripts no longer hardcode `E:\Hydrocast Windows
+  Server`, and the `PROJECT_ROOT` overrides in `.env`/`.env.example` are
+  commented out (the backend resolves paths from its own location).
+- **CORS/origins:** production origins corrected to lowercase HTTPS. Added a
+  dedicated `hydrocast-admin.unishivaji.ac.in` Caddy site (its `/ws/*` streams
+  from :8001); the old `/admin` sub-path mount redirected because its assets
+  cannot load from a sub-path.
+- **WebSocket security:** portal and console moved from `ws://` to `wss://`.
+  An HTTPS page cannot open an insecure WebSocket, which had silently killed
+  live telemetry.
+
+### Changed
+
+- `requirements.txt` floors raised to the validated versions;
+  `requirements.lock` regenerated (no more "optional extras omitted").
+  Removed unused `psycopg2-pool`, `circuitbreaker`, `structlog` entries.
+- `requirements-dev.txt` and `.pre-commit-config.yaml` pinned to current tool
+  releases (black 26.3.1, isort 8.0.1, mypy 2.4.1, gitleaks 8.30.1,
+  pre-commit-hooks v6.0.0).
+- `pyproject.toml` targets Python 3.12; frontend TypeScript pinned to 5.9.3 in
+  both apps.
+- `frontend-admin/.env.local` untracked; `.env.local.example` templates added so
+  a fresh clone has valid, reviewable configuration.
+
+### Added
+
+- `windows/deploy_release.ps1` — one-command, idempotent production deployment
+  (pre-flight, venv install, `npm ci && npm run build`, optional Alembic
+  migration, service restart, health checks, revision recording).
+- Regression tests: `tests/test_api_cache.py`,
+  `tests/test_hand_inundation.py`, `tests/test_hydrology_fallbacks.py`.
+
+### Verification
+
+- Backend tests: **346 passed, 3 skipped** (was 325 passed).
+- New tests assert the app boots with `cachetools` unavailable.
+
+---
+
 ## [1.4.1] - 2026-11-15 — Stable Repository & Documentation Consolidation (`windows-v1.4.1`)
 
 Stable patch release on `windows-server-production` consolidating documentation, repository hygiene, community standards, and operational tooling. No hydrology or telemetry algorithm changes.

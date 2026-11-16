@@ -28,17 +28,17 @@
 <!-- TIER 2: REPOSITORY & COMMUNITY HEALTH BADGES                            -->
 <!-- ======================================================================= -->
 <p align="center">
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.4.1">
-    <img src="https://img.shields.io/badge/release-windows--v1.4.1-0284c7?style=for-the-badge&logo=github" alt="Release">
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.4.2">
+    <img src="https://img.shields.io/badge/release-windows--v1.4.2-0284c7?style=for-the-badge&logo=github" alt="Release">
   </a>
   <a href="ISSUES.md">
     <img src="https://img.shields.io/badge/Issues%20Tracked-26%20Documented-8b5cf6?style=for-the-badge&logo=githubissues" alt="Issues">
   </a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/pipeline.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/pipeline.yml?branch=windows-server-production&label=Forecast%20Pipeline&style=for-the-badge&logo=githubactions&logoColor=white" alt="Forecast Pipeline">
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/ci.yml?branch=windows-server-production&label=CI%20Pipeline&style=for-the-badge&logo=githubactions&logoColor=white" alt="CI Pipeline">
   </a>
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/tests.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/tests.yml?branch=windows-server-production&label=Test%20Suite&style=for-the-badge&logo=pytest&logoColor=white" alt="Tests">
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/actions/workflows/ci.yml?query=branch%3Awindows-server-production">
+    <img src="https://img.shields.io/github/actions/workflow/status/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/ci.yml?branch=windows-server-production&label=Test%20Suite&style=for-the-badge&logo=pytest&logoColor=white" alt="Tests">
   </a>
 </p>
 
@@ -76,7 +76,7 @@ HydroCast achieves this by coupling:
 | **Simulation Core** | Python 3.12 · USACE HEC-HMS 4.13 · Vectorized Python Digital Twin · Jython |
 | **Scientific & Spatial Computing** | NumPy · SciPy (PCHIP Monotonic Splines) · Pandas · GeoPandas · Shapely |
 | **Numerical Meteorology** | ECMWF IFS HRES (0.1° / 9 km QPF) · Open-Meteo REST API |
-| **Backend & API Engine** | FastAPI 0.110+ · Pydantic v2 · Uvicorn · Starlette · asyncpg connection pool · Ruff linter |
+| **Backend & API Engine** | FastAPI 0.141+ · Pydantic v2 · Uvicorn · Starlette · asyncpg connection pool · Ruff linter |
 | **Database & Spatial Store** | **PostgreSQL 16** · **PostGIS 3.4** Spatial Extension — **100% self-hosted, no cloud sync** |
 | **Frontend & Control Room UI**| Next.js 14 (App Router) · React 18 · TypeScript 5 · Tailwind CSS · Lucide Icons · Leaflet GIS · KaTeX |
 | **Authentication & RBAC** | JWT/API key auth · Fail-closed secret handling · DB-backed admin auth with role-based access |
@@ -302,9 +302,28 @@ FastAPI provides an asynchronous REST API running on port **8000** with the foll
 * PostgreSQL 16.x x64 with PostGIS 3.4 (Port 5432, local bound)
 * Python 3.12.x 64-bit, in PATH
 * Node.js v18.x or v20.x LTS (Powers ports 3000 and 3001)
-* HEC-HMS 4.13 x64 installed at `C:\Program Files\HEC\HEC-HMS\4.13\HEC-HMS.exe`
+* HEC-HMS 4.13 x64 installed at `C:\Program Files\HEC\HEC-HMS-4.13\HEC-HMS.exe`
 
-### Step 1: Run Pre-Flight Diagnostics
+### One-Command Production Deploy (recommended)
+
+Run from the repository root **as Administrator** on the server:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\windows\deploy_release.ps1 -Ref windows-v1.4.2
+```
+
+It performs pre-flight checks, installs into `.venv` from `requirements.lock`,
+runs `npm ci && npm run build` for both portals **on the server**, optionally
+migrates the database (`-Migrate`), restarts the NSSM services, and polls the
+health endpoints. Nothing is copied from a developer machine — this is the only
+path guaranteed to reproduce the validated build.
+
+> Never zip `node_modules`, `.next`, or `.env` between machines. Build artefacts
+> contain absolute paths, and Node native modules are tied to the Node ABI.
+
+### Manual Steps (reference runbook)
+
+##### Step 1: Run Pre-Flight Diagnostics
 Validate that all system ports, runtimes, dependencies, and file permissions are ready:
 
 ```powershell
@@ -312,7 +331,7 @@ Validate that all system ports, runtimes, dependencies, and file permissions are
 ```
 *Verification criteria: Output must report `System status: READY FOR PRODUCTION`.*
 
-### Step 2: Initialize PostgreSQL Database
+#### Step 2: Initialize PostgreSQL Database
 Create the `rainfall_runoff` database, tables, spatial indexes, and approved accounts:
 
 ```powershell
@@ -320,7 +339,7 @@ Create the `rainfall_runoff` database, tables, spatial indexes, and approved acc
 ```
 *Verification criteria: `[SUCCESS] PostgreSQL Database initialized and ready for production.`*
 
-### Step 3: Configure Environment Secrets
+#### Step 3: Configure Environment Secrets
 Copy the example environment file and configure all secrets. **Never commit the `.env` file.**
 
 ```powershell
@@ -336,7 +355,7 @@ Edit `.env` with your secure values:
 - `VISIT_HASH_SALT` — random salt for IP hashing
 - `TELEGRAM_WEBHOOK_SECRET` — random secret for Telegram webhook validation
 
-### Step 4: Build Frontend Production Assets
+#### Step 4: Build Frontend Production Assets
 Compile the Next.js production builds for both portals:
 
 ```powershell
@@ -352,7 +371,7 @@ cd ..
 ```
 *Success looks like: Next.js compilation complete, bundles output to `out/` directories, no TypeScript errors.*
 
-### Step 5: Register Windows Services (NSSM)
+#### Step 5: Register Windows Services (NSSM)
 Install the backend, scheduler, watchdog, public portal, and operator console as native Windows Services:
 
 ```powershell
@@ -365,7 +384,7 @@ powershell -ExecutionPolicy Bypass -File .\windows\install_services.ps1
 - `HydroCast-PublicWeb` (port 3000)
 - `HydroCast-OperatorConsole` (port 3001)
 
-### Step 6: Launch and Verify Services
+#### Step 6: Launch and Verify Services
 Start all registered services and inspect their status:
 
 ```powershell
@@ -374,14 +393,14 @@ powershell -ExecutionPolicy Bypass -File .\windows\service_control.ps1 -Action s
 ```
 *Success looks like: All 5 services running, backend responding on http://127.0.0.1:8000, admin console on http://127.0.0.1:3001.*
 
-### Step 7: Smoke-Test a Manual Forecast Cycle
+#### Step 7: Smoke-Test a Manual Forecast Cycle
 Execute a test run directly from PowerShell to verify the entire pipeline:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\windows\run_pipeline_manual.ps1
 ```
 
-### Step 8: Verify Health Endpoints
+#### Step 8: Verify Health Endpoints
 ```powershell
 curl http://127.0.0.1:8000/api/v1/health
 curl http://127.0.0.1:8000/healthz/live
@@ -393,34 +412,34 @@ curl http://127.0.0.1:8000/healthz/ready
 
 ## 📈 Release & Upgrade Runbook (Windows Server)
 
-### Cutting windows-v1.0.0
+### Cutting a release
 1. Ensure all intended changes are merged into `windows-server-production`.
-2. Update `CHANGELOG.md` with `## [1.0.0] - 2026-11-13 — Windows Server Base Release (windows-v1.0.0)`.
-3. Tag the release: `git tag windows-v1.0.0` and `git push windows-v1.0.0`.
+2. Update `CHANGELOG.md` with the new version entry.
+3. Tag the release: `git tag windows-v1.4.2` and `git push origin windows-v1.4.2`.
 4. Verify health gates:
    - All health endpoints return healthy status.
-   - Database migration scripts run without error.
+   - Database migration scripts run without error (`-Migrate` in the deploy script).
    - Frontend builds pass: `npm ci && npm run build` on both `frontend-public` and `frontend-admin`.
    - NSSM services restart cleanly after tag.
 
-### Deploying windows-v1.0.0 to Windows Server
-1. Pull the tagged release on the Windows Server:
+### Deploying a release to Windows Server
+1. On the server, run:
    ```powershell
-   git pull origin windows-v1.0.0
+   powershell -ExecutionPolicy Bypass -File .\windows\deploy_release.ps1 -Ref windows-v1.4.2
    ```
-2. Re-run the full installation runbook (Steps 1–7 above). All steps are idempotent.
-3. Verify the new health endpoints `/healthz/live` and `/healthz/ready`.
-4. Confirm the version reported in API responses matches `API-Version: 1.2.0`.
+2. The script fetches, checks out, rebuilds, restarts services, and runs health
+   checks. Add `-Migrate` when database schema changes are included.
+3. Confirm the deployed revision: `Get-Content data\deployed_revision.txt`.
+4. Confirm the version reported by the API matches `API-Version: 1.4.2`.
 
 ### Rolling back to prior version
-1. Identify the prior tag: `git tag --list | sort -V`.
-2. Check out the prior release:
+1. Identify the prior tag: `git tag --list | Sort-Object { [version]($_ -replace '^windows-v','') }`.
+2. Redeploy it:
    ```powershell
-   git checkout <previous-windows-tag>
+   powershell -ExecutionPolicy Bypass -File .\windows\deploy_release.ps1 -Ref <previous-windows-tag>
    ```
-3. Re-run the installation runbook (Steps 1–7). All scripts are backward-compatible.
-4. Verify health endpoints report the prior version.
-5. Return to `windows-server-production` once the rollback is confirmed successful.
+3. Verify health endpoints report the prior version.
+4. Return to `windows-server-production` once the rollback is confirmed successful.
 
 --- 
 

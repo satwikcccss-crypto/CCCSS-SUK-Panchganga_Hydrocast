@@ -61,7 +61,7 @@ if (-not (Test-Path $tablespaceDir)) {
 
 # ── 8. Load schema and seeds ─────────────────────────────────────────────────
 Write-Host "Loading schema and seed data..."
-$projectRoot = "E:\Hydrocast Windows Server"
+$projectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $setupSql = "$projectRoot\database\setup_postgresql.sql"
 
 & "$pgBin\psql.exe" -U hms_app -d rainfall_runoff -h 127.0.0.1 -p 5432 -f "$setupSql"

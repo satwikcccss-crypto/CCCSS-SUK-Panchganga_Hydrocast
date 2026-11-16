@@ -30,6 +30,9 @@ if (-not $isAdmin) {
 
 $ErrorActionPreference = "Stop"
 
+# NSSM redirects stdout/stderr into this directory; it must exist first.
+New-Item -ItemType Directory -Force -Path (Join-Path $WorkingDir "data\logs") | Out-Null
+
 Write-Host "`n============================================================" -ForegroundColor Cyan
 Write-Host " HYDROCAST WINDOWS SERVER -- SERVICE INSTALLATION (NSSM)" -ForegroundColor Cyan
 Write-Host " Shivaji University Kolhapur (SUK) Production Environment" -ForegroundColor Cyan
@@ -52,7 +55,16 @@ if (-not $NssmCmd) {
     $NssmPath = $NssmCmd.Source
 }
 
-$PythonExe = (Get-Command python).Source
+# Prefer the project virtualenv: the system interpreter does not have the
+# locked runtime dependencies, and pointing NSSM at it is the classic cause of
+# "service starts then immediately dies with ModuleNotFoundError".
+$VenvPython = Join-Path $WorkingDir ".venv\Scripts\python.exe"
+if (Test-Path $VenvPython) {
+    $PythonExe = $VenvPython
+} else {
+    $PythonExe = (Get-Command python).Source
+    Write-Host "[WARN] .venv not found - falling back to system Python. Run windows\deploy_release.ps1 first." -ForegroundColor Yellow
+}
 $NodeExe   = (Get-Command node -ErrorAction SilentlyContinue)
 if ($NodeExe) { $NodeExe = $NodeExe.Source }
 

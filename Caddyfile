@@ -71,14 +71,11 @@ hydrocast.unishivaji.ac.in, cccss.unishivaji.ac.in {
         }
     }
 
-    # Operator Mission Control Room (Dedicated Admin Sub-path)
-    handle_path /admin* {
-        reverse_proxy localhost:3001 {
-            header_up Host {upstream_hostport}
-            header_up X-Real-IP {remote_host}
-            header_up X-Forwarded-For {remote_host}
-            header_up X-Forwarded-Proto {scheme}
-        }
+    # Operator Mission Control lives on its own hostname (dedicated CORS
+    # origin and WebSocket backend). Redirect old /admin bookmarks instead of
+    # serving the console from a sub-path, where its /_next assets cannot load.
+    handle /admin* {
+        redir https://hydrocast-admin.unishivaji.ac.in/ 302
     }
 
     # Public Citizen Flood Intelligence Portal (Next.js :3000)
@@ -93,6 +90,49 @@ hydrocast.unishivaji.ac.in, cccss.unishivaji.ac.in {
 
     log {
         output file "data/logs/caddy_access.log" {
+            roll_size 10mb
+            roll_keep 10
+        }
+    }
+}
+
+# 1b. Operator Mission Control (dedicated hostname)
+# Separate origin is required: the admin console talks to the :8001 backend and
+# must not share a cookie/CORS origin with the citizen portal.
+hydrocast-admin.unishivaji.ac.in {
+    encode zstd gzip
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    }
+
+    # Admin WebSockets (telemetry + log streaming) live on the :8001 backend.
+    # Next.js rewrites do not proxy WebSocket upgrades, so route them here.
+    handle /ws/* {
+        reverse_proxy localhost:8001 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # Everything else (pages, /api/v1/admin/* rewrites) is served by Next.js.
+    handle {
+        reverse_proxy localhost:3001 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    log {
+        output file "data/logs/caddy_admin_access.log" {
             roll_size 10mb
             roll_keep 10
         }
@@ -124,9 +164,9 @@ hydrocast.unishivaji.ac.in, cccss.unishivaji.ac.in {
         reverse_proxy localhost:8000
     }
 
-    # Admin portal
-    handle_path /admin* {
-        reverse_proxy localhost:3001
+    # Operator console: canonical home is the dedicated admin hostname.
+    handle /admin* {
+        redir https://hydrocast-admin.unishivaji.ac.in/ 302
     }
 
     # Default citizen portal

@@ -62,7 +62,7 @@ log = logging.getLogger(__name__)
 
 app = FastAPI(
     title="HydroCast Panchganga Operator Console API",
-    version="1.4.1",
+    version="1.4.2",
     summary="Operator Console administrative API (Port 8001)",
     description=(
         "**IMPENETRABLE ADMIN CONSOLE** â€” HydroCast operator control plane.\n\n"
@@ -296,7 +296,7 @@ async def admin_liveness():
     return {
         "status": "alive",
         "service": "hydrocast-admin-console",
-        "version": "1.4.1",
+        "version": "1.4.2",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -320,7 +320,7 @@ async def admin_health(request: Request, _: bool = AdminDep):
 
     return {
         "service": "hydrocast-admin-console",
-        "version": "1.4.1",
+        "version": "1.4.2",
         "port": 8001,
         "database": db_status,
         "timestamp": datetime.now(timezone.utc).isoformat(),

@@ -7,16 +7,25 @@ reference table in PostgreSQL.
 """
 
 import io
+import os
 import re
 import zipfile
 from datetime import datetime
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import psycopg2
 from psycopg2.extras import execute_values
 
-ZIP_PATH = r"E:\Hydrocast Windows Server\nond wahi 2004 to 2024.zip"
-DB_URL = "postgresql://hms_app:REPLACE_ME_DB_PASSWORD@127.0.0.1:5432/rainfall_runoff"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+ZIP_PATH = os.getenv(
+    "WRD_CLIMATOLOGY_ZIP", str(PROJECT_ROOT / "nond wahi 2004 to 2024.zip")
+)
+DB_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://hms_app:REPLACE_ME_DB_PASSWORD@127.0.0.1:5432/rainfall_runoff",
+)
 RAJARAM_GAUGE_ZERO_M = 530.18
 
 def parse_feet_inches(val_str: str) -> float:

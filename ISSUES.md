@@ -10,6 +10,7 @@ All issues correspond directly to the official GitHub Issue tracker at [satwikcc
 
 | Milestone | Tag | Issues Closed | Issues Open | Focus Area |
 |:---|:---|:---:|:---:|:---|
+| **windows-v1.4.2** | `windows-v1.4.2` | 6 | 0 | Production Deployment Hardening, Dependency Sync, Service Config |
 | **windows-v1.4.1** | `windows-v1.4.1` | 4 | 0 | Repository Hygiene, Docs Consolidation, 100% Community Health Benchmark |
 | **windows-v1.4.0** | `windows-v1.4.0` | 8 | 1 | IoT Sensor Physics, SIM Signal Strength, Pipeline Exceptions, Auth Restoration |
 | **windows-v1.3.0** | `windows-v1.3.0` | 6 | 0 | Role-Based Access Control (RBAC), ETag / 304, PDF Advisory Bulletin, WS Security |
@@ -28,6 +29,75 @@ All issues correspond directly to the official GitHub Issue tracker at [satwikcc
 ---
 
 ## 📦 Closed / Resolved Issues & Features Register
+
+### Release: `windows-v1.4.2` (2026-11-16)
+
+Production deployment hardening. Resolves every defect that prevented a clean
+server from booting this codebase, and synchronises dependency manifests with
+the validated build.
+
+#### #51 — Undeclared runtime dependencies prevented API startup
+- **Category:** `bug`, `deployment`
+- **Severity:** 🔴 **Critical**
+- **Impact:** `backend/api/cache.py` imported `cachetools` unguarded; neither it
+  nor `orjson` was declared in `requirements.txt`. A fresh server could not
+  start uvicorn at all.
+- **Resolution:** Both packages declared and locked; the module now degrades to
+  an internal TTL cache when they are absent. Regression test spawns a blocked
+  import to prove boot.
+- **Status:** 🟢 **CLOSED**
+
+#### #52 — Response cache served filtered requests the wrong payload
+- **Category:** `bug`, `data-integrity`
+- **Severity:** 🔴 **Critical**
+- **Impact:** Cache keys were bare namespaces (`"ecmwf"`), ignoring the query
+  string. `?subbasin_id=B1` could receive the unfiltered body cached moments
+  earlier, so dashboards showed other subbasins' rainfall as their own.
+- **Resolution:** Keys now include method + path + sorted query; ETag/304
+  implemented; oversized bodies bypass the cache.
+- **Status:** 🟢 **CLOSED**
+
+#### #53 — HAND inundation engine crashed on first call
+- **Category:** `bug`
+- **Severity:** 🟡 **Medium**
+- **Impact:** Missing `numpy` import (`NameError`) and a `src_cr` typo that made
+  reprojection silently return projected coordinates; raster mask inversion;
+  per-polygon depth read from pixel `(0, 0)`.
+- **Resolution:** All corrected; graceful `available: false` without the
+  optional geospatial stack.
+- **Status:** 🟢 **CLOSED**
+
+#### #54 — Duplicate bridge block and degraded-path field filtering regression
+- **Category:** `bug`
+- **Severity:** 🟡 **Medium**
+- **Impact:** A duplicated loop reset its own result set; the `fields=` query
+  parameter stopped working on degraded responses.
+- **Resolution:** Block removed; filtering restored; ECMWF falls back to the
+  base table when `latest_cycle_summary` is absent.
+- **Status:** 🟢 **CLOSED**
+
+#### #55 — Windows services used the system Python interpreter
+- **Category:** `deployment`, `config`
+- **Severity:** 🔴 **Critical**
+- **Impact:** NSSM registered `python` from PATH instead of `.venv`, so services
+  failed with `ModuleNotFoundError` even though dependencies were installed.
+- **Resolution:** Installer prefers `.venv\Scripts\python.exe`; log directory
+  created before stdout redirection.
+- **Status:** 🟢 **CLOSED**
+
+#### #56 — Absolute paths, CORS, and WebSocket origin mismatches
+- **Category:** `deployment`, `security`
+- **Severity:** 🟡 **Medium**
+- **Impact:** Nine scripts hardcoded `E:\Hydrocast Windows Server`;
+  `PROJECT_ROOT` overrides broke relocated installs; CORS origins used `http://`
+  and mixed case; admin console shared the portal origin; live telemetry used
+  `ws://` under HTTPS and silently failed.
+- **Resolution:** Scripts derive paths from `__file__`; path overrides
+  commented out; HTTPS lowercase origins; dedicated admin hostname with
+  WebSocket routing; `wss://` everywhere.
+- **Status:** 🟢 **CLOSED**
+
+---
 
 ### Release: `windows-v1.4.1` (2026-11-15)
 

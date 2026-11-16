@@ -1,5 +1,23 @@
 [
   {
+    "cycle_id": "CYC_TEST_SINGLE_STEP_4",
+    "run_id": "CYC_TEST_SINGLE_STEP_4",
+    "run_date": "2026-11-16",
+    "start_time": "2026-11-16T06:00:00+00:00",
+    "duration_seconds": 14.74,
+    "peak_discharge_m3s": 0.0,
+    "lead_hours_to_peak": 0,
+    "total_volume_mcm": 0.0,
+    "alert_level": "NORMAL",
+    "status": "completed",
+    "summary": {
+      "peak_arrival": "T+0h",
+      "peak_discharge_m3s": 0.0,
+      "total_volume_mcm": 0.0,
+      "alert_level": "NORMAL"
+    }
+  },
+  {
     "cycle_id": "CYC_20261106_06z",
     "run_date": "06 Nov 2026",
     "cycle_time": "06z",

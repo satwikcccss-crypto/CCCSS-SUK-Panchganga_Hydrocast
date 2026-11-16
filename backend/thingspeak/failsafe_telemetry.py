@@ -27,7 +27,10 @@ from backend.validation.telemetry_metrics import (
     compute_pure_metrics,
 )
 
-SHIVAJI_DECK_LEVEL_MSL = 556.5
+# Sensor datum (m MSL) for Shivaji Bridge ultrasonic radar.
+# Matches sensor_datum_m in multi_station.py station SS config for
+# consistent stage conversion with the rest of the pipeline.
+SHIVAJI_SENSOR_DATUM_M = 549.35
 
 log = logging.getLogger(__name__)
 
@@ -122,9 +125,9 @@ def fetch_thingspeak_failsafe(
                 if val is None or val == "":
                     continue
                 feet_down = float(val)
-                # Convert feet below deck to meters MSL
-                # Deck level is approx 556.5m MSL
-                stage_msl = SHIVAJI_DECK_LEVEL_MSL - (feet_down * 0.3048)
+                # Convert feet below sensor datum to meters MSL
+                # Sensor datum is 549.35m MSL (matches sensor_datum_m in multi_station.py)
+                stage_msl = SHIVAJI_SENSOR_DATUM_M - (feet_down * 0.3048)
                 raw_points.append({
                     "timestamp": f.get("created_at"),
                     "stage_m": round(stage_msl, 3),

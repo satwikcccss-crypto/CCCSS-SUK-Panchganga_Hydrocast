@@ -110,8 +110,18 @@ logs/
 node_modules/
 package-lock.json
 package.json
+
 # Application lockfiles are required for reproducible CI installs (`npm ci`).
 !frontend-public/package-lock.json
+!frontend-admin/package-lock.json
+
+# Dev-assistant configuration and local capture artefacts
+opencode.jsonc
+.startup-skills.bat
+ts_integrate.py
+pytest_output.txt
+test_output.txt
+test_output2.txt
 *.docx
 docs_site/
 *.log

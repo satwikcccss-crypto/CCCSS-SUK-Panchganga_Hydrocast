@@ -7,7 +7,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(r"E:\Hydrocast Windows Server")
+ROOT = Path(__file__).resolve().parents[1]
 LOGS = ROOT / "logs"
 LOGS.mkdir(exist_ok=True)
 

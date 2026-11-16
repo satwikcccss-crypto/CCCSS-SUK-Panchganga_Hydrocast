@@ -1,49 +1,75 @@
-# Core weather/data
-openmeteo-requests>=0.2
-requests-cache>=1.2
-retry-requests>=2.0
-xarray>=2024.1
+# ==============================================================================
+# HydroCast — runtime dependencies (validated floor versions)
+# ==============================================================================
+# These lower bounds match the versions actually validated in the v1.4.2 build
+# environment. A fresh server installing this file therefore gets the same
+# generation of every library the test suite was run against.
+#
+# For byte-for-byte reproducibility use the pinned lock instead:
+#     pip install -r requirements.lock
+#
+# Optional / heavyweight extras are listed in the commented block at the bottom
+# and are intentionally NOT part of the default install.
+# ==============================================================================
 
-# Optional HEC-DSS / GRIB extras are not installed by default:
-#   cfgrib, eccodes, pydsstools
-# pydsstools currently requires numpy<2, which conflicts with the pinned
-# numpy 2.x core. Install these in a separate venv/image if you need HEC-DSS
-# writing or GRIB decoding. They are intentionally absent from requirements.lock.
+# ── Weather / data acquisition ────────────────────────────────────────────────
+openmeteo-requests>=1.7.5
+requests-cache>=1.3.3
+retry-requests>=2.0.0
+xarray>=2026.2.0
 
-# Scientific
-numpy>=1.26
-scipy>=1.12
-pandas>=2.2
-scikit-learn>=1.4
+# ── Scientific stack ─────────────────────────────────────────────────────────
+numpy>=2.4.3
+scipy>=1.17.1
+pandas>=2.3.3
+scikit-learn>=1.8.0
 
-# HEC-DSS: optional; see the optional-extras block above.
+# ── Database ─────────────────────────────────────────────────────────────────
+psycopg2-binary>=2.9.12
+asyncpg>=0.31.0
+alembic>=1.20.1
 
-# Database
-psycopg2-binary>=2.9.9
-asyncpg>=0.29.0
-alembic>=1.13.0
-psycopg2-pool>=1.1
-
-# API & Security
-fastapi>=0.111
-uvicorn[standard]>=0.29
-httpx>=0.27
+# ── API & security ───────────────────────────────────────────────────────────
+fastapi>=0.141.1
+uvicorn[standard]>=0.52.4
+httpx>=0.28.1
 slowapi>=0.1.10
 pyjwt>=2.15.0
-bcrypt>=4.1
-circuitbreaker>=1.4.0
+bcrypt>=5.0.0
 
-# Monitoring & Observability
-prometheus-client>=0.20.0
-structlog>=24.1.0
+# ── API response layer (backend/api/cache.py) ────────────────────────────────
+# Both are optional at runtime — the app degrades to stdlib json + a local TTL
+# cache — but they must be declared so a fresh server matches the build host.
+cachetools>=7.0.5
+orjson>=3.12.0
 
-# Notifications
-python-telegram-bot>=21.3
-requests>=2.31
+# ── Monitoring & observability ───────────────────────────────────────────────
+prometheus-client>=0.26.0
 
-# Utils & Archival
-python-dotenv>=1.0
-click>=8.1
-tqdm>=4.66
-pyarrow>=15.0.0
+# ── Notifications ────────────────────────────────────────────────────────────
+python-telegram-bot>=22.8
+requests>=2.34.2
 
+# ── Utilities & archival ─────────────────────────────────────────────────────
+python-dotenv>=1.2.3
+click>=8.1.7
+tqdm>=4.67.3
+pyarrow>=23.0.1
+
+# ==============================================================================
+# OPTIONAL EXTRAS — install only where the feature is needed
+# ==============================================================================
+# HAND inundation engine (backend/spatial/hand_inundation.py). The endpoint
+# reports {"available": false} when these are absent, so the API still boots.
+#
+#   rasterio>=1.4
+#   shapely>=2.0
+#   pyproj>=3.6
+#
+# HEC-DSS writing / GRIB decoding. pydsstools requires numpy<2 and therefore
+# conflicts with the pinned numpy 2.x core — install these in a separate venv.
+#
+#   cfgrib
+#   eccodes
+#   pydsstools
+# ==============================================================================

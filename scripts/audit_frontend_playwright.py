@@ -2,9 +2,11 @@ import os
 import sys
 import json
 import time
+from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-SCREENSHOT_DIR = r"E:\Hydrocast Windows Server\historical_checks\playwright_audit"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+SCREENSHOT_DIR = str(PROJECT_ROOT / "historical_checks" / "playwright_audit")
 os.makedirs(SCREENSHOT_DIR, exist_ok=True)
 
 def audit_frontend():

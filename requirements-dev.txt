@@ -5,29 +5,29 @@
 # NOT installed into the production image - see the `dev` stage of the
 # Dockerfile, which layers this file on top of the runtime image.
 #
-#   pip install -r requirements.txt -r requirements-dev.txt
+# Install:  pip install -r requirements.txt -r requirements-dev.txt
 # ==============================================================================
 
 # ── Static analysis & formatting (mirrored by .pre-commit-config.yaml) ───────
-black>=25.1
-isort>=6.0
+black>=26.3.1
+isort>=8.0.1
 ruff==0.17.5
-mypy>=1.14
+mypy>=2.3.1
 types-requests>=2.32
-pre-commit>=4.0
+pre-commit>=4.6
 
 # ── Test suite ──────────────────────────────────────────────────────────────
-pytest>=8.3
+pytest>=9.0.2
 pytest-asyncio>=0.25
-pytest-cov>=6.0
+pytest-cov>=7.1.0
 
 # ── Tutorial notebooks (notebooks/*.ipynb) ──────────────────────────────────
 # jupyterlab pulls in the full server, notebook kernel, nbconvert and widgets
 # that `jupyter nbconvert --execute` needs for the docs build.
 jupyterlab>=4.3
 notebook>=7.3
-nbconvert>=7.16
-nbformat>=5.10
-ipykernel>=6.29
-matplotlib>=3.9
-seaborn>=0.13
+nbconvert>=7.17.1
+nbformat>=5.10.4
+ipykernel>=7.2.0
+matplotlib>=3.10.8
+seaborn>=0.13.2
