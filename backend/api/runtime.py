@@ -7,7 +7,7 @@ import logging
 import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import Depends, Header, HTTPException, Request, WebSocket
 
@@ -16,6 +16,15 @@ from backend.api.keys import verify_public_key
 log = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _json_default(obj: Any) -> Any:
+    """``json.dumps`` default hook — encode ``decimal.Decimal`` as a number."""
+    from decimal import Decimal
+
+    if isinstance(obj, Decimal):
+        return float(obj)
+    return str(obj)
 
 async def get_pool():
     """Delegate to the canonical pool factory in main (mockable in tests)."""
@@ -177,7 +186,7 @@ from fastapi.responses import JSONResponse, Response
 def compute_etag(payload) -> str:
     """Return a weak ETag for a JSON-serializable payload."""
     try:
-        body = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
+        body = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=_json_default)
     except Exception:
         body = repr(payload)
     digest = hashlib.sha256(body.encode("utf-8")).hexdigest()[:32]
@@ -216,7 +225,7 @@ def json_with_etag(request: Request, payload, cache_control: str = "no-cache", s
         from fastapi.encoders import jsonable_encoder
         content = jsonable_encoder(payload)
     except Exception:
-        content = json.loads(json.dumps(payload, default=str))
+        content = json.loads(json.dumps(payload, default=_json_default))
     resp = JSONResponse(content=content, status_code=status_code)
     resp.headers["ETag"] = etag
     resp.headers["Cache-Control"] = cache_control

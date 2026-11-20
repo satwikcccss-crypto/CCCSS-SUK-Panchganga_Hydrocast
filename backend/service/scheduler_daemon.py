@@ -76,6 +76,10 @@ class SchedulerDaemon:
         log.info("Scheduler daemon stopped.")
         return {"status": "stopped"}
 
+    def wait(self, timeout: Optional[float] = None) -> bool:
+        """Block until the stop event is set (or *timeout* seconds elapse)."""
+        return self._stop_event.wait(timeout=timeout)
+
     # ── Operator API ─────────────────────────────────────────────────────────
 
     def get_status(self) -> Dict[str, Any]:
@@ -261,6 +265,30 @@ class SchedulerDaemon:
 
 # Process-wide singleton imported by the admin/WebSocket routers.
 scheduler_instance = SchedulerDaemon()
+
+
+if __name__ == "__main__":
+    """Module entry point: `python -m backend.service.scheduler_daemon`.
+
+    Runs the autonomous scheduler loop until SIGINT/SIGTERM (as required by the
+    ``HydroCast-Scheduler`` NSSM service definition).
+    """
+    import signal
+
+    from backend.api.runtime import log
+
+    def _handle_signal(signum, frame) -> None:
+        try:
+            scheduler_instance.stop()
+        except Exception:  # pragma: no cover - best-effort shutdown
+            pass
+
+    signal.signal(signal.SIGINT, _handle_signal)
+    signal.signal(signal.SIGTERM, _handle_signal)
+
+    scheduler_instance.start()
+    log.info("Scheduler service booted via module entry point.")
+    scheduler_instance.wait()
 
 
 __all__ = ["SchedulerDaemon", "scheduler_instance", "CYCLE_HOURS_UTC"]

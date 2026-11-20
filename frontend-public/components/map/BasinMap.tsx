@@ -177,8 +177,8 @@ export default function BasinMap({
 
   function getSubRainfall(subId: string) {
     if (ecmwf && ecmwf[subId] && ecmwf[subId].length > 0) {
-      const sum = ecmwf[subId].reduce((acc: number, p: any) => acc + (p.mm_hr ?? 0), 0);
-      return parseFloat(sum.toFixed(1));
+      const sum = ecmwf[subId].reduce((acc: any, p: any) => acc + (Number(p?.mm_hr) || 0), 0);
+      return parseFloat(Number(sum).toFixed(1));
     }
     const stMatch = safeStations.find((s: any) => s.subbasin_id === subId);
     if (stMatch && stMatch.cumulative_90h_mm !== undefined) {

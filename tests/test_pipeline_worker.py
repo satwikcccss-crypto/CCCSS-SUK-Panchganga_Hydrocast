@@ -8,6 +8,10 @@ from datetime import datetime, timezone
 import threading
 import time
 import pytest
+from backend.rainfall import open_meteo as _open_meteo
+from backend.rainfall import open_meteo_failsafe as _failsafe
+from backend.service.pipeline import checkpoints as _checkpoints
+from backend.service.pipeline import dashboard as _dashboard
 from backend.service.pipeline_worker import (
     save_step_checkpoint,
     get_step_checkpoint,
@@ -19,6 +23,31 @@ from backend.service.pipeline_worker import (
     ACTIVE_RUN_LOCK,
     ACTIVE_RUN_METADATA,
 )
+
+
+@pytest.fixture(autouse=True)
+def _isolate_pipeline_artifacts(tmp_path, monkeypatch):
+    """Keep pipeline tests from writing test cycles into the production ledger.
+
+    ``execute_cycle`` calls ``write_dashboard_payload``, which inserts the cycle
+    into ``data/runs/runs_index.json``. Running the suite used to resurrect
+    ``CYC_TEST_SINGLE_STEP_4`` after every cleanup, breaking /api/v1/accuracy.
+    """
+    runs_dir = tmp_path / "runs"
+    state_dir = tmp_path / "state"
+    checkpoint_dir = tmp_path / "checkpoints"
+    weather_dir = tmp_path / "weather"
+    weather_cache_dir = weather_dir / "cache"
+    frontend_data_dir = tmp_path / "frontend_data"
+    for directory in (runs_dir, state_dir, checkpoint_dir, weather_dir, weather_cache_dir, frontend_data_dir):
+        directory.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr(_dashboard, "JSON_RUNS_DIR", runs_dir)
+    monkeypatch.setattr(_dashboard, "JSON_STATE_DIR", state_dir)
+    monkeypatch.setattr(_checkpoints, "STAGING_STATE_DIR", checkpoint_dir)
+    monkeypatch.setattr(_open_meteo, "OUTPUT_DIR", weather_dir)
+    monkeypatch.setattr(_open_meteo, "FRONTEND_DATA_DIR", frontend_data_dir)
+    monkeypatch.setattr(_failsafe, "CACHE_DIR", weather_cache_dir)
 
 
 def test_step_checkpointing():

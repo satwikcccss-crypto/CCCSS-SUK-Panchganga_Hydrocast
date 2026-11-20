@@ -74,29 +74,33 @@ const ENDPOINTS: EndpointInfo[] = [
   },
   {
     method: "GET",
-    path: "/api/v1/forecast/latest",
-    title: "Latest Operational Hydrometric Forecast",
-    description: "Returns the latest verified forecast vectors, water surface elevations (WSE), and statutory alert states for Kolhapur crossings.",
+    path: "/api/v1/runoff/stage/SHIVAJI_BRIDGE",
+    title: "Latest Operational Hydrometric Forecast (Shivaji Bridge)",
+    description: "Latest water surface elevation (WSE), statutory alert thresholds, and the 90-hour stage/discharge forecast series for the Kolhapur crossing.",
     rateLimit: "100 req/min",
     sampleResponse: {
-      site_id: "SHIVAJI_BRIDGE",
-      elevation_datum_amsl: 530.12,
-      current_stage_amsl: 531.84,
-      alert_status: "NORMAL",
-      is_degraded: false
+      site: {
+        site_id: "SHIVAJI_BRIDGE",
+        site_name: "Chhatrapati Shivaji Maharaj Bridge (Panchganga Ghat)",
+        alert_stage_m: 542.1,
+        warning_stage_m: 542.7,
+        danger_stage_m: 543.3,
+        forecast: [
+          { forecast_time: "2026-11-14T06:00:00+00:00", lead_hours: 0, stage_m: 531.84, discharge_m3s: 12.0, alert_level: "NORMAL", is_above_danger: false }
+        ]
+      }
     }
   },
   {
     method: "GET",
-    path: "/api/v1/stations/rainfall",
+    path: "/api/v1/sensors/registry",
     title: "Rain Gauge & Telemetry Station Inventory",
-    description: "Spatial coordinates, sensor operational states, and latest observed rainfall readings across the 20 basin stations.",
+    description: "Sensor network registry: spatial coordinates, sensor operational states, and live water-level sensor metadata across the basin stations.",
     rateLimit: "100 req/min",
     sampleResponse: {
-      stations_count: 20,
       stations: [
-        { id: "GAGANBAWDA", name: "Gaganbawda", lat: 16.54, lon: 73.83, rain_24h_mm: 12.4 },
-        { id: "RADHANAGARI", name: "Radhanagari", lat: 16.41, lon: 74.00, rain_24h_mm: 8.2 }
+        { station_id: "SS", name: "Shivaji Bridge", latitude: 16.695, longitude: 74.2275, type: "ultrasonic_radar", status: "OFFLINE", stage_m: null },
+        { station_id: "NW", name: "Nitawade RWLS", latitude: 16.72, longitude: 74.205, type: "ultrasonic_radar", status: "OFFLINE", stage_m: null }
       ]
     }
   },

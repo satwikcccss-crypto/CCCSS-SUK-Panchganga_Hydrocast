@@ -10,6 +10,7 @@ All issues correspond directly to the official GitHub Issue tracker at [satwikcc
 
 | Milestone | Tag | Issues Closed | Issues Open | Focus Area |
 |:---|:---|:---:|:---:|:---|
+| **windows-v2.0.0** | `windows-v2.0.0` | 9 | 0 | Runtime Stability, JSON Serialisation, API Reliability, Release Gates |
 | **windows-v1.4.2** | `windows-v1.4.2` | 6 | 0 | Production Deployment Hardening, Dependency Sync, Service Config |
 | **windows-v1.4.1** | `windows-v1.4.1` | 4 | 0 | Repository Hygiene, Docs Consolidation, 100% Community Health Benchmark |
 | **windows-v1.4.0** | `windows-v1.4.0` | 8 | 1 | IoT Sensor Physics, SIM Signal Strength, Pipeline Exceptions, Auth Restoration |
@@ -29,6 +30,43 @@ All issues correspond directly to the official GitHub Issue tracker at [satwikcc
 ---
 
 ## 📦 Closed / Resolved Issues & Features Register
+
+### Release: `windows-v2.0.0` (2026-11-20)
+
+Deliberate major platform milestone on `windows-server-production`. All changes
+are backwards-compatible stability fixes — there is no breaking API change.
+
+- **Public dashboard crash** — DB `Decimal` values were serialized as JSON
+  strings (`"mm_hr":"0.00"`) and the map reduced them with `.toFixed()`. Fixed in
+  `backend/api/cache.py` and `backend/api/runtime.py` (Decimal → `float`), with
+  defensive `Number()` coercion in `frontend-public/components/map/BasinMap.tsx`.
+- **`/api/v1/sensors/live` 500** — missing `import asyncio` plus duplicate
+  `fetch_all_stations`/`fetch_station` definitions that shadowed each other in
+  `backend/thingspeak/multi_station.py`. Single definitions restored.
+- **Rainfall stations/gauges 500** — undefined `_load_pipeline_state()` called
+  from async routes, and `ST_Y(g.geom)`/`ST_X(g.geom)` against a table with no
+  `geom` column. Replaced with `await load_pipeline_state_async()` and the
+  canonical `latitude`/`longitude` columns in both hydrology and station selector.
+- **Missing rainfall telemetry table / migration** — `rainfall_data` created and
+  Alembic revision `003_add_rainfall_data.py` added; DB brought to revision 003.
+- **`/api/v1/accuracy` 404** — stale test run `CYC_TEST_SINGLE_STEP_4` polluted
+  the "latest run" lookup. Removed from `data/runs/runs_index.json`.
+- **Scheduler not runnable as a service** — added `__main__` entry point and a
+  public `wait()` method to `backend/service/scheduler_daemon.py`.
+- **Release-gate failure (`ruff` F821)** — undefined `urllib` in the sync
+  ThingSpeak fetch path, latent until real channel keys are configured. Added
+  `import urllib.request`.
+- **Docs advertised phantom endpoints** — `/api/v1/forecast/latest` and
+  `/api/v1/stations/rainfall` replaced with verified live endpoints.
+- **Tests polluted the production runs ledger** — `test_pipeline_worker.py`
+  recreated `CYC_TEST_*` entries on every suite run, resurrecting the 404 on
+  `/api/v1/accuracy`. Artifacts removed and test paths isolated to `tmp_path`.
+- **Supervisor kept stale code alive** — orphaned uvicorn workers held the port
+  after the parent exited, so health checks reported healthy and no restart
+  happened. Restart now clears port listeners before respawning.
+
+**Verification:** 357 passed / 3 skipped, `ruff check` clean, both frontend
+production builds pass, Alembic at head (003), all five services healthy.
 
 ### Release: `windows-v1.4.2` (2026-11-16)
 

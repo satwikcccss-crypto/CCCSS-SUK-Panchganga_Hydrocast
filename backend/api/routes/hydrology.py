@@ -127,7 +127,7 @@ async def station_selection(request: Request):
             rows = await conn.fetch("""
                 SELECT s.subbasin_id, s.selected_station_id, s.cumulative_mm,
                        s.all_candidates_json, s.selected_at,
-                       g.station_name, ST_Y(g.geom) lat, ST_X(g.geom) lon
+                       g.station_name, g.latitude AS lat, g.longitude AS lon
                 FROM station_selection_log s
                 JOIN gauge_stations g ON g.station_id=s.selected_station_id
                 WHERE s.cycle_id=(SELECT run_id FROM simulation_runs ORDER BY start_time DESC LIMIT 1)
@@ -135,7 +135,7 @@ async def station_selection(request: Request):
             """)
     except Exception as e:
         log.warning("Station selection fallback: %s", e)
-        state = _load_pipeline_state()
+        state = await load_pipeline_state_async()
         if state and state.get("stations"):
             return {"data": state["stations"], "degraded": True, "source": "pipeline_state_file", "error": str(e)}
         return {"degraded": True, "source": "fallback", "error": str(e), "stations": []}
@@ -167,7 +167,7 @@ async def gauge_hyetographs(request: Request):
             rows = await conn.fetch("""
                 SELECT r.gauge_id, r.subbasin_id, r.timestamp,
                        r.rainfall_mm, r.quality_flag,
-                       g.station_name, ST_Y(g.geom) lat, ST_X(g.geom) lon
+                       g.station_name, g.latitude AS lat, g.longitude AS lon
                 FROM rainfall_data r
                 JOIN gauge_stations g ON g.station_id=r.gauge_id
                 WHERE r.timestamp >= NOW()-'91 hours'::interval
@@ -175,7 +175,7 @@ async def gauge_hyetographs(request: Request):
             """)
     except Exception as e:
         log.warning("Gauge hyetographs fallback: %s", e)
-        state = _load_pipeline_state()
+        state = await load_pipeline_state_async()
         if state and state.get("gauges"):
             return {"data": state["gauges"], "degraded": True, "source": "pipeline_state_file", "error": str(e)}
         return {"degraded": True, "source": "fallback", "error": str(e), "gauges": []}
@@ -497,7 +497,7 @@ async def bridge_stage_forecast(request: Request, site_id: str):
             )
     except Exception as e:
         log.warning("Bridge stage forecast fallback: %s", e)
-        state = _load_pipeline_state()
+        state = await load_pipeline_state_async()
         if state:
             key_map = {"SHIVAJI_BRIDGE": "bridgeShivaji", "RAJARAM_BRIDGE": "bridgeRajaram", "RAJARAM_WEIR": "bridgeRajaram"}
             json_key = key_map.get(site_id)
@@ -533,7 +533,7 @@ async def active_alerts(request: Request):
             rows = await conn.fetch("SELECT * FROM v_active_alerts_enriched")
     except Exception as e:
         log.warning("Active alerts fallback: %s", e)
-        state = _load_pipeline_state()
+        state = await load_pipeline_state_async()
         if state:
             alerts = state.get("alerts", [])
             if alerts:
@@ -787,7 +787,7 @@ async def research_hydrological_summary(request: Request):
                     rajaram_stage = stg
     except Exception as e:
         log.warning("Research summary fallback: %s", e)
-        state = _load_pipeline_state()
+        state = await load_pipeline_state_async()
         if state:
             summary = state.get("summary", {})
             peak_q = float(summary.get("peak_discharge_m3s", 9.10))

@@ -33,7 +33,7 @@
     Do not poll the health endpoints at the end.
 
 .EXAMPLE
-    powershell -ExecutionPolicy Bypass -File .\windows\deploy_release.ps1 -Ref windows-v1.4.2
+    powershell -ExecutionPolicy Bypass -File .\windows\deploy_release.ps1 -Ref windows-v2.0.0
 
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\windows\deploy_release.ps1 -SkipFrontend -Migrate

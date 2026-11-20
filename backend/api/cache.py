@@ -97,14 +97,29 @@ MAX_CACHED_BODY_BYTES = 2 * 1024 * 1024
 
 
 # ── Serialisation ──────────────────────────────────────────────────────────
+def _json_default(obj: Any) -> Any:
+    """``json.dumps`` default hook.
+
+    ``decimal.Decimal`` values (returned by asyncpg for ``NUMERIC`` columns)
+    must be encoded as JSON **numbers**, not strings. Using ``default=str``
+    turned rainfall/discharge/stage fields into strings (e.g. ``"12.00"``), which
+    broke every frontend numeric reduction that expects a number.
+    """
+    from decimal import Decimal
+
+    if isinstance(obj, Decimal):
+        return float(obj)
+    return str(obj)
+
+
 def _dumps(payload: Any) -> bytes:
     """Serialise *payload* to UTF-8 JSON bytes, preferring orjson."""
     if _HAS_ORJSON and orjson is not None:
         try:
-            return orjson.dumps(payload, default=str)
+            return orjson.dumps(payload, default=_json_default)
         except TypeError:
             pass
-    return json.dumps(payload, default=str, separators=(",", ":")).encode("utf-8")
+    return json.dumps(payload, default=_json_default, separators=(",", ":")).encode("utf-8")
 
 
 def _weak_etag(body: bytes) -> str:

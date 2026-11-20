@@ -227,7 +227,7 @@ def load_stations(conn) -> List[RainStation]:
     with conn.cursor() as cur:
         cur.execute("""
             SELECT station_id, station_name, subbasin_id,
-                   ST_Y(geom) AS lat, ST_X(geom) AS lon
+                   latitude AS lat, longitude AS lon
             FROM gauge_stations
             WHERE is_active = TRUE
             ORDER BY subbasin_id, station_id

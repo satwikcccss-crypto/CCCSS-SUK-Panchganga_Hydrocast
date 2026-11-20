@@ -16,9 +16,11 @@ Important:
     AsyncClient with a 3-second total timeout per request.
 """
 
+import asyncio
 import json
 import logging
 import os
+import urllib.request
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -457,30 +459,6 @@ def _station_meta_next_id() -> Dict[str, Any]:
         "has_voltage": False,
         "has_signal_strength": False,
     }
-
-
-# ── Sync wrappers for backward compatibility ───────────────────────────────
-def fetch_all_stations() -> List[Dict[str, Any]]:
-    """Synchronous wrapper: runs the async version in a new event loop.
-
-    Kept for existing callers (e.g. pipeline steps, health checks) that are not yet
-    async. Prefer the new async version where possible.
-    """
-    try:
-        return asyncio.get_event_loop().run_until_complete(fetch_all_stations_async())
-    except RuntimeError:
-        # No running loop – create a fresh one
-        import asyncio as a
-        return a.run(fetch_all_stations_async())
-
-
-def fetch_station(station_id: str) -> Optional[Dict[str, Any]]:
-    """Sync wrapper for a single station; delegates to fetch_all_stations then filters."""
-    results = fetch_all_stations()
-    for r in results:
-        if r.get("station_id") == station_id.upper():
-            return r
-    return None
 
 
 # ── Public API for the new async function ──────────────────────────────────

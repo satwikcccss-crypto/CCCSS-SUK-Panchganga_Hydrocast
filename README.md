@@ -28,8 +28,8 @@
 <!-- TIER 2: REPOSITORY & COMMUNITY HEALTH BADGES                            -->
 <!-- ======================================================================= -->
 <p align="center">
-  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v1.4.2">
-    <img src="https://img.shields.io/badge/release-windows--v1.4.2-0284c7?style=for-the-badge&logo=github" alt="Release">
+  <a href="https://github.com/satwikcccss-crypto/CCCSS-SUK-Panchganga_Hydrocast/releases/tag/windows-v2.0.0">
+    <img src="https://img.shields.io/badge/release-windows--v2.0.0-0284c7?style=for-the-badge&logo=github" alt="Release">
   </a>
   <a href="ISSUES.md">
     <img src="https://img.shields.io/badge/Issues%20Tracked-26%20Documented-8b5cf6?style=for-the-badge&logo=githubissues" alt="Issues">
@@ -309,7 +309,7 @@ FastAPI provides an asynchronous REST API running on port **8000** with the foll
 Run from the repository root **as Administrator** on the server:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\windows\deploy_release.ps1 -Ref windows-v1.4.2
+powershell -ExecutionPolicy Bypass -File .\windows\deploy_release.ps1 -Ref windows-v2.0.0
 ```
 
 It performs pre-flight checks, installs into `.venv` from `requirements.lock`,
@@ -415,7 +415,7 @@ curl http://127.0.0.1:8000/healthz/ready
 ### Cutting a release
 1. Ensure all intended changes are merged into `windows-server-production`.
 2. Update `CHANGELOG.md` with the new version entry.
-3. Tag the release: `git tag windows-v1.4.2` and `git push origin windows-v1.4.2`.
+3. Tag the release: `git tag windows-v2.0.0` and `git push origin windows-v2.0.0`.
 4. Verify health gates:
    - All health endpoints return healthy status.
    - Database migration scripts run without error (`-Migrate` in the deploy script).
@@ -425,12 +425,12 @@ curl http://127.0.0.1:8000/healthz/ready
 ### Deploying a release to Windows Server
 1. On the server, run:
    ```powershell
-   powershell -ExecutionPolicy Bypass -File .\windows\deploy_release.ps1 -Ref windows-v1.4.2
+   powershell -ExecutionPolicy Bypass -File .\windows\deploy_release.ps1 -Ref windows-v2.0.0
    ```
 2. The script fetches, checks out, rebuilds, restarts services, and runs health
    checks. Add `-Migrate` when database schema changes are included.
 3. Confirm the deployed revision: `Get-Content data\deployed_revision.txt`.
-4. Confirm the version reported by the API matches `API-Version: 1.4.2`.
+4. Confirm the version reported by the API matches `API-Version: 2.0.0`.
 
 ### Rolling back to prior version
 1. Identify the prior tag: `git tag --list | Sort-Object { [version]($_ -replace '^windows-v','') }`.

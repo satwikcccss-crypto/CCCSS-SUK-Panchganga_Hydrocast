@@ -81,7 +81,7 @@ _openapi_url = None if _APP_ENV_DOCS == "production" else "/openapi.json"
 # ORJSONResponse default_response_class is deprecated in current FastAPI and is
 # slower than returning plain models/dicts.
 app = FastAPI(
-    version="1.4.2",
+    version="2.0.0",
     summary="Rainfall-runoff and river flood intelligence for the Panchganga Basin, Kolhapur.",
     docs_url=_docs_url,
     openapi_url=_openapi_url,
@@ -174,7 +174,7 @@ def custom_openapi():
 
     schema = get_openapi(
         title="Shivaji University Kolhapur â€” HydroCast Public Flood Intelligence API",
-        version="1.4.2",
+        version="2.0.0",
         description=(
             "### Official Free Public Flood Intelligence API\n"
             "Centre for Climate Change and Sustainability Studies (CCCSS), Shivaji University, Kolhapur.\n\n"

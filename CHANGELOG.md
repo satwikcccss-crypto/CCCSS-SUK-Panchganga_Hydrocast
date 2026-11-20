@@ -6,6 +6,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.0] - 2026-11-20 — Runtime Stability & API Reliability (`windows-v2.0.0`)
+
+**Deliberate major platform milestone.** This version jump is *not* a SemVer
+breaking change — the public API contract is unchanged. It marks the Windows
+Server edition reaching a stable, fully verified production posture after the
+runtime-stability campaign below. All fixes are backwards-compatible.
+
+### Fixed
+
+- **Dashboard crash:** DB `Decimal` values were serialized as JSON strings
+  (`"mm_hr":"0.00"`), causing the map's `.toFixed()` reduction to throw. The
+  serializer now emits JSON numbers (`Decimal → float`) in both the response
+  cache and ETag/fallback paths, with defensive `Number()` coercion in the
+  frontend. Verified: 0 string-encoded `mm_hr` values in the dashboard payload.
+- **`/api/v1/sensors/live` 500:** missing `import asyncio` and duplicate
+  `fetch_all_stations`/`fetch_station` definitions shadowing each other in the
+  ThingSpeak client. Single, correct definitions restored.
+- **Rainfall endpoints 500:** async routes called an undefined
+  `_load_pipeline_state()` and queried `ST_Y(g.geom)` / `ST_X(g.geom)` on a table
+  that only has `latitude`/`longitude`. Now uses `load_pipeline_state_async()`
+  and the canonical coordinate columns in both hydrology and station selector.
+- **Missing telemetry storage:** created `rainfall_data` table and Alembic
+  revision `003_add_rainfall_data.py`; deployed database advanced to revision 003.
+- **`/api/v1/accuracy` 404:** a stale `CYC_TEST_SINGLE_STEP_4` artifact was being
+  selected as the latest run. Removed from `data/runs/runs_index.json`.
+- **Scheduler service:** added the missing `__main__` entry point and a public
+  `wait()` method so `python -m backend.service.scheduler_daemon` can run under
+  the Windows service manager.
+- **Latent ThingSpeak crash (release-gate find):** `urllib` was used without
+  being imported in the synchronous fetch path — it would have failed as soon
+  as real channel keys were configured. Added `import urllib.request`.
+- **Documentation accuracy:** replaced advertised but nonexistent endpoints
+  (`/api/v1/forecast/latest`, `/api/v1/stations/rainfall`) with live, verified
+  routes (`/api/v1/runoff/stage/SHIVAJI_BRIDGE`, `/api/v1/sensors/registry`).
+- **Test suite polluted production data:** `tests/test_pipeline_worker.py`
+  wrote `CYC_TEST_*` cycles into `data/runs/runs_index.json` on every run, which
+  repeatedly resurrected the artifact that broke `/api/v1/accuracy`. The tests
+  now redirect dashboard/state/checkpoint/weather-cache paths into `tmp_path`.
+- **Supervisor served stale code after a worker crash:** killing a uvicorn
+  parent left its `--workers` children holding the port; the health probe then
+  reported "healthy" and the supervisor refused to restart, so old code kept
+  running indefinitely. `scripts/start_production.py` now clears orphaned
+  listeners on restart before spawning a fresh process tree.
+
+### Added
+
+- Regression tests covering the serialisation shadowing, import/definition
+  integrity, canonical SQL columns, runs-index hygiene and docs endpoint validity.
+
+### Verification
+
+- Backend tests: **357 passed, 3 skipped**.
+- `ruff check backend tests scripts`: **clean** (blocking gate).
+- Frontend production builds: **`frontend-public` and `frontend-admin` passed**.
+- Alembic: **head = 003**. All five services healthy.
+
+---
+
 ## [1.4.2] - 2026-11-16 — Production Deployment Hardening (`windows-v1.4.2`)
 
 Fixes that made a fresh Windows Server deployment fail, plus dependency and

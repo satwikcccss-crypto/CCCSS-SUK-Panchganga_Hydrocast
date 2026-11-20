@@ -1,7 +1,7 @@
 # ==============================================================================
 # HydroCast — runtime dependencies (validated floor versions)
 # ==============================================================================
-# These lower bounds match the versions actually validated in the v1.4.2 build
+# These lower bounds match the versions actually validated in the v2.0.0 build
 # environment. A fresh server installing this file therefore gets the same
 # generation of every library the test suite was run against.
 #
