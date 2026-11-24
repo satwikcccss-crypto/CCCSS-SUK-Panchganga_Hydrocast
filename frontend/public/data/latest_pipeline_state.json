@@ -23877,41 +23877,41 @@
         "step_number": 1,
         "step_name": "01. Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)",
         "status": "success",
-        "duration_seconds": 0.89
+        "duration_seconds": 0.5
       },
       {
         "step_number": 2,
         "step_name": "02. Dynamic Subbasin Station Selection",
         "status": "success",
-        "duration_seconds": 0.0
+        "duration_seconds": 0.01
       },
       {
         "step_number": 3,
         "step_name": "02b. Soil-Moisture Snapshot (fetch-and-log only, never used in decisions)",
         "status": "success",
-        "duration_seconds": 5.78
+        "duration_seconds": 2.08
       },
       {
         "step_number": 4,
         "step_name": "03. Live Telemetry Fetch & IoT Sync",
         "status": "success",
-        "duration_seconds": 0.03
+        "duration_seconds": 0.35
       },
       {
         "step_number": 5,
         "step_name": "04. Real-Time Calibration Assessment (physics-informed, gated ML)",
         "status": "success",
-        "duration_seconds": 0.43
+        "duration_seconds": 1.09
       },
       {
         "step_number": 6,
         "step_name": "05. HEC-HMS 4.13 Hydrologic Simulation",
         "status": "success",
-        "duration_seconds": 0.06
+        "duration_seconds": 0.08
       }
     ],
     "metrics": {
-      "avg_duration_s": 7.2,
+      "avg_duration_s": 4.1,
       "success_rate_pct": 100.0
     }
   },
@@ -23921,8 +23921,8 @@
       "run_id": "CYC_20261124_18z",
       "status": "completed",
       "start_time": "2026-11-24T18:00:00+00:00",
-      "end_time": "2026-11-24T19:40:01.793754+00:00",
-      "duration_seconds": 7.2,
+      "end_time": "2026-11-24T23:37:00.203193+00:00",
+      "duration_seconds": 4.1,
       "total_rainfall_mm": 2.5,
       "peak_discharge_m3s": 12.1,
       "peak_stage_m": 531.85,
@@ -23937,54 +23937,54 @@
   },
   "logs": [
     {
-      "t": "19:39:54",
+      "t": "23:36:56",
       "lv": "INFO",
       "msg": "Forecast cycle CYC_20261124_18z initiated across 18 Panchganga stations"
     },
     {
-      "t": "19:39:55",
+      "t": "23:36:56",
       "lv": "INFO",
       "msg": "Open-Meteo 90-hr precipitation forecast downloaded successfully"
     },
     {
-      "t": "19:39:55",
+      "t": "23:36:56",
       "lv": "INFO",
       "msg": "Dynamic subbasin selector evaluated: S1\u2192Karveer, S2\u2192Balinga, S6\u2192Gaganbawda"
     },
     {
-      "t": "19:39:55",
+      "t": "23:36:56",
       "lv": "INFO",
       "msg": "HEC-DSS hyetograph time-series generated: //<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/"
     },
     {
-      "t": "19:40:01",
+      "t": "23:36:58",
       "lv": "INFO",
       "msg": "Soil-moisture snapshot captured for 9 subbasins (S1, S2, S3, S4, S5, S6, S7, S8, S9)"
     },
     {
-      "t": "19:40:01",
+      "t": "23:36:59",
       "lv": "INFO",
       "msg": "ThingSpeak Shivaji Live Ground Truth: Distance=57.40 ft -> Water Level=531.85 m MSL"
     },
     {
-      "t": "19:40:01",
+      "t": "23:37:00",
       "lv": "INFO",
-      "msg": "Hydrologic Calibration Baseline Stable: Within tolerances (\u0394t=+0.0h, signed=-0.01m, max=0.01m)"
+      "msg": "Hydrologic Calibration Baseline Stable: Within tolerances (\u0394t=+0.0h, signed=+0.00m, max=0.00m)"
     },
     {
-      "t": "19:40:01",
+      "t": "23:37:00",
       "lv": "INFO",
       "msg": "HEC-HMS 4.13 execution completed (CALIBRATED_RJKT): Peak Discharge 12.1 m\u00b3/s at T+0h in 14.8s"
     },
     {
-      "t": "19:40:02",
+      "t": "23:37:01",
       "lv": "INFO",
       "msg": "Model accuracy evaluated: Spearman \u03c1=N/A, NSE=N/A [ACCUMULATING_TELEMETRY]"
     }
   ],
   "validation": {
     "cycle_id": "CYC_20261124_18z",
-    "validation_timestamp": "2026-11-24T22:53:43.688226+00:00",
+    "validation_timestamp": "2026-11-24T23:37:29.823692+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -25215,7 +25215,7 @@
       "run_date": "24 Nov 2026",
       "cycle_time": "18z",
       "start_time": "2026-11-24T18:00:00+00:00",
-      "duration_seconds": 7.2,
+      "duration_seconds": 4.1,
       "peak_discharge_m3s": 12.1,
       "lead_hours_to_peak": 0,
       "total_volume_mcm": 3.6,
@@ -25501,7 +25501,7 @@
       "spearman_rho": null,
       "nse": null,
       "rmse": null,
-      "lifecycle_status": "PENDING",
+      "lifecycle_status": "AWAITING_OBSERVATIONS",
       "verified_hours": 0
     },
     {
@@ -25543,7 +25543,7 @@
       "spearman_rho": null,
       "nse": null,
       "rmse": null,
-      "lifecycle_status": "AWAITING_OBSERVATIONS",
+      "lifecycle_status": "OBSERVATION_GAP",
       "verified_hours": 0
     },
     {
