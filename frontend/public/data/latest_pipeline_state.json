@@ -65,28 +65,28 @@
       "outlet": {
         "site_id": "J_Outlet",
         "site_name": "Panchganga Basin Sink (Rajaram Weir)",
-        "peak_lead_hours": 60,
-        "peak_arrival_time": "2026-11-28T06:00:00+00:00",
-        "peak_discharge_m3s": 10.9,
-        "peak_stage_m": 531.72,
+        "peak_lead_hours": 0,
+        "peak_arrival_time": "2026-11-25T18:00:00+00:00",
+        "peak_discharge_m3s": 12.1,
+        "peak_stage_m": 531.85,
         "confidence_interval": {
           "margin_hours": 2.0,
           "confidence_pct": 95,
-          "earliest_lead_hours": 58.0,
-          "latest_lead_hours": 62.0,
-          "earliest_arrival_time": "2026-11-28T04:00:00+00:00",
-          "latest_arrival_time": "2026-11-28T08:00:00+00:00",
+          "earliest_lead_hours": 0.0,
+          "latest_lead_hours": 2.0,
+          "earliest_arrival_time": "2026-11-25T16:00:00+00:00",
+          "latest_arrival_time": "2026-11-25T20:00:00+00:00",
           "stage_range_m": [
-            531.6,
-            531.84
+            531.73,
+            531.97
           ],
           "discharge_range_m3s": [
-            10.2,
-            11.6
+            11.4,
+            12.8
           ]
         },
-        "is_receding": false,
-        "status": "PEAK_IDENTIFIED"
+        "is_receding": true,
+        "status": "RECEDING_NO_PEAK"
       }
     },
     "bridges": {
@@ -447,12 +447,12 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
@@ -687,17 +687,17 @@
       {
         "hour": 62,
         "timestamp": "2026-11-28T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
@@ -889,7 +889,7 @@
       {
         "hour": 12,
         "timestamp": "2026-11-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
@@ -899,17 +899,17 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
@@ -1144,7 +1144,7 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
@@ -1281,12 +1281,12 @@
       {
         "hour": 0,
         "timestamp": "2026-11-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 2,
@@ -1733,12 +1733,12 @@
       {
         "hour": 0,
         "timestamp": "2026-11-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
@@ -1803,22 +1803,22 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
         "timestamp": "2026-11-26T11:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 18,
@@ -2048,12 +2048,12 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
@@ -2190,7 +2190,7 @@
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
@@ -2250,17 +2250,17 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
@@ -2370,12 +2370,12 @@
       {
         "hour": 37,
         "timestamp": "2026-11-27T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-11-27T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
@@ -2385,7 +2385,7 @@
       {
         "hour": 40,
         "timestamp": "2026-11-27T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 41,
@@ -2485,7 +2485,7 @@
       {
         "hour": 60,
         "timestamp": "2026-11-28T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 61,
@@ -2500,12 +2500,12 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
@@ -2520,7 +2520,7 @@
       {
         "hour": 67,
         "timestamp": "2026-11-28T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
@@ -2707,12 +2707,12 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
@@ -2822,27 +2822,27 @@
       {
         "hour": 37,
         "timestamp": "2026-11-27T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-11-27T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
         "timestamp": "2026-11-27T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
         "timestamp": "2026-11-27T10:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 41,
         "timestamp": "2026-11-27T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 42,
@@ -2937,22 +2937,22 @@
       {
         "hour": 60,
         "timestamp": "2026-11-28T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 61,
         "timestamp": "2026-11-28T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 62,
         "timestamp": "2026-11-28T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 64,
@@ -2962,7 +2962,7 @@
       {
         "hour": 65,
         "timestamp": "2026-11-28T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -3154,22 +3154,22 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 17,
@@ -3269,7 +3269,7 @@
       {
         "hour": 36,
         "timestamp": "2026-11-27T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 37,
@@ -3279,17 +3279,17 @@
       {
         "hour": 38,
         "timestamp": "2026-11-27T08:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
         "timestamp": "2026-11-27T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
         "timestamp": "2026-11-27T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 41,
@@ -3389,17 +3389,17 @@
       {
         "hour": 60,
         "timestamp": "2026-11-28T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 61,
         "timestamp": "2026-11-28T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 62,
         "timestamp": "2026-11-28T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 63,
@@ -3409,7 +3409,7 @@
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -3546,7 +3546,7 @@
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 2,
@@ -3601,27 +3601,27 @@
       {
         "hour": 12,
         "timestamp": "2026-11-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
@@ -3861,7 +3861,7 @@
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -4058,22 +4058,22 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
@@ -4188,7 +4188,7 @@
       {
         "hour": 39,
         "timestamp": "2026-11-27T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
@@ -4308,12 +4308,12 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -4450,7 +4450,7 @@
       "lat": 16.706369,
       "lon": 74.2481772,
       "elevation": "550m",
-      "cumulative_90h_mm": 0.5,
+      "cumulative_90h_mm": 0.0,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4464,7 +4464,7 @@
       "lat": 16.6841962,
       "lon": 74.0931627,
       "elevation": "572m",
-      "cumulative_90h_mm": 0.2,
+      "cumulative_90h_mm": 0.0,
       "is_primary": true,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4478,7 +4478,7 @@
       "lat": 16.6878443,
       "lon": 74.17031,
       "elevation": "560m",
-      "cumulative_90h_mm": 0.6,
+      "cumulative_90h_mm": 0.1,
       "is_primary": false,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4492,7 +4492,7 @@
       "lat": 16.7228087,
       "lon": 74.0564499,
       "elevation": "580m",
-      "cumulative_90h_mm": 0.2,
+      "cumulative_90h_mm": 0.0,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4506,10 +4506,10 @@
       "lat": 16.7820174,
       "lon": 74.0518705,
       "elevation": "585m",
-      "cumulative_90h_mm": 0.0,
+      "cumulative_90h_mm": 0.1,
       "is_primary": true,
-      "is_governing": true,
-      "method": "GOVERNING (MAX_VOL)",
+      "is_governing": false,
+      "method": "OBSERVED_POINT",
       "data_source": "OPEN_METEO_API",
       "active_telemetry": true
     },
@@ -4520,10 +4520,10 @@
       "lat": 16.8086769,
       "lon": 74.1107824,
       "elevation": "590m",
-      "cumulative_90h_mm": 0.0,
+      "cumulative_90h_mm": 0.3,
       "is_primary": false,
-      "is_governing": false,
-      "method": "OBSERVED_POINT",
+      "is_governing": true,
+      "method": "GOVERNING (MAX_VOL)",
       "data_source": "OPEN_METEO_API",
       "active_telemetry": true
     },
@@ -4534,7 +4534,7 @@
       "lat": 16.7446006,
       "lon": 74.115187,
       "elevation": "575m",
-      "cumulative_90h_mm": 0.0,
+      "cumulative_90h_mm": 0.1,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4548,7 +4548,7 @@
       "lat": 16.7850973,
       "lon": 73.9036487,
       "elevation": "640m",
-      "cumulative_90h_mm": 1.0,
+      "cumulative_90h_mm": 0.2,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4562,7 +4562,7 @@
       "lat": 16.701934,
       "lon": 73.843584,
       "elevation": "620m",
-      "cumulative_90h_mm": 1.2,
+      "cumulative_90h_mm": 0.4,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4576,7 +4576,7 @@
       "lat": 16.6712,
       "lon": 73.9735,
       "elevation": "595m",
-      "cumulative_90h_mm": 0.2,
+      "cumulative_90h_mm": 0.0,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4590,7 +4590,7 @@
       "lat": 16.5469926,
       "lon": 73.8346738,
       "elevation": "680m",
-      "cumulative_90h_mm": 2.0,
+      "cumulative_90h_mm": 1.3,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4604,7 +4604,7 @@
       "lat": 16.520366,
       "lon": 73.918419,
       "elevation": "610m",
-      "cumulative_90h_mm": 2.1,
+      "cumulative_90h_mm": 1.7,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4618,7 +4618,7 @@
       "lat": 16.647984,
       "lon": 74.1288964,
       "elevation": "565m",
-      "cumulative_90h_mm": 0.8,
+      "cumulative_90h_mm": 0.1,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4632,7 +4632,7 @@
       "lat": 16.6166768,
       "lon": 74.1062828,
       "elevation": "560m",
-      "cumulative_90h_mm": 0.8,
+      "cumulative_90h_mm": 0.1,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4646,10 +4646,10 @@
       "lat": 16.41021,
       "lon": 73.9971822,
       "elevation": "615m",
-      "cumulative_90h_mm": 0.8,
+      "cumulative_90h_mm": 0.1,
       "is_primary": true,
-      "is_governing": true,
-      "method": "GOVERNING (MAX_VOL)",
+      "is_governing": false,
+      "method": "OBSERVED_POINT",
       "data_source": "OPEN_METEO_API",
       "active_telemetry": true
     },
@@ -4660,10 +4660,10 @@
       "lat": 16.5932632,
       "lon": 74.156292,
       "elevation": "555m",
-      "cumulative_90h_mm": 0.6,
+      "cumulative_90h_mm": 0.2,
       "is_primary": false,
-      "is_governing": false,
-      "method": "OBSERVED_POINT",
+      "is_governing": true,
+      "method": "GOVERNING (MAX_VOL)",
       "data_source": "OPEN_METEO_API",
       "active_telemetry": true
     },
@@ -4674,7 +4674,7 @@
       "lat": 16.5475641,
       "lon": 74.1019728,
       "elevation": "570m",
-      "cumulative_90h_mm": 0.6,
+      "cumulative_90h_mm": 0.2,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4688,7 +4688,7 @@
       "lat": 16.481009,
       "lon": 74.0549812,
       "elevation": "585m",
-      "cumulative_90h_mm": 0.4,
+      "cumulative_90h_mm": 0.1,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4702,7 +4702,7 @@
       "lat": 16.4478876,
       "lon": 74.021589,
       "elevation": "595m",
-      "cumulative_90h_mm": 0.4,
+      "cumulative_90h_mm": 0.1,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4716,7 +4716,7 @@
       "lat": 16.41021,
       "lon": 73.9971822,
       "elevation": "615m",
-      "cumulative_90h_mm": 0.8,
+      "cumulative_90h_mm": 0.1,
       "is_primary": false,
       "is_governing": false,
       "method": "OBSERVED_POINT",
@@ -4732,7 +4732,7 @@
       "lat": 16.706369,
       "lon": 74.2481772,
       "elevation": "550m",
-      "cumulative_90h_mm": 0.5,
+      "cumulative_90h_mm": 0.0,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4746,7 +4746,7 @@
       "lat": 16.6878443,
       "lon": 74.17031,
       "elevation": "560m",
-      "cumulative_90h_mm": 0.6,
+      "cumulative_90h_mm": 0.1,
       "is_primary": false,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4754,14 +4754,14 @@
       "active_telemetry": true
     },
     {
-      "station_id": "KOTOLI",
-      "station_name": "Kotoli",
+      "station_id": "BAJAR_BHOGAON",
+      "station_name": "Bajar Bhogaon",
       "subbasin_id": "S3",
-      "lat": 16.7820174,
-      "lon": 74.0518705,
-      "elevation": "585m",
-      "cumulative_90h_mm": 0.0,
-      "is_primary": true,
+      "lat": 16.8086769,
+      "lon": 74.1107824,
+      "elevation": "590m",
+      "cumulative_90h_mm": 0.3,
+      "is_primary": false,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
       "data_source": "OPEN_METEO_API",
@@ -4774,7 +4774,7 @@
       "lat": 16.7850973,
       "lon": 73.9036487,
       "elevation": "640m",
-      "cumulative_90h_mm": 1.0,
+      "cumulative_90h_mm": 0.2,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4788,7 +4788,7 @@
       "lat": 16.701934,
       "lon": 73.843584,
       "elevation": "620m",
-      "cumulative_90h_mm": 1.2,
+      "cumulative_90h_mm": 0.4,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4802,7 +4802,7 @@
       "lat": 16.5469926,
       "lon": 73.8346738,
       "elevation": "680m",
-      "cumulative_90h_mm": 2.0,
+      "cumulative_90h_mm": 1.3,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4816,7 +4816,7 @@
       "lat": 16.520366,
       "lon": 73.918419,
       "elevation": "610m",
-      "cumulative_90h_mm": 2.1,
+      "cumulative_90h_mm": 1.7,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4830,7 +4830,7 @@
       "lat": 16.647984,
       "lon": 74.1288964,
       "elevation": "565m",
-      "cumulative_90h_mm": 0.8,
+      "cumulative_90h_mm": 0.1,
       "is_primary": true,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
@@ -4838,14 +4838,14 @@
       "active_telemetry": true
     },
     {
-      "station_id": "RADHANAGARI",
-      "station_name": "Radhanagari",
+      "station_id": "HALADI",
+      "station_name": "Haladi",
       "subbasin_id": "S9",
-      "lat": 16.41021,
-      "lon": 73.9971822,
-      "elevation": "615m",
-      "cumulative_90h_mm": 0.8,
-      "is_primary": true,
+      "lat": 16.5932632,
+      "lon": 74.156292,
+      "elevation": "555m",
+      "cumulative_90h_mm": 0.2,
+      "is_primary": false,
       "is_governing": true,
       "method": "GOVERNING (MAX_VOL)",
       "data_source": "OPEN_METEO_API",
@@ -4927,12 +4927,12 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
@@ -5167,17 +5167,17 @@
       {
         "hour": 62,
         "timestamp": "2026-11-28T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
@@ -5369,7 +5369,7 @@
       {
         "hour": 12,
         "timestamp": "2026-11-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
@@ -5379,7 +5379,7 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
@@ -5821,7 +5821,7 @@
       {
         "hour": 12,
         "timestamp": "2026-11-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
@@ -5831,17 +5831,17 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
@@ -6076,7 +6076,7 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
@@ -6273,7 +6273,7 @@
       {
         "hour": 12,
         "timestamp": "2026-11-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
@@ -6283,7 +6283,7 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
@@ -6670,7 +6670,7 @@
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
@@ -7117,12 +7117,12 @@
       {
         "hour": 0,
         "timestamp": "2026-11-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 2,
@@ -7574,7 +7574,7 @@
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
@@ -8021,12 +8021,12 @@
       {
         "hour": 0,
         "timestamp": "2026-11-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
@@ -8091,22 +8091,22 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
         "timestamp": "2026-11-26T11:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 18,
@@ -8336,12 +8336,12 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
@@ -8478,7 +8478,7 @@
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
@@ -8538,17 +8538,17 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
@@ -8658,12 +8658,12 @@
       {
         "hour": 37,
         "timestamp": "2026-11-27T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-11-27T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
@@ -8673,7 +8673,7 @@
       {
         "hour": 40,
         "timestamp": "2026-11-27T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 41,
@@ -8773,7 +8773,7 @@
       {
         "hour": 60,
         "timestamp": "2026-11-28T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 61,
@@ -8788,12 +8788,12 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
@@ -8808,7 +8808,7 @@
       {
         "hour": 67,
         "timestamp": "2026-11-28T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
@@ -8995,12 +8995,12 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
@@ -9447,12 +9447,12 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
@@ -9562,27 +9562,27 @@
       {
         "hour": 37,
         "timestamp": "2026-11-27T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-11-27T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
         "timestamp": "2026-11-27T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
         "timestamp": "2026-11-27T10:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 41,
         "timestamp": "2026-11-27T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 42,
@@ -9677,22 +9677,22 @@
       {
         "hour": 60,
         "timestamp": "2026-11-28T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 61,
         "timestamp": "2026-11-28T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 62,
         "timestamp": "2026-11-28T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 64,
@@ -9702,7 +9702,7 @@
       {
         "hour": 65,
         "timestamp": "2026-11-28T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -9894,22 +9894,22 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 17,
@@ -10009,7 +10009,7 @@
       {
         "hour": 36,
         "timestamp": "2026-11-27T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 37,
@@ -10019,17 +10019,17 @@
       {
         "hour": 38,
         "timestamp": "2026-11-27T08:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
         "timestamp": "2026-11-27T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
         "timestamp": "2026-11-27T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 41,
@@ -10129,17 +10129,17 @@
       {
         "hour": 60,
         "timestamp": "2026-11-28T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 61,
         "timestamp": "2026-11-28T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 62,
         "timestamp": "2026-11-28T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 63,
@@ -10149,7 +10149,7 @@
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -10286,7 +10286,7 @@
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 2,
@@ -10341,27 +10341,27 @@
       {
         "hour": 12,
         "timestamp": "2026-11-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
@@ -10601,7 +10601,7 @@
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -10738,7 +10738,7 @@
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 2,
@@ -10793,27 +10793,27 @@
       {
         "hour": 12,
         "timestamp": "2026-11-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
@@ -11053,7 +11053,7 @@
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -11250,22 +11250,22 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 17,
@@ -11380,7 +11380,7 @@
       {
         "hour": 39,
         "timestamp": "2026-11-27T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
@@ -11637,7 +11637,7 @@
       {
         "hour": 0,
         "timestamp": "2026-11-25T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 1,
@@ -11697,22 +11697,22 @@
       {
         "hour": 12,
         "timestamp": "2026-11-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
@@ -11952,12 +11952,12 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -12089,7 +12089,7 @@
       {
         "hour": 0,
         "timestamp": "2026-11-25T18:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 1,
@@ -12149,22 +12149,22 @@
       {
         "hour": 12,
         "timestamp": "2026-11-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
@@ -12404,12 +12404,12 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -12606,17 +12606,17 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
@@ -12861,7 +12861,7 @@
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -13058,17 +13058,17 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
@@ -13313,7 +13313,7 @@
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -13510,22 +13510,22 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.1
       },
       {
         "hour": 17,
@@ -13640,7 +13640,7 @@
       {
         "hour": 39,
         "timestamp": "2026-11-27T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
@@ -13967,12 +13967,12 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
@@ -14207,17 +14207,17 @@
       {
         "hour": 62,
         "timestamp": "2026-11-28T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
@@ -14409,7 +14409,7 @@
       {
         "hour": 12,
         "timestamp": "2026-11-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
@@ -14419,17 +14419,17 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
@@ -14664,7 +14664,7 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
@@ -14801,12 +14801,12 @@
       {
         "hour": 0,
         "timestamp": "2026-11-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 2,
@@ -15253,12 +15253,12 @@
       {
         "hour": 0,
         "timestamp": "2026-11-25T18:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
@@ -15323,22 +15323,22 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
         "timestamp": "2026-11-26T11:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 18,
@@ -15568,12 +15568,12 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
@@ -15710,7 +15710,7 @@
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 2,
@@ -15770,17 +15770,17 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
@@ -15890,12 +15890,12 @@
       {
         "hour": 37,
         "timestamp": "2026-11-27T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-11-27T08:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
@@ -15905,7 +15905,7 @@
       {
         "hour": 40,
         "timestamp": "2026-11-27T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 41,
@@ -16005,7 +16005,7 @@
       {
         "hour": 60,
         "timestamp": "2026-11-28T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 61,
@@ -16020,12 +16020,12 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 65,
@@ -16040,7 +16040,7 @@
       {
         "hour": 67,
         "timestamp": "2026-11-28T13:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 68,
@@ -16227,12 +16227,12 @@
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.4
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
@@ -16342,27 +16342,27 @@
       {
         "hour": 37,
         "timestamp": "2026-11-27T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 38,
         "timestamp": "2026-11-27T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
         "timestamp": "2026-11-27T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
         "timestamp": "2026-11-27T10:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 41,
         "timestamp": "2026-11-27T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 42,
@@ -16457,22 +16457,22 @@
       {
         "hour": 60,
         "timestamp": "2026-11-28T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 61,
         "timestamp": "2026-11-28T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 62,
         "timestamp": "2026-11-28T08:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 64,
@@ -16482,7 +16482,7 @@
       {
         "hour": 65,
         "timestamp": "2026-11-28T11:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 66,
@@ -16674,22 +16674,22 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.1
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.2
       },
       {
         "hour": 17,
@@ -16789,7 +16789,7 @@
       {
         "hour": 36,
         "timestamp": "2026-11-27T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 37,
@@ -16799,17 +16799,17 @@
       {
         "hour": 38,
         "timestamp": "2026-11-27T08:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 39,
         "timestamp": "2026-11-27T09:00:00+00:00",
-        "mm_hr": 0.3
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
         "timestamp": "2026-11-27T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 41,
@@ -16909,17 +16909,17 @@
       {
         "hour": 60,
         "timestamp": "2026-11-28T06:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 61,
         "timestamp": "2026-11-28T07:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.2
       },
       {
         "hour": 62,
         "timestamp": "2026-11-28T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.4
       },
       {
         "hour": 63,
@@ -16929,7 +16929,7 @@
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -17066,7 +17066,7 @@
       {
         "hour": 1,
         "timestamp": "2026-11-25T19:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 2,
@@ -17121,27 +17121,27 @@
       {
         "hour": 12,
         "timestamp": "2026-11-26T06:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
@@ -17381,7 +17381,7 @@
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -17578,22 +17578,22 @@
       {
         "hour": 13,
         "timestamp": "2026-11-26T07:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 14,
         "timestamp": "2026-11-26T08:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 15,
         "timestamp": "2026-11-26T09:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 16,
         "timestamp": "2026-11-26T10:00:00+00:00",
-        "mm_hr": 0.2
+        "mm_hr": 0.0
       },
       {
         "hour": 17,
@@ -17708,7 +17708,7 @@
       {
         "hour": 39,
         "timestamp": "2026-11-27T09:00:00+00:00",
-        "mm_hr": 0.1
+        "mm_hr": 0.0
       },
       {
         "hour": 40,
@@ -17828,12 +17828,12 @@
       {
         "hour": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "mm_hr": 0.0
+        "mm_hr": 0.1
       },
       {
         "hour": 65,
@@ -17971,70 +17971,22 @@
         "forecast_90h_vwc": {
           "depths_cm": {
             "soil_moisture_0_to_7cm": [
-              0.203,
-              0.203,
-              0.203,
-              0.203,
-              0.203,
-              0.203,
-              0.203,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.203,
-              0.203,
-              0.203,
-              0.203,
-              0.202,
+              0.205,
+              0.205,
+              0.205,
+              0.205,
+              0.205,
+              0.205,
+              0.205,
+              0.205,
+              0.204,
+              0.204,
+              0.204,
+              0.204,
+              0.204,
               0.203,
               0.202,
               0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.202,
-              0.201,
-              0.201,
-              0.201,
-              0.2,
-              0.2,
-              0.2,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.199,
-              0.2,
-              0.201,
               0.201,
               0.201,
               0.201,
@@ -18055,8 +18007,56 @@
               0.2,
               0.2,
               0.2,
-              0.2,
-              0.2,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.198,
+              0.198,
+              0.198,
+              0.198,
+              0.198,
+              0.198,
+              0.198,
+              0.198,
+              0.198,
+              0.198,
+              0.198,
+              0.198,
+              0.199,
+              0.199,
+              0.198,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
+              0.199,
               0.199,
               0.199,
               0.199,
@@ -18116,11 +18116,11 @@
               0.282,
               0.282,
               0.282,
-              0.282,
-              0.282,
-              0.282,
-              0.282,
-              0.282,
+              0.281,
+              0.281,
+              0.281,
+              0.281,
+              0.281,
               0.281,
               0.281,
               0.281,
@@ -18155,6 +18155,7 @@
               0.281
             ],
             "soil_moisture_28_to_100cm": [
+              0.299,
               0.3,
               0.3,
               0.3,
@@ -18164,8 +18165,6 @@
               0.3,
               0.3,
               0.3,
-              0.3,
-              0.3,
               0.299,
               0.299,
               0.299,
@@ -18219,25 +18218,26 @@
               0.299,
               0.299,
               0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
+              0.298,
               0.298,
               0.298,
               0.298,
@@ -18340,9 +18340,9 @@
             ]
           },
           "current_vwc": {
-            "soil_moisture_0_to_7cm": 0.203,
+            "soil_moisture_0_to_7cm": 0.205,
             "soil_moisture_7_to_28cm": 0.282,
-            "soil_moisture_28_to_100cm": 0.3,
+            "soil_moisture_28_to_100cm": 0.299,
             "soil_moisture_100_to_255cm": 0.385
           }
         },
@@ -18353,53 +18353,45 @@
         "forecast_90h_vwc": {
           "depths_cm": {
             "soil_moisture_0_to_7cm": [
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
+              0.231,
+              0.231,
+              0.231,
+              0.231,
+              0.231,
+              0.231,
+              0.231,
+              0.231,
+              0.231,
+              0.231,
+              0.231,
+              0.231,
+              0.231,
               0.23,
               0.23,
-              0.23,
-              0.23,
-              0.23,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
-              0.229,
               0.229,
               0.229,
               0.229,
               0.229,
               0.228,
               0.228,
+              0.228,
+              0.228,
+              0.228,
+              0.228,
+              0.228,
+              0.228,
+              0.228,
+              0.228,
+              0.228,
+              0.228,
+              0.228,
+              0.228,
+              0.228,
+              0.228,
               0.227,
               0.227,
               0.227,
               0.227,
-              0.227,
-              0.227,
-              0.227,
-              0.227,
               0.226,
               0.226,
               0.226,
@@ -18414,31 +18406,39 @@
               0.226,
               0.226,
               0.226,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
               0.226,
               0.226,
-              0.227,
-              0.227,
-              0.227,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
-              0.226,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
+              0.225,
               0.225,
               0.225,
               0.225,
@@ -18456,7 +18456,7 @@
               0.281,
               0.281,
               0.281,
-              0.28,
+              0.281,
               0.28,
               0.28,
               0.28,
@@ -18574,7 +18574,6 @@
               0.307,
               0.307,
               0.307,
-              0.307,
               0.306,
               0.306,
               0.306,
@@ -18626,7 +18625,8 @@
               0.305,
               0.305,
               0.305,
-              0.305
+              0.305,
+              0.304
             ],
             "soil_moisture_100_to_255cm": [
               0.381,
@@ -18694,21 +18694,21 @@
               0.381,
               0.381,
               0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
-              0.381,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
+              0.38,
               0.38,
               0.38,
               0.38,
@@ -18722,7 +18722,7 @@
             ]
           },
           "current_vwc": {
-            "soil_moisture_0_to_7cm": 0.229,
+            "soil_moisture_0_to_7cm": 0.231,
             "soil_moisture_7_to_28cm": 0.281,
             "soil_moisture_28_to_100cm": 0.308,
             "soil_moisture_100_to_255cm": 0.381
@@ -18731,25 +18731,75 @@
         "antecedent_5d_vwc": null
       },
       "S3": {
-        "station_id": "KOTOLI",
+        "station_id": "BAJAR_BHOGAON",
         "forecast_90h_vwc": {
           "depths_cm": {
             "soil_moisture_0_to_7cm": [
+              0.26,
+              0.261,
+              0.261,
+              0.261,
+              0.261,
+              0.261,
+              0.261,
+              0.261,
+              0.261,
+              0.261,
+              0.261,
+              0.261,
+              0.261,
+              0.26,
+              0.26,
+              0.26,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.259,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.257,
+              0.257,
+              0.257,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
               0.255,
               0.255,
               0.255,
               0.255,
               0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
               0.254,
               0.254,
               0.254,
@@ -18773,60 +18823,22 @@
               0.254,
               0.254,
               0.254,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.253,
-              0.252,
-              0.252,
-              0.252,
-              0.252,
-              0.252,
-              0.252,
-              0.252
+              0.254,
+              0.253
             ],
             "soil_moisture_7_to_28cm": [
+              0.287,
+              0.287,
+              0.287,
+              0.287,
+              0.287,
+              0.287,
+              0.287,
+              0.287,
+              0.287,
+              0.287,
+              0.287,
+              0.287,
               0.286,
               0.286,
               0.286,
@@ -18843,6 +18855,16 @@
               0.286,
               0.286,
               0.286,
+              0.286,
+              0.286,
+              0.286,
+              0.286,
+              0.286,
+              0.286,
+              0.286,
+              0.286,
+              0.286,
+              0.286,
               0.285,
               0.285,
               0.285,
@@ -18868,6 +18890,8 @@
               0.285,
               0.285,
               0.285,
+              0.285,
+              0.285,
               0.284,
               0.284,
               0.284,
@@ -18892,69 +18916,27 @@
               0.284,
               0.284,
               0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.284,
-              0.283,
-              0.283,
-              0.283,
-              0.283
+              0.284
             ],
             "soil_moisture_28_to_100cm": [
-              0.336,
-              0.336,
-              0.336,
-              0.336,
-              0.336,
-              0.336,
-              0.336,
-              0.336,
-              0.336,
               0.335,
               0.335,
               0.335,
               0.335,
               0.335,
               0.335,
+              0.335,
+              0.335,
+              0.335,
+              0.335,
+              0.335,
               0.334,
               0.334,
               0.334,
               0.334,
               0.334,
               0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
-              0.334,
+              0.333,
               0.333,
               0.333,
               0.333,
@@ -18983,6 +18965,23 @@
               0.332,
               0.332,
               0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
+              0.332,
               0.331,
               0.331,
               0.331,
@@ -19005,109 +19004,110 @@
               0.331,
               0.331,
               0.331,
-              0.33,
-              0.33,
-              0.33,
+              0.331,
+              0.331,
+              0.331,
+              0.331,
               0.33
             ],
             "soil_moisture_100_to_255cm": [
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.424,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423,
-              0.423
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.437,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436,
+              0.436
             ]
           },
           "current_vwc": {
-            "soil_moisture_0_to_7cm": 0.255,
-            "soil_moisture_7_to_28cm": 0.286,
-            "soil_moisture_28_to_100cm": 0.336,
-            "soil_moisture_100_to_255cm": 0.424
+            "soil_moisture_0_to_7cm": 0.26,
+            "soil_moisture_7_to_28cm": 0.287,
+            "soil_moisture_28_to_100cm": 0.335,
+            "soil_moisture_100_to_255cm": 0.437
           }
         },
         "antecedent_5d_vwc": null
@@ -19117,74 +19117,47 @@
         "forecast_90h_vwc": {
           "depths_cm": {
             "soil_moisture_0_to_7cm": [
-              0.256,
-              0.256,
-              0.256,
-              0.256,
-              0.256,
-              0.256,
-              0.256,
-              0.256,
-              0.256,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.256,
-              0.257,
+              0.261,
+              0.262,
+              0.262,
+              0.262,
+              0.262,
+              0.262,
+              0.262,
+              0.262,
+              0.262,
+              0.262,
+              0.262,
+              0.262,
+              0.261,
+              0.261,
+              0.261,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
               0.26,
               0.26,
               0.259,
               0.259,
               0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
-              0.259,
               0.258,
               0.258,
               0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.257,
-              0.257,
-              0.257,
-              0.257,
-              0.258,
-              0.257,
-              0.257,
-              0.257,
               0.257,
               0.257,
               0.257,
@@ -19206,7 +19179,34 @@
               0.256,
               0.256,
               0.256,
-              0.255
+              0.256,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.254,
+              0.254,
+              0.254,
+              0.254,
+              0.254,
+              0.253
             ],
             "soil_moisture_7_to_28cm": [
               0.291,
@@ -19222,6 +19222,7 @@
               0.291,
               0.291,
               0.291,
+              0.291,
               0.29,
               0.29,
               0.29,
@@ -19246,9 +19247,6 @@
               0.29,
               0.29,
               0.29,
-              0.29,
-              0.29,
-              0.289,
               0.289,
               0.289,
               0.289,
@@ -19283,15 +19281,17 @@
               0.288,
               0.288,
               0.288,
-              0.289,
-              0.289,
-              0.289,
-              0.289,
-              0.289,
-              0.289,
-              0.289,
-              0.289,
-              0.289,
+              0.288,
+              0.288,
+              0.288,
+              0.288,
+              0.288,
+              0.288,
+              0.288,
+              0.288,
+              0.288,
+              0.288,
+              0.288,
               0.288,
               0.288,
               0.288,
@@ -19340,7 +19340,6 @@
               0.365,
               0.365,
               0.365,
-              0.365,
               0.364,
               0.364,
               0.364,
@@ -19363,6 +19362,7 @@
               0.364,
               0.364,
               0.364,
+              0.363,
               0.363,
               0.363,
               0.363,
@@ -19412,7 +19412,6 @@
               0.465,
               0.465,
               0.465,
-              0.465,
               0.464,
               0.464,
               0.464,
@@ -19464,9 +19463,10 @@
               0.464,
               0.464,
               0.464,
-              0.464,
-              0.464,
-              0.464,
+              0.463,
+              0.463,
+              0.463,
+              0.463,
               0.463,
               0.463,
               0.463,
@@ -19486,7 +19486,7 @@
             ]
           },
           "current_vwc": {
-            "soil_moisture_0_to_7cm": 0.256,
+            "soil_moisture_0_to_7cm": 0.261,
             "soil_moisture_7_to_28cm": 0.291,
             "soil_moisture_28_to_100cm": 0.367,
             "soil_moisture_100_to_255cm": 0.465
@@ -19500,58 +19500,12 @@
           "depths_cm": {
             "soil_moisture_0_to_7cm": [
               0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.274,
-              0.274,
-              0.275,
               0.276,
               0.276,
               0.276,
               0.276,
               0.276,
               0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.276,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
               0.275,
               0.275,
               0.275,
@@ -19561,34 +19515,80 @@
               0.274,
               0.274,
               0.274,
-              0.273,
               0.274,
               0.274,
               0.274,
               0.274,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
-              0.275,
+              0.274,
+              0.274,
+              0.274,
+              0.274,
+              0.274,
+              0.274,
+              0.274,
+              0.274,
+              0.274,
+              0.274,
               0.274,
               0.274,
               0.274,
               0.273,
               0.273,
               0.273,
-              0.272
+              0.273,
+              0.272,
+              0.272,
+              0.271,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.272,
+              0.271,
+              0.271,
+              0.271,
+              0.271,
+              0.271,
+              0.271,
+              0.271,
+              0.271,
+              0.271,
+              0.271,
+              0.271,
+              0.271,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.27,
+              0.269,
+              0.269,
+              0.269,
+              0.268
             ],
             "soil_moisture_7_to_28cm": [
               0.307,
@@ -19606,7 +19606,6 @@
               0.306,
               0.306,
               0.306,
-              0.306,
               0.305,
               0.305,
               0.305,
@@ -19628,24 +19627,7 @@
               0.305,
               0.305,
               0.305,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.303,
-              0.303,
-              0.303,
-              0.303,
-              0.303,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
+              0.305,
               0.304,
               0.304,
               0.304,
@@ -19654,6 +19636,24 @@
               0.303,
               0.303,
               0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.303,
+              0.302,
+              0.302,
               0.302,
               0.302,
               0.302,
@@ -19716,12 +19716,12 @@
               0.379,
               0.379,
               0.379,
-              0.379,
               0.378,
               0.378,
               0.378,
               0.378,
               0.378,
+              0.378,
               0.377,
               0.377,
               0.377,
@@ -19743,23 +19743,6 @@
               0.377,
               0.377,
               0.377,
-              0.377,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
-              0.376,
               0.376,
               0.376,
               0.376,
@@ -19772,7 +19755,24 @@
               0.375,
               0.375,
               0.375,
-              0.375
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.375,
+              0.374
             ],
             "soil_moisture_100_to_255cm": [
               0.465,
@@ -19859,8 +19859,8 @@
               0.464,
               0.464,
               0.464,
-              0.464,
-              0.464,
+              0.463,
+              0.463,
               0.463,
               0.463,
               0.463,
@@ -19881,70 +19881,23 @@
         "forecast_90h_vwc": {
           "depths_cm": {
             "soil_moisture_0_to_7cm": [
-              0.31,
-              0.31,
-              0.31,
-              0.31,
-              0.31,
-              0.31,
-              0.31,
-              0.31,
-              0.31,
-              0.309,
-              0.309,
               0.308,
               0.307,
               0.307,
-              0.308,
-              0.309,
-              0.309,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
-              0.308,
+              0.307,
+              0.307,
+              0.307,
+              0.307,
+              0.307,
+              0.307,
+              0.307,
               0.307,
               0.306,
-              0.306,
               0.305,
               0.305,
-              0.306,
-              0.306,
-              0.306,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.305,
-              0.304,
+              0.303,
               0.303,
               0.302,
-              0.301,
-              0.301,
               0.302,
               0.301,
               0.301,
@@ -19952,16 +19905,15 @@
               0.301,
               0.301,
               0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
+              0.302,
+              0.302,
+              0.302,
+              0.302,
+              0.302,
+              0.302,
+              0.302,
+              0.302,
+              0.302,
               0.301,
               0.301,
               0.3,
@@ -19970,7 +19922,55 @@
               0.297,
               0.296,
               0.295,
-              0.295
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.293,
+              0.293,
+              0.293,
+              0.294,
+              0.294,
+              0.295,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.296,
+              0.295,
+              0.295,
+              0.294,
+              0.293,
+              0.293,
+              0.292,
+              0.292,
+              0.291
             ],
             "soil_moisture_7_to_28cm": [
               0.334,
@@ -19988,7 +19988,6 @@
               0.333,
               0.333,
               0.333,
-              0.333,
               0.332,
               0.332,
               0.332,
@@ -20004,31 +20003,12 @@
               0.332,
               0.332,
               0.332,
-              0.333,
-              0.333,
-              0.333,
               0.332,
               0.332,
               0.332,
-              0.331,
-              0.331,
-              0.331,
-              0.33,
-              0.33,
-              0.33,
-              0.33,
-              0.33,
-              0.33,
-              0.33,
-              0.33,
-              0.33,
-              0.33,
-              0.33,
-              0.33,
-              0.33,
-              0.33,
-              0.331,
-              0.331,
+              0.332,
+              0.332,
+              0.332,
               0.331,
               0.331,
               0.33,
@@ -20037,22 +20017,20 @@
               0.329,
               0.329,
               0.329,
-              0.328,
-              0.328,
-              0.328,
-              0.328,
-              0.328,
-              0.328,
-              0.328,
-              0.328,
-              0.328,
-              0.328,
-              0.328,
-              0.328,
-              0.328,
-              0.328,
               0.329,
               0.329,
+              0.329,
+              0.329,
+              0.329,
+              0.329,
+              0.33,
+              0.33,
+              0.33,
+              0.33,
+              0.33,
+              0.33,
+              0.33,
+              0.33,
               0.329,
               0.329,
               0.329,
@@ -20062,14 +20040,35 @@
               0.327,
               0.327,
               0.327,
-              0.326
+              0.327,
+              0.327,
+              0.327,
+              0.327,
+              0.327,
+              0.327,
+              0.327,
+              0.327,
+              0.327,
+              0.328,
+              0.328,
+              0.328,
+              0.328,
+              0.328,
+              0.328,
+              0.328,
+              0.327,
+              0.327,
+              0.327,
+              0.326,
+              0.326,
+              0.326,
+              0.325
             ],
             "soil_moisture_28_to_100cm": [
               0.42,
               0.42,
               0.42,
-              0.42,
-              0.42,
+              0.419,
               0.419,
               0.419,
               0.419,
@@ -20084,9 +20083,6 @@
               0.418,
               0.418,
               0.418,
-              0.418,
-              0.418,
-              0.418,
               0.417,
               0.417,
               0.417,
@@ -20103,18 +20099,9 @@
               0.417,
               0.417,
               0.417,
-              0.416,
-              0.416,
-              0.416,
-              0.416,
-              0.416,
-              0.416,
-              0.416,
-              0.416,
-              0.416,
-              0.416,
-              0.416,
-              0.416,
+              0.417,
+              0.417,
+              0.417,
               0.416,
               0.416,
               0.416,
@@ -20127,19 +20114,30 @@
               0.415,
               0.415,
               0.415,
+              0.415,
+              0.415,
+              0.415,
+              0.415,
+              0.415,
+              0.415,
+              0.415,
+              0.415,
+              0.415,
+              0.415,
+              0.415,
               0.414,
               0.414,
               0.414,
               0.414,
-              0.414,
-              0.414,
-              0.414,
-              0.414,
-              0.414,
-              0.414,
-              0.414,
-              0.414,
-              0.414,
+              0.413,
+              0.413,
+              0.413,
+              0.413,
+              0.413,
+              0.413,
+              0.413,
+              0.413,
+              0.413,
               0.413,
               0.413,
               0.413,
@@ -20154,7 +20152,9 @@
               0.412,
               0.412,
               0.412,
-              0.412
+              0.412,
+              0.412,
+              0.411
             ],
             "soil_moisture_100_to_255cm": [
               0.47,
@@ -20177,10 +20177,10 @@
               0.47,
               0.47,
               0.47,
-              0.47,
-              0.47,
-              0.47,
-              0.47,
+              0.469,
+              0.469,
+              0.469,
+              0.469,
               0.469,
               0.469,
               0.469,
@@ -20250,7 +20250,7 @@
             ]
           },
           "current_vwc": {
-            "soil_moisture_0_to_7cm": 0.31,
+            "soil_moisture_0_to_7cm": 0.308,
             "soil_moisture_7_to_28cm": 0.334,
             "soil_moisture_28_to_100cm": 0.42,
             "soil_moisture_100_to_255cm": 0.47
@@ -20263,98 +20263,121 @@
         "forecast_90h_vwc": {
           "depths_cm": {
             "soil_moisture_0_to_7cm": [
-              0.296,
-              0.296,
-              0.296,
-              0.296,
-              0.296,
-              0.296,
-              0.296,
-              0.296,
-              0.296,
-              0.296,
-              0.296,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.297,
-              0.297,
+              0.304,
+              0.304,
+              0.304,
+              0.304,
+              0.304,
+              0.304,
+              0.304,
+              0.304,
+              0.304,
+              0.304,
+              0.304,
+              0.303,
+              0.303,
+              0.302,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.301,
+              0.3,
+              0.3,
+              0.299,
               0.298,
               0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.296,
               0.296,
               0.295,
-              0.297,
-              0.298,
-              0.298,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.297,
-              0.296,
-              0.296,
+              0.295,
               0.295,
               0.294,
-              0.295,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.294,
+              0.293,
+              0.293,
+              0.294,
+              0.296,
+              0.298,
+              0.298,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
+              0.297,
               0.296,
               0.296,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
-              0.295,
               0.295,
               0.294,
               0.294,
               0.293,
-              0.292,
-              0.292,
-              0.291,
-              0.291,
-              0.29
+              0.293,
+              0.293
             ],
             "soil_moisture_7_to_28cm": [
+              0.324,
+              0.324,
+              0.324,
+              0.324,
+              0.324,
+              0.324,
+              0.324,
+              0.324,
+              0.324,
+              0.324,
+              0.324,
+              0.324,
+              0.324,
+              0.323,
+              0.323,
+              0.323,
+              0.323,
+              0.322,
+              0.322,
+              0.322,
+              0.322,
+              0.322,
+              0.322,
               0.323,
               0.323,
               0.323,
@@ -20373,13 +20396,12 @@
               0.321,
               0.321,
               0.321,
-              0.321,
-              0.321,
-              0.321,
-              0.321,
-              0.321,
-              0.321,
-              0.321,
+              0.32,
+              0.32,
+              0.32,
+              0.32,
+              0.32,
+              0.32,
               0.321,
               0.321,
               0.321,
@@ -20408,45 +20430,47 @@
               0.319,
               0.319,
               0.319,
-              0.32,
-              0.32,
-              0.32,
-              0.32,
-              0.32,
               0.319,
               0.319,
               0.319,
               0.319,
+              0.319,
+              0.319,
+              0.319,
+              0.319,
+              0.319,
+              0.319,
+              0.319,
               0.318,
               0.318,
               0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.318,
-              0.317,
-              0.317,
-              0.317,
-              0.317,
-              0.317,
-              0.317,
-              0.316
+              0.317
             ],
             "soil_moisture_28_to_100cm": [
+              0.411,
+              0.411,
+              0.411,
+              0.411,
+              0.411,
+              0.411,
+              0.411,
+              0.411,
+              0.411,
+              0.411,
+              0.411,
+              0.411,
+              0.41,
+              0.41,
+              0.41,
+              0.41,
+              0.41,
+              0.409,
+              0.409,
+              0.409,
+              0.409,
+              0.409,
+              0.409,
+              0.409,
               0.409,
               0.409,
               0.409,
@@ -20463,7 +20487,6 @@
               0.408,
               0.408,
               0.408,
-              0.408,
               0.407,
               0.407,
               0.407,
@@ -20483,16 +20506,6 @@
               0.407,
               0.407,
               0.407,
-              0.407,
-              0.406,
-              0.406,
-              0.406,
-              0.406,
-              0.406,
-              0.406,
-              0.406,
-              0.406,
-              0.406,
               0.406,
               0.406,
               0.406,
@@ -20509,34 +20522,21 @@
               0.405,
               0.405,
               0.405,
+              0.405,
+              0.405,
+              0.405,
+              0.405,
+              0.405,
+              0.405,
+              0.405,
+              0.405,
+              0.405,
+              0.405,
+              0.405,
               0.404,
               0.404,
               0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.404,
-              0.403,
-              0.403,
-              0.403,
-              0.402,
-              0.402,
-              0.402,
-              0.402
+              0.404
             ],
             "soil_moisture_100_to_255cm": [
               0.467,
@@ -20632,9 +20632,9 @@
             ]
           },
           "current_vwc": {
-            "soil_moisture_0_to_7cm": 0.296,
-            "soil_moisture_7_to_28cm": 0.323,
-            "soil_moisture_28_to_100cm": 0.409,
+            "soil_moisture_0_to_7cm": 0.304,
+            "soil_moisture_7_to_28cm": 0.324,
+            "soil_moisture_28_to_100cm": 0.411,
             "soil_moisture_100_to_255cm": 0.467
           }
         },
@@ -20645,46 +20645,71 @@
         "forecast_90h_vwc": {
           "depths_cm": {
             "soil_moisture_0_to_7cm": [
-              0.254,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.256,
-              0.257,
+              0.263,
+              0.263,
+              0.263,
+              0.263,
+              0.263,
+              0.263,
+              0.263,
+              0.263,
+              0.263,
+              0.262,
+              0.262,
+              0.262,
+              0.262,
+              0.262,
+              0.261,
+              0.261,
+              0.261,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
               0.259,
               0.259,
-              0.259,
-              0.259,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
-              0.258,
               0.258,
               0.258,
               0.258,
               0.257,
               0.257,
               0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.257,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
               0.256,
               0.256,
               0.256,
@@ -20709,32 +20734,7 @@
               0.255,
               0.255,
               0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.255,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.254,
-              0.253
+              0.255
             ],
             "soil_moisture_7_to_28cm": [
               0.281,
@@ -20840,11 +20840,11 @@
               0.322,
               0.322,
               0.322,
+              0.322,
               0.321,
               0.321,
               0.321,
               0.321,
-              0.321,
               0.32,
               0.32,
               0.32,
@@ -20867,7 +20867,6 @@
               0.32,
               0.32,
               0.32,
-              0.319,
               0.319,
               0.319,
               0.319,
@@ -20916,8 +20915,9 @@
               0.317,
               0.317,
               0.317,
-              0.317,
-              0.317,
+              0.316,
+              0.316,
+              0.316,
               0.316
             ],
             "soil_moisture_100_to_255cm": [
@@ -20935,7 +20935,7 @@
               0.4,
               0.4,
               0.4,
-              0.399,
+              0.4,
               0.399,
               0.399,
               0.399,
@@ -21014,7 +21014,7 @@
             ]
           },
           "current_vwc": {
-            "soil_moisture_0_to_7cm": 0.254,
+            "soil_moisture_0_to_7cm": 0.263,
             "soil_moisture_7_to_28cm": 0.281,
             "soil_moisture_28_to_100cm": 0.322,
             "soil_moisture_100_to_255cm": 0.4
@@ -21023,383 +21023,383 @@
         "antecedent_5d_vwc": null
       },
       "S9": {
-        "station_id": "RADHANAGARI",
+        "station_id": "HALADI",
         "forecast_90h_vwc": {
           "depths_cm": {
             "soil_moisture_0_to_7cm": [
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.263,
-              0.263,
-              0.263,
-              0.264,
-              0.265,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.266,
-              0.265,
-              0.265,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.264,
-              0.263,
-              0.263,
-              0.263,
-              0.262,
-              0.262,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
-              0.261,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
+              0.26,
               0.26,
               0.26,
               0.26,
               0.259,
               0.259,
               0.259,
-              0.258
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.258,
+              0.257,
+              0.257,
+              0.257,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.256,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.255,
+              0.254
             ],
             "soil_moisture_7_to_28cm": [
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.304,
-              0.303,
-              0.303,
-              0.303,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.302,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.301,
-              0.3,
-              0.3,
-              0.3,
-              0.3,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.299,
-              0.298,
-              0.298,
-              0.298,
-              0.298
+              0.285,
+              0.285,
+              0.285,
+              0.285,
+              0.285,
+              0.285,
+              0.285,
+              0.285,
+              0.285,
+              0.285,
+              0.285,
+              0.285,
+              0.285,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.284,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.283,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282,
+              0.282
             ],
             "soil_moisture_28_to_100cm": [
-              0.37,
-              0.37,
-              0.37,
-              0.37,
-              0.37,
-              0.37,
-              0.37,
-              0.37,
-              0.37,
-              0.37,
-              0.37,
-              0.369,
-              0.369,
-              0.369,
-              0.369,
-              0.369,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.368,
-              0.367,
-              0.367,
-              0.367,
-              0.367,
-              0.367,
-              0.366,
-              0.366,
-              0.366,
-              0.366,
-              0.366,
-              0.366,
-              0.366,
-              0.366,
-              0.366,
-              0.367,
-              0.367,
-              0.367,
-              0.367,
-              0.367,
-              0.367,
-              0.366,
-              0.366,
-              0.366,
-              0.366,
-              0.366,
-              0.366,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.365,
-              0.364,
-              0.364,
-              0.364,
-              0.364
+              0.317,
+              0.317,
+              0.317,
+              0.317,
+              0.317,
+              0.317,
+              0.317,
+              0.317,
+              0.317,
+              0.317,
+              0.317,
+              0.317,
+              0.316,
+              0.316,
+              0.316,
+              0.316,
+              0.316,
+              0.316,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.315,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.314,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.313,
+              0.312,
+              0.312,
+              0.312,
+              0.312
             ],
             "soil_moisture_100_to_255cm": [
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.462,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461,
-              0.461
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.396,
+              0.395
             ]
           },
           "current_vwc": {
-            "soil_moisture_0_to_7cm": 0.264,
-            "soil_moisture_7_to_28cm": 0.304,
-            "soil_moisture_28_to_100cm": 0.37,
-            "soil_moisture_100_to_255cm": 0.462
+            "soil_moisture_0_to_7cm": 0.26,
+            "soil_moisture_7_to_28cm": 0.285,
+            "soil_moisture_28_to_100cm": 0.317,
+            "soil_moisture_100_to_255cm": 0.396
           }
         },
         "antecedent_5d_vwc": null
@@ -21862,7 +21862,7 @@
       "timestamp": "2026-11-27T15:00:00+00:00",
       "lead_hours": 45,
       "discharge_m3s": 11.1,
-      "surface_runoff_m3s": 0.1,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
       "stage_m": 531.75,
       "is_peak": false
@@ -21872,7 +21872,7 @@
       "timestamp": "2026-11-27T16:00:00+00:00",
       "lead_hours": 46,
       "discharge_m3s": 11.1,
-      "surface_runoff_m3s": 0.1,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
       "stage_m": 531.75,
       "is_peak": false
@@ -21881,20 +21881,20 @@
       "hour": 47,
       "timestamp": "2026-11-27T17:00:00+00:00",
       "lead_hours": 47,
-      "discharge_m3s": 11.1,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 11.0,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.75,
+      "stage_m": 531.74,
       "is_peak": false
     },
     {
       "hour": 48,
       "timestamp": "2026-11-27T18:00:00+00:00",
       "lead_hours": 48,
-      "discharge_m3s": 11.1,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 11.0,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.75,
+      "stage_m": 531.74,
       "is_peak": false
     },
     {
@@ -21902,7 +21902,7 @@
       "timestamp": "2026-11-27T19:00:00+00:00",
       "lead_hours": 49,
       "discharge_m3s": 11.0,
-      "surface_runoff_m3s": 0.1,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
       "stage_m": 531.74,
       "is_peak": false
@@ -21912,7 +21912,7 @@
       "timestamp": "2026-11-27T20:00:00+00:00",
       "lead_hours": 50,
       "discharge_m3s": 11.0,
-      "surface_runoff_m3s": 0.1,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
       "stage_m": 531.74,
       "is_peak": false
@@ -21922,7 +21922,7 @@
       "timestamp": "2026-11-27T21:00:00+00:00",
       "lead_hours": 51,
       "discharge_m3s": 11.0,
-      "surface_runoff_m3s": 0.1,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
       "stage_m": 531.74,
       "is_peak": false
@@ -21931,40 +21931,40 @@
       "hour": 52,
       "timestamp": "2026-11-27T22:00:00+00:00",
       "lead_hours": 52,
-      "discharge_m3s": 11.0,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.9,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.74,
+      "stage_m": 531.72,
       "is_peak": false
     },
     {
       "hour": 53,
       "timestamp": "2026-11-27T23:00:00+00:00",
       "lead_hours": 53,
-      "discharge_m3s": 11.0,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.9,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.74,
+      "stage_m": 531.72,
       "is_peak": false
     },
     {
       "hour": 54,
       "timestamp": "2026-11-28T00:00:00+00:00",
       "lead_hours": 54,
-      "discharge_m3s": 11.0,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.9,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.74,
+      "stage_m": 531.72,
       "is_peak": false
     },
     {
       "hour": 55,
       "timestamp": "2026-11-28T01:00:00+00:00",
       "lead_hours": 55,
-      "discharge_m3s": 11.0,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.9,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.74,
+      "stage_m": 531.72,
       "is_peak": false
     },
     {
@@ -21972,7 +21972,7 @@
       "timestamp": "2026-11-28T02:00:00+00:00",
       "lead_hours": 56,
       "discharge_m3s": 10.9,
-      "surface_runoff_m3s": 0.1,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
       "stage_m": 531.72,
       "is_peak": false
@@ -21981,330 +21981,330 @@
       "hour": 57,
       "timestamp": "2026-11-28T03:00:00+00:00",
       "lead_hours": 57,
-      "discharge_m3s": 10.9,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.8,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.72,
+      "stage_m": 531.71,
       "is_peak": false
     },
     {
       "hour": 58,
       "timestamp": "2026-11-28T04:00:00+00:00",
       "lead_hours": 58,
-      "discharge_m3s": 10.9,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.8,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.72,
+      "stage_m": 531.71,
       "is_peak": false
     },
     {
       "hour": 59,
       "timestamp": "2026-11-28T05:00:00+00:00",
       "lead_hours": 59,
-      "discharge_m3s": 10.9,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.8,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.72,
+      "stage_m": 531.71,
       "is_peak": false
     },
     {
       "hour": 60,
       "timestamp": "2026-11-28T06:00:00+00:00",
       "lead_hours": 60,
-      "discharge_m3s": 10.9,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.8,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.72,
+      "stage_m": 531.71,
       "is_peak": false
     },
     {
       "hour": 61,
       "timestamp": "2026-11-28T07:00:00+00:00",
       "lead_hours": 61,
-      "discharge_m3s": 10.9,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.8,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.72,
+      "stage_m": 531.71,
       "is_peak": false
     },
     {
       "hour": 62,
       "timestamp": "2026-11-28T08:00:00+00:00",
       "lead_hours": 62,
-      "discharge_m3s": 10.9,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.7,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.72,
+      "stage_m": 531.7,
       "is_peak": false
     },
     {
       "hour": 63,
       "timestamp": "2026-11-28T09:00:00+00:00",
       "lead_hours": 63,
-      "discharge_m3s": 10.8,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.7,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.71,
+      "stage_m": 531.7,
       "is_peak": false
     },
     {
       "hour": 64,
       "timestamp": "2026-11-28T10:00:00+00:00",
       "lead_hours": 64,
-      "discharge_m3s": 10.8,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.7,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.71,
+      "stage_m": 531.7,
       "is_peak": false
     },
     {
       "hour": 65,
       "timestamp": "2026-11-28T11:00:00+00:00",
       "lead_hours": 65,
-      "discharge_m3s": 10.8,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.7,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.71,
+      "stage_m": 531.7,
       "is_peak": false
     },
     {
       "hour": 66,
       "timestamp": "2026-11-28T12:00:00+00:00",
       "lead_hours": 66,
-      "discharge_m3s": 10.8,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.7,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.71,
+      "stage_m": 531.7,
       "is_peak": false
     },
     {
       "hour": 67,
       "timestamp": "2026-11-28T13:00:00+00:00",
       "lead_hours": 67,
-      "discharge_m3s": 10.8,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.6,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.71,
+      "stage_m": 531.69,
       "is_peak": false
     },
     {
       "hour": 68,
       "timestamp": "2026-11-28T14:00:00+00:00",
       "lead_hours": 68,
-      "discharge_m3s": 10.7,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.6,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.7,
+      "stage_m": 531.69,
       "is_peak": false
     },
     {
       "hour": 69,
       "timestamp": "2026-11-28T15:00:00+00:00",
       "lead_hours": 69,
-      "discharge_m3s": 10.7,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.6,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.7,
+      "stage_m": 531.69,
       "is_peak": false
     },
     {
       "hour": 70,
       "timestamp": "2026-11-28T16:00:00+00:00",
       "lead_hours": 70,
-      "discharge_m3s": 10.7,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.6,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.7,
+      "stage_m": 531.69,
       "is_peak": false
     },
     {
       "hour": 71,
       "timestamp": "2026-11-28T17:00:00+00:00",
       "lead_hours": 71,
-      "discharge_m3s": 10.7,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.5,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.7,
+      "stage_m": 531.68,
       "is_peak": false
     },
     {
       "hour": 72,
       "timestamp": "2026-11-28T18:00:00+00:00",
       "lead_hours": 72,
-      "discharge_m3s": 10.6,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.5,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.69,
+      "stage_m": 531.68,
       "is_peak": false
     },
     {
       "hour": 73,
       "timestamp": "2026-11-28T19:00:00+00:00",
       "lead_hours": 73,
-      "discharge_m3s": 10.6,
-      "surface_runoff_m3s": 0.2,
+      "discharge_m3s": 10.5,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.69,
+      "stage_m": 531.68,
       "is_peak": false
     },
     {
       "hour": 74,
       "timestamp": "2026-11-28T20:00:00+00:00",
       "lead_hours": 74,
-      "discharge_m3s": 10.6,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.5,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.69,
+      "stage_m": 531.68,
       "is_peak": false
     },
     {
       "hour": 75,
       "timestamp": "2026-11-28T21:00:00+00:00",
       "lead_hours": 75,
-      "discharge_m3s": 10.6,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.5,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.69,
+      "stage_m": 531.68,
       "is_peak": false
     },
     {
       "hour": 76,
       "timestamp": "2026-11-28T22:00:00+00:00",
       "lead_hours": 76,
-      "discharge_m3s": 10.5,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.4,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.68,
+      "stage_m": 531.67,
       "is_peak": false
     },
     {
       "hour": 77,
       "timestamp": "2026-11-28T23:00:00+00:00",
       "lead_hours": 77,
-      "discharge_m3s": 10.5,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.4,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.68,
+      "stage_m": 531.67,
       "is_peak": false
     },
     {
       "hour": 78,
       "timestamp": "2026-11-29T00:00:00+00:00",
       "lead_hours": 78,
-      "discharge_m3s": 10.5,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.4,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.68,
+      "stage_m": 531.67,
       "is_peak": false
     },
     {
       "hour": 79,
       "timestamp": "2026-11-29T01:00:00+00:00",
       "lead_hours": 79,
-      "discharge_m3s": 10.5,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.4,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.68,
+      "stage_m": 531.67,
       "is_peak": false
     },
     {
       "hour": 80,
       "timestamp": "2026-11-29T02:00:00+00:00",
       "lead_hours": 80,
-      "discharge_m3s": 10.4,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.3,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.67,
+      "stage_m": 531.66,
       "is_peak": false
     },
     {
       "hour": 81,
       "timestamp": "2026-11-29T03:00:00+00:00",
       "lead_hours": 81,
-      "discharge_m3s": 10.4,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.3,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.67,
+      "stage_m": 531.66,
       "is_peak": false
     },
     {
       "hour": 82,
       "timestamp": "2026-11-29T04:00:00+00:00",
       "lead_hours": 82,
-      "discharge_m3s": 10.4,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.3,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.67,
+      "stage_m": 531.66,
       "is_peak": false
     },
     {
       "hour": 83,
       "timestamp": "2026-11-29T05:00:00+00:00",
       "lead_hours": 83,
-      "discharge_m3s": 10.4,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.3,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.67,
+      "stage_m": 531.66,
       "is_peak": false
     },
     {
       "hour": 84,
       "timestamp": "2026-11-29T06:00:00+00:00",
       "lead_hours": 84,
-      "discharge_m3s": 10.4,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.2,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.67,
+      "stage_m": 531.65,
       "is_peak": false
     },
     {
       "hour": 85,
       "timestamp": "2026-11-29T07:00:00+00:00",
       "lead_hours": 85,
-      "discharge_m3s": 10.3,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.2,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.66,
+      "stage_m": 531.65,
       "is_peak": false
     },
     {
       "hour": 86,
       "timestamp": "2026-11-29T08:00:00+00:00",
       "lead_hours": 86,
-      "discharge_m3s": 10.3,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.2,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.66,
+      "stage_m": 531.65,
       "is_peak": false
     },
     {
       "hour": 87,
       "timestamp": "2026-11-29T09:00:00+00:00",
       "lead_hours": 87,
-      "discharge_m3s": 10.3,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.2,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.66,
+      "stage_m": 531.65,
       "is_peak": false
     },
     {
       "hour": 88,
       "timestamp": "2026-11-29T10:00:00+00:00",
       "lead_hours": 88,
-      "discharge_m3s": 10.3,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.2,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.66,
+      "stage_m": 531.65,
       "is_peak": false
     },
     {
       "hour": 89,
       "timestamp": "2026-11-29T11:00:00+00:00",
       "lead_hours": 89,
-      "discharge_m3s": 10.3,
-      "surface_runoff_m3s": 0.1,
+      "discharge_m3s": 10.1,
+      "surface_runoff_m3s": 0.0,
       "baseflow_m3s": 12.1,
-      "stage_m": 531.66,
+      "stage_m": 531.63,
       "is_peak": false
     }
   ],
@@ -22706,16 +22706,16 @@
       {
         "forecast_time": "2026-11-27T17:00:00+00:00",
         "lead_hours": 47,
-        "stage_m": 531.75,
-        "discharge_m3s": 11.1,
+        "stage_m": 531.74,
+        "discharge_m3s": 11.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-27T18:00:00+00:00",
         "lead_hours": 48,
-        "stage_m": 531.75,
-        "discharge_m3s": 11.1,
+        "stage_m": 531.74,
+        "discharge_m3s": 11.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -22746,32 +22746,32 @@
       {
         "forecast_time": "2026-11-27T22:00:00+00:00",
         "lead_hours": 52,
-        "stage_m": 531.74,
-        "discharge_m3s": 11.0,
+        "stage_m": 531.72,
+        "discharge_m3s": 10.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-27T23:00:00+00:00",
         "lead_hours": 53,
-        "stage_m": 531.74,
-        "discharge_m3s": 11.0,
+        "stage_m": 531.72,
+        "discharge_m3s": 10.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T00:00:00+00:00",
         "lead_hours": 54,
-        "stage_m": 531.74,
-        "discharge_m3s": 11.0,
+        "stage_m": 531.72,
+        "discharge_m3s": 10.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T01:00:00+00:00",
         "lead_hours": 55,
-        "stage_m": 531.74,
-        "discharge_m3s": 11.0,
+        "stage_m": 531.72,
+        "discharge_m3s": 10.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -22786,264 +22786,264 @@
       {
         "forecast_time": "2026-11-28T03:00:00+00:00",
         "lead_hours": 57,
-        "stage_m": 531.72,
-        "discharge_m3s": 10.9,
+        "stage_m": 531.71,
+        "discharge_m3s": 10.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T04:00:00+00:00",
         "lead_hours": 58,
-        "stage_m": 531.72,
-        "discharge_m3s": 10.9,
+        "stage_m": 531.71,
+        "discharge_m3s": 10.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T05:00:00+00:00",
         "lead_hours": 59,
-        "stage_m": 531.72,
-        "discharge_m3s": 10.9,
+        "stage_m": 531.71,
+        "discharge_m3s": 10.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T06:00:00+00:00",
         "lead_hours": 60,
-        "stage_m": 531.72,
-        "discharge_m3s": 10.9,
+        "stage_m": 531.71,
+        "discharge_m3s": 10.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T07:00:00+00:00",
         "lead_hours": 61,
-        "stage_m": 531.72,
-        "discharge_m3s": 10.9,
+        "stage_m": 531.71,
+        "discharge_m3s": 10.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T08:00:00+00:00",
         "lead_hours": 62,
-        "stage_m": 531.72,
-        "discharge_m3s": 10.9,
+        "stage_m": 531.7,
+        "discharge_m3s": 10.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T09:00:00+00:00",
         "lead_hours": 63,
-        "stage_m": 531.71,
-        "discharge_m3s": 10.8,
+        "stage_m": 531.7,
+        "discharge_m3s": 10.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T10:00:00+00:00",
         "lead_hours": 64,
-        "stage_m": 531.71,
-        "discharge_m3s": 10.8,
+        "stage_m": 531.7,
+        "discharge_m3s": 10.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T11:00:00+00:00",
         "lead_hours": 65,
-        "stage_m": 531.71,
-        "discharge_m3s": 10.8,
+        "stage_m": 531.7,
+        "discharge_m3s": 10.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T12:00:00+00:00",
         "lead_hours": 66,
-        "stage_m": 531.71,
-        "discharge_m3s": 10.8,
+        "stage_m": 531.7,
+        "discharge_m3s": 10.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T13:00:00+00:00",
         "lead_hours": 67,
-        "stage_m": 531.71,
-        "discharge_m3s": 10.8,
+        "stage_m": 531.69,
+        "discharge_m3s": 10.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T14:00:00+00:00",
         "lead_hours": 68,
-        "stage_m": 531.7,
-        "discharge_m3s": 10.7,
+        "stage_m": 531.69,
+        "discharge_m3s": 10.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T15:00:00+00:00",
         "lead_hours": 69,
-        "stage_m": 531.7,
-        "discharge_m3s": 10.7,
+        "stage_m": 531.69,
+        "discharge_m3s": 10.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T16:00:00+00:00",
         "lead_hours": 70,
-        "stage_m": 531.7,
-        "discharge_m3s": 10.7,
+        "stage_m": 531.69,
+        "discharge_m3s": 10.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T17:00:00+00:00",
         "lead_hours": 71,
-        "stage_m": 531.7,
-        "discharge_m3s": 10.7,
+        "stage_m": 531.68,
+        "discharge_m3s": 10.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T18:00:00+00:00",
         "lead_hours": 72,
-        "stage_m": 531.69,
-        "discharge_m3s": 10.6,
+        "stage_m": 531.68,
+        "discharge_m3s": 10.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T19:00:00+00:00",
         "lead_hours": 73,
-        "stage_m": 531.69,
-        "discharge_m3s": 10.6,
+        "stage_m": 531.68,
+        "discharge_m3s": 10.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T20:00:00+00:00",
         "lead_hours": 74,
-        "stage_m": 531.69,
-        "discharge_m3s": 10.6,
+        "stage_m": 531.68,
+        "discharge_m3s": 10.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T21:00:00+00:00",
         "lead_hours": 75,
-        "stage_m": 531.69,
-        "discharge_m3s": 10.6,
+        "stage_m": 531.68,
+        "discharge_m3s": 10.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T22:00:00+00:00",
         "lead_hours": 76,
-        "stage_m": 531.68,
-        "discharge_m3s": 10.5,
+        "stage_m": 531.67,
+        "discharge_m3s": 10.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T23:00:00+00:00",
         "lead_hours": 77,
-        "stage_m": 531.68,
-        "discharge_m3s": 10.5,
+        "stage_m": 531.67,
+        "discharge_m3s": 10.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T00:00:00+00:00",
         "lead_hours": 78,
-        "stage_m": 531.68,
-        "discharge_m3s": 10.5,
+        "stage_m": 531.67,
+        "discharge_m3s": 10.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T01:00:00+00:00",
         "lead_hours": 79,
-        "stage_m": 531.68,
-        "discharge_m3s": 10.5,
+        "stage_m": 531.67,
+        "discharge_m3s": 10.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T02:00:00+00:00",
         "lead_hours": 80,
-        "stage_m": 531.67,
-        "discharge_m3s": 10.4,
+        "stage_m": 531.66,
+        "discharge_m3s": 10.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T03:00:00+00:00",
         "lead_hours": 81,
-        "stage_m": 531.67,
-        "discharge_m3s": 10.4,
+        "stage_m": 531.66,
+        "discharge_m3s": 10.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T04:00:00+00:00",
         "lead_hours": 82,
-        "stage_m": 531.67,
-        "discharge_m3s": 10.4,
+        "stage_m": 531.66,
+        "discharge_m3s": 10.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T05:00:00+00:00",
         "lead_hours": 83,
-        "stage_m": 531.67,
-        "discharge_m3s": 10.4,
+        "stage_m": 531.66,
+        "discharge_m3s": 10.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T06:00:00+00:00",
         "lead_hours": 84,
-        "stage_m": 531.67,
-        "discharge_m3s": 10.4,
+        "stage_m": 531.65,
+        "discharge_m3s": 10.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T07:00:00+00:00",
         "lead_hours": 85,
-        "stage_m": 531.66,
-        "discharge_m3s": 10.3,
+        "stage_m": 531.65,
+        "discharge_m3s": 10.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T08:00:00+00:00",
         "lead_hours": 86,
-        "stage_m": 531.66,
-        "discharge_m3s": 10.3,
+        "stage_m": 531.65,
+        "discharge_m3s": 10.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T09:00:00+00:00",
         "lead_hours": 87,
-        "stage_m": 531.66,
-        "discharge_m3s": 10.3,
+        "stage_m": 531.65,
+        "discharge_m3s": 10.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T10:00:00+00:00",
         "lead_hours": 88,
-        "stage_m": 531.66,
-        "discharge_m3s": 10.3,
+        "stage_m": 531.65,
+        "discharge_m3s": 10.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T11:00:00+00:00",
         "lead_hours": 89,
-        "stage_m": 531.66,
-        "discharge_m3s": 10.3,
+        "stage_m": 531.63,
+        "discharge_m3s": 10.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       }
@@ -23481,16 +23481,16 @@
       {
         "forecast_time": "2026-11-27T17:00:00+00:00",
         "lead_hours": 47,
-        "stage_m": 532.39,
-        "discharge_m3s": 11.1,
+        "stage_m": 532.38,
+        "discharge_m3s": 11.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-27T18:00:00+00:00",
         "lead_hours": 48,
-        "stage_m": 532.39,
-        "discharge_m3s": 11.1,
+        "stage_m": 532.38,
+        "discharge_m3s": 11.0,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -23521,32 +23521,32 @@
       {
         "forecast_time": "2026-11-27T22:00:00+00:00",
         "lead_hours": 52,
-        "stage_m": 532.38,
-        "discharge_m3s": 11.0,
+        "stage_m": 532.37,
+        "discharge_m3s": 10.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-27T23:00:00+00:00",
         "lead_hours": 53,
-        "stage_m": 532.38,
-        "discharge_m3s": 11.0,
+        "stage_m": 532.37,
+        "discharge_m3s": 10.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T00:00:00+00:00",
         "lead_hours": 54,
-        "stage_m": 532.38,
-        "discharge_m3s": 11.0,
+        "stage_m": 532.37,
+        "discharge_m3s": 10.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T01:00:00+00:00",
         "lead_hours": 55,
-        "stage_m": 532.38,
-        "discharge_m3s": 11.0,
+        "stage_m": 532.37,
+        "discharge_m3s": 10.9,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
@@ -23561,264 +23561,264 @@
       {
         "forecast_time": "2026-11-28T03:00:00+00:00",
         "lead_hours": 57,
-        "stage_m": 532.37,
-        "discharge_m3s": 10.9,
+        "stage_m": 532.36,
+        "discharge_m3s": 10.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T04:00:00+00:00",
         "lead_hours": 58,
-        "stage_m": 532.37,
-        "discharge_m3s": 10.9,
+        "stage_m": 532.36,
+        "discharge_m3s": 10.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T05:00:00+00:00",
         "lead_hours": 59,
-        "stage_m": 532.37,
-        "discharge_m3s": 10.9,
+        "stage_m": 532.36,
+        "discharge_m3s": 10.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T06:00:00+00:00",
         "lead_hours": 60,
-        "stage_m": 532.37,
-        "discharge_m3s": 10.9,
+        "stage_m": 532.36,
+        "discharge_m3s": 10.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T07:00:00+00:00",
         "lead_hours": 61,
-        "stage_m": 532.37,
-        "discharge_m3s": 10.9,
+        "stage_m": 532.36,
+        "discharge_m3s": 10.8,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T08:00:00+00:00",
         "lead_hours": 62,
-        "stage_m": 532.37,
-        "discharge_m3s": 10.9,
+        "stage_m": 532.35,
+        "discharge_m3s": 10.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T09:00:00+00:00",
         "lead_hours": 63,
-        "stage_m": 532.36,
-        "discharge_m3s": 10.8,
+        "stage_m": 532.35,
+        "discharge_m3s": 10.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T10:00:00+00:00",
         "lead_hours": 64,
-        "stage_m": 532.36,
-        "discharge_m3s": 10.8,
+        "stage_m": 532.35,
+        "discharge_m3s": 10.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T11:00:00+00:00",
         "lead_hours": 65,
-        "stage_m": 532.36,
-        "discharge_m3s": 10.8,
+        "stage_m": 532.35,
+        "discharge_m3s": 10.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T12:00:00+00:00",
         "lead_hours": 66,
-        "stage_m": 532.36,
-        "discharge_m3s": 10.8,
+        "stage_m": 532.35,
+        "discharge_m3s": 10.7,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T13:00:00+00:00",
         "lead_hours": 67,
-        "stage_m": 532.36,
-        "discharge_m3s": 10.8,
+        "stage_m": 532.34,
+        "discharge_m3s": 10.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T14:00:00+00:00",
         "lead_hours": 68,
-        "stage_m": 532.35,
-        "discharge_m3s": 10.7,
+        "stage_m": 532.34,
+        "discharge_m3s": 10.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T15:00:00+00:00",
         "lead_hours": 69,
-        "stage_m": 532.35,
-        "discharge_m3s": 10.7,
+        "stage_m": 532.34,
+        "discharge_m3s": 10.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T16:00:00+00:00",
         "lead_hours": 70,
-        "stage_m": 532.35,
-        "discharge_m3s": 10.7,
+        "stage_m": 532.34,
+        "discharge_m3s": 10.6,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T17:00:00+00:00",
         "lead_hours": 71,
-        "stage_m": 532.35,
-        "discharge_m3s": 10.7,
+        "stage_m": 532.33,
+        "discharge_m3s": 10.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T18:00:00+00:00",
         "lead_hours": 72,
-        "stage_m": 532.34,
-        "discharge_m3s": 10.6,
+        "stage_m": 532.33,
+        "discharge_m3s": 10.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T19:00:00+00:00",
         "lead_hours": 73,
-        "stage_m": 532.34,
-        "discharge_m3s": 10.6,
+        "stage_m": 532.33,
+        "discharge_m3s": 10.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T20:00:00+00:00",
         "lead_hours": 74,
-        "stage_m": 532.34,
-        "discharge_m3s": 10.6,
+        "stage_m": 532.33,
+        "discharge_m3s": 10.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T21:00:00+00:00",
         "lead_hours": 75,
-        "stage_m": 532.34,
-        "discharge_m3s": 10.6,
+        "stage_m": 532.33,
+        "discharge_m3s": 10.5,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T22:00:00+00:00",
         "lead_hours": 76,
-        "stage_m": 532.33,
-        "discharge_m3s": 10.5,
+        "stage_m": 532.32,
+        "discharge_m3s": 10.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-28T23:00:00+00:00",
         "lead_hours": 77,
-        "stage_m": 532.33,
-        "discharge_m3s": 10.5,
+        "stage_m": 532.32,
+        "discharge_m3s": 10.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T00:00:00+00:00",
         "lead_hours": 78,
-        "stage_m": 532.33,
-        "discharge_m3s": 10.5,
+        "stage_m": 532.32,
+        "discharge_m3s": 10.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T01:00:00+00:00",
         "lead_hours": 79,
-        "stage_m": 532.33,
-        "discharge_m3s": 10.5,
+        "stage_m": 532.32,
+        "discharge_m3s": 10.4,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T02:00:00+00:00",
         "lead_hours": 80,
-        "stage_m": 532.32,
-        "discharge_m3s": 10.4,
+        "stage_m": 532.31,
+        "discharge_m3s": 10.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T03:00:00+00:00",
         "lead_hours": 81,
-        "stage_m": 532.32,
-        "discharge_m3s": 10.4,
+        "stage_m": 532.31,
+        "discharge_m3s": 10.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T04:00:00+00:00",
         "lead_hours": 82,
-        "stage_m": 532.32,
-        "discharge_m3s": 10.4,
+        "stage_m": 532.31,
+        "discharge_m3s": 10.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T05:00:00+00:00",
         "lead_hours": 83,
-        "stage_m": 532.32,
-        "discharge_m3s": 10.4,
+        "stage_m": 532.31,
+        "discharge_m3s": 10.3,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T06:00:00+00:00",
         "lead_hours": 84,
-        "stage_m": 532.32,
-        "discharge_m3s": 10.4,
+        "stage_m": 532.29,
+        "discharge_m3s": 10.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T07:00:00+00:00",
         "lead_hours": 85,
-        "stage_m": 532.31,
-        "discharge_m3s": 10.3,
+        "stage_m": 532.29,
+        "discharge_m3s": 10.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T08:00:00+00:00",
         "lead_hours": 86,
-        "stage_m": 532.31,
-        "discharge_m3s": 10.3,
+        "stage_m": 532.29,
+        "discharge_m3s": 10.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T09:00:00+00:00",
         "lead_hours": 87,
-        "stage_m": 532.31,
-        "discharge_m3s": 10.3,
+        "stage_m": 532.29,
+        "discharge_m3s": 10.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T10:00:00+00:00",
         "lead_hours": 88,
-        "stage_m": 532.31,
-        "discharge_m3s": 10.3,
+        "stage_m": 532.29,
+        "discharge_m3s": 10.2,
         "alert_level": "NORMAL",
         "is_above_danger": false
       },
       {
         "forecast_time": "2026-11-29T11:00:00+00:00",
         "lead_hours": 89,
-        "stage_m": 532.31,
-        "discharge_m3s": 10.3,
+        "stage_m": 532.28,
+        "discharge_m3s": 10.1,
         "alert_level": "NORMAL",
         "is_above_danger": false
       }
@@ -23877,7 +23877,7 @@
         "step_number": 1,
         "step_name": "01. Open-Meteo 90-hr Forecast Download (18 Panchganga Stations)",
         "status": "success",
-        "duration_seconds": 1.06
+        "duration_seconds": 0.46
       },
       {
         "step_number": 2,
@@ -23889,29 +23889,29 @@
         "step_number": 3,
         "step_name": "02b. Soil-Moisture Snapshot (fetch-and-log only, never used in decisions)",
         "status": "success",
-        "duration_seconds": 1.96
+        "duration_seconds": 2.27
       },
       {
         "step_number": 4,
         "step_name": "03. Live Telemetry Fetch & IoT Sync",
         "status": "success",
-        "duration_seconds": 0.19
+        "duration_seconds": 0.1
       },
       {
         "step_number": 5,
         "step_name": "04. Real-Time Calibration Assessment (physics-informed, gated ML)",
         "status": "success",
-        "duration_seconds": 0.74
+        "duration_seconds": 0.46
       },
       {
         "step_number": 6,
         "step_name": "05. HEC-HMS 4.13 Hydrologic Simulation",
         "status": "success",
-        "duration_seconds": 0.03
+        "duration_seconds": 0.08
       }
     ],
     "metrics": {
-      "avg_duration_s": 4.0,
+      "avg_duration_s": 3.4,
       "success_rate_pct": 100.0
     }
   },
@@ -23921,12 +23921,12 @@
       "run_id": "CYC_20261125_18z",
       "status": "completed",
       "start_time": "2026-11-25T18:00:00+00:00",
-      "end_time": "2026-11-25T18:47:42.662912+00:00",
-      "duration_seconds": 4.0,
-      "total_rainfall_mm": 1.0,
+      "end_time": "2026-11-25T23:14:17.343022+00:00",
+      "duration_seconds": 3.4,
+      "total_rainfall_mm": 0.5,
       "peak_discharge_m3s": 12.1,
       "peak_stage_m": 531.85,
-      "surface_soil_moisture_0_7cm": 0.2602,
+      "surface_soil_moisture_0_7cm": 0.263,
       "alert_level": "NORMAL",
       "spearman_rho": null,
       "nse": null,
@@ -23937,54 +23937,54 @@
   },
   "logs": [
     {
-      "t": "18:47:38",
+      "t": "23:14:13",
       "lv": "INFO",
       "msg": "Forecast cycle CYC_20261125_18z initiated across 18 Panchganga stations"
     },
     {
-      "t": "18:47:39",
+      "t": "23:14:14",
       "lv": "INFO",
       "msg": "Open-Meteo 90-hr precipitation forecast downloaded successfully"
     },
     {
-      "t": "18:47:39",
+      "t": "23:14:14",
       "lv": "INFO",
       "msg": "Dynamic subbasin selector evaluated: S1\u2192Karveer, S2\u2192Balinga, S6\u2192Gaganbawda"
     },
     {
-      "t": "18:47:39",
+      "t": "23:14:14",
       "lv": "INFO",
       "msg": "HEC-DSS hyetograph time-series generated: //<GAGE>/PRECIP-INC/<date>/1HOUR/GAGE/"
     },
     {
-      "t": "18:47:41",
+      "t": "23:14:16",
       "lv": "INFO",
       "msg": "Soil-moisture snapshot captured for 9 subbasins (S1, S2, S3, S4, S5, S6, S7, S8, S9)"
     },
     {
-      "t": "18:47:41",
+      "t": "23:14:16",
       "lv": "INFO",
       "msg": "ThingSpeak Shivaji Live Ground Truth: Distance=57.40 ft -> Water Level=531.85 m MSL"
     },
     {
-      "t": "18:47:42",
+      "t": "23:14:17",
       "lv": "INFO",
-      "msg": "Hydrologic Calibration Baseline Stable: Within tolerances (\u0394t=+0.0h, signed=-0.03m, max=0.03m)"
+      "msg": "Hydrologic Calibration Baseline Stable: Within tolerances (\u0394t=+0.0h, signed=+0.00m, max=0.00m)"
     },
     {
-      "t": "18:47:42",
+      "t": "23:14:17",
       "lv": "INFO",
       "msg": "HEC-HMS 4.13 execution completed (CALIBRATED_RJKT): Peak Discharge 12.1 m\u00b3/s at T+0h in 14.8s"
     },
     {
-      "t": "18:47:42",
+      "t": "23:14:17",
       "lv": "INFO",
       "msg": "Model accuracy evaluated: Spearman \u03c1=N/A, NSE=N/A [ACCUMULATING_TELEMETRY]"
     }
   ],
   "validation": {
     "cycle_id": "CYC_20261125_18z",
-    "validation_timestamp": "2026-11-25T18:48:09.956837+00:00",
+    "validation_timestamp": "2026-11-25T23:14:43.213849+00:00",
     "sensor_source": "ThingSpeak Channel 3424513 (Shivaji Bridge Ultrasonic)",
     "sensor_datum_msl": 549.35,
     "reach_metadata": {
@@ -24651,8 +24651,8 @@
       {
         "lead_hours": 47,
         "timestamp": "2026-11-27T17:00:00+00:00",
-        "predicted_stage_m": 531.75,
-        "predicted_discharge_m3s": 11.1,
+        "predicted_stage_m": 531.74,
+        "predicted_discharge_m3s": 11.0,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24664,8 +24664,8 @@
       {
         "lead_hours": 48,
         "timestamp": "2026-11-27T18:00:00+00:00",
-        "predicted_stage_m": 531.75,
-        "predicted_discharge_m3s": 11.1,
+        "predicted_stage_m": 531.74,
+        "predicted_discharge_m3s": 11.0,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24716,8 +24716,8 @@
       {
         "lead_hours": 52,
         "timestamp": "2026-11-27T22:00:00+00:00",
-        "predicted_stage_m": 531.74,
-        "predicted_discharge_m3s": 11.0,
+        "predicted_stage_m": 531.72,
+        "predicted_discharge_m3s": 10.9,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24729,8 +24729,8 @@
       {
         "lead_hours": 53,
         "timestamp": "2026-11-27T23:00:00+00:00",
-        "predicted_stage_m": 531.74,
-        "predicted_discharge_m3s": 11.0,
+        "predicted_stage_m": 531.72,
+        "predicted_discharge_m3s": 10.9,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24742,8 +24742,8 @@
       {
         "lead_hours": 54,
         "timestamp": "2026-11-28T00:00:00+00:00",
-        "predicted_stage_m": 531.74,
-        "predicted_discharge_m3s": 11.0,
+        "predicted_stage_m": 531.72,
+        "predicted_discharge_m3s": 10.9,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24755,8 +24755,8 @@
       {
         "lead_hours": 55,
         "timestamp": "2026-11-28T01:00:00+00:00",
-        "predicted_stage_m": 531.74,
-        "predicted_discharge_m3s": 11.0,
+        "predicted_stage_m": 531.72,
+        "predicted_discharge_m3s": 10.9,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24781,8 +24781,8 @@
       {
         "lead_hours": 57,
         "timestamp": "2026-11-28T03:00:00+00:00",
-        "predicted_stage_m": 531.72,
-        "predicted_discharge_m3s": 10.9,
+        "predicted_stage_m": 531.71,
+        "predicted_discharge_m3s": 10.8,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24794,8 +24794,8 @@
       {
         "lead_hours": 58,
         "timestamp": "2026-11-28T04:00:00+00:00",
-        "predicted_stage_m": 531.72,
-        "predicted_discharge_m3s": 10.9,
+        "predicted_stage_m": 531.71,
+        "predicted_discharge_m3s": 10.8,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24807,8 +24807,8 @@
       {
         "lead_hours": 59,
         "timestamp": "2026-11-28T05:00:00+00:00",
-        "predicted_stage_m": 531.72,
-        "predicted_discharge_m3s": 10.9,
+        "predicted_stage_m": 531.71,
+        "predicted_discharge_m3s": 10.8,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24820,8 +24820,8 @@
       {
         "lead_hours": 60,
         "timestamp": "2026-11-28T06:00:00+00:00",
-        "predicted_stage_m": 531.72,
-        "predicted_discharge_m3s": 10.9,
+        "predicted_stage_m": 531.71,
+        "predicted_discharge_m3s": 10.8,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24833,8 +24833,8 @@
       {
         "lead_hours": 61,
         "timestamp": "2026-11-28T07:00:00+00:00",
-        "predicted_stage_m": 531.72,
-        "predicted_discharge_m3s": 10.9,
+        "predicted_stage_m": 531.71,
+        "predicted_discharge_m3s": 10.8,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24846,8 +24846,8 @@
       {
         "lead_hours": 62,
         "timestamp": "2026-11-28T08:00:00+00:00",
-        "predicted_stage_m": 531.72,
-        "predicted_discharge_m3s": 10.9,
+        "predicted_stage_m": 531.7,
+        "predicted_discharge_m3s": 10.7,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24859,8 +24859,8 @@
       {
         "lead_hours": 63,
         "timestamp": "2026-11-28T09:00:00+00:00",
-        "predicted_stage_m": 531.71,
-        "predicted_discharge_m3s": 10.8,
+        "predicted_stage_m": 531.7,
+        "predicted_discharge_m3s": 10.7,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24872,8 +24872,8 @@
       {
         "lead_hours": 64,
         "timestamp": "2026-11-28T10:00:00+00:00",
-        "predicted_stage_m": 531.71,
-        "predicted_discharge_m3s": 10.8,
+        "predicted_stage_m": 531.7,
+        "predicted_discharge_m3s": 10.7,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24885,8 +24885,8 @@
       {
         "lead_hours": 65,
         "timestamp": "2026-11-28T11:00:00+00:00",
-        "predicted_stage_m": 531.71,
-        "predicted_discharge_m3s": 10.8,
+        "predicted_stage_m": 531.7,
+        "predicted_discharge_m3s": 10.7,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24898,8 +24898,8 @@
       {
         "lead_hours": 66,
         "timestamp": "2026-11-28T12:00:00+00:00",
-        "predicted_stage_m": 531.71,
-        "predicted_discharge_m3s": 10.8,
+        "predicted_stage_m": 531.7,
+        "predicted_discharge_m3s": 10.7,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24911,8 +24911,8 @@
       {
         "lead_hours": 67,
         "timestamp": "2026-11-28T13:00:00+00:00",
-        "predicted_stage_m": 531.71,
-        "predicted_discharge_m3s": 10.8,
+        "predicted_stage_m": 531.69,
+        "predicted_discharge_m3s": 10.6,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24924,8 +24924,8 @@
       {
         "lead_hours": 68,
         "timestamp": "2026-11-28T14:00:00+00:00",
-        "predicted_stage_m": 531.7,
-        "predicted_discharge_m3s": 10.7,
+        "predicted_stage_m": 531.69,
+        "predicted_discharge_m3s": 10.6,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24937,8 +24937,8 @@
       {
         "lead_hours": 69,
         "timestamp": "2026-11-28T15:00:00+00:00",
-        "predicted_stage_m": 531.7,
-        "predicted_discharge_m3s": 10.7,
+        "predicted_stage_m": 531.69,
+        "predicted_discharge_m3s": 10.6,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24950,8 +24950,8 @@
       {
         "lead_hours": 70,
         "timestamp": "2026-11-28T16:00:00+00:00",
-        "predicted_stage_m": 531.7,
-        "predicted_discharge_m3s": 10.7,
+        "predicted_stage_m": 531.69,
+        "predicted_discharge_m3s": 10.6,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24963,8 +24963,8 @@
       {
         "lead_hours": 71,
         "timestamp": "2026-11-28T17:00:00+00:00",
-        "predicted_stage_m": 531.7,
-        "predicted_discharge_m3s": 10.7,
+        "predicted_stage_m": 531.68,
+        "predicted_discharge_m3s": 10.5,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24976,8 +24976,8 @@
       {
         "lead_hours": 72,
         "timestamp": "2026-11-28T18:00:00+00:00",
-        "predicted_stage_m": 531.69,
-        "predicted_discharge_m3s": 10.6,
+        "predicted_stage_m": 531.68,
+        "predicted_discharge_m3s": 10.5,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -24989,8 +24989,8 @@
       {
         "lead_hours": 73,
         "timestamp": "2026-11-28T19:00:00+00:00",
-        "predicted_stage_m": 531.69,
-        "predicted_discharge_m3s": 10.6,
+        "predicted_stage_m": 531.68,
+        "predicted_discharge_m3s": 10.5,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25002,8 +25002,8 @@
       {
         "lead_hours": 74,
         "timestamp": "2026-11-28T20:00:00+00:00",
-        "predicted_stage_m": 531.69,
-        "predicted_discharge_m3s": 10.6,
+        "predicted_stage_m": 531.68,
+        "predicted_discharge_m3s": 10.5,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25015,8 +25015,8 @@
       {
         "lead_hours": 75,
         "timestamp": "2026-11-28T21:00:00+00:00",
-        "predicted_stage_m": 531.69,
-        "predicted_discharge_m3s": 10.6,
+        "predicted_stage_m": 531.68,
+        "predicted_discharge_m3s": 10.5,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25028,8 +25028,8 @@
       {
         "lead_hours": 76,
         "timestamp": "2026-11-28T22:00:00+00:00",
-        "predicted_stage_m": 531.68,
-        "predicted_discharge_m3s": 10.5,
+        "predicted_stage_m": 531.67,
+        "predicted_discharge_m3s": 10.4,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25041,8 +25041,8 @@
       {
         "lead_hours": 77,
         "timestamp": "2026-11-28T23:00:00+00:00",
-        "predicted_stage_m": 531.68,
-        "predicted_discharge_m3s": 10.5,
+        "predicted_stage_m": 531.67,
+        "predicted_discharge_m3s": 10.4,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25054,8 +25054,8 @@
       {
         "lead_hours": 78,
         "timestamp": "2026-11-29T00:00:00+00:00",
-        "predicted_stage_m": 531.68,
-        "predicted_discharge_m3s": 10.5,
+        "predicted_stage_m": 531.67,
+        "predicted_discharge_m3s": 10.4,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25067,8 +25067,8 @@
       {
         "lead_hours": 79,
         "timestamp": "2026-11-29T01:00:00+00:00",
-        "predicted_stage_m": 531.68,
-        "predicted_discharge_m3s": 10.5,
+        "predicted_stage_m": 531.67,
+        "predicted_discharge_m3s": 10.4,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25080,8 +25080,8 @@
       {
         "lead_hours": 80,
         "timestamp": "2026-11-29T02:00:00+00:00",
-        "predicted_stage_m": 531.67,
-        "predicted_discharge_m3s": 10.4,
+        "predicted_stage_m": 531.66,
+        "predicted_discharge_m3s": 10.3,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25093,8 +25093,8 @@
       {
         "lead_hours": 81,
         "timestamp": "2026-11-29T03:00:00+00:00",
-        "predicted_stage_m": 531.67,
-        "predicted_discharge_m3s": 10.4,
+        "predicted_stage_m": 531.66,
+        "predicted_discharge_m3s": 10.3,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25106,8 +25106,8 @@
       {
         "lead_hours": 82,
         "timestamp": "2026-11-29T04:00:00+00:00",
-        "predicted_stage_m": 531.67,
-        "predicted_discharge_m3s": 10.4,
+        "predicted_stage_m": 531.66,
+        "predicted_discharge_m3s": 10.3,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25119,8 +25119,8 @@
       {
         "lead_hours": 83,
         "timestamp": "2026-11-29T05:00:00+00:00",
-        "predicted_stage_m": 531.67,
-        "predicted_discharge_m3s": 10.4,
+        "predicted_stage_m": 531.66,
+        "predicted_discharge_m3s": 10.3,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25132,8 +25132,8 @@
       {
         "lead_hours": 84,
         "timestamp": "2026-11-29T06:00:00+00:00",
-        "predicted_stage_m": 531.67,
-        "predicted_discharge_m3s": 10.4,
+        "predicted_stage_m": 531.65,
+        "predicted_discharge_m3s": 10.2,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25145,8 +25145,8 @@
       {
         "lead_hours": 85,
         "timestamp": "2026-11-29T07:00:00+00:00",
-        "predicted_stage_m": 531.66,
-        "predicted_discharge_m3s": 10.3,
+        "predicted_stage_m": 531.65,
+        "predicted_discharge_m3s": 10.2,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25158,8 +25158,8 @@
       {
         "lead_hours": 86,
         "timestamp": "2026-11-29T08:00:00+00:00",
-        "predicted_stage_m": 531.66,
-        "predicted_discharge_m3s": 10.3,
+        "predicted_stage_m": 531.65,
+        "predicted_discharge_m3s": 10.2,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25171,8 +25171,8 @@
       {
         "lead_hours": 87,
         "timestamp": "2026-11-29T09:00:00+00:00",
-        "predicted_stage_m": 531.66,
-        "predicted_discharge_m3s": 10.3,
+        "predicted_stage_m": 531.65,
+        "predicted_discharge_m3s": 10.2,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25184,8 +25184,8 @@
       {
         "lead_hours": 88,
         "timestamp": "2026-11-29T10:00:00+00:00",
-        "predicted_stage_m": 531.66,
-        "predicted_discharge_m3s": 10.3,
+        "predicted_stage_m": 531.65,
+        "predicted_discharge_m3s": 10.2,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25197,8 +25197,8 @@
       {
         "lead_hours": 89,
         "timestamp": "2026-11-29T11:00:00+00:00",
-        "predicted_stage_m": 531.66,
-        "predicted_discharge_m3s": 10.3,
+        "predicted_stage_m": 531.63,
+        "predicted_discharge_m3s": 10.1,
         "observed_stage_m": null,
         "observed_distance_ft": null,
         "observed_discharge_m3s": null,
@@ -25215,11 +25215,11 @@
       "run_date": "25 Nov 2026",
       "cycle_time": "18z",
       "start_time": "2026-11-25T18:00:00+00:00",
-      "duration_seconds": 4.0,
+      "duration_seconds": 3.4,
       "peak_discharge_m3s": 12.1,
       "lead_hours_to_peak": 0,
       "total_volume_mcm": 3.6,
-      "total_rainfall_mm": 2.1,
+      "total_rainfall_mm": 1.7,
       "shivaji_peak_stage_m": 531.85,
       "rajaram_peak_stage_m": 532.5,
       "alert_level": "NORMAL",
@@ -25480,7 +25480,7 @@
       "spearman_rho": null,
       "nse": null,
       "rmse": null,
-      "lifecycle_status": "PENDING",
+      "lifecycle_status": "AWAITING_OBSERVATIONS",
       "verified_hours": 0
     },
     {
@@ -25522,7 +25522,7 @@
       "spearman_rho": null,
       "nse": null,
       "rmse": null,
-      "lifecycle_status": "AWAITING_OBSERVATIONS",
+      "lifecycle_status": "OBSERVATION_GAP",
       "verified_hours": 0
     },
     {
@@ -26876,8 +26876,8 @@
     {
       "lead_hours": 47,
       "timestamp": "2026-11-27T17:00:00+00:00",
-      "predicted_stage_m": 531.75,
-      "predicted_discharge_m3s": 11.1,
+      "predicted_stage_m": 531.74,
+      "predicted_discharge_m3s": 11.0,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -26889,8 +26889,8 @@
     {
       "lead_hours": 48,
       "timestamp": "2026-11-27T18:00:00+00:00",
-      "predicted_stage_m": 531.75,
-      "predicted_discharge_m3s": 11.1,
+      "predicted_stage_m": 531.74,
+      "predicted_discharge_m3s": 11.0,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -26941,8 +26941,8 @@
     {
       "lead_hours": 52,
       "timestamp": "2026-11-27T22:00:00+00:00",
-      "predicted_stage_m": 531.74,
-      "predicted_discharge_m3s": 11.0,
+      "predicted_stage_m": 531.72,
+      "predicted_discharge_m3s": 10.9,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -26954,8 +26954,8 @@
     {
       "lead_hours": 53,
       "timestamp": "2026-11-27T23:00:00+00:00",
-      "predicted_stage_m": 531.74,
-      "predicted_discharge_m3s": 11.0,
+      "predicted_stage_m": 531.72,
+      "predicted_discharge_m3s": 10.9,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -26967,8 +26967,8 @@
     {
       "lead_hours": 54,
       "timestamp": "2026-11-28T00:00:00+00:00",
-      "predicted_stage_m": 531.74,
-      "predicted_discharge_m3s": 11.0,
+      "predicted_stage_m": 531.72,
+      "predicted_discharge_m3s": 10.9,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -26980,8 +26980,8 @@
     {
       "lead_hours": 55,
       "timestamp": "2026-11-28T01:00:00+00:00",
-      "predicted_stage_m": 531.74,
-      "predicted_discharge_m3s": 11.0,
+      "predicted_stage_m": 531.72,
+      "predicted_discharge_m3s": 10.9,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27006,8 +27006,8 @@
     {
       "lead_hours": 57,
       "timestamp": "2026-11-28T03:00:00+00:00",
-      "predicted_stage_m": 531.72,
-      "predicted_discharge_m3s": 10.9,
+      "predicted_stage_m": 531.71,
+      "predicted_discharge_m3s": 10.8,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27019,8 +27019,8 @@
     {
       "lead_hours": 58,
       "timestamp": "2026-11-28T04:00:00+00:00",
-      "predicted_stage_m": 531.72,
-      "predicted_discharge_m3s": 10.9,
+      "predicted_stage_m": 531.71,
+      "predicted_discharge_m3s": 10.8,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27032,8 +27032,8 @@
     {
       "lead_hours": 59,
       "timestamp": "2026-11-28T05:00:00+00:00",
-      "predicted_stage_m": 531.72,
-      "predicted_discharge_m3s": 10.9,
+      "predicted_stage_m": 531.71,
+      "predicted_discharge_m3s": 10.8,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27045,8 +27045,8 @@
     {
       "lead_hours": 60,
       "timestamp": "2026-11-28T06:00:00+00:00",
-      "predicted_stage_m": 531.72,
-      "predicted_discharge_m3s": 10.9,
+      "predicted_stage_m": 531.71,
+      "predicted_discharge_m3s": 10.8,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27058,8 +27058,8 @@
     {
       "lead_hours": 61,
       "timestamp": "2026-11-28T07:00:00+00:00",
-      "predicted_stage_m": 531.72,
-      "predicted_discharge_m3s": 10.9,
+      "predicted_stage_m": 531.71,
+      "predicted_discharge_m3s": 10.8,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27071,8 +27071,8 @@
     {
       "lead_hours": 62,
       "timestamp": "2026-11-28T08:00:00+00:00",
-      "predicted_stage_m": 531.72,
-      "predicted_discharge_m3s": 10.9,
+      "predicted_stage_m": 531.7,
+      "predicted_discharge_m3s": 10.7,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27084,8 +27084,8 @@
     {
       "lead_hours": 63,
       "timestamp": "2026-11-28T09:00:00+00:00",
-      "predicted_stage_m": 531.71,
-      "predicted_discharge_m3s": 10.8,
+      "predicted_stage_m": 531.7,
+      "predicted_discharge_m3s": 10.7,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27097,8 +27097,8 @@
     {
       "lead_hours": 64,
       "timestamp": "2026-11-28T10:00:00+00:00",
-      "predicted_stage_m": 531.71,
-      "predicted_discharge_m3s": 10.8,
+      "predicted_stage_m": 531.7,
+      "predicted_discharge_m3s": 10.7,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27110,8 +27110,8 @@
     {
       "lead_hours": 65,
       "timestamp": "2026-11-28T11:00:00+00:00",
-      "predicted_stage_m": 531.71,
-      "predicted_discharge_m3s": 10.8,
+      "predicted_stage_m": 531.7,
+      "predicted_discharge_m3s": 10.7,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27123,8 +27123,8 @@
     {
       "lead_hours": 66,
       "timestamp": "2026-11-28T12:00:00+00:00",
-      "predicted_stage_m": 531.71,
-      "predicted_discharge_m3s": 10.8,
+      "predicted_stage_m": 531.7,
+      "predicted_discharge_m3s": 10.7,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27136,8 +27136,8 @@
     {
       "lead_hours": 67,
       "timestamp": "2026-11-28T13:00:00+00:00",
-      "predicted_stage_m": 531.71,
-      "predicted_discharge_m3s": 10.8,
+      "predicted_stage_m": 531.69,
+      "predicted_discharge_m3s": 10.6,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27149,8 +27149,8 @@
     {
       "lead_hours": 68,
       "timestamp": "2026-11-28T14:00:00+00:00",
-      "predicted_stage_m": 531.7,
-      "predicted_discharge_m3s": 10.7,
+      "predicted_stage_m": 531.69,
+      "predicted_discharge_m3s": 10.6,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27162,8 +27162,8 @@
     {
       "lead_hours": 69,
       "timestamp": "2026-11-28T15:00:00+00:00",
-      "predicted_stage_m": 531.7,
-      "predicted_discharge_m3s": 10.7,
+      "predicted_stage_m": 531.69,
+      "predicted_discharge_m3s": 10.6,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27175,8 +27175,8 @@
     {
       "lead_hours": 70,
       "timestamp": "2026-11-28T16:00:00+00:00",
-      "predicted_stage_m": 531.7,
-      "predicted_discharge_m3s": 10.7,
+      "predicted_stage_m": 531.69,
+      "predicted_discharge_m3s": 10.6,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27188,8 +27188,8 @@
     {
       "lead_hours": 71,
       "timestamp": "2026-11-28T17:00:00+00:00",
-      "predicted_stage_m": 531.7,
-      "predicted_discharge_m3s": 10.7,
+      "predicted_stage_m": 531.68,
+      "predicted_discharge_m3s": 10.5,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27201,8 +27201,8 @@
     {
       "lead_hours": 72,
       "timestamp": "2026-11-28T18:00:00+00:00",
-      "predicted_stage_m": 531.69,
-      "predicted_discharge_m3s": 10.6,
+      "predicted_stage_m": 531.68,
+      "predicted_discharge_m3s": 10.5,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27214,8 +27214,8 @@
     {
       "lead_hours": 73,
       "timestamp": "2026-11-28T19:00:00+00:00",
-      "predicted_stage_m": 531.69,
-      "predicted_discharge_m3s": 10.6,
+      "predicted_stage_m": 531.68,
+      "predicted_discharge_m3s": 10.5,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27227,8 +27227,8 @@
     {
       "lead_hours": 74,
       "timestamp": "2026-11-28T20:00:00+00:00",
-      "predicted_stage_m": 531.69,
-      "predicted_discharge_m3s": 10.6,
+      "predicted_stage_m": 531.68,
+      "predicted_discharge_m3s": 10.5,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27240,8 +27240,8 @@
     {
       "lead_hours": 75,
       "timestamp": "2026-11-28T21:00:00+00:00",
-      "predicted_stage_m": 531.69,
-      "predicted_discharge_m3s": 10.6,
+      "predicted_stage_m": 531.68,
+      "predicted_discharge_m3s": 10.5,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27253,8 +27253,8 @@
     {
       "lead_hours": 76,
       "timestamp": "2026-11-28T22:00:00+00:00",
-      "predicted_stage_m": 531.68,
-      "predicted_discharge_m3s": 10.5,
+      "predicted_stage_m": 531.67,
+      "predicted_discharge_m3s": 10.4,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27266,8 +27266,8 @@
     {
       "lead_hours": 77,
       "timestamp": "2026-11-28T23:00:00+00:00",
-      "predicted_stage_m": 531.68,
-      "predicted_discharge_m3s": 10.5,
+      "predicted_stage_m": 531.67,
+      "predicted_discharge_m3s": 10.4,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27279,8 +27279,8 @@
     {
       "lead_hours": 78,
       "timestamp": "2026-11-29T00:00:00+00:00",
-      "predicted_stage_m": 531.68,
-      "predicted_discharge_m3s": 10.5,
+      "predicted_stage_m": 531.67,
+      "predicted_discharge_m3s": 10.4,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27292,8 +27292,8 @@
     {
       "lead_hours": 79,
       "timestamp": "2026-11-29T01:00:00+00:00",
-      "predicted_stage_m": 531.68,
-      "predicted_discharge_m3s": 10.5,
+      "predicted_stage_m": 531.67,
+      "predicted_discharge_m3s": 10.4,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27305,8 +27305,8 @@
     {
       "lead_hours": 80,
       "timestamp": "2026-11-29T02:00:00+00:00",
-      "predicted_stage_m": 531.67,
-      "predicted_discharge_m3s": 10.4,
+      "predicted_stage_m": 531.66,
+      "predicted_discharge_m3s": 10.3,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27318,8 +27318,8 @@
     {
       "lead_hours": 81,
       "timestamp": "2026-11-29T03:00:00+00:00",
-      "predicted_stage_m": 531.67,
-      "predicted_discharge_m3s": 10.4,
+      "predicted_stage_m": 531.66,
+      "predicted_discharge_m3s": 10.3,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27331,8 +27331,8 @@
     {
       "lead_hours": 82,
       "timestamp": "2026-11-29T04:00:00+00:00",
-      "predicted_stage_m": 531.67,
-      "predicted_discharge_m3s": 10.4,
+      "predicted_stage_m": 531.66,
+      "predicted_discharge_m3s": 10.3,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27344,8 +27344,8 @@
     {
       "lead_hours": 83,
       "timestamp": "2026-11-29T05:00:00+00:00",
-      "predicted_stage_m": 531.67,
-      "predicted_discharge_m3s": 10.4,
+      "predicted_stage_m": 531.66,
+      "predicted_discharge_m3s": 10.3,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27357,8 +27357,8 @@
     {
       "lead_hours": 84,
       "timestamp": "2026-11-29T06:00:00+00:00",
-      "predicted_stage_m": 531.67,
-      "predicted_discharge_m3s": 10.4,
+      "predicted_stage_m": 531.65,
+      "predicted_discharge_m3s": 10.2,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27370,8 +27370,8 @@
     {
       "lead_hours": 85,
       "timestamp": "2026-11-29T07:00:00+00:00",
-      "predicted_stage_m": 531.66,
-      "predicted_discharge_m3s": 10.3,
+      "predicted_stage_m": 531.65,
+      "predicted_discharge_m3s": 10.2,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27383,8 +27383,8 @@
     {
       "lead_hours": 86,
       "timestamp": "2026-11-29T08:00:00+00:00",
-      "predicted_stage_m": 531.66,
-      "predicted_discharge_m3s": 10.3,
+      "predicted_stage_m": 531.65,
+      "predicted_discharge_m3s": 10.2,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27396,8 +27396,8 @@
     {
       "lead_hours": 87,
       "timestamp": "2026-11-29T09:00:00+00:00",
-      "predicted_stage_m": 531.66,
-      "predicted_discharge_m3s": 10.3,
+      "predicted_stage_m": 531.65,
+      "predicted_discharge_m3s": 10.2,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27409,8 +27409,8 @@
     {
       "lead_hours": 88,
       "timestamp": "2026-11-29T10:00:00+00:00",
-      "predicted_stage_m": 531.66,
-      "predicted_discharge_m3s": 10.3,
+      "predicted_stage_m": 531.65,
+      "predicted_discharge_m3s": 10.2,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
@@ -27422,8 +27422,8 @@
     {
       "lead_hours": 89,
       "timestamp": "2026-11-29T11:00:00+00:00",
-      "predicted_stage_m": 531.66,
-      "predicted_discharge_m3s": 10.3,
+      "predicted_stage_m": 531.63,
+      "predicted_discharge_m3s": 10.1,
       "observed_stage_m": null,
       "observed_distance_ft": null,
       "observed_discharge_m3s": null,
